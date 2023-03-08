@@ -1,3 +1,15 @@
+#ifndef MAKEQVECTORS_H
+#define MAKEQVECTORS_H
+
+#include <iostream>
+#include <string>
+#include <vector>
+#include <regex>
+
+#include <TChain.h>
+#include <ROOT/RDataFrame.hxx>
+#include <QnTools/CorrectionManager.hpp>
+
 using filteredDF=ROOT::RDF::RInterface<ROOT::Detail::RDF::RJittedFilter, void>;
 using definedDF=ROOT::RDF::RInterface<ROOT::Detail::RDF::RLoopManager, void>;
 using ROOT::VecOps::RVec;
@@ -11,40 +23,39 @@ enum varType
   kNVarTypes
 };
 
-string qaFilePath;
+std::string qaFilePath;
 Qn::CorrectionManager man; 
 TFile *outFile;
 TTree *outTree;
 short particleTypePosition;
 
-vector <string> varPatterns(kNVarTypes);
-vector <vector<string>> varNames(kNVarTypes);
-vector<short> vcInitialPositions(kNVarTypes, 0);
+std::vector <std::string> varPatterns(kNVarTypes);
+std::vector <std::vector<std::string>> varNames(kNVarTypes);
+std::vector<short> vcInitialPositions(kNVarTypes, 0);
 
-void InitVariables(filteredDF &d, vector <string> &patterns, vector<vector<string>> &varNames) 
+void InitVariables(filteredDF &d, std::vector <std::string> &patterns, std::vector<std::vector<std::string>> &varNames)
 {
   // Add all needed variables
   short ivar=0;
   for (int type=0;type<kNVarTypes;type++)
   {
-    vector<short> varSizes;
+    std::vector<short> varSizes;
     for (auto &name : d.GetColumnNames()) 
     {
       short size{1};
       auto columnType=d.GetColumnType(name);
-      if (type==kEvent && columnType.find("RVec")<columnType.size()) 
+      if (type==kEvent && columnType.find("ROOT::VecOps::RVec")<columnType.size())
         continue;
-      if (!regex_match(name, regex(patterns.at(type))))
+      if (!regex_match(name, std::regex(patterns.at(type))))
         continue;
       if (type==kChannel)
         size=*d.Range(0,0).Define("n", name+".size()").Mean("n");
       varNames.at(type).push_back(name);
       varSizes.push_back(size);
-        
     }
 
     vcInitialPositions.at(type)=ivar;
-    cout << "\nPattern: " << patterns.at(type) << endl;
+    std::cout << "\nPattern: " << patterns.at(type) << std::endl;
     for (int i=0;i<varNames.at(type).size();i++)
     {
       auto name=varNames.at(type).at(i);
@@ -61,37 +72,37 @@ void InitVariables(filteredDF &d, vector <string> &patterns, vector<vector<strin
   man.AddVariable("particleType", particleTypePosition, 1);
 }
 
-void DefineVariableFilling(filteredDF &d, vector <vector<string>> &varNames)
+void DefineVariableFilling(filteredDF &d, std::vector <std::vector<std::string>> &varNames)
 {
-  string vcEventFillExpr="vector<float> vcEvent; ";
+  std::string vcEventFillExpr="vector<float> vcEvent; ";
   for (auto& var:varNames.at(kEvent))
     vcEventFillExpr+=Form("vcEvent.push_back(%s); ",var.c_str());
   vcEventFillExpr+="return vcEvent;";
-  cout << endl << vcEventFillExpr << endl; 
-  
-  string vcModuleFillExpr="vector<float> vcModule; ";
+  std::cout << std::endl << vcEventFillExpr << std::endl;
+
+  std::string vcModuleFillExpr="vector<float> vcModule; ";
   for (auto& var:varNames.at(kChannel))
     vcModuleFillExpr+=Form("for(auto& val:%s) vcModule.push_back(val); ",var.c_str());
   vcModuleFillExpr+="return vcModule;";
-  cout << endl << vcModuleFillExpr << endl; 
-  
-  string nRecPart="0";
+  std::cout << std::endl << vcModuleFillExpr << std::endl;
+
+  std::string nRecPart="0";
   if (varNames.at(kRecParticle).size()>0)
     nRecPart=varNames.at(kRecParticle).front() + ".size()";
-  string vcRecPartFillExpr=Form("vector<vector<float>> vcRecParticle(%s); for(int i=0;i<vcRecParticle.size();i++) { ", nRecPart.c_str());
+  std::string vcRecPartFillExpr=Form("vector<vector<float>> vcRecParticle(%s); for(int i=0;i<vcRecParticle.size();i++) { ", nRecPart.c_str());
   for (auto& var:varNames.at(kRecParticle))
     vcRecPartFillExpr+=Form("vcRecParticle.at(i).push_back(%s.at(i)); ", var.c_str());
   vcRecPartFillExpr+=" } return vcRecParticle;";
-  cout << endl << vcRecPartFillExpr << endl; 
-  
-  string nSimPart="0";
+  std::cout << std::endl << vcRecPartFillExpr << std::endl;
+
+  std::string nSimPart="0";
   if (varNames.at(kSimParticle).size()>0)
     nSimPart=varNames.at(kSimParticle).front() + ".size()";
-  string vcSimPartFillExpr=Form("vector<vector<float>> vcSimParticle(%s); for(int i=0;i<vcSimParticle.size();i++) { ", nSimPart.c_str());
+  std::string vcSimPartFillExpr=Form("vector<vector<float>> vcSimParticle(%s); for(int i=0;i<vcSimParticle.size();i++) { ", nSimPart.c_str());
   for (auto& var:varNames.at(kSimParticle))
     vcSimPartFillExpr+=Form("vcSimParticle.at(i).push_back(%s.at(i)); ", var.c_str());
   vcSimPartFillExpr+=" } return vcSimParticle;";
-  cout << endl << vcSimPartFillExpr << endl; 
+  std::cout << std::endl << vcSimPartFillExpr << std::endl;
   
   d=d.Define("vcEvent", vcEventFillExpr)
      .Define("vcModule", vcModuleFillExpr)
@@ -101,9 +112,9 @@ void DefineVariableFilling(filteredDF &d, vector <vector<string>> &varNames)
 //  d.Display({/*"vcEvent","vcModule","vcRecParticle",*/"vcSimParticle"},2)->Print();
 }
 
-void processEvent(const ULong64_t eventId, const vector<float> vcEvent, const vector<float> vcModule, const vector<vector<float>> vcRecParticle, const vector<vector<float>> vcSimParticle)
+void processEvent(const ULong64_t eventId, const std::vector<float> vcEvent, const std::vector<float> vcModule, const std::vector<std::vector<float>> vcRecParticle, const std::vector<std::vector<float>> vcSimParticle)
 {
-  cout << "\r" << eventId;
+  std::cout << "\r" << eventId;
   man.Reset();
   double *vc = man.GetVariableContainer();
   for(int ivar=0; ivar<vcEvent.size();ivar++)
@@ -131,13 +142,13 @@ void processEvent(const ULong64_t eventId, const vector<float> vcEvent, const ve
   man.ProcessCorrections();
 }
 
-void init(filteredDF &d, string outFilePath, string calibFilePath)
+void init(filteredDF &d, std::string outFilePath, std::string calibFilePath)
 {
   outFile = TFile::Open(outFilePath.c_str(), "recreate");
   outFile->cd();
   outTree = new TTree("tree", "tree");
-  //qaFilePath=regex_replace(outFilePath, regex("qn\\.root"), "qa.root");
-  qaFilePath=regex_replace(outFilePath, regex("qn\\.root"), "qa.root");
+  //qa_file_path_=regex_replace(outFilePath, regex("qn\\.root"), "qa.root");
+  qaFilePath=regex_replace(outFilePath, std::regex("qn\\.root"), "qa.root");
   man.SetCalibrationInputFileName(calibFilePath);
   man.SetFillOutputTree(true);
   man.SetFillCalibrationQA(true);
@@ -152,7 +163,7 @@ void run(filteredDF &d) {
   man.SetCurrentRunName("test");
   DefineVariableFilling(d, varNames);
   d.Foreach(processEvent, {"rdfentry_", "vcEvent", "vcModule", "vcRecParticle", "vcSimParticle"});
-  cout << endl;
+  std::cout << std::endl;
   
   man.Finalize();
   outFile->cd();
@@ -164,3 +175,5 @@ void run(filteredDF &d) {
   man.GetCorrectionList()->Write("CorrectionHistograms", TObject::kSingleKey);
   qaFile.Close();
 }
+
+#endif // MAKEQVECTORS_H
