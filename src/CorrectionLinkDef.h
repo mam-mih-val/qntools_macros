@@ -14,6 +14,7 @@
 
 #pragma link C++ class VariableManager;
 #pragma link C++ class CorrectionTask;
+#pragma link C++ class VectorConfig;
 
 #endif
 

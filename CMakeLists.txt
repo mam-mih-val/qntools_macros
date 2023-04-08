@@ -18,10 +18,12 @@ message(STATUS ${QnTools_INCLUDE_DIR})
 set(SOURCES
         src/variable_manager.cc
         src/correction_task.cc
+        src/vector_config.cc
         )
 set(HEADERS
         src/variable_manager.h
         src/correction_task.h
+        src/vector_config.h
         )
 
 set(PCM_FILE_NAME libCorrection)
