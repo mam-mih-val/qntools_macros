@@ -11,6 +11,20 @@ void example(){
   std::string treename = "t";
   ROOT::RDataFrame d("t", "/home/mikhail/bmn_plain_tree/330.tree.root");
   auto dd=d
+          .Define("centrality",
+                  "float centrality;"
+                  "std::vector<float> centrality_percentage{ 0, 5, 10, 15, 20, 25, 30, 35, 40, 50, 60, 70, 80, 90, 100 };\n"
+                  "std::vector<int> multiplicity_edges{ 249, 118, 102, 89, 77, 67, 57, 49, 42, 29, 20, 13, 8, 4, 0 };\n"
+                  "auto multiplicity = trMom.size();\n"
+                  "int idx = 0;\n"
+                  "float bin_edge = multiplicity_edges[idx];\n"
+                  "while( multiplicity < bin_edge &&\n"
+                    "idx < multiplicity_edges.size()-1 ){\n"
+                    "idx++;\n"
+                    "bin_edge = multiplicity_edges[idx];\n"
+                  "}\n"
+                  "centrality = (centrality_percentage[idx-1] + centrality_percentage[idx])/2.0f;\n"
+                  "return centrality;")
           .Define("fhcalModPhi","ROOT::VecOps::RVec<float> phi; for(auto& pos:fhcalModPos) phi.push_back(pos.phi()); return phi;")
           .Define("fhcalModX","ROOT::VecOps::RVec<float> x; for(auto& pos:fhcalModPos) x.push_back(pos.x()); return x;")
           .Define("fhcalModY","ROOT::VecOps::RVec<float> y; for(auto& pos:fhcalModPos) y.push_back(pos.y()); return y;")
@@ -24,11 +38,26 @@ void example(){
                           "auto p = trMom.at(i).P();"
                           "auto E = sqrt(m*m + p*p);"
                           "auto y = 0.5*log( (E+pz)/(E-pz) );"
-                          "ycm.push_back(y);"
+                          "ycm.push_back( y - 1.17 );"
                         "}"
                         " return ycm;")
           .Define("trEta","ROOT::VecOps::RVec<float> eta; for(auto& mom:trMom) eta.push_back(mom.eta()); return eta;")
           .Define("trPhi","ROOT::VecOps::RVec<float> phi;for(auto& mom:trMom) phi.push_back(mom.phi()); return phi;")
+          .Define("trPid","ROOT::VecOps::RVec<int> pid; for( auto& id : trSimIndex){"
+                            "if(id > simPdg.size()){"
+                              "pid.push_back(-1);"
+                              "continue;"
+                            "}"
+                            "if(id < 0){"
+                              "pid.push_back(-1);"
+                              "continue;"
+                            "}"
+                            "pid.push_back(simPdg.at(id));"
+                          "}"
+                          "return pid;")
+          .Define( "trIsProton", "trPid == 2212" )
+          .Define( "trIsPiNeg", "trPid == -211" )
+          .Define( "trIsPiPos", "trPid == 211" )
           .Define("simPt","ROOT::VecOps::RVec<float> pt;for(auto& mom:simMom) pt.push_back(mom.pt()); return pt;")
           .Define("simEta","ROOT::VecOps::RVec<float> eta;for(auto& mom:simMom) eta.push_back(mom.eta()); return eta;")
           .Define("simPhi","ROOT::VecOps::RVec<float> phi;for(auto& mom:simMom) phi.push_back(mom.phi()); return phi;")
@@ -36,15 +65,15 @@ void example(){
           .Filter("vtxChi2>0.0001"); // at least one filter is mandatory!!!
 
   auto correction_task = CorrectionTask( dd, "correction_out.root", "correction_in.root" );
-  correction_task.SetEventVariables(std::regex("b"));
+  correction_task.SetEventVariables(std::regex("centrality"));
   correction_task.SetChannelVariables({std::regex("fhcalMod(X|Y|Phi|E|Id)")});
   correction_task.SetTrackVariables({
-                                            std::regex("tr(Pt|Eta|Phi|BetaTof400|BetaTof700|SimIndex|Y)"),
+                                            std::regex("tr(Pt|Eta|Phi|BetaTof400|BetaTof700|SimIndex|Y|Pid|IsProton)"),
                                             std::regex("sim(Pt|Eta|Phi|Pdg|MotherId|Y)")
                                     });
 
   correction_task.InitVariables();
-  correction_task.AddEventAxis( {"b", 4,0,10} );
+  correction_task.AddEventAxis( {"centrality", 8, 0, 40} );
 
   VectorConfig f1( "F1", "fhcalModPhi", "fhcalModE", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
   f1.SetHarmonicArray( {1, 2} );
@@ -52,59 +81,61 @@ void example(){
   f1.AddCut( "fhcalModId", [f1_modules](double mod_id){
     auto id = static_cast<int>(mod_id);
     return std::find( f1_modules.begin(), f1_modules.end(), id) != f1_modules.end();
-    }, "Bruh" );
+    }, "F1 Cut" );
   f1.AddHisto2D({{"fhcalModX", 100, -100, 100}, {"fhcalModY", 100, -100, 100}});
   correction_task.AddVector(f1);
 
-  //
-//  std::vector<Qn::AxisD> corrAxesParticle=
-//          {
-//                  {"trPt",4,0,2},
-//                  {"trEta",4,0,2},
-//          };
-//
-//  std::vector<Qn::AxisD> corrAxesSim=
-//          {
-//                  {"simPt",4,0,2},
-//                  {"simEta",4,0,2},
-//          };
-//
-//
-//  for (auto &axis:corrAxesEvent)
-//    man->AddCorrectionAxis(axis);
-//
-//  Qn::Recentering recentering;
-//  recentering.SetApplyWidthEqualization(false);
-//  Qn::TwistAndRescale twistRescale;
-//  twistRescale.SetApplyRescale(true);
-//  twistRescale.SetTwistAndRescaleMethod(Qn::TwistAndRescale::Method::DOUBLE_HARMONIC);
-//
-//  auto sumW=Qn::QVector::Normalization::M;
-//  auto track=Qn::DetectorType::TRACK;
-//  auto channel=Qn::DetectorType::CHANNEL;
-//  auto plain=Qn::QVector::CorrectionStep::PLAIN;
-//  auto recentered=Qn::QVector::CorrectionStep::RECENTERED;
-//  auto twisted=Qn::QVector::CorrectionStep::TWIST;
-//  auto rescaled=Qn::QVector::CorrectionStep::RESCALED;
-//
-//  man->AddDetector("fhcal1", channel, "fhcalModPhi", "fhcalModE", {}, {1}, sumW);
-//  man->AddCorrectionOnQnVector("fhcal1", recentering);
-//  man->AddCorrectionOnQnVector("fhcal1", twistRescale);
-//  man->SetOutputQVectors("fhcal1", {plain, recentered});
-//  man->AddCutOnDetector("fhcal1", {"fhcalModInSub1"}, [](double val){ return static_cast<bool>(val == 1); }, "fhcal1");
-//  man->AddHisto2D("fhcal1", {{"fhcalModId", 100, 0., 100}, {"fhcalModE", 100, 0., 10}});
-//  man->AddHisto2D("fhcal1", {{"fhcalModX", 100, -100, 100}, {"fhcalModY", 100, -100, 100}});
-//
-//  man->AddDetector("sim", track, "simPhi", "Ones", corrAxesSim, {1,2}, sumW);
-//  man->AddCutOnDetector("sim", {"track_type"}, [](double val){ return static_cast<bool>(fabs(val - 1)<0.1); }, "sim");
-////  correction_manager_.AddCutOnDetector("tr", {"simPdg"}, [](float pdg){return int(pdg)==2212;}, "proton");
-////  man->AddCorrectionOnQnVector("sim", recentering);
-////  man->AddCorrectionOnQnVector("sim", twistRescale);
-//  man->SetOutputQVectors("sim", {plain});
-//  man->AddHisto1D("sim", {"simPhi", 100, -3.15, 3.15}, "Ones");
-//  man->AddHisto2D("sim", {{"simY", 100, 0.0, 4.0},
-//                         {"simPt", 100, 0.0, 2.0}}, "Ones");
-////  correction_manager_.AddHisto2D("tr", {{"trEta", 100, 0., 6.}, {"trPt",  100, 0., 3.}}, "Ones");
+  VectorConfig f2( "F2", "fhcalModPhi", "fhcalModE", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
+  f2.SetHarmonicArray( {1, 2} );
+  f2.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
+  f2.AddCut( "fhcalModId", [f2_modules](double mod_id){
+    auto id = static_cast<int>(mod_id);
+    return std::find( f2_modules.begin(), f2_modules.end(), id) != f2_modules.end();
+    }, "F2 Cut" );
+  f2.AddHisto2D({{"fhcalModX", 100, -100, 100}, {"fhcalModY", 100, -100, 100}});
+  correction_task.AddVector(f2);
+
+  VectorConfig f3( "F3", "fhcalModPhi", "fhcalModE", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
+  f3.SetHarmonicArray( {1, 2} );
+  f3.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
+  f3.AddCut( "fhcalModId", [f3_modules](double mod_id){
+    auto id = static_cast<int>(mod_id);
+    return std::find( f3_modules.begin(), f3_modules.end(), id) != f3_modules.end();
+    }, "F3 Cut" );
+  f3.AddHisto2D({{"fhcalModX", 100, -100, 100}, {"fhcalModY", 100, -100, 100}});
+  correction_task.AddVector(f3);
+
+  std::vector<Qn::AxisD> proton_axes{
+          { "trY", 12, -0.2, 1.0 },
+          { "trPt", 15, 0.0, 1.5 },
+  };
+
+  VectorConfig proton( "proton", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  proton.SetHarmonicArray( {1, 2} );
+  proton.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
+  proton.SetCorrectionAxes( proton_axes );
+  proton.AddCut( "trPid", [](double pid){
+    auto pdg_code = static_cast<int>(pid);
+    return pdg_code == 2212;
+    }, "proton cut" );
+  proton.AddHisto2D({{"trY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
+  correction_task.AddVector(proton);
+
+  VectorConfig Tp( "Tp", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  Tp.SetHarmonicArray( {1, 2} );
+  Tp.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
+  Tp.AddCut( "trPid", [](double pid){
+    auto pdg_code = static_cast<int>(pid);
+    return pdg_code == 2212;
+    }, "proton cut" );
+  Tp.AddCut( "trY", [](double ycm){
+    return 0.4 < ycm && ycm < 0.6;
+    }, "Tp ycm cut" );
+  Tp.AddCut( "trPt", [](double pT){
+    return 0.4 < pT && pT < 2.0;
+    }, "Tp pT cut" );
+  correction_task.AddVector(Tp);
+
 
   correction_task.Run();
 }
