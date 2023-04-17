@@ -18,7 +18,7 @@ mkdir $id
 cd $id
 
 source /mnt/pool/nica/7/mam2mih/soft/basov/root-6.24.06/install/bin/thisroot.sh
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/mnt/pool/nica/7/mam2mih/soft/basov/QnTools/install/lib
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/mnt/pool/nica/7/mam2mih/soft/basov/QnTools/install/lib:/mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/build/
 
 echo "/mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/build/correct /mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/macro/example.cc $list_dir/$file_list"
 

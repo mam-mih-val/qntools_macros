@@ -26,19 +26,17 @@ set(HEADERS
         src/vector_config.h
         )
 
-set(PCM_FILE_NAME libCorrection)
-ROOT_GENERATE_DICTIONARY( G__Correction ${HEADERS} LINKDEF src/CorrectionLinkDef.h )
 add_library(Correction SHARED ${SOURCES} G__Correction.cxx )
+ROOT_GENERATE_DICTIONARY( G__Correction ${HEADERS} LINKDEF src/CorrectionLinkDef.h )
 target_link_libraries(Correction PUBLIC QnTools::Correction QnTools::Base ROOT::RIO ROOT::Tree ROOT::ROOTDataFrame )
 
 add_executable( correct src/correct.cc )
-target_link_libraries( correct PUBLIC ROOT::RIO Correction )
+target_link_libraries( correct PUBLIC Correction ROOT::RIO )
 
 set( QNTOOLS_INCLUDE_PATH ${QnTools_INCLUDE_DIR}/QnTools )
 configure_file(src/correlate.cc.in ${CMAKE_SOURCE_DIR}/src/correlate.cc @ONLY)
 
 add_executable( correlate src/correlate.cc )
-target_include_directories( correlate PRIVATE ${QnTools_INCLUDE_DIR}/QnTools )
 set_target_properties( correlate PROPERTIES LINKER_LANGUAGE CXX)
-target_link_libraries( correlate PUBLIC ROOT::RIO ROOT::Geom QnTools::DataFrame QnTools::Base )
+target_link_libraries( correlate PRIVATE ROOT::RIO ROOT::Geom QnTools::DataFrame QnTools::Base )
 
