@@ -11,7 +11,7 @@ CorrectionTask::CorrectionTask(
   out_file_ = TFile::Open(outFilePath.c_str(), "recreate");
   out_file_->cd();
   out_tree_ = new TTree("tree", "tree");
-  qa_file_path_ = outFilePath;
+  qa_file_path_ = "qa.root";
   correction_manager_ = std::make_shared<Qn::CorrectionManager>();
   correction_manager_->SetCalibrationInputFileName(calibFilePath);
   correction_manager_->SetFillOutputTree(true);

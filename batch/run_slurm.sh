@@ -24,10 +24,8 @@ echo "/mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/build/correct /mnt/pool
 
 # PLAIN
 time /mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/build/correct /mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/macro/example.cc $list_dir/$file_list
-mv correction_out.root correction_in.root
 # RECENTERING
 time /mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/build/correct /mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/macro/example.cc $list_dir/$file_list
-mv correction_out.root correction_in.root
 # TWIST AND RESCALING
 time /mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/build/correct /mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/macro/example.cc $list_dir/$file_list
 

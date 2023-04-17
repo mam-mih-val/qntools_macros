@@ -67,7 +67,7 @@ void example(std::string list){
           .Define("simY","ROOT::VecOps::RVec<float> y;for(auto& mom:simMom) y.push_back(mom.Rapidity()); return y;")
           .Filter("vtxChi2>0.0001"); // at least one filter is mandatory!!!
 
-  auto correction_task = CorrectionTask( dd, "correction_out.root", "correction_in.root" );
+  auto correction_task = CorrectionTask( dd, "correction_out.root", "qa.root" );
   correction_task.SetEventVariables(std::regex("centrality"));
   correction_task.SetChannelVariables({std::regex("fhcalMod(X|Y|Phi|E|Id)")});
   correction_task.SetTrackVariables({
