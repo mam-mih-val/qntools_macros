@@ -40,3 +40,11 @@ target_link_libraries(Correction PUBLIC QnTools::Correction QnTools::Base ROOT::
 add_executable( correct src/correct.cc )
 target_link_libraries( correct ROOT::RIO Correction )
 
+set( QNTOOLS_INCLUDE_PATH ${QnTools_INCLUDE_DIR}/QnTools )
+configure_file(src/correlate.cc.in ${CMAKE_SOURCE_DIR}/src/correlate.cc @ONLY)
+
+add_executable( correlate src/correlate.cc )
+target_include_directories( correlate PRIVATE ${QnTools_INCLUDE_DIR}/QnTools )
+set_target_properties( correlate PROPERTIES LINKER_LANGUAGE CXX)
+target_link_libraries( correlate ROOT::RIO ROOT::Geom QnTools::DataFrame QnTools::Base )
+
