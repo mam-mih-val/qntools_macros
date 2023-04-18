@@ -40,8 +40,8 @@ void example(std::string list){
                           "auto pz = trMom.at(i).pz();"
                           "auto p = trMom.at(i).P();"
                           "auto E = sqrt(m*m + p*p);"
-                          "auto y = 0.5*log( (E+pz)/(E-pz) );"
-                          "ycm.push_back( y - 1.17 );"
+                          "auto y = 0.5*log( (E + pz) / (E - pz) );"
+                          "ycm.push_back( y - 1.0 );"
                         "}"
                         " return ycm;")
           .Define("trEta","ROOT::VecOps::RVec<float> eta; for(auto& mom:trMom) eta.push_back(mom.eta()); return eta;")
@@ -121,6 +121,10 @@ void example(std::string list){
     auto pdg_code = static_cast<int>(pid);
     return pdg_code == 2212;
     }, "proton cut" );
+  proton.AddCut( "track_type", [](double type){
+    auto int_type = static_cast<int>(type);
+    return int_type == 1;
+    }, "cut on is track" );
   proton.AddHisto2D({{"trY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
   correction_task.AddVector(proton);
 
@@ -137,6 +141,10 @@ void example(std::string list){
   Tp.AddCut( "trPt", [](double pT){
     return 0.4 < pT && pT < 2.0;
     }, "Tp pT cut" );
+  Tp.AddCut( "track_type", [](double type){
+    auto int_type = static_cast<int>(type);
+    return int_type == 1;
+  }, "cut on is track" );
   correction_task.AddVector(Tp);
 
 
