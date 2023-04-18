@@ -23,6 +23,18 @@ public:
 
   void InitVariables( ROOT::RDF::RInterface<ROOT::Detail::RDF::RJittedFilter, void>& filtered_data_frame );
 
+  [[nodiscard]] const std::regex &GetEventVariablePattern() const {
+    return event_variable_pattern_;
+  }
+
+  [[nodiscard]] const std::vector<std::regex> &GetChannelVariablePatterns() const {
+    return channel_variable_patterns_;
+  }
+
+  [[nodiscard]] const std::vector<std::regex> &GetTrackVariablePatterns() const {
+    return track_variable_patterns_;
+  }
+
   void operator()( ULong64_t event_id,
                    const std::vector<float>& event_variables,
                    const std::vector<std::vector<std::vector<float>>>& module_variables,

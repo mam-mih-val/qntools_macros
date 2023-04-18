@@ -56,6 +56,22 @@ public:
   VectorConfig& operator=(VectorConfig&&) = default;
   ~VectorConfig() = default;
 
+  const std::string &GetName() const {
+    return name_;
+  }
+
+  const std::string &GetPhiField() const {
+    return phi_field_;
+  }
+
+  const std::string &GetWeightField() const {
+    return weight_field_;
+  }
+
+  VECTOR_TYPE GetType() const {
+    return type_;
+  }
+
   void SetHarmonicArray(const std::vector<int> &harmonic_array) {
     harmonic_array_ = harmonic_array;
   }

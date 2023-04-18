@@ -121,10 +121,6 @@ void example(std::string list){
     auto pdg_code = static_cast<int>(pid);
     return pdg_code == 2212;
     }, "proton cut" );
-  proton.AddCut( "track_type", [](double type){
-    auto int_type = static_cast<int>(type);
-    return int_type == 1;
-    }, "cut on is track" );
   proton.AddHisto2D({{"trY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
   correction_task.AddVector(proton);
 
@@ -141,10 +137,6 @@ void example(std::string list){
   Tp.AddCut( "trPt", [](double pT){
     return 0.4 < pT && pT < 2.0;
     }, "Tp pT cut" );
-  Tp.AddCut( "track_type", [](double type){
-    auto int_type = static_cast<int>(type);
-    return int_type == 1;
-  }, "cut on is track" );
   correction_task.AddVector(Tp);
 
 

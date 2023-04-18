@@ -38,9 +38,22 @@ void CorrectionTask::SpecifyVariables(
 
 void CorrectionTask::Run() {
   std::for_each( event_axes_.begin(), event_axes_.end(), [this](const Qn::AxisD& ax){ this->correction_manager_->AddCorrectionAxis(ax); } );
-  for( const auto& conf : vector_configs_ ){
-    conf.Decorate( correction_manager_ );
+
+  for( auto& conf : vector_configs_ ){
+    if( conf.GetType() != VECTOR_TYPE::TRACK )
+      continue;
+    int i=0;
+    for( const auto& pattern : varible_manager_.GetTrackVariablePatterns() ){
+      std::smatch match;
+      if( std::regex_match( conf.GetPhiField(), match, pattern ) )
+        conf.AddCut("track_type", [i](double type){
+          auto int_type = static_cast<int>(type);
+          return int_type == 1;
+        }, "cut to select only track of this type");
+      i++;
+    }
   }
+  std::for_each( vector_configs_.begin(), vector_configs_.end(), [this]( const auto& config ){ config.Decorate( this->correction_manager_ ); } );
   correction_manager_->InitializeOnNode();
   correction_manager_->SetCurrentRunName("test");
   filtered_data_frame_.Foreach(varible_manager_, {"rdfentry_", "event_variables", "channel_variables", "track_variables"});
