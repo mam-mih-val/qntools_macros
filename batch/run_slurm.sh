@@ -2,7 +2,7 @@
 
 #SBATCH -p fast
 #SBATCH -t 1:00:00
-#SBATCH -J finder
+#SBATCH -J QnTools
 #SBATCH -o /mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/log/%A_%a.log
 
 list_dir=${1}
