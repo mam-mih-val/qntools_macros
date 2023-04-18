@@ -58,6 +58,18 @@ void example(std::string list){
                             "pid.push_back(simPdg.at(id));"
                           "}"
                           "return pid;")
+          .Define("trMotherId","ROOT::VecOps::RVec<int> mother_id; for( auto& id : trSimIndex){"
+                            "if(id > simMotherId.size()){"
+                              "mother_id.push_back(-999);"
+                              "continue;"
+                            "}"
+                            "if(id < 0){"
+                              "mother_id.push_back(-999);"
+                              "continue;"
+                            "}"
+                            "mother_id.push_back(simMotherId.at(id));"
+                          "}"
+                          "return mother_id;")
           .Define( "trIsProton", "trPid == 2212" )
           .Define( "trIsPiNeg", "trPid == -211" )
           .Define( "trIsPiPos", "trPid == 211" )
@@ -71,7 +83,7 @@ void example(std::string list){
   correction_task.SetEventVariables(std::regex("centrality"));
   correction_task.SetChannelVariables({std::regex("fhcalMod(X|Y|Phi|E|Id)")});
   correction_task.SetTrackVariables({
-                                            std::regex("tr(Pt|Eta|Phi|BetaTof400|BetaTof700|SimIndex|Y|Pid|IsProton)"),
+                                            std::regex("tr(Pt|Eta|Phi|BetaTof400|BetaTof700|SimIndex|Y|Pid|IsProton|MotherId)"),
                                             std::regex("sim(Pt|Eta|Phi|Pdg|MotherId|Y)")
                                     });
 
@@ -121,6 +133,10 @@ void example(std::string list){
     auto pdg_code = static_cast<int>(pid);
     return pdg_code == 2212;
     }, "proton cut" );
+  proton.AddCut( "trMotherId", [](double pid){
+    auto pdg_code = static_cast<int>(pid);
+    return pdg_code == -1;
+    }, "cut on primary" );
   proton.AddHisto2D({{"trY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
   correction_task.AddVector(proton);
 
@@ -137,6 +153,10 @@ void example(std::string list){
   Tp.AddCut( "trPt", [](double pT){
     return 0.4 < pT && pT < 2.0;
     }, "Tp pT cut" );
+  proton.AddCut( "trMotherId", [](double pid){
+    auto pdg_code = static_cast<int>(pid);
+    return pdg_code == -1;
+  }, "cut on primary" );
   correction_task.AddVector(Tp);
 
 
