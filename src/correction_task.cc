@@ -48,7 +48,7 @@ void CorrectionTask::Run() {
       if( std::regex_match( conf.GetPhiField(), match, pattern ) )
         conf.AddCut("track_type", [i](double type){
           auto int_type = static_cast<int>(type);
-          return int_type == 1;
+          return int_type == i;
         }, "cut to select only track of this type");
       i++;
     }
