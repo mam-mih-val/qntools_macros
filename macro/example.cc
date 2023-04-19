@@ -33,10 +33,14 @@ void example(std::string list){
           .Define("fhcalModY","ROOT::VecOps::RVec<float> y; for(auto& pos:fhcalModPos) y.push_back(pos.y()); return y;")
           .Define("scwallModPhi","ROOT::VecOps::RVec<float> phi; for(auto& pos:scwallModPos) phi.push_back(pos.phi()); return phi;")
           .Define("trPt","ROOT::VecOps::RVec<float> pt; for(auto& mom:trMom) pt.push_back(mom.pt()); return pt;")
-          .Define("trY","ROOT::VecOps::RVec<float> ycm;"
-                        "for(int i=0; i<trMom.size(); ++i){ "
+          .Define("trY","ROOT::VecOps::RVec<float> ycm{};"
+                        "for(int i=0; i<trMom.size(); ++i){"
                           "auto matching_id = trSimIndex.at(i);"
-                          "auto m = simMom.at(i).mass();"
+                          "if( matching_id < 0 || matching_id > simMom.size(){"
+                            "ycm.push_back(-999.);"
+                            "continue;"
+                          "}"
+                          "auto m = simMom.at(matching_id).mass();"
                           "auto pz = trMom.at(i).pz();"
                           "auto p = trMom.at(i).P();"
                           "auto E = sqrt(m*m + p*p);"
@@ -46,7 +50,8 @@ void example(std::string list){
                         " return ycm;")
           .Define("trEta","ROOT::VecOps::RVec<float> eta; for(auto& mom:trMom) eta.push_back(mom.eta()); return eta;")
           .Define("trPhi","ROOT::VecOps::RVec<float> phi;for(auto& mom:trMom) phi.push_back(mom.phi()); return phi;")
-          .Define("trPid","ROOT::VecOps::RVec<int> pid; for( auto& id : trSimIndex){"
+          .Define("trPid","ROOT::VecOps::RVec<int> pid{}; "
+                          "for( auto& id : trSimIndex){"
                             "if(id > simPdg.size()){"
                               "pid.push_back(-1);"
                               "continue;"
@@ -58,18 +63,20 @@ void example(std::string list){
                             "pid.push_back(simPdg.at(id));"
                           "}"
                           "return pid;")
-          .Define("trMotherId","ROOT::VecOps::RVec<int> mother_id; for( auto& id : trSimIndex){"
-                            "if(id > simMotherId.size()){"
-                              "mother_id.push_back(-999);"
-                              "continue;"
-                            "}"
-                            "if(id < 0){"
-                              "mother_id.push_back(-999);"
-                              "continue;"
-                            "}"
-                            "mother_id.push_back(simMotherId.at(id));"
-                          "}"
-                          "return mother_id;")
+          .Define("trMotherId",
+                  "ROOT::VecOps::RVec<int> mother_id{};\n"
+                  "for( auto& id : trSimIndex){\n"
+                    "if(id > simMotherId.size()){\n"
+                      "mother_id.push_back(-999);\n"
+                      "continue;\n"
+                    "}\n"
+                    "if(id < 0){\n"
+                      "mother_id.push_back(-999);\n"
+                      "continue;\n"
+                    "}\n"
+                    "mother_id.push_back(simMotherId.at(id));\n"
+                  "}\n"
+                  "return mother_id;\n")
           .Define( "trIsProton", "trPid == 2212" )
           .Define( "trIsPiNeg", "trPid == -211" )
           .Define( "trIsPiPos", "trPid == 211" )
@@ -133,9 +140,9 @@ void example(std::string list){
     auto pdg_code = static_cast<int>(pid);
     return pdg_code == 2212;
     }, "proton cut" );
-  proton.AddCut( "trMotherId", [](double pid){
-    auto pdg_code = static_cast<int>(pid);
-    return pdg_code == -1;
+  proton.AddCut( "trMotherId", [](double mother_id){
+    auto int_mother_id = static_cast<int>(mother_id);
+    return int_mother_id == -1;
     }, "cut on primary" );
   proton.AddHisto2D({{"trY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
   correction_task.AddVector(proton);
@@ -153,9 +160,9 @@ void example(std::string list){
   Tp.AddCut( "trPt", [](double pT){
     return 0.4 < pT && pT < 2.0;
     }, "Tp pT cut" );
-  proton.AddCut( "trMotherId", [](double pid){
-    auto pdg_code = static_cast<int>(pid);
-    return pdg_code == -1;
+  Tp.AddCut( "trMotherId", [](double mother_id){
+    auto int_mother_id = static_cast<int>(mother_id);
+    return int_mother_id == -1;
   }, "cut on primary" );
   correction_task.AddVector(Tp);
 
