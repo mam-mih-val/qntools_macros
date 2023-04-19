@@ -33,21 +33,21 @@ void example(std::string list){
           .Define("fhcalModY","ROOT::VecOps::RVec<float> y; for(auto& pos:fhcalModPos) y.push_back(pos.y()); return y;")
           .Define("scwallModPhi","ROOT::VecOps::RVec<float> phi; for(auto& pos:scwallModPos) phi.push_back(pos.phi()); return phi;")
           .Define("trPt","ROOT::VecOps::RVec<float> pt; for(auto& mom:trMom) pt.push_back(mom.pt()); return pt;")
-          .Define("trY","ROOT::VecOps::RVec<float> ycm{};"
-                        "for(int i=0; i<trMom.size(); ++i){"
-                          "auto matching_id = trSimIndex.at(i);"
-                          "if( matching_id < 0 || matching_id > simMom.size(){"
-                            "ycm.push_back(-999.);"
-                            "continue;"
-                          "}"
-                          "auto m = simMom.at(matching_id).mass();"
-                          "auto pz = trMom.at(i).pz();"
-                          "auto p = trMom.at(i).P();"
-                          "auto E = sqrt(m*m + p*p);"
-                          "auto y = 0.5*log( (E + pz) / (E - pz) );"
-                          "ycm.push_back( y - 1.0 );"
-                        "}"
-                        " return ycm;")
+          .Define("trY","ROOT::VecOps::RVec<float> ycm{};\n"
+                        "for(int i=0; i<trMom.size(); ++i){\n"
+                        " auto matching_id = trSimIndex.at(i);\n"
+                        " if( matching_id < 0 || matching_id > simMom.size() ){\n"
+                        "   ycm.push_back(-999.);\n"
+                        "   continue;\n"
+                        " }\n"
+                        " auto m = simMom.at(matching_id).mass();\n"
+                        " auto pz = trMom.at(i).pz();\n"
+                        " auto p = trMom.at(i).P();\n"
+                        " auto E = sqrt(m*m + p*p);\n"
+                        " auto y = 0.5*log( (E + pz) / (E - pz) );\n"
+                        " ycm.push_back( y - 1.0 );\n"
+                        "}\n"
+                        "return ycm;\n")
           .Define("trEta","ROOT::VecOps::RVec<float> eta; for(auto& mom:trMom) eta.push_back(mom.eta()); return eta;")
           .Define("trPhi","ROOT::VecOps::RVec<float> phi;for(auto& mom:trMom) phi.push_back(mom.phi()); return phi;")
           .Define("trPid","ROOT::VecOps::RVec<int> pid{}; "
