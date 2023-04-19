@@ -9,6 +9,10 @@ vector <vector<string>> Q1Q1=
   {"Tp_RESCALED", "F1_RESCALED"},
   {"Tp_RESCALED", "F2_RESCALED"},
   {"Tp_RESCALED", "F3_RESCALED"},
+
+  {"Tneg_RESCALED", "F1_RESCALED"},
+  {"Tneg_RESCALED", "F2_RESCALED"},
+  {"Tneg_RESCALED", "F3_RESCALED"},
 };
 
 vector <vector<string>> u1Q1=
@@ -18,9 +22,9 @@ vector <vector<string>> u1Q1=
   {"proton_RESCALED", "F3_RESCALED"},
 };
 
-void correlate(string inputFiles="qn.root", string outputFile="corr.root")
+void proton_correlate(string inputFiles="qn.root", string outputFile="corr.root")
 {
-  int nSamples = 100;
+  int nSamples = 1000;
   Qn::AxisD centAxis({"centrality", 8, 0, 40});
   auto axes_correlation = Qn::MakeAxes(centAxis);
   ROOT::RDataFrame d( "tree", inputFiles.c_str() );

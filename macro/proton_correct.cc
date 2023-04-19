@@ -2,7 +2,7 @@
 // Created by Misha on 3/7/2023.
 //
 
-void example(std::string list){
+void proton_correct(std::string list){
   std::vector<int> f1_modules = {11, 12, 13, 16, 17, 20, 21, 22};
   std::vector<int> f2_modules = {5, 6, 7, 8, 9, 10, 14, 15, 18, 19, 23, 24, 25, 26, 27, 28};
   std::vector<int> f3_modules = {0, 1, 2, 3, 4, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53};
@@ -33,48 +33,50 @@ void example(std::string list){
           .Define("fhcalModY","ROOT::VecOps::RVec<float> y; for(auto& pos:fhcalModPos) y.push_back(pos.y()); return y;")
           .Define("scwallModPhi","ROOT::VecOps::RVec<float> phi; for(auto& pos:scwallModPos) phi.push_back(pos.phi()); return phi;")
           .Define("trPt","ROOT::VecOps::RVec<float> pt; for(auto& mom:trMom) pt.push_back(mom.pt()); return pt;")
-          .Define("trY","ROOT::VecOps::RVec<float> ycm{};\n"
-                        "for(int i=0; i<trMom.size(); ++i){\n"
-                        " auto matching_id = trSimIndex.at(i);\n"
-                        " if( matching_id < 0 || matching_id > simMom.size() ){\n"
-                        "   ycm.push_back(-999.);\n"
-                        "   continue;\n"
-                        " }\n"
-                        " auto m = simMom.at(matching_id).mass();\n"
-                        " auto pz = trMom.at(i).pz();\n"
-                        " auto p = trMom.at(i).P();\n"
-                        " auto E = sqrt(m*m + p*p);\n"
-                        " auto y = 0.5*log( (E + pz) / (E - pz) );\n"
-                        " ycm.push_back( y - 1.0 );\n"
-                        "}\n"
-                        "return ycm;\n")
+          .Define("trY",
+                  "ROOT::VecOps::RVec<float> ycm{};\n"
+                  "for(int i=0; i<trMom.size(); ++i){\n"
+                  " auto matching_id = trSimIndex.at(i);\n"
+                  " if( matching_id < 0 || matching_id > simMom.size() ){\n"
+                  "   ycm.push_back(-999.);\n"
+                  "   continue;\n"
+                  " }\n"
+                  " auto m = simMom.at(matching_id).mass();\n"
+                  " auto pz = trMom.at(i).pz();\n"
+                  " auto p = trMom.at(i).P();\n"
+                  " auto E = sqrt(m*m + p*p);\n"
+                  " auto y = 0.5*log( (E + pz) / (E - pz) );\n"
+                  " ycm.push_back( y - 1.0 );\n"
+                  "}\n"
+                  "return ycm;\n")
           .Define("trEta","ROOT::VecOps::RVec<float> eta; for(auto& mom:trMom) eta.push_back(mom.eta()); return eta;")
           .Define("trPhi","ROOT::VecOps::RVec<float> phi;for(auto& mom:trMom) phi.push_back(mom.phi()); return phi;")
-          .Define("trPid","ROOT::VecOps::RVec<int> pid{}; "
-                          "for( auto& id : trSimIndex){"
-                            "if(id > simPdg.size()){"
-                              "pid.push_back(-1);"
-                              "continue;"
-                            "}"
-                            "if(id < 0){"
-                              "pid.push_back(-1);"
-                              "continue;"
-                            "}"
-                            "pid.push_back(simPdg.at(id));"
-                          "}"
-                          "return pid;")
+          .Define("trPid",
+                  "ROOT::VecOps::RVec<int> pid{};\n"
+                  "for( auto& id : trSimIndex){\n"
+                  " if(id > simPdg.size()){\n"
+                  "   pid.push_back(-1);\n"
+                  "   continue;\n"
+                  " }\n"
+                  " if(id < 0){\n"
+                  "   pid.push_back(-1);\n"
+                  "   continue;\n"
+                  " }\n"
+                  " pid.push_back(simPdg.at(id));\n"
+                  "}\n"
+                  "return pid;\n")
           .Define("trMotherId",
                   "ROOT::VecOps::RVec<int> mother_id{};\n"
                   "for( auto& id : trSimIndex){\n"
-                    "if(id > simMotherId.size()){\n"
-                      "mother_id.push_back(-999);\n"
-                      "continue;\n"
-                    "}\n"
-                    "if(id < 0){\n"
-                      "mother_id.push_back(-999);\n"
-                      "continue;\n"
-                    "}\n"
-                    "mother_id.push_back(simMotherId.at(id));\n"
+                  " if(id > simMotherId.size()){\n"
+                  "   mother_id.push_back(-999);\n"
+                  "   continue;\n"
+                  " }\n"
+                  " if(id < 0){\n"
+                  "   mother_id.push_back(-999);\n"
+                  "   continue;\n"
+                  "  }\n"
+                  " mother_id.push_back(simMotherId.at(id));\n"
                   "}\n"
                   "return mother_id;\n")
           .Define( "trIsProton", "trPid == 2212" )
@@ -90,7 +92,7 @@ void example(std::string list){
   correction_task.SetEventVariables(std::regex("centrality"));
   correction_task.SetChannelVariables({std::regex("fhcalMod(X|Y|Phi|E|Id)")});
   correction_task.SetTrackVariables({
-                                            std::regex("tr(Pt|Eta|Phi|BetaTof400|BetaTof700|SimIndex|Y|Pid|IsProton|MotherId)"),
+                                            std::regex("tr(Pt|Eta|Phi|BetaTof400|BetaTof700|SimIndex|Y|Pid|IsProton|MotherId|Charge)"),
                                             std::regex("sim(Pt|Eta|Phi|Pdg|MotherId|Y)")
                                     });
 
@@ -165,6 +167,20 @@ void example(std::string list){
     return int_mother_id == -1;
   }, "cut on primary" );
   correction_task.AddVector(Tp);
+
+  VectorConfig Tneg( "Tneg", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  Tneg.SetHarmonicArray( {1, 2} );
+  Tneg.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
+  Tneg.AddCut( "trCharge", [](double charge){
+    return charge < 0.0;
+    }, "charge" );
+  Tneg.AddCut( "trEta", [](double eta){
+    return 1.0 < eta && eta < 2.0;
+    }, "Tneg eta cut" );
+  Tneg.AddCut( "trPt", [](double pT){
+    return 0.1 < pT && pT < 0.5;
+    }, "Tneg pT cut" );
+  correction_task.AddVector(Tneg);
 
 
   correction_task.Run();
