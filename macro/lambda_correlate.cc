@@ -17,24 +17,24 @@ vector <vector<string>> Q1Q1=
 
 vector <vector<string>> u1Q1=
 {
-  {"lambda_signal_RESCALED",      "psi_rp_PLAIN"},
-  {"lambda_background_RESCALED",  "psi_rp_PLAIN"},
-  {"lambda_good_RESCALED",        "psi_rp_PLAIN"},
+  {"lambda_signal_PLAIN",      "psi_rp_PLAIN"},
+  {"lambda_background_PLAIN",  "psi_rp_PLAIN"},
+  {"lambda_good_PLAIN",        "psi_rp_PLAIN"},
   {"lambda_true_PLAIN",        "psi_rp_PLAIN"},
 
-  {"lambda_signal_RESCALED",      "F1_RESCALED"},
-  {"lambda_background_RESCALED",  "F1_RESCALED"},
-  {"lambda_good_RESCALED",        "F1_RESCALED"},
+  {"lambda_signal_PLAIN",      "F1_RESCALED"},
+  {"lambda_background_PLAIN",  "F1_RESCALED"},
+  {"lambda_good_PLAIN",        "F1_RESCALED"},
   {"lambda_true_PLAIN",        "F1_RESCALED"},
 
-  {"lambda_signal_RESCALED",      "F2_RESCALED"},
-  {"lambda_background_RESCALED",  "F2_RESCALED"},
-  {"lambda_good_RESCALED",        "F2_RESCALED"},
+  {"lambda_signal_PLAIN",      "F2_RESCALED"},
+  {"lambda_background_PLAIN",  "F2_RESCALED"},
+  {"lambda_good_PLAIN",        "F2_RESCALED"},
   {"lambda_true_PLAIN",        "F2_RESCALED"},
 
-  {"lambda_signal_RESCALED",      "F3_RESCALED"},
-  {"lambda_background_RESCALED",  "F3_RESCALED"},
-  {"lambda_good_RESCALED",        "F3_RESCALED"},
+  {"lambda_signal_PLAIN",      "F3_RESCALED"},
+  {"lambda_background_PLAIN",  "F3_RESCALED"},
+  {"lambda_good_PLAIN",        "F3_RESCALED"},
   {"lambda_true_PLAIN",        "F3_RESCALED"},
 };
 
