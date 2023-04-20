@@ -29,7 +29,7 @@ time /mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/build/correct /mnt/pool/
 # TWIST AND RESCALING
 time /mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/build/correct /mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/macro/lambda_correct.cc $list_dir/$file_list
 
-echo "/mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/build/correlate /mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/macro/labda_correlate.cc correction_out.root"
-time /mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/build/correlate /mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/macro/labda_correlate.cc correction_out.root
+echo "/mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/build/correlate /mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/macro/lambda_correlate.cc correction_out.root"
+time /mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/build/correlate /mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/macro/lambda_correlate.cc correction_out.root
 
 echo "The End."

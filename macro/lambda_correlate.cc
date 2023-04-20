@@ -38,7 +38,7 @@ vector <vector<string>> u1Q1=
   {"lambda_true_RESCALED",        "F3_RESCALED"},
 };
 
-void proton_correlate(string inputFiles="qn.root", string outputFile="corr.root")
+void lambda_correlate(string inputFiles="qn.root", string outputFile="corr.root")
 {
   int nSamples = 100;
   Qn::AxisD centAxis({"centrality", 8, 0, 40});
