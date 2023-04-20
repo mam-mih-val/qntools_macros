@@ -20,22 +20,22 @@ vector <vector<string>> u1Q1=
   {"lambda_signal_RESCALED",      "psi_rp_PLAIN"},
   {"lambda_background_RESCALED",  "psi_rp_PLAIN"},
   {"lambda_good_RESCALED",        "psi_rp_PLAIN"},
-  {"lambda_true_RESCALED",        "psi_rp_PLAIN"},
+  {"lambda_true_PLAIN",        "psi_rp_PLAIN"},
 
   {"lambda_signal_RESCALED",      "F1_RESCALED"},
   {"lambda_background_RESCALED",  "F1_RESCALED"},
   {"lambda_good_RESCALED",        "F1_RESCALED"},
-  {"lambda_true_RESCALED",        "F1_RESCALED"},
+  {"lambda_true_PLAIN",        "F1_RESCALED"},
 
   {"lambda_signal_RESCALED",      "F2_RESCALED"},
   {"lambda_background_RESCALED",  "F2_RESCALED"},
   {"lambda_good_RESCALED",        "F2_RESCALED"},
-  {"lambda_true_RESCALED",        "F2_RESCALED"},
+  {"lambda_true_PLAIN",        "F2_RESCALED"},
 
   {"lambda_signal_RESCALED",      "F3_RESCALED"},
   {"lambda_background_RESCALED",  "F3_RESCALED"},
   {"lambda_good_RESCALED",        "F3_RESCALED"},
-  {"lambda_true_RESCALED",        "F3_RESCALED"},
+  {"lambda_true_PLAIN",        "F3_RESCALED"},
 };
 
 void lambda_correlate(string inputFiles="qn.root", string outputFile="corr.root")
