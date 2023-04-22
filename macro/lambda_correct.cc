@@ -247,7 +247,7 @@ void lambda_correct(std::string list){
 
   VectorConfig lambda_signal( "lambda_signal", "candidate_phi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   lambda_signal.SetHarmonicArray( {1, 2} );
-  lambda_signal.SetCorrections( {CORRECTION::PLAIN } );
+  lambda_signal.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, } );
   lambda_signal.SetCorrectionAxes( rec_lamda_axes );
   lambda_signal.AddCut( "candidate_signal", [](double is_signal){
     auto int_is_signal = static_cast<int>(is_signal);
@@ -257,7 +257,7 @@ void lambda_correct(std::string list){
 
   VectorConfig lambda_background( "lambda_background", "candidate_phi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   lambda_background.SetHarmonicArray( {1, 2} );
-  lambda_background.SetCorrections( {CORRECTION::PLAIN } );
+  lambda_background.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, } );
   lambda_background.SetCorrectionAxes( rec_lamda_axes );
   lambda_background.AddCut( "candidate_background", [](double is_signal){
     auto int_is_signal = static_cast<int>(is_signal);
@@ -267,7 +267,7 @@ void lambda_correct(std::string list){
 
   VectorConfig lambda_good( "lambda_good", "candidate_phi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   lambda_good.SetHarmonicArray( {1, 2} );
-  lambda_good.SetCorrections( {CORRECTION::PLAIN } );
+  lambda_good.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, } );
   lambda_good.SetCorrectionAxes( rec_lamda_axes );
   lambda_good.AddCut( "candidate_good", [](double is_signal){
     auto int_is_signal = static_cast<int>(is_signal);
