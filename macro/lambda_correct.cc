@@ -132,7 +132,7 @@ void lambda_correct(std::string list){
   correction_task.SetChannelVariables({std::regex("fhcalMod(X|Y|Phi|E|Id)")});
   correction_task.SetTrackVariables({
                                             std::regex("tr(Pt|Eta|Phi|BetaTof400|BetaTof700|SimIndex|Y|Pid|IsProton|MotherId|Charge)"),
-                                            std::regex("candidate_(pT|rapidity|phi|mass|signal|background|good)"),
+                                            std::regex("candidate_(pT|rapidity|phi|mass|signal|background|good|good_signal|good_background)"),
                                             std::regex("sim(Pt|Eta|Phi|Pdg|MotherId|Y)")
                                     });
 
