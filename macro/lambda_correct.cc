@@ -137,7 +137,7 @@ void lambda_correct(std::string list){
                                     });
 
   correction_task.InitVariables();
-  correction_task.AddEventAxis( {"centrality", 8, 0, 40} );
+  correction_task.AddEventAxis( {"centrality", 1, 10, 40} );
 
   VectorConfig f1( "F1", "fhcalModPhi", "fhcalModE", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
   f1.SetHarmonicArray( {1, 2} );
@@ -222,7 +222,7 @@ void lambda_correct(std::string list){
   lambda_signal.SetHarmonicArray( {1, 2} );
   lambda_signal.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, } );
   lambda_signal.SetCorrectionAxes( rec_lamda_axes );
-  lambda_signal.AddCut( "candidate_signal", [](double is_signal){
+  lambda_signal.AddCut( "candidate_good_signal", [](double is_signal){
     auto int_is_signal = static_cast<int>(is_signal);
     return int_is_signal == 1;
   }, "cut on if is signal" );
@@ -232,7 +232,7 @@ void lambda_correct(std::string list){
   lambda_background.SetHarmonicArray( {1, 2} );
   lambda_background.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, } );
   lambda_background.SetCorrectionAxes( rec_lamda_axes );
-  lambda_background.AddCut( "candidate_background", [](double is_signal){
+  lambda_background.AddCut( "candidate_good_background", [](double is_signal){
     auto int_is_signal = static_cast<int>(is_signal);
     return int_is_signal == 1;
   }, "cut on if is signal" );
