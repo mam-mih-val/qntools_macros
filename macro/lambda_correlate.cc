@@ -18,9 +18,12 @@ vector <vector<string>> Q1Q1=
 vector <vector<string>> u1Q1=
 {
   {"lambda_signal_RECENTERED",      "psi_rp_PLAIN"},
+  {"lambda_signal_PLAIN",           "psi_rp_PLAIN"},
   {"lambda_background_RECENTERED",  "psi_rp_PLAIN"},
+  {"lambda_background_PLAIN",       "psi_rp_PLAIN"},
   {"lambda_good_RECENTERED",        "psi_rp_PLAIN"},
-  {"lambda_true_PLAIN",        "psi_rp_PLAIN"},
+  {"lambda_good_PLAIN",             "psi_rp_PLAIN"},
+  {"lambda_true_PLAIN",             "psi_rp_PLAIN"},
 
   {"lambda_signal_RECENTERED",      "F1_RESCALED"},
   {"lambda_background_RECENTERED",  "F1_RESCALED"},
