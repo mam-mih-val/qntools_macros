@@ -19,11 +19,13 @@ set(SOURCES
         src/variable_manager.cc
         src/correction_task.cc
         src/vector_config.cc
+        src/t_file_ptr.cc
         )
 set(HEADERS
         src/variable_manager.h
         src/correction_task.h
         src/vector_config.h
+        src/t_file_ptr.h
         )
 
 add_library(Correction SHARED ${SOURCES} G__Correction.cxx )

@@ -23,11 +23,11 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/mnt/pool/nica/7/mam2mih/soft/basov/QnTo
 echo "/mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/build/correct /mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/macro/lambda_correct.cc $list_dir/$file_list"
 
 # PLAIN
-time /mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/build/correct /mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/macro/lambda_correct.cc $list_dir/$file_list
+time /mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/build/correct /mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/macro/lambda_correct.cc $list_dir/$file_list /mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/lambda_efficiency.root
 # RECENTERING
-time /mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/build/correct /mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/macro/lambda_correct.cc $list_dir/$file_list
+time /mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/build/correct /mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/macro/lambda_correct.cc $list_dir/$file_list /mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/lambda_efficiency.root
 # TWIST AND RESCALING
-time /mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/build/correct /mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/macro/lambda_correct.cc $list_dir/$file_list
+time /mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/build/correct /mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/macro/lambda_correct.cc $list_dir/$file_list /mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/lambda_efficiency.root
 
 echo "/mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/build/correlate /mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/macro/lambda_correlate.cc correction_out.root"
 time /mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/build/correlate /mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/macro/lambda_correlate.cc correction_out.root

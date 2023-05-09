@@ -2,12 +2,14 @@
 // Created by Misha on 3/7/2023.
 //
 
-void lambda_correct(std::string list){
+void lambda_correct(std::string list, std::string str_efficiency_file){
   std::vector<int> f1_modules = {11, 12, 13, 16, 17, 20, 21, 22};
   std::vector<int> f2_modules = {5, 6, 7, 8, 9, 10, 14, 15, 18, 19, 23, 24, 25, 26, 27, 28};
   std::vector<int> f3_modules = {0, 1, 2, 3, 4, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53};
-  TStopwatch timer;
-  timer.Start();
+  TFilePtr efficiency_file{ str_efficiency_file };
+  TH2D* efficiency_histo{nullptr};
+  efficiency_file->GetObject( "h2_efficiency", efficiency_histo );
+  if( !efficiency_histo ){ std::cout << "Efficiency histogram cannot be retrieved from file" << std::endl; }
   std::string treename = "t";
   TFileCollection collection( "collection", "", list.c_str() );
   auto* chain = new TChain( treename.c_str() );
@@ -75,6 +77,24 @@ void lambda_correct(std::string list){
           .Define("candidate_pT", "std::vector<float> pT; for( auto mom : candidate_momenta ){ pT.push_back( mom.Pt() ); } return pT;")
           .Define("candidate_phi", "std::vector<float> phi; for( auto mom : candidate_momenta ){ phi.push_back( mom.Phi() ); } return phi;")
           .Define("candidate_rapidity", "std::vector<float> rapidity; for( auto mom : candidate_momenta ){ rapidity.push_back( mom.Rapidity() - 1.0 ); } return rapidity;")
+          .Define("candidate_weight",
+                  [efficiency_histo]( ROOT::VecOps::RVec<ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> >> momenta ){
+            std::vector<float> weights;
+            for( auto mom : momenta ){
+              if( !efficiency_histo ){
+                weights.push_back(1.f);
+              }
+              auto y = mom.Rapidity();
+              auto pT = mom.Pt();
+              auto y_bin = efficiency_histo->GetXaxis()->FindBin( y );
+              auto pT_bin = efficiency_histo->GetYaxis()->FindBin( pT );
+              auto efficiency = efficiency_histo->GetBinContent( y_bin, pT_bin );
+              auto weight = efficiency > 0.0001 ? 1.0/efficiency : 0.0;
+              weights.push_back( weight );
+            }
+            return weights;
+          },
+                  {"candidate_momenta"})
           .Define("m_err", "std::vector<float> err; for( auto mom : candidate_momentum_errors ){ err.push_back( mom.at(3) ); } return err;")
           .Define("daughter1_cos", "std::vector<float> cosine; for( int i=0; i<daughter_cosines.at(0).size(); ++i ){ cosine.push_back( daughter_cosines.at(0).at(i) ); } return cosine;")
           .Define("daughter2_cos", "std::vector<float> cosine; for( int i=0; i<daughter_cosines.at(1).size(); ++i ){ cosine.push_back( daughter_cosines.at(1).at(i) ); } return cosine;")
@@ -132,7 +152,7 @@ void lambda_correct(std::string list){
   correction_task.SetChannelVariables({std::regex("fhcalMod(X|Y|Phi|E|Id)")});
   correction_task.SetTrackVariables({
                                             std::regex("tr(Pt|Eta|Phi|BetaTof400|BetaTof700|SimIndex|Y|Pid|IsProton|MotherId|Charge)"),
-                                            std::regex("candidate_(pT|rapidity|phi|mass|signal|background|good|good_signal|good_background)"),
+                                            std::regex("candidate_(pT|rapidity|phi|weight|mass|signal|background|good|good_signal|good_background)"),
                                             std::regex("sim(Pt|Eta|Phi|Pdg|MotherId|Y)")
                                     });
 
@@ -218,7 +238,7 @@ void lambda_correct(std::string list){
           { "simPt", 14, 0.0, 1.4 },
   };
 
-  VectorConfig lambda_signal( "lambda_signal", "candidate_phi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  VectorConfig lambda_signal( "lambda_signal", "candidate_phi", "candidate_weight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   lambda_signal.SetHarmonicArray( {1, 2} );
   lambda_signal.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, } );
   lambda_signal.SetCorrectionAxes( rec_lamda_axes );
@@ -228,7 +248,7 @@ void lambda_correct(std::string list){
   }, "cut on if is signal" );
   correction_task.AddVector(lambda_signal);
 
-  VectorConfig lambda_background( "lambda_background", "candidate_phi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  VectorConfig lambda_background( "lambda_background", "candidate_phi", "candidate_weight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   lambda_background.SetHarmonicArray( {1, 2} );
   lambda_background.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, } );
   lambda_background.SetCorrectionAxes( rec_lamda_axes );
@@ -238,7 +258,7 @@ void lambda_correct(std::string list){
   }, "cut on if is signal" );
   correction_task.AddVector(lambda_background);
 
-  VectorConfig lambda_good( "lambda_good", "candidate_phi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  VectorConfig lambda_good( "lambda_good", "candidate_phi", "candidate_weight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   lambda_good.SetHarmonicArray( {1, 2} );
   lambda_good.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, } );
   lambda_good.SetCorrectionAxes( rec_lamda_axes );

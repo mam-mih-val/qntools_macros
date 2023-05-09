@@ -15,6 +15,7 @@
 #pragma link C++ class VariableManager;
 #pragma link C++ class CorrectionTask;
 #pragma link C++ class VectorConfig;
+#pragma link C++ class TFilePtr;
 
 #endif
 
