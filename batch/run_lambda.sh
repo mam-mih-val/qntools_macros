@@ -1,7 +1,7 @@
 #!/bin/bash
 
-#SBATCH -p fast
-#SBATCH -t 1:00:00
+#SBATCH -p cpu
+#SBATCH -t 8:00:00
 #SBATCH -J QnTools
 #SBATCH -o /mnt/pool/nica/7/mam2mih/soft/basov/qntools_macros/log/%A_%a.log
 
