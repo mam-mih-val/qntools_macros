@@ -220,5 +220,10 @@ void mcpico_correct(std::string list){
   rnd_sub.SetCorrections( {CORRECTION::PLAIN } );
   correction_task.AddVector(rnd_sub);
 
+  VectorConfig psi_rp( "psi_rp", "phi2", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  psi_rp.SetHarmonicArray( {1, 2} );
+  psi_rp.SetCorrections( {CORRECTION::PLAIN } );
+  correction_task.AddVector(psi_rp);
+
   correction_task.Run();
 }

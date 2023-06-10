@@ -20,6 +20,7 @@ vector <vector<string>> u1Q1=
   {"proton_PLAIN", "F1_PLAIN"},
   {"proton_PLAIN", "F2_PLAIN"},
   {"proton_PLAIN", "F3_PLAIN"},
+  {"proton_PLAIN", "psi_rp_PLAIN"},
 };
 
 vector <vector<string>> u1=
