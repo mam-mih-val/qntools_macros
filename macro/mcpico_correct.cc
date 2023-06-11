@@ -139,7 +139,10 @@ void mcpico_correct(std::string list){
   VectorConfig f1( "F1", "phi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   f1.SetHarmonicArray( {1, 2} );
   f1.SetCorrections( {CORRECTION::PLAIN } );
-  f1.AddCut( "eta_lab", [](double eta){
+  f1.AddCut( "pdg", [](double pid){
+    auto pdg_code = static_cast<int>(pid);
+    return pdg_code == 2212 || pdg_code == 2112;
+  }, "proton cut" );f1.AddCut( "eta_lab", [](double eta){
     return 3.8 < eta && eta < 5.4;
     }, "F1 Cut" );
   correction_task.AddVector(f1);
@@ -147,7 +150,10 @@ void mcpico_correct(std::string list){
   VectorConfig f2( "F2", "phi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   f2.SetHarmonicArray( {1, 2} );
   f2.SetCorrections( {CORRECTION::PLAIN } );
-  f2.AddCut( "eta_lab", [](double eta){
+  f2.AddCut( "pdg", [](double pid){
+    auto pdg_code = static_cast<int>(pid);
+    return pdg_code == 2212 || pdg_code == 2112;
+  }, "proton cut" );f2.AddCut( "eta_lab", [](double eta){
     return 3.3 < eta && eta < 3.8;
     }, "F2 Cut" );
   correction_task.AddVector(f2);
@@ -155,6 +161,10 @@ void mcpico_correct(std::string list){
   VectorConfig f3( "F3", "phi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   f3.SetHarmonicArray( {1, 2} );
   f3.SetCorrections( {CORRECTION::PLAIN } );
+  f3.AddCut( "pdg", [](double pid){
+    auto pdg_code = static_cast<int>(pid);
+    return pdg_code == 2212 || pdg_code == 2112;
+  }, "proton cut" );
   f3.AddCut( "eta_lab", [](double eta){
     return 2.7 < eta && eta < 3.3;
     }, "F3 Cut" );
