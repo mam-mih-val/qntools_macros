@@ -102,7 +102,7 @@ void mcpico_correct(std::string list){
                   continue;
                 auto y = vec_y.at(j);
                 auto phi2 = vec_phi.at(j);
-                auto weight = y < 0.8 ? y / 0.8 : 1.0;
+                auto weight = fabs(y) < 0.8 ? y / 0.8 : y/fabs(y);
                 sum_wx += weight * cos(phi2);
                 sum_wy += weight * sin(phi2);
               }
@@ -131,7 +131,7 @@ void mcpico_correct(std::string list){
                 continue;
               auto phi = vec_phi.at(i);
               auto y = vec_y.at(i);
-              auto weight = y < 0.8 ? y / 0.8 : 1.0;
+              auto weight = fabs(y) < 0.8 ? y / 0.8 : y/fabs(y);
               auto idx = rnd_sub.at(i);
               sum_wx.at(idx) += weight * cos(phi);
               sum_wy.at(idx) += weight * sin(phi);
