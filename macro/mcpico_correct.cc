@@ -72,7 +72,12 @@ void mcpico_correct(std::string list){
             }
             return y_norm;
           },{ "y" })
-          .Define("dphi",[]( ROOT::VecOps::RVec<float> vec_phi, ROOT::VecOps::RVec<float> vec_y, ROOT::VecOps::RVec<int> vec_pid ){
+          .Define("dphi",[](
+                  ROOT::VecOps::RVec<float> vec_phi,
+                  ROOT::VecOps::RVec<float> vec_y,
+                  ROOT::VecOps::RVec<int> vec_pid,
+                  ROOT::VecOps::RVec<float> vec_eta
+                  ){
             ROOT::VecOps::RVec<float> vec_dphi;
             for(int i=0; i<vec_phi.size(); ++i){
               auto phi = vec_phi.at(i);
@@ -84,6 +89,9 @@ void mcpico_correct(std::string list){
                 auto pid = vec_pid.at(j);
                 if( pid != 2212 )
                   continue;
+                auto eta = vec_eta.at(j);
+                if( eta < 0 || eta > 2 )
+                  continue;
                 auto y = vec_y.at(j);
                 auto phi2 = vec_phi.at(j);
                 auto weight = y < 0.8 ? y / 0.8 : 1.0;
@@ -94,12 +102,14 @@ void mcpico_correct(std::string list){
               vec_dphi.push_back( phi - psi );
             }
             return vec_dphi;
-          },{ "phi", "y_norm", "pdg" })
+          },{ "phi", "y_norm", "pdg", "eta_lab" })
           .Define("psi12",[](
                   ROOT::VecOps::RVec<float> vec_phi,
                   ROOT::VecOps::RVec<float> vec_y,
                   ROOT::VecOps::RVec<int> vec_pid,
-                  ROOT::VecOps::RVec<int> rnd_sub ){
+                  ROOT::VecOps::RVec<int> rnd_sub,
+                  ROOT::VecOps::RVec<int> vec_eta
+                  ){
             float vec_dphi;
             // First RS
             std::array<float, 2> sum_wx{};
@@ -107,6 +117,9 @@ void mcpico_correct(std::string list){
             for(int i=0; i<vec_phi.size(); ++i){
               auto pid = vec_pid.at(i);
               if( pid != 2212 )
+                continue;
+              auto eta = vec_eta.at(i);
+              if( eta < 0 || eta > 2 )
                 continue;
               auto phi = vec_phi.at(i);
               auto y = vec_y.at(i);
@@ -122,7 +135,7 @@ void mcpico_correct(std::string list){
             auto psi1 = atan2( sum_wy.at(0), sum_wx.at(0) );
             auto psi2 = atan2( sum_wy.at(1), sum_wx.at(1) );
             return psi1 - psi2;
-          },{ "phi", "y_norm", "pdg", "rnd_sub" })
+          },{ "phi", "y_norm", "pdg", "rnd_sub", "eta_lab" })
           .Filter("bimp<14.0")
 
           ;
@@ -180,6 +193,9 @@ void mcpico_correct(std::string list){
   proton.SetHarmonicArray( {1, 2} );
   proton.SetCorrections( {CORRECTION::PLAIN } );
   proton.SetCorrectionAxes( proton_axes );
+  proton.AddCut( "eta_lab", [](double eta){
+    return 0. < eta && eta < 2.;
+  }, "acceptance cut" );
   proton.AddCut( "pdg", [](double pid){
     auto pdg_code = static_cast<int>(pid);
     return pdg_code == 2212;
@@ -219,6 +235,9 @@ void mcpico_correct(std::string list){
   rs_proton.SetHarmonicArray( {1, 2} );
   rs_proton.SetCorrections( {CORRECTION::PLAIN } );
   rs_proton.SetCorrectionAxes( proton_axes );
+  rs_proton.AddCut( "eta_lab", [](double eta){
+    return 0. < eta && eta < 2.;
+  }, "acceptance cut" );
   rs_proton.AddCut( "pdg", [](double pid){
     auto pdg_code = static_cast<int>(pid);
     return pdg_code == 2212;
