@@ -13,15 +13,23 @@ void mcpico_correct(std::string list){
   chain->AddFileInfoList( collection.GetList() );
   ROOT::RDataFrame d( *chain );
   auto dd=d
-          .Define("phi", []( ROOT::VecOps::RVec<float> vec_px, ROOT::VecOps::RVec<float> vec_py ){
+          .Define( "reaction_plane", [](){
+            std::random_device rnd_device;
+            std::mt19937 generator(rnd_device());
+            std::uniform_real_distribution<float> distribution(-M_PI,M_PI); // distribution in range [0, 1]
+            return distribution(generator);
+          }, {} )
+          .Define("phi", []( ROOT::VecOps::RVec<float> vec_px, ROOT::VecOps::RVec<float> vec_py, float psi_rp ){
             ROOT::VecOps::RVec<float> vec_phi;
             for( int i=0; i<vec_px.size(); ++i ){
               auto px = vec_px.at(i);
               auto py = vec_py.at(i);
-              vec_phi.push_back( atan2(py, px) );
+              auto phi = atan2(py, px);
+              phi+=psi_rp;
+              vec_phi.push_back( phi );
             }
             return vec_phi;
-          },{ "momx", "momy", })
+          },{ "momx", "momy", "reaction_plane" })
           .Define("pT", []( ROOT::VecOps::RVec<float> vec_px, ROOT::VecOps::RVec<float> vec_py ){
             ROOT::VecOps::RVec<float> vec_pT;
             for( int i=0; i<vec_px.size(); ++i ){
@@ -141,7 +149,7 @@ void mcpico_correct(std::string list){
           ;
 
   auto correction_task = CorrectionTask( dd, "correction_out.root", "qa.root" );
-  correction_task.SetEventVariables( std::regex("bimp|phi2|psi12") );
+  correction_task.SetEventVariables( std::regex("bimp|reaction_plane|psi12") );
   correction_task.SetTrackVariables({
     std::regex("phi|pT|y|eta_lab|pdg|rnd_sub|charge|dphi")
   });
@@ -249,7 +257,7 @@ void mcpico_correct(std::string list){
   rnd_sub.SetCorrections( {CORRECTION::PLAIN } );
   correction_task.AddVector(rnd_sub);
 
-  VectorConfig psi_rp( "psi_rp", "phi2", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  VectorConfig psi_rp( "psi_rp", "reaction_plane", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   psi_rp.SetHarmonicArray( {1, 2} );
   psi_rp.SetCorrections( {CORRECTION::PLAIN } );
   correction_task.AddVector(psi_rp);
