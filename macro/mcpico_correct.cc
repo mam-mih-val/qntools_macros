@@ -108,7 +108,7 @@ void mcpico_correct(std::string list){
                   ROOT::VecOps::RVec<float> vec_y,
                   ROOT::VecOps::RVec<int> vec_pid,
                   ROOT::VecOps::RVec<int> rnd_sub,
-                  ROOT::VecOps::RVec<int> vec_eta
+                  ROOT::VecOps::RVec<float> vec_eta
                   ){
             float vec_dphi;
             // First RS
