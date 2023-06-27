@@ -162,7 +162,7 @@ void mcpico_correct(std::string list){
   f1.SetCorrections( {CORRECTION::PLAIN } );
   f1.AddCut( "pdg", [](double pid){
     auto pdg_code = static_cast<int>(pid);
-    return pdg_code == 2212 || pdg_code == 2112;
+    return pdg_code == 2112;
   }, "proton cut" );f1.AddCut( "eta_lab", [](double eta){
     return 3.8 < eta && eta < 5.4;
     }, "F1 Cut" );
@@ -173,7 +173,7 @@ void mcpico_correct(std::string list){
   f2.SetCorrections( {CORRECTION::PLAIN } );
   f2.AddCut( "pdg", [](double pid){
     auto pdg_code = static_cast<int>(pid);
-    return pdg_code == 2212 || pdg_code == 2112;
+    return pdg_code == 2112;
   }, "proton cut" );f2.AddCut( "eta_lab", [](double eta){
     return 3.3 < eta && eta < 3.8;
     }, "F2 Cut" );
@@ -184,7 +184,7 @@ void mcpico_correct(std::string list){
   f3.SetCorrections( {CORRECTION::PLAIN } );
   f3.AddCut( "pdg", [](double pid){
     auto pdg_code = static_cast<int>(pid);
-    return pdg_code == 2212 || pdg_code == 2112;
+    return pdg_code == 2112;
   }, "proton cut" );
   f3.AddCut( "eta_lab", [](double eta){
     return 2.7 < eta && eta < 3.3;
