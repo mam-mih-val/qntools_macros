@@ -3,8 +3,14 @@
 // Created by Misha on 3/7/2023.
 //
 
-void mcpico_correct(std::string list){
-  const float Y_BEAM = 0.731032;
+void mcpico_correct(std::string list, double sqrt_snn=2.4){
+  const double M = 0.938;
+  const double T = sqrt_snn * sqrt_snn/ 2 / M - 2*M;
+  const double GAMMA = (T + M) / M;
+  const double BETA = sqrt(1 - (M * M) / (M + T) / (M + T));
+  const double PZ = M * BETA * GAMMA;
+  const double E = T + M;
+  const double Y_BEAM = 0.5 * log((E + PZ) / (E - PZ)) / 2.0;
   TStopwatch timer;
   timer.Start();
   std::string treename = "mctree";
