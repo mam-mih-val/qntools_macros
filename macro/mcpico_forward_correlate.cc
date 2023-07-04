@@ -14,7 +14,7 @@ vector <vector<string>> Q1Psi1=
   {"F3_PLAIN", "psi_rp_PLAIN"},
 };
 
-void mcpico_correlate(string inputFiles="qn.root", string outputFile="corr.root")
+void mcpico_forward_correlate(string inputFiles="qn.root", string outputFile="corr.root")
 {
   int nSamples = 100;
   Qn::AxisD centAxis({"bimp", 14, 0, 14});
