@@ -3,7 +3,8 @@
 // Created by Misha on 3/7/2023.
 //
 
-void mcpico_correct(std::string list, double sqrt_snn=2.4){
+void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4"){
+  const double sqrt_snn = std::stod(str_sqrt_snn);
   const double M = 0.938;
   const double T = sqrt_snn * sqrt_snn/ 2 / M - 2*M;
   const double GAMMA = (T + M) / M;
