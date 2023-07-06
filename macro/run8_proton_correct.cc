@@ -2,7 +2,7 @@
 // Created by Misha on 3/7/2023.
 //
 
-void proton_correct(std::string list){
+void run8_proton_correct(std::string list){
   std::vector<int> f1_modules = {11, 12, 13, 16, 17, 20, 21, 22};
   std::vector<int> f2_modules = {5, 6, 7, 8, 9, 10, 14, 15, 18, 19, 23, 24, 25, 26, 27, 28};
   std::vector<int> f3_modules = {0, 1, 2, 3, 4, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53};
