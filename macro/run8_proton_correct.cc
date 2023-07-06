@@ -80,7 +80,7 @@ void run8_proton_correct(std::string list){
 
   std::vector<Qn::AxisD> negative_axes{
           { "trEta", 5, 0.5, 5.5 },
-          { "trPt", 5, 0.0, 1.5 },
+          { "trPt", 5, 0.0, 1.0 },
   };
 
   VectorConfig Tneg( "Tneg", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
