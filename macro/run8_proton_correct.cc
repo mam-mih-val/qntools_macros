@@ -78,20 +78,19 @@ void run8_proton_correct(std::string list){
   f3.AddHisto2D({{"fhcalModX", 100, -100, 100}, {"fhcalModY", 100, -100, 100}});
   correction_task.AddVector(f3);
 
+  std::vector<Qn::AxisD> negative_axes{
+          { "trEta", 5, 0.5, 5.5 },
+          { "trPt", 5, 0.0, 1.5 },
+  };
+
   VectorConfig Tneg( "Tneg", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   Tneg.SetHarmonicArray( {1, 2} );
   Tneg.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
+  Tneg.SetCorrectionAxes(negative_axes);
   Tneg.AddCut( "trCharge", [](double charge){
     return charge < 0.0;
     }, "charge" );
-  Tneg.AddCut( "trEta", [](double eta){
-    return 1.0 < eta && eta < 2.0;
-    }, "Tneg eta cut" );
-  Tneg.AddCut( "trPt", [](double pT){
-    return 0.1 < pT && pT < 0.5;
-    }, "Tneg pT cut" );
   correction_task.AddVector(Tneg);
-
 
   correction_task.Run();
 }
