@@ -1,6 +1,28 @@
 #include "QnDataFrame.hpp"
 
-vector <vector<string>> Q1Q1=
+vector <vector<string>> Q1Q1_plain =
+{
+  {"F1_PLAIN", "F2_PLAIN"},
+  {"F1_PLAIN", "F3_PLAIN"},
+  {"F2_PLAIN", "F3_PLAIN"},
+
+  {"Tneg_PLAIN", "F1_PLAIN"},
+  {"Tneg_PLAIN", "F2_PLAIN"},
+  {"Tneg_PLAIN", "F3_PLAIN"},
+};
+
+vector <vector<string>> Q1Q1_recentered =
+{
+  {"F1_RECENTERED", "F2_RECENTERED"},
+  {"F1_RECENTERED", "F3_RECENTERED"},
+  {"F2_RECENTERED", "F3_RECENTERED"},
+
+  {"Tneg_RECENTERED", "F1_RECENTERED"},
+  {"Tneg_RECENTERED", "F2_RECENTERED"},
+  {"Tneg_RECENTERED", "F3_RECENTERED"},
+};
+
+vector <vector<string>> Q1Q1_rescaled =
 {
   {"F1_RESCALED", "F2_RESCALED"},
   {"F1_RESCALED", "F3_RESCALED"},
@@ -35,7 +57,25 @@ void run8_proton_correlate(string inputFiles="qn.root", string outputFile="corr.
 
   auto corrBuilder =
     Qn::Correlation::CorrelationBuilder{&d_samples, nSamples, axes_correlation};
-  for (auto &corr:Q1Q1)
+  for (auto &corr: Q1Q1_plain)
+  {
+    std::array<std::string, 2> qn{corr.at(0), corr.at(1)};
+    string corrName=corr.at(0)+"."+corr.at(1);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1x1", P2::xx(1, 1), wUnity, wn, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1y1", P2::yy(1, 1), wUnity, wn, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1y1", P2::xy(1, 1), wUnity, wn, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1x1", P2::yx(1, 1), wUnity, wn, qn, qn);
+  }
+  for (auto &corr: Q1Q1_recentered)
+  {
+    std::array<std::string, 2> qn{corr.at(0), corr.at(1)};
+    string corrName=corr.at(0)+"."+corr.at(1);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1x1", P2::xx(1, 1), wUnity, wn, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1y1", P2::yy(1, 1), wUnity, wn, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1y1", P2::xy(1, 1), wUnity, wn, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1x1", P2::yx(1, 1), wUnity, wn, qn, qn);
+  }
+  for (auto &corr: Q1Q1_rescaled)
   {
     std::array<std::string, 2> qn{corr.at(0), corr.at(1)};
     string corrName=corr.at(0)+"."+corr.at(1);
