@@ -100,10 +100,15 @@ void run8_proton_correct(std::string list){
   VectorConfig Tpos( "Tpos", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   Tpos.SetHarmonicArray( {1, 2} );
   Tpos.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
-  Tpos.SetCorrectionAxes( negative_axes );
   Tpos.AddCut( "trCharge", [](double charge){
     return charge >= 0.0;
     }, "charge" );
+  Tpos.AddCut( "trEta", [](double eta){
+    return 2.0 < eta && eta < 3.0;
+  }, "eta cut" );
+  Tpos.AddCut( "trPt", [](double pT){
+    return pT > 0.2;
+  }, "pT cut" );
   correction_task.AddVector(Tpos);
 
   correction_task.Run();
