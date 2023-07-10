@@ -97,5 +97,14 @@ void run8_proton_correct(std::string list){
     }, "pT cut" );
   correction_task.AddVector(Tneg);
 
+  VectorConfig Tpos( "Tpos", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  Tpos.SetHarmonicArray( {1, 2} );
+  Tpos.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
+  Tpos.SetCorrectionAxes( negative_axes );
+  Tpos.AddCut( "trCharge", [](double charge){
+    return charge >= 0.0;
+    }, "charge" );
+  correction_task.AddVector(Tpos);
+
   correction_task.Run();
 }

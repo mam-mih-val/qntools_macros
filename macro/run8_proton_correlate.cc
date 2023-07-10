@@ -9,6 +9,10 @@ vector <vector<string>> Q1Q1_plain =
   {"Tneg_PLAIN", "F1_PLAIN"},
   {"Tneg_PLAIN", "F2_PLAIN"},
   {"Tneg_PLAIN", "F3_PLAIN"},
+
+  {"Tpos_PLAIN", "F1_PLAIN"},
+  {"Tpos_PLAIN", "F2_PLAIN"},
+  {"Tpos_PLAIN", "F3_PLAIN"},
 };
 
 vector <vector<string>> Q1Q1_recentered =
@@ -20,6 +24,10 @@ vector <vector<string>> Q1Q1_recentered =
   {"Tneg_RECENTERED", "F1_RECENTERED"},
   {"Tneg_RECENTERED", "F2_RECENTERED"},
   {"Tneg_RECENTERED", "F3_RECENTERED"},
+
+  {"Tpos_RECENTERED", "F1_RECENTERED"},
+  {"Tpos_RECENTERED", "F2_RECENTERED"},
+  {"Tpos_RECENTERED", "F3_RECENTERED"},
 };
 
 vector <vector<string>> Q1Q1_rescaled =
@@ -31,6 +39,10 @@ vector <vector<string>> Q1Q1_rescaled =
   {"Tneg_RESCALED", "F1_RESCALED"},
   {"Tneg_RESCALED", "F2_RESCALED"},
   {"Tneg_RESCALED", "F3_RESCALED"},
+
+  {"Tpos_RESCALED", "F1_RESCALED"},
+  {"Tpos_RESCALED", "F2_RESCALED"},
+  {"Tpos_RESCALED", "F3_RESCALED"},
 };
 
 vector <vector<string>> u1Q1=
