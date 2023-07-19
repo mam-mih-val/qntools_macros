@@ -3,9 +3,15 @@
 // Created by Misha on 3/7/2023.
 //
 
-void mcpico_correct(std::string list){
-  const float Y_BEAM = 0.731032;
-  TStopwatch timer;
+void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4"){
+  const double sqrt_snn = std::stod(str_sqrt_snn);
+  const double M = 0.938;
+  const double T = sqrt_snn * sqrt_snn/ 2 / M - 2*M;
+  const double GAMMA = (T + M) / M;
+  const double BETA = sqrt(1 - (M * M) / (M + T) / (M + T));
+  const double PZ = M * BETA * GAMMA;
+  const double E = T + M;
+  const double Y_BEAM = 0.5 * log((E + PZ) / (E - PZ)) / 2.0;
   timer.Start();
   std::string treename = "mctree";
   TFileCollection collection( "collection", "", list.c_str() );
@@ -162,9 +168,9 @@ void mcpico_correct(std::string list){
   f1.SetCorrections( {CORRECTION::PLAIN } );
   f1.AddCut( "pdg", [](double pid){
     auto pdg_code = static_cast<int>(pid);
-    return pdg_code == 2112;
+    return pdg_code == 2112 || pdg_code == 2212;
   }, "proton cut" );f1.AddCut( "eta_lab", [](double eta){
-    return 3.8 < eta && eta < 5.4;
+    return 4.4 < eta && eta < 5.5;
     }, "F1 Cut" );
   correction_task.AddVector(f1);
 
@@ -173,9 +179,9 @@ void mcpico_correct(std::string list){
   f2.SetCorrections( {CORRECTION::PLAIN } );
   f2.AddCut( "pdg", [](double pid){
     auto pdg_code = static_cast<int>(pid);
-    return pdg_code == 2112;
+    return pdg_code == 2112 || pdg_code == 2212;
   }, "proton cut" );f2.AddCut( "eta_lab", [](double eta){
-    return 3.3 < eta && eta < 3.8;
+    return 3.9 < eta && eta < 4.4;
     }, "F2 Cut" );
   correction_task.AddVector(f2);
 
@@ -184,10 +190,10 @@ void mcpico_correct(std::string list){
   f3.SetCorrections( {CORRECTION::PLAIN } );
   f3.AddCut( "pdg", [](double pid){
     auto pdg_code = static_cast<int>(pid);
-    return pdg_code == 2112;
+    return pdg_code == 2112 || pdg_code == 2212;
   }, "proton cut" );
   f3.AddCut( "eta_lab", [](double eta){
-    return 2.7 < eta && eta < 3.3;
+    return 3.1 < eta && eta < 3.9;
     }, "F3 Cut" );
   correction_task.AddVector(f3);
 
