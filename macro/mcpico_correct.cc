@@ -12,6 +12,7 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4"){
   const double PZ = M * BETA * GAMMA;
   const double E = T + M;
   const double Y_BEAM = 0.5 * log((E + PZ) / (E - PZ)) / 2.0;
+  TStopwatch timer;
   timer.Start();
   std::string treename = "mctree";
   TFileCollection collection( "collection", "", list.c_str() );
