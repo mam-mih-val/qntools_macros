@@ -15,6 +15,9 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
   const double nucleus_mass = std::stod(str_nucleus_mass);
   const double NUCLEUS_RADIUS = 1.25 * pow( nucleus_mass, 1.0 / 3.0 );
 
+  std::cout << "Energy: " << sqrt_snn << " Y beam: " << Y_BEAM << std::endl;
+  std::cout << "Nucleus: " << nucleus_mass << " Radius: " << NUCLEUS_RADIUS << std::endl;
+
   TStopwatch timer;
   timer.Start();
   std::string treename = "mctree";
