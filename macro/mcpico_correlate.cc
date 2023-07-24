@@ -46,7 +46,7 @@ vector <vector<string>> u1=
 void mcpico_correlate(string inputFiles="qn.root", string outputFile="corr.root")
 {
   int nSamples = 100;
-  Qn::AxisD centAxis({"bimp", 14, 0, 14});
+  Qn::AxisD centAxis({"b_norm", 20, 0, 2});
   auto axes_correlation = Qn::MakeAxes(centAxis);
   ROOT::RDataFrame d( "tree", inputFiles.c_str() );
   auto d_samples = Qn::Correlation::Resample(d, nSamples);

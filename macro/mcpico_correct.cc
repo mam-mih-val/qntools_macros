@@ -3,7 +3,7 @@
 // Created by Misha on 3/7/2023.
 //
 
-void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4"){
+void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::string str_nucleus_mass="197"){
   const double sqrt_snn = std::stod(str_sqrt_snn);
   const double M = 0.938;
   const double T = sqrt_snn * sqrt_snn/ 2 / M - 2*M;
@@ -12,6 +12,9 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4"){
   const double PZ = M * BETA * GAMMA;
   const double E = T + M;
   const double Y_BEAM = 0.5 * log((E + PZ) / (E - PZ)) / 2.0;
+  const double nucleus_mass = std::stod(str_nucleus_mass);
+  const double NUCLEUS_RADIUS = 1.25 * pow( nucleus_mass, 1.0 / 3.0 );
+
   TStopwatch timer;
   timer.Start();
   std::string treename = "mctree";
@@ -20,6 +23,9 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4"){
   chain->AddFileInfoList( collection.GetList() );
   ROOT::RDataFrame d( *chain );
   auto dd=d
+          .Define( "b_norm", [NUCLEUS_RADIUS](float b){
+            return b/NUCLEUS_RADIUS;
+          }, {"bimp"} )
           .Define( "reaction_plane", [](){
             std::random_device rnd_device;
             std::mt19937 generator(rnd_device());
@@ -162,7 +168,7 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4"){
   });
 
   correction_task.InitVariables();
-  correction_task.AddEventAxis( {"bimp", 14, 0, 14} );
+  correction_task.AddEventAxis( {"b_norm", 20, 0, 2} );
 
   VectorConfig f1( "F1", "phi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   f1.SetHarmonicArray( {1, 2} );
