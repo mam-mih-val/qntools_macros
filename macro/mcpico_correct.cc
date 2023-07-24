@@ -106,26 +106,39 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
                   ROOT::VecOps::RVec<float> vec_eta
                   ){
             ROOT::VecOps::RVec<float> vec_dphi;
+            float sum_wx{};
+            float sum_wy{};
+            std::vector<float> vec_weights{};
+            // Filling the global Q-vector
             for(int i=0; i<vec_phi.size(); ++i){
               auto phi = vec_phi.at(i);
-              float sum_wx{};
-              float sum_wy{};
-              for( int j=0; j<vec_phi.size(); ++j ){
-                if( i == j )
-                  continue;
-                auto pid = vec_pid.at(j);
-                if( pid != 2212 )
-                  continue;
-                auto eta = vec_eta.at(j);
-                if( eta < ETA_MIN || eta > ETA_MAX )
-                  continue;
-                auto y = vec_y.at(j);
-                auto phi2 = vec_phi.at(j);
-                auto weight = fabs(y) < 0.8 ? y / 0.8 : y/fabs(y);
-                sum_wx += weight * cos(phi2);
-                sum_wy += weight * sin(phi2);
+              auto eta = vec_eta.at(i);
+              auto pid = vec_pid.at(i);
+              auto y = vec_y.at(i);
+              if( eta < ETA_MIN || eta > ETA_MAX ) {
+                vec_weights.push_back(0.0);
+                continue;
               }
-              auto psi = atan2( sum_wy, sum_wx );
+              if( pid != 2212 && pid != 2112 ) {
+                vec_weights.push_back(0.0);
+                continue;
+              }
+              auto weight = fabs(y) < 0.8 ? y / 0.8 : y/fabs(y);
+              vec_weights.push_back(weight);
+              sum_wx += weight * cos(phi);
+              sum_wy += weight * sin(phi);
+            }
+            // Calculating the dphi for each particle
+            for(int i=0; i<vec_phi.size(); ++i){
+              auto phi = vec_phi.at(i);
+              auto eta = vec_eta.at(i);
+              auto y = vec_y.at(i);
+              if( eta < ETA_MIN || eta > ETA_MAX )
+                continue;
+              auto weight = vec_weights.at(i);
+              auto Qx = sum_wx - weight * cos(phi);
+              auto Qy = sum_wy - weight * sin(phi);
+              auto psi = atan2( Qy, Qx );
               vec_dphi.push_back( phi - psi );
             }
             return vec_dphi;
