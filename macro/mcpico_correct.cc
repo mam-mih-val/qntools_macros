@@ -4,6 +4,9 @@
 //
 
 void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::string str_nucleus_mass="197"){
+  const double ETA_MIN = 0.5;
+  const double ETA_MAX = 3.0;
+
   const double sqrt_snn = std::stod(str_sqrt_snn);
   const double M = 0.938;
   const double T = sqrt_snn * sqrt_snn/ 2 / M - 2*M;
@@ -96,7 +99,7 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
             }
             return y_norm;
           },{ "y" })
-          .Define("dphi",[](
+          .Define("dphi",[ETA_MIN, ETA_MAX](
                   ROOT::VecOps::RVec<float> vec_phi,
                   ROOT::VecOps::RVec<float> vec_y,
                   ROOT::VecOps::RVec<int> vec_pid,
@@ -114,7 +117,7 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
                 if( pid != 2212 )
                   continue;
                 auto eta = vec_eta.at(j);
-                if( eta < 0 || eta > 2 )
+                if( eta < ETA_MIN || eta > ETA_MAX )
                   continue;
                 auto y = vec_y.at(j);
                 auto phi2 = vec_phi.at(j);
@@ -127,7 +130,7 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
             }
             return vec_dphi;
           },{ "phi", "y_norm", "pdg", "eta_lab" })
-          .Define("psi12",[](
+          .Define("psi12",[ETA_MIN, ETA_MAX](
                   ROOT::VecOps::RVec<float> vec_phi,
                   ROOT::VecOps::RVec<float> vec_y,
                   ROOT::VecOps::RVec<int> vec_pid,
@@ -143,7 +146,7 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
               if( pid != 2212 )
                 continue;
               auto eta = vec_eta.at(i);
-              if( eta < 0 || eta > 2 )
+              if( eta < ETA_MIN || eta > ETA_MAX )
                 continue;
               auto phi = vec_phi.at(i);
               auto y = vec_y.at(i);
@@ -165,7 +168,7 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
           ;
 
   auto correction_task = CorrectionTask( dd, "correction_out.root", "qa.root" );
-  correction_task.SetEventVariables( std::regex("bimp|reaction_plane|psi12") );
+  correction_task.SetEventVariables( std::regex("bimp|b_norm|reaction_plane|psi12") );
   correction_task.SetTrackVariables({
     std::regex("phi|pT|y|eta_lab|pdg|rnd_sub|charge|dphi")
   });
@@ -217,8 +220,8 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
   proton.SetHarmonicArray( {1, 2} );
   proton.SetCorrections( {CORRECTION::PLAIN } );
   proton.SetCorrectionAxes( proton_axes );
-  proton.AddCut( "eta_lab", [](double eta){
-    return 0. < eta && eta < 2.;
+  proton.AddCut( "eta_lab", [ETA_MIN, ETA_MAX](double eta){
+    return ETA_MIN < eta && eta < ETA_MAX;
   }, "acceptance cut" );
   proton.AddCut( "pdg", [](double pid){
     auto pdg_code = static_cast<int>(pid);
@@ -259,8 +262,8 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
   rs_proton.SetHarmonicArray( {1, 2} );
   rs_proton.SetCorrections( {CORRECTION::PLAIN } );
   rs_proton.SetCorrectionAxes( proton_axes );
-  rs_proton.AddCut( "eta_lab", [](double eta){
-    return 0. < eta && eta < 2.;
+  rs_proton.AddCut( "eta_lab", [ETA_MIN, ETA_MAX](double eta){
+    return ETA_MIN < eta && eta < ETA_MAX;
   }, "acceptance cut" );
   rs_proton.AddCut( "pdg", [](double pid){
     auto pdg_code = static_cast<int>(pid);
