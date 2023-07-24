@@ -119,7 +119,7 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
                 vec_weights.push_back(0.0);
                 continue;
               }
-              if( pid != 2212 && pid != 2112 ) {
+              if( pid != 2212 ) {
                 vec_weights.push_back(0.0);
                 continue;
               }
@@ -152,10 +152,10 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
             std::array<float, 2> sum_wy{};
             for(int i=0; i<vec_phi.size(); ++i){
               auto pid = vec_pid.at(i);
-              if( pid != 2212 )
-                continue;
               auto eta = vec_eta.at(i);
               if( eta < ETA_MIN || eta > ETA_MAX )
+                continue;
+              if( pid != 2212 )
                 continue;
               auto phi = vec_phi.at(i);
               auto y = vec_y.at(i);
@@ -163,10 +163,6 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
               auto idx = rnd_sub.at(i);
               sum_wx.at(idx) += weight * cos(phi);
               sum_wy.at(idx) += weight * sin(phi);
-              for( int j=0; j<vec_phi.size(); ++j ){
-                if( i == j )
-                  continue;
-              }
             }
             auto psi1 = atan2( sum_wy.at(0), sum_wx.at(0) );
             auto psi2 = atan2( sum_wy.at(1), sum_wx.at(1) );
