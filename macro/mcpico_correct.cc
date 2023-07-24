@@ -131,10 +131,6 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
             // Calculating the dphi for each particle
             for(int i=0; i<vec_phi.size(); ++i){
               auto phi = vec_phi.at(i);
-              auto eta = vec_eta.at(i);
-              auto y = vec_y.at(i);
-              if( eta < ETA_MIN || eta > ETA_MAX )
-                continue;
               auto weight = vec_weights.at(i);
               auto Qx = sum_wx - weight * cos(phi);
               auto Qy = sum_wy - weight * sin(phi);
@@ -195,7 +191,8 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
   f1.AddCut( "pdg", [](double pid){
     auto pdg_code = static_cast<int>(pid);
     return pdg_code == 2112 || pdg_code == 2212;
-  }, "proton cut" );f1.AddCut( "eta_lab", [](double eta){
+  }, "proton cut" );
+  f1.AddCut( "eta_lab", [](double eta){
     return 4.4 < eta && eta < 5.5;
     }, "F1 Cut" );
   correction_task.AddVector(f1);
@@ -206,7 +203,8 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
   f2.AddCut( "pdg", [](double pid){
     auto pdg_code = static_cast<int>(pid);
     return pdg_code == 2112 || pdg_code == 2212;
-  }, "proton cut" );f2.AddCut( "eta_lab", [](double eta){
+  }, "proton cut" );
+  f2.AddCut( "eta_lab", [](double eta){
     return 3.9 < eta && eta < 4.4;
     }, "F2 Cut" );
   correction_task.AddVector(f2);
@@ -260,11 +258,12 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
   VectorConfig Tneg( "Tpi", "phi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   Tneg.SetHarmonicArray( {1, 2} );
   Tneg.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
-  Tneg.AddCut( "pdg", [](double pid){
-    return static_cast<int>(pid) == -211;
-    }, "negative pion cut" );
-  Tneg.AddCut( "y", [](double y){
-    return 0.2 < y && y < 0.8;
+  Tneg.AddCut( "pdg", [](double double_pid){
+    auto pid = static_cast<int>(double_pid);
+    return pid == -211 || pid == 211;
+    }, "pion cut" );
+  Tneg.AddCut( "eta_lab", [](double eta){
+    return 1.5 < eta && eta < 2.5;
     }, "Tneg y cut" );
   Tneg.AddCut( "pT", [](double pT){
     return 0.1 < pT && pT < 0.5;
