@@ -4,7 +4,7 @@
 //
 
 void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::string str_nucleus_mass="197"){
-  const double ETA_MIN = 0.5;
+  const double ETA_MIN = 1.0;
   const double ETA_MAX = 3.0;
 
   const double sqrt_snn = std::stod(str_sqrt_snn);
