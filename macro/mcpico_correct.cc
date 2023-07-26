@@ -178,19 +178,15 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
               std::cout << "psi1=" << psi1 << " psi2=" << psi2 << std::endl;
               std::cout << "Particles in each sub-event: " << std::endl;
               std::cout << "Phi:" << std::endl;
-              for( const auto &vec : debug_vec_phi ){
-                for( auto x : vec ){
-                  std::cout << x << "; ";
-                }
-                std::cout << "\n";
+              for( const auto phi : vec_phi ){
+                  std::cout << phi << "; ";
               }
+              std::cout << "\n";
               std::cout << "Rapidity:" << std::endl;
-              for( const auto &vec : debug_vec_phi ){
-                for( auto x : vec ){
-                  std::cout << x << "; ";
-                }
-                std::cout << "\n";
+              for( const auto y : vec_y ){
+                std::cout << y << "; ";
               }
+              std::cout << "\n";
               throw std::runtime_error("Nan propagates");
             }
 
