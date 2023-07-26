@@ -18,8 +18,8 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
   const double nucleus_mass = std::stod(str_nucleus_mass);
   const double NUCLEUS_RADIUS = 1.25 * pow( nucleus_mass, 1.0 / 3.0 );
 
-  std::cout << "Energy: " << sqrt_snn << " Y beam: " << Y_BEAM << std::endl;
-  std::cout << "Nucleus: " << nucleus_mass << " Radius: " << NUCLEUS_RADIUS << std::endl;
+  std::cout << "Energy: " << sqrt_snn << "; Y beam: " << Y_BEAM << std::endl;
+  std::cout << "Nucleus: " << nucleus_mass << "; Radius: " << NUCLEUS_RADIUS << std::endl;
 
   TStopwatch timer;
   timer.Start();
@@ -148,6 +148,10 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
                   ){
             float vec_dphi;
             // First RS
+            //Debug
+            std::array<std::vector<float>, 2> debug_vec_phi{};
+            std::array<std::vector<float>, 2> debug_vec_y{};
+
             std::array<float, 2> sum_wx{};
             std::array<float, 2> sum_wy{};
             for(int i=0; i<vec_phi.size(); ++i){
@@ -163,9 +167,34 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
               auto idx = rnd_sub.at(i);
               sum_wx.at(idx) += weight * cos(phi);
               sum_wy.at(idx) += weight * sin(phi);
+              // debug
+              debug_vec_phi.at(idx).push_back( phi );
+              debug_vec_phi.at(idx).push_back( y );
             }
             auto psi1 = atan2( sum_wy.at(0), sum_wx.at(0) );
             auto psi2 = atan2( sum_wy.at(1), sum_wx.at(1) );
+            if( std::isnan( psi1 ) || std::isnan(psi2) ){
+              std::cout << "std::isnan(psi1) or std::isnan(psi2) failed." << std::endl;
+              std::cout << "psi1=" << psi1 << " psi2=" << psi2 << std::endl;
+              std::cout << "Particles in each sub-event: " << std::endl;
+              std::cout << "Phi:" << std::endl;
+              for( const auto &vec : debug_vec_phi ){
+                for( auto x : vec ){
+                  std::cout << x << "; ";
+                }
+                std::cout << "\n";
+              }
+              std::cout << "Rapidity:" << std::endl;
+              for( const auto &vec : debug_vec_phi ){
+                for( auto x : vec ){
+                  std::cout << x << "; ";
+                }
+                std::cout << "\n";
+              }
+              throw std::runtime_error();
+            }
+
+
             return psi1 - psi2;
           },{ "phi", "y_norm", "pdg", "rnd_sub", "eta_lab" })
           .Filter("bimp<14.0")
