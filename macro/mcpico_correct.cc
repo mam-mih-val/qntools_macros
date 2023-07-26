@@ -191,7 +191,7 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
                 }
                 std::cout << "\n";
               }
-              throw std::runtime_error();
+              throw std::runtime_error("Nan propagates");
             }
 
 
