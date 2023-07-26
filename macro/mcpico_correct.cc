@@ -197,7 +197,7 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
 
             return psi1 - psi2;
           },{ "phi", "y_norm", "pdg", "rnd_sub", "eta_lab" })
-          .Filter("bimp<14.0")
+          .Filter("for(auto x : phi){ if( std::isnan(phi) return false; }")
 
           ;
 
