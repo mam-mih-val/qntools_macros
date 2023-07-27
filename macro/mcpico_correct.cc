@@ -260,6 +260,12 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
     auto pdg_code = static_cast<int>(pid);
     return pdg_code == 2212;
     }, "proton cut" );
+  proton.AddCut( "pdg", [](double pid){
+    std::random_device rnd_device;
+    std::mt19937 generator(rnd_device());
+    std::uniform_int_distribution<int> distribution(0,1);
+    return distribution(generator) == 1;
+    }, "proton cut" );
   correction_task.AddVector(proton);
 
   VectorConfig Tp( "Tp", "phi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
@@ -302,6 +308,12 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
   rs_proton.AddCut( "pdg", [](double pid){
     auto pdg_code = static_cast<int>(pid);
     return pdg_code == 2212;
+  }, "proton cut" );
+  rs_proton.AddCut( "pdg", [](double pid){
+    std::random_device rnd_device;
+    std::mt19937 generator(rnd_device());
+    std::uniform_int_distribution<int> distribution(0,1);
+    return distribution(generator) == 1;
   }, "proton cut" );
   correction_task.AddVector(rs_proton);
 
