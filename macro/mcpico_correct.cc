@@ -81,7 +81,7 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
             }
             return vec_eta;
           },{ "y", "pT", "pdg", })
-          .Define("rnd_sub",[]( ROOT::VecOps::RVec<float> vec_y ){
+          .Define("is_accepted",[]( ROOT::VecOps::RVec<float> vec_y ){
             ROOT::VecOps::RVec<int> rnd_sub;
             std::random_device rnd_device;
             std::mt19937 generator(rnd_device());
@@ -103,7 +103,8 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
                   ROOT::VecOps::RVec<float> vec_phi,
                   ROOT::VecOps::RVec<float> vec_y,
                   ROOT::VecOps::RVec<int> vec_pid,
-                  ROOT::VecOps::RVec<float> vec_eta
+                  ROOT::VecOps::RVec<float> vec_eta,
+                  ROOT::VecOps::RVec<int> is_accepted
                   ){
             ROOT::VecOps::RVec<float> vec_dphi;
             float sum_wx{};
@@ -115,11 +116,16 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
               auto eta = vec_eta.at(i);
               auto pid = vec_pid.at(i);
               auto y = vec_y.at(i);
+              auto acceptance = is_accepted.at(i);
               if( eta < ETA_MIN || eta > ETA_MAX ) {
                 vec_weights.push_back(0.0);
                 continue;
               }
               if( pid != 2212 ) {
+                vec_weights.push_back(0.0);
+                continue;
+              }
+              if( acceptance == 0 ) {
                 vec_weights.push_back(0.0);
                 continue;
               }
@@ -138,12 +144,12 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
               vec_dphi.push_back( phi - psi );
             }
             return vec_dphi;
-          },{ "phi", "y_norm", "pdg", "eta_lab" })
+          },{ "phi", "y_norm", "pdg", "eta_lab", "is_accepted" })
           .Define("psi12",[ETA_MIN, ETA_MAX](
                   ROOT::VecOps::RVec<float> vec_phi,
                   ROOT::VecOps::RVec<float> vec_y,
                   ROOT::VecOps::RVec<int> vec_pid,
-                  ROOT::VecOps::RVec<int> rnd_sub,
+                  ROOT::VecOps::RVec<int> is_accepted,
                   ROOT::VecOps::RVec<float> vec_eta
                   ){
             float vec_dphi;
@@ -154,17 +160,23 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
 
             std::array<float, 2> sum_wx{};
             std::array<float, 2> sum_wy{};
+            std::random_device rnd_device;
+            std::mt19937 generator(rnd_device());
+            std::uniform_int_distribution<int> distribution(0,1);
             for(int i=0; i<vec_phi.size(); ++i){
               auto pid = vec_pid.at(i);
               auto eta = vec_eta.at(i);
+              auto acceptance = is_accepted.at(i);
               if( eta < ETA_MIN || eta > ETA_MAX )
                 continue;
               if( pid != 2212 )
                 continue;
+              if( acceptance == 0 )
+                continue;
+              auto idx = distribution(generator);
               auto phi = vec_phi.at(i);
               auto y = vec_y.at(i);
               auto weight = fabs(y) < 0.8 ? y / 0.8 : y/fabs(y);
-              auto idx = rnd_sub.at(i);
               sum_wx.at(idx) += weight * cos(phi);
               sum_wy.at(idx) += weight * sin(phi);
               // debug
@@ -192,7 +204,7 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
 
 
             return psi1 - psi2;
-          },{ "phi", "y_norm", "pdg", "rnd_sub", "eta_lab" })
+          },{ "phi", "y_norm", "pdg", "is_accepted", "eta_lab" })
           .Filter("for(auto x : phi){ if( std::isnan(x) ) return false; } return true;")
           .Filter("for(auto x : y){ if( std::isnan(x) ) return false; } return true;")
 
@@ -201,7 +213,7 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
   auto correction_task = CorrectionTask( dd, "correction_out.root", "qa.root" );
   correction_task.SetEventVariables( std::regex("bimp|b_norm|reaction_plane|psi12") );
   correction_task.SetTrackVariables({
-    std::regex("phi|pT|y|eta_lab|pdg|rnd_sub|charge|dphi")
+    std::regex("phi|pT|y|eta_lab|is_accepted|pdg|charge|dphi")
   });
 
   correction_task.InitVariables();
@@ -260,11 +272,9 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
     auto pdg_code = static_cast<int>(pid);
     return pdg_code == 2212;
     }, "proton cut" );
-  proton.AddCut( "pdg", [](double pid){
-    std::random_device rnd_device;
-    std::mt19937 generator(rnd_device());
-    std::uniform_int_distribution<int> distribution(0,1);
-    return distribution(generator) == 1;
+  proton.AddCut( "is_accepted", [](double pid){
+    auto pdg_code = static_cast<int>(pid);
+    return pdg_code == 2212;
     }, "proton cut" );
   correction_task.AddVector(proton);
 
@@ -309,11 +319,9 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
     auto pdg_code = static_cast<int>(pid);
     return pdg_code == 2212;
   }, "proton cut" );
-  rs_proton.AddCut( "pdg", [](double pid){
-    std::random_device rnd_device;
-    std::mt19937 generator(rnd_device());
-    std::uniform_int_distribution<int> distribution(0,1);
-    return distribution(generator) == 1;
+  proton.AddCut( "is_accepted", [](double pid){
+    auto pdg_code = static_cast<int>(pid);
+    return pdg_code == 1;
   }, "proton cut" );
   correction_task.AddVector(rs_proton);
 
