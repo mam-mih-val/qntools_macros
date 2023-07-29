@@ -81,16 +81,6 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
             }
             return vec_eta;
           },{ "y", "pT", "pdg", })
-          .Define("is_accepted",[]( ROOT::VecOps::RVec<float> vec_y ){
-            ROOT::VecOps::RVec<float> rnd_sub;
-            std::random_device rnd_device;
-            std::mt19937 generator(rnd_device());
-            std::uniform_real_distribution<float> distribution(0,1); // distribution in range [0, 1]
-            for( int i=0; i<vec_y.size(); ++i ){
-              rnd_sub.push_back( distribution(generator) );
-            }
-            return rnd_sub;
-          },{ "y" })
           .Define("y_norm",[Y_BEAM]( ROOT::VecOps::RVec<float> vec_y ){
             ROOT::VecOps::RVec<float> y_norm;
             for( int i=0; i<vec_y.size(); ++i ){
@@ -99,121 +89,99 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
             }
             return y_norm;
           },{ "y" })
-          .Define("dphi",[ETA_MIN, ETA_MAX](
-                  ROOT::VecOps::RVec<float> vec_phi,
-                  ROOT::VecOps::RVec<float> vec_y,
-                  ROOT::VecOps::RVec<int> vec_pid,
-                  ROOT::VecOps::RVec<float> vec_eta,
-                  ROOT::VecOps::RVec<float> is_accepted
-                  ){
-            ROOT::VecOps::RVec<float> vec_dphi;
-            float sum_wx{};
-            float sum_wy{};
-            std::vector<float> vec_weights{};
-            // Filling the global Q-vector
-            for(int i=0; i<vec_phi.size(); ++i){
-              auto phi = vec_phi.at(i);
+          .Define( "is_accepted", [ETA_MIN, ETA_MAX](ROOT::VecOps::RVec<float> vec_eta, ROOT::VecOps::RVec<float> vec_pT){
+            ROOT::VecOps::RVec<int> is_accepted;
+            for( int i=0; i<vec_eta.size(); ++i ){
               auto eta = vec_eta.at(i);
+              auto pT = vec_pT.at(i);
+              if( eta < ETA_MIN || eta > ETA_MAX ){
+                is_accepted.push_back( 0 );
+                continue;
+              }
+              if( pT < 0.3 ){
+                is_accepted.push_back( 0 );
+                continue;
+              }
+              is_accepted.push_back(1);
+            }
+            return is_accepted;
+          }, { "eta_lab", "pT" } )
+          .Define( "rnd_weights", [](
+                  ROOT::VecOps::RVec<int> is_accepted,
+                  ROOT::VecOps::RVec<int> vec_pid,
+                  ROOT::VecOps::RVec<float> vec_y
+                  ){
+            ROOT::VecOps::RVec<float> vec_weights;
+            for( int i=0; i<is_accepted.size(); ++i ){
+              auto acceptance = is_accepted.at(i);
               auto pid = vec_pid.at(i);
               auto y = vec_y.at(i);
-              auto acceptance = is_accepted.at(i);
-              if( eta < ETA_MIN || eta > ETA_MAX ) {
-                vec_weights.push_back(0.0);
+              if( acceptance == 0 ){
+                vec_weights.push_back(0);
                 continue;
               }
-              if( pid != 2212 ) {
-                vec_weights.push_back(0.0);
-                continue;
-              }
-              if( acceptance < 0.75 ) {
-                vec_weights.push_back(0.0);
+              if( pid != 2212 ){
+                vec_weights.push_back(0);
                 continue;
               }
               auto weight = fabs(y) < 0.8 ? y / 0.8 : y/fabs(y);
               vec_weights.push_back(weight);
+            }
+            return vec_weights;
+          }, {"is_accepted", "pdg", "y_norm"} )
+          .Define("dphi",[](
+                  ROOT::VecOps::RVec<float> vec_phi,
+                  ROOT::VecOps::RVec<float> rnd_weights
+                  ){
+            ROOT::VecOps::RVec<float> vec_dphi;
+            float sum_wx{};
+            float sum_wy{};
+            // Filling the global Q-vector
+            for(int i=0; i<vec_phi.size(); ++i){
+              auto phi = vec_phi.at(i);
+              auto weight = rnd_weights.at(i);
               sum_wx += weight * cos(phi);
               sum_wy += weight * sin(phi);
             }
             // Calculating the dphi for each particle
             for(int i=0; i<vec_phi.size(); ++i){
               auto phi = vec_phi.at(i);
-              auto weight = vec_weights.at(i);
+              auto weight = rnd_weights.at(i);
               auto Qx = sum_wx - weight * cos(phi);
               auto Qy = sum_wy - weight * sin(phi);
               auto psi = atan2( Qy, Qx );
               vec_dphi.push_back( phi - psi );
             }
             return vec_dphi;
-          },{ "phi", "y_norm", "pdg", "eta_lab", "is_accepted" })
+          },{ "phi", "rnd_weights" })
           .Define("psi12",[ETA_MIN, ETA_MAX](
                   ROOT::VecOps::RVec<float> vec_phi,
-                  ROOT::VecOps::RVec<float> vec_y,
-                  ROOT::VecOps::RVec<int> vec_pid,
-                  ROOT::VecOps::RVec<float> is_accepted,
-                  ROOT::VecOps::RVec<float> vec_eta
+                  ROOT::VecOps::RVec<float> rnd_weights
                   ){
-            float vec_dphi;
-            // First RS
-            //Debug
-            std::array<std::vector<float>, 2> debug_vec_phi{};
-            std::array<std::vector<float>, 2> debug_vec_y{};
-
-            std::array<float, 2> sum_wx{};
-            std::array<float, 2> sum_wy{};
             std::random_device rnd_device;
             std::mt19937 generator(rnd_device());
             std::uniform_int_distribution<int> distribution(0,1);
+            std::array<float, 2> sum_wx{};
+            std::array<float, 2> sum_wy{};
             for(int i=0; i<vec_phi.size(); ++i){
-              auto pid = vec_pid.at(i);
-              auto eta = vec_eta.at(i);
-              auto acceptance = is_accepted.at(i);
-              if( eta < ETA_MIN || eta > ETA_MAX )
-                continue;
-              if( pid != 2212 )
-                continue;
-              if( acceptance < 0.75 )
-                continue;
-              auto idx = distribution(generator);
               auto phi = vec_phi.at(i);
-              auto y = vec_y.at(i);
-              auto weight = fabs(y) < 0.8 ? y / 0.8 : y/fabs(y);
+              auto weight = rnd_weights.at(i);
+              auto idx = distribution(generator);
               sum_wx.at(idx) += weight * cos(phi);
               sum_wy.at(idx) += weight * sin(phi);
-              // debug
-              debug_vec_phi.at(idx).push_back( phi );
-              debug_vec_phi.at(idx).push_back( y );
             }
             auto psi1 = atan2( sum_wy.at(0), sum_wx.at(0) );
             auto psi2 = atan2( sum_wy.at(1), sum_wx.at(1) );
-            if( std::isnan( psi1 ) || std::isnan(psi2) ){
-              std::cout << "std::isnan(psi1) or std::isnan(psi2) failed." << std::endl;
-              std::cout << "psi1=" << psi1 << " psi2=" << psi2 << std::endl;
-              std::cout << "Particles in each sub-event: " << std::endl;
-              std::cout << "Phi:" << std::endl;
-              for( const auto phi : vec_phi ){
-                  std::cout << phi << "; ";
-              }
-              std::cout << "\n";
-              std::cout << "Rapidity:" << std::endl;
-              for( const auto y : vec_y ){
-                std::cout << y << "; ";
-              }
-              std::cout << "\n";
-              throw std::runtime_error("Nan propagates");
-            }
-
-
             return psi1 - psi2;
-          },{ "phi", "y_norm", "pdg", "is_accepted", "eta_lab" })
+          },{ "phi", "rnd_weights" })
           .Filter("for(auto x : phi){ if( std::isnan(x) ) return false; } return true;")
           .Filter("for(auto x : y){ if( std::isnan(x) ) return false; } return true;")
-
           ;
 
   auto correction_task = CorrectionTask( dd, "correction_out.root", "qa.root" );
   correction_task.SetEventVariables( std::regex("bimp|b_norm|reaction_plane|psi12") );
   correction_task.SetTrackVariables({
-    std::regex("phi|pT|y|eta_lab|is_accepted|pdg|charge|dphi")
+    std::regex("phi|pT|y|eta_lab|pdg|charge|dphi|is_accepted")
   });
 
   correction_task.InitVariables();
@@ -265,16 +233,14 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
   proton.SetHarmonicArray( {1, 2} );
   proton.SetCorrections( {CORRECTION::PLAIN } );
   proton.SetCorrectionAxes( proton_axes );
-  proton.AddCut( "eta_lab", [ETA_MIN, ETA_MAX](double eta){
-    return ETA_MIN < eta && eta < ETA_MAX;
-  }, "acceptance cut" );
   proton.AddCut( "pdg", [](double pid){
     auto pdg_code = static_cast<int>(pid);
     return pdg_code == 2212;
     }, "proton cut" );
   proton.AddCut( "is_accepted", [](double pid){
-    return pid > 0.75;
-    }, "proton cut" );
+    auto pdg_code = static_cast<int>(pid);
+    return pdg_code == 1;
+    }, "acceptance cut" );
   correction_task.AddVector(proton);
 
   VectorConfig Tp( "Tp", "phi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
@@ -311,16 +277,14 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
   rs_proton.SetHarmonicArray( {1, 2} );
   rs_proton.SetCorrections( {CORRECTION::PLAIN } );
   rs_proton.SetCorrectionAxes( proton_axes );
-  rs_proton.AddCut( "eta_lab", [ETA_MIN, ETA_MAX](double eta){
-    return ETA_MIN < eta && eta < ETA_MAX;
-  }, "acceptance cut" );
   rs_proton.AddCut( "pdg", [](double pid){
     auto pdg_code = static_cast<int>(pid);
     return pdg_code == 2212;
   }, "proton cut" );
-  proton.AddCut( "is_accepted", [](double pid){
-    return pid > 0.75;
-  }, "proton cut" );
+  rs_proton.AddCut( "is_accepted", [](double pid){
+    auto pdg_code = static_cast<int>(pid);
+    return pdg_code == 1;
+  }, "acceptance cut" );
   correction_task.AddVector(rs_proton);
 
   VectorConfig rnd_sub( "rnd_sub", "psi12", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
