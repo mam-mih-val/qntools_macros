@@ -82,10 +82,10 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
             return vec_eta;
           },{ "y", "pT", "pdg", })
           .Define("is_accepted",[]( ROOT::VecOps::RVec<float> vec_y ){
-            ROOT::VecOps::RVec<int> rnd_sub;
+            ROOT::VecOps::RVec<float> rnd_sub;
             std::random_device rnd_device;
             std::mt19937 generator(rnd_device());
-            std::uniform_int_distribution<int> distribution(0,1); // distribution in range [0, 1]
+            std::uniform_real_distribution<float> distribution(0,1); // distribution in range [0, 1]
             for( int i=0; i<vec_y.size(); ++i ){
               rnd_sub.push_back( distribution(generator) );
             }
@@ -104,7 +104,7 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
                   ROOT::VecOps::RVec<float> vec_y,
                   ROOT::VecOps::RVec<int> vec_pid,
                   ROOT::VecOps::RVec<float> vec_eta,
-                  ROOT::VecOps::RVec<int> is_accepted
+                  ROOT::VecOps::RVec<float> is_accepted
                   ){
             ROOT::VecOps::RVec<float> vec_dphi;
             float sum_wx{};
@@ -125,7 +125,7 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
                 vec_weights.push_back(0.0);
                 continue;
               }
-              if( acceptance == 0 ) {
+              if( acceptance < 0.75 ) {
                 vec_weights.push_back(0.0);
                 continue;
               }
@@ -149,7 +149,7 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
                   ROOT::VecOps::RVec<float> vec_phi,
                   ROOT::VecOps::RVec<float> vec_y,
                   ROOT::VecOps::RVec<int> vec_pid,
-                  ROOT::VecOps::RVec<int> is_accepted,
+                  ROOT::VecOps::RVec<float> is_accepted,
                   ROOT::VecOps::RVec<float> vec_eta
                   ){
             float vec_dphi;
@@ -171,7 +171,7 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
                 continue;
               if( pid != 2212 )
                 continue;
-              if( acceptance == 0 )
+              if( acceptance < 0.75 )
                 continue;
               auto idx = distribution(generator);
               auto phi = vec_phi.at(i);
@@ -273,8 +273,7 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
     return pdg_code == 2212;
     }, "proton cut" );
   proton.AddCut( "is_accepted", [](double pid){
-    auto pdg_code = static_cast<int>(pid);
-    return pdg_code == 2212;
+    return pid > 0.75;
     }, "proton cut" );
   correction_task.AddVector(proton);
 
@@ -320,8 +319,7 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
     return pdg_code == 2212;
   }, "proton cut" );
   proton.AddCut( "is_accepted", [](double pid){
-    auto pdg_code = static_cast<int>(pid);
-    return pdg_code == 1;
+    return pid > 0.75;
   }, "proton cut" );
   correction_task.AddVector(rs_proton);
 
