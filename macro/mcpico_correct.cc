@@ -5,7 +5,7 @@
 
 void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::string str_nucleus_mass="197"){
   const double ETA_MIN = 1.0;
-  const double ETA_MAX = 3.0;
+  const double ETA_MAX = 2.5;
 
   const double sqrt_snn = std::stod(str_sqrt_snn);
   const double M = 0.938;
@@ -229,6 +229,11 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
           { "pT", 20, 0.0, 2.0 },
   };
 
+  std::vector<Qn::AxisD> pion_axes{
+          { "y", 20, -1.0, 1.0 },
+          { "pT", 20, 0.0, 1.0 },
+  };
+
   VectorConfig proton( "proton", "phi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   proton.SetHarmonicArray( {1, 2} );
   proton.SetCorrections( {CORRECTION::PLAIN } );
@@ -242,6 +247,20 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
     return pdg_code == 1;
     }, "acceptance cut" );
   correction_task.AddVector(proton);
+
+  VectorConfig pion( "pi_neg", "phi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  pion.SetHarmonicArray( {1, 2} );
+  pion.SetCorrections( {CORRECTION::PLAIN } );
+  pion.SetCorrectionAxes( pion_axes );
+  pion.AddCut( "pdg", [](double pid){
+    auto pdg_code = static_cast<int>(pid);
+    return pdg_code == -211;
+    }, "pion cut" );
+  pion.AddCut( "is_accepted", [](double pid){
+    auto pdg_code = static_cast<int>(pid);
+    return pdg_code == 1;
+    }, "acceptance cut" );
+  correction_task.AddVector(pion);
 
   VectorConfig Tp( "Tp", "phi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   Tp.SetHarmonicArray( {1, 2} );

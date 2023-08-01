@@ -21,11 +21,17 @@ vector <vector<string>> u1Q1=
   {"proton_PLAIN", "F2_PLAIN"},
   {"proton_PLAIN", "F3_PLAIN"},
   {"proton_PLAIN", "psi_rp_PLAIN"},
+
+  {"pi_neg_PLAIN", "F1_PLAIN"},
+  {"pi_neg_PLAIN", "F2_PLAIN"},
+  {"pi_neg_PLAIN", "F3_PLAIN"},
+  {"pi_neg_PLAIN", "psi_rp_PLAIN"},
 };
 
 vector <vector<string>> u2Q2=
 {
   {"proton_PLAIN", "psi_rp_PLAIN"},
+  {"pi_neg_PLAIN", "psi_rp_PLAIN"},
 };
 
 vector <vector<string>> u2Q1Q1=
