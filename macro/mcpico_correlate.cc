@@ -99,16 +99,25 @@ void mcpico_correlate(string inputFiles="qn.root", string outputFile="corr.root"
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y2x2", P2::yx(2, 2), wSumWu, wy, qn, qn);
   }
 
-  for (auto &corr : u1 )
   {
-    std::array<std::string, 1> qn{ corr.at(0) };
-    string corrName=corr.at(0)+".x1";
-    string corrName2=corr.at(0)+".x2";
-    auto corr_function = []( const Qn::QVector &a ){ return a.x(1); };
-    auto corr_function2 = []( const Qn::QVector &a ){ return a.x(2); };
+    auto corr = u1.at(0);
+    std::array<std::string, 1> qn{corr.at(0)};
+    string corrName = corr.at(0) + ".x1";
+    string corrName2 = corr.at(0) + ".x2";
+    auto corr_function = [](const Qn::QVector &a) { return a.x(1); };
+    auto corr_function2 = [](const Qn::QVector &a) { return a.x(2); };
     auto sumW = [](const Qn::QVector &a) { return a.sumweights(); };
     corrBuilder.AddCorrelationWithInternalReader(corrName, corr_function, sumW, wy, qn, qn);
     corrBuilder.AddCorrelationWithInternalReader(corrName2, corr_function2, sumW, wy, qn, qn);
+  }
+
+  {
+    auto corr = u1.at(1);
+    std::array<std::string, 1> qn{ corr.at(0) };
+    string corrName=corr.at(0)+".x1";
+    auto corr_function = []( const Qn::QVector &a ){ return a.x(1); };
+    auto unity = [](const Qn::QVector &a) { return 1; };
+    corrBuilder.AddCorrelationWithInternalReader(corrName, corr_function, unity, wn, qn, qn);
   }
 
   // ---------------- //
