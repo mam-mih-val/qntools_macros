@@ -288,6 +288,19 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
     }, "Tneg pT cut" );
   correction_task.AddVector(Tneg);
 
+  VectorConfig Tneg2( "Tpi2", "phi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  Tneg2.SetHarmonicArray( {1, 2} );
+  Tneg2.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
+  Tneg2.AddCut( "pdg", [](double double_pid){
+    auto pid = static_cast<int>(double_pid);
+    return pid == -211 || pid == 211;
+    }, "pion cut" );
+  Tneg2.AddCut( "is_accepted", [](double pid){
+    auto pdg_code = static_cast<int>(pid);
+    return pdg_code == 1;
+  }, "acceptance cut" );
+  correction_task.AddVector(Tneg2);
+
   VectorConfig rs_proton( "rnd_proton", "dphi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   rs_proton.SetHarmonicArray( {1, 2} );
   rs_proton.SetCorrections( {CORRECTION::PLAIN } );

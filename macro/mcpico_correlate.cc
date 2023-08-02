@@ -15,6 +15,10 @@ vector <vector<string>> Q1Q1=
   {"Tpi_PLAIN", "F3_PLAIN"},
 };
 
+vector <vector<string>> Q2Q1Q1{
+  {"Tpi2_PLAIN", "F1_PLAIN", "F3_PLAIN"},
+};
+
 vector <vector<string>> u1Q1=
 {
   {"proton_PLAIN", "F1_PLAIN"},
@@ -43,6 +47,12 @@ vector <vector<string>> u2Q1Q1=
   {"proton_PLAIN", "F1_PLAIN", "F3_PLAIN"},
 };
 
+vector <vector<string>> u1Q2Q1=
+{
+  {"proton_PLAIN", "Tpi2_PLAIN", "F1_PLAIN"},
+  {"proton_PLAIN", "Tpi2_PLAIN", "F3_PLAIN"},
+};
+
 vector <vector<string>> u1=
 {
   {"rnd_proton_PLAIN"},
@@ -64,6 +74,7 @@ void mcpico_correlate(string inputFiles="qn.root", string outputFile="corr.root"
   auto wUnity = [](const Qn::QVector &a, const Qn::QVector &b) { return 1; };
   auto wSumWu = [](const Qn::QVector &a, const Qn::QVector &b) { return a.sumweights(); };
   auto wSumWu3part = [](const Qn::QVector &a, const Qn::QVector &b, const Qn::QVector &c) { return a.sumweights(); };
+  auto wUnity3part = [](const Qn::QVector &a, const Qn::QVector &b, const Qn::QVector &c) { return 1; };
 
   auto corrBuilder =
     Qn::Correlation::CorrelationBuilder{&d_samples, nSamples, axes_correlation};
@@ -103,6 +114,25 @@ void mcpico_correlate(string inputFiles="qn.root", string outputFile="corr.root"
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y2y2", P2::yy(2, 2), wSumWu, wy, qn, qn);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x2y2", P2::xy(2, 2), wSumWu, wy, qn, qn);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y2x2", P2::yx(2, 2), wSumWu, wy, qn, qn);
+  }
+
+  for (auto &corr:u1Q2Q1)
+  {
+    std::array<std::string, 3> qn{corr.at(0), corr.at(1), corr.at(2)};
+    string corrName=corr.at(0)+"."+corr.at(1)+"."+corr.at(2);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1x2x1", P3::xxx(1, 2, 1), wSumWu3part, wy, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1y2y1", P3::xyy(1, 2, 1), wSumWu3part, wy, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1x2y1", P3::yxy(1, 2, 1), wSumWu3part, wy, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1y2x1", P3::yyx(1, 2, 1), wSumWu3part, wy, qn, qn);
+  }
+  for (auto &corr:Q2Q1Q1)
+  {
+    std::array<std::string, 3> qn{corr.at(0), corr.at(1), corr.at(2)};
+    string corrName=corr.at(0)+"."+corr.at(1)+"."+corr.at(2);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x2x1x1", P3::xxx(2, 1, 1), wUnity3part, wn, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x2y1y1", P3::xyy(2, 1, 1), wUnity3part, wn, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y2x1y1", P3::yxy(2, 1, 1), wUnity3part, wn, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y2y1x1", P3::yyx(2, 1, 1), wUnity3part, wn, qn, qn);
   }
 
   {
