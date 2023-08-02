@@ -4,7 +4,7 @@
 //
 
 void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::string str_nucleus_mass="197"){
-  const double ETA_MIN = 1.0;
+  const double ETA_MIN = 0.5;
   const double ETA_MAX = 2.5;
 
   const double sqrt_snn = std::stod(str_sqrt_snn);
@@ -95,10 +95,6 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
               auto eta = vec_eta.at(i);
               auto pT = vec_pT.at(i);
               if( eta < ETA_MIN || eta > ETA_MAX ){
-                is_accepted.push_back( 0 );
-                continue;
-              }
-              if( pT < 0.3 ){
                 is_accepted.push_back( 0 );
                 continue;
               }
@@ -284,8 +280,8 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
     auto pid = static_cast<int>(double_pid);
     return pid == -211 || pid == 211;
     }, "pion cut" );
-  Tneg.AddCut( "eta_lab", [](double eta){
-    return 1.5 < eta && eta < 2.5;
+  Tneg.AddCut( "y", [](double y){
+    return 0.2 < y && y < 0.8;
     }, "Tneg y cut" );
   Tneg.AddCut( "pT", [](double pT){
     return 0.1 < pT && pT < 0.5;
