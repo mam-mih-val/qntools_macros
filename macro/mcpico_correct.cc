@@ -98,6 +98,10 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
                 is_accepted.push_back( 0 );
                 continue;
               }
+              if( pT < 0.3 ){
+                is_accepted.push_back( 0 );
+                continue;
+              }
               is_accepted.push_back(1);
             }
             return is_accepted;
@@ -238,9 +242,8 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
     auto pdg_code = static_cast<int>(pid);
     return pdg_code == 2212;
     }, "proton cut" );
-  proton.AddCut( "is_accepted", [](double pid){
-    auto pdg_code = static_cast<int>(pid);
-    return pdg_code == 1;
+  proton.AddCut( "eta_lab", [ETA_MIN, ETA_MAX](double eta){
+    return ETA_MIN < eta && eta < ETA_MAX;
     }, "acceptance cut" );
   correction_task.AddVector(proton);
 
@@ -252,10 +255,9 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
     auto pdg_code = static_cast<int>(pid);
     return pdg_code == -211;
     }, "pion cut" );
-  pion.AddCut( "is_accepted", [](double pid){
-    auto pdg_code = static_cast<int>(pid);
-    return pdg_code == 1;
-    }, "acceptance cut" );
+  pion.AddCut( "eta_lab", [ETA_MIN, ETA_MAX](double eta){
+    return ETA_MIN < eta && eta < ETA_MAX;
+  }, "acceptance cut" );
   correction_task.AddVector(pion);
 
   VectorConfig Tp( "Tp", "phi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
@@ -309,9 +311,8 @@ void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::strin
     auto pdg_code = static_cast<int>(pid);
     return pdg_code == 2212;
   }, "proton cut" );
-  rs_proton.AddCut( "is_accepted", [](double pid){
-    auto pdg_code = static_cast<int>(pid);
-    return pdg_code == 1;
+  rs_proton.AddCut( "eta_lab", [ETA_MIN, ETA_MAX](double eta){
+    return ETA_MIN < eta && eta < ETA_MAX;
   }, "acceptance cut" );
   correction_task.AddVector(rs_proton);
 
