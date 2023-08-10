@@ -114,7 +114,7 @@ void mcpico_collider_correct(std::string list, std::string str_sqrt_snn="2.4", s
     return pdg_code == 2112 || pdg_code == 2212;
   }, "proton cut" );
   fn.AddCut( "eta_cm", [](double eta){
-    return -5.0 < eta && eta < 2.0;
+    return -5.0 < eta && eta < -2.0;
     }, "fn Cut" );
   correction_task.AddVector(fn);
   
