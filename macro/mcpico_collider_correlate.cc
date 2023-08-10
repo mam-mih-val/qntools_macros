@@ -38,7 +38,7 @@ vector <vector<string>> u2Q1Q1=
   {"proton_PLAIN", "Fp_PLAIN", "Fn_PLAIN"},
 };
 
-void mcpico_correlate(string inputFiles="qn.root", string outputFile="corr.root")
+void mcpico_collider_correlate(string inputFiles="qn.root", string outputFile="corr.root")
 {
   int nSamples = 100;
   Qn::AxisD centAxis({"b_norm", 20, 0, 2});

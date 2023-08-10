@@ -3,7 +3,7 @@
 // Created by Misha on 3/7/2023.
 //
 
-void mcpico_correct(std::string list, std::string str_sqrt_snn="2.4", std::string str_nucleus_mass="197"){
+void mcpico_collider_correct(std::string list, std::string str_sqrt_snn="2.4", std::string str_nucleus_mass="197"){
   const double ETA_MIN = -1.0;
   const double ETA_MAX = 1.0;
 
