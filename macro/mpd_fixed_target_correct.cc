@@ -46,7 +46,7 @@ void mpd_fixed_target_correct(std::string list, std::string collision_energy="2.
   std::vector<int> f3_modules = { 0, 1, 2, 3, 4, 5, 11, 12, 18, 19, 25, 26, 32, 33, 39, 40, 41, 42, 43, 44 };
   TStopwatch timer;
   timer.Start();
-  std::string treename = "t";
+  std::string treename = "picodst";
   TFileCollection collection( "collection", "", list.c_str() );
   auto* chain = new TChain( treename.c_str() );
   chain->AddFileInfoList( collection.GetList() );
