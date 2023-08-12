@@ -25,7 +25,7 @@ vector <vector<string>> u1Q1=
   {"tru_proton_PLAIN", "psi_rp_PLAIN"},
 };
 
-void mcpico_correlate(string inputFiles="qn.root", string outputFile="corr.root")
+void mpd_fixed_target_correlate(string inputFiles="qn.root", string outputFile="corr.root")
 {
   int nSamples = 100;
   Qn::AxisD centAxis({"b_norm", 20, 0, 2});

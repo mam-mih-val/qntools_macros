@@ -29,7 +29,7 @@ TVector3 GetFHCalPos(int iModule)
   return vec;
 }
 
-void mpd_fixed_target_correct(std::string list, std::string collision_energy="2.4", std::string str_nucleus_mass="197"){
+void mpd_fixed_target_correct(std::string list, std::string collision_energy="2.5", std::string str_nucleus_mass="209"){
 
   const double T = std::stod( collision_energy );
   const double M = 0.938;
