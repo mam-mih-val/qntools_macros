@@ -201,9 +201,6 @@ void mpd_fixed_target_correct(std::string list, std::string collision_energy="2.
   Tneg.AddCut( "tr_y", [](double eta){
     return -1.5 < eta && eta < 0.2;
     }, "Tpi y cut" );
-  Tneg.AddCut( "trPt", [](double pT){
-    return 0.1 < pT && pT < 0.5;
-    }, "Tneg pT cut" );
   correction_task.AddVector(Tneg);
 
   std::vector<Qn::AxisD> sim_proton_axes{
