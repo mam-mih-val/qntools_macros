@@ -112,9 +112,7 @@ void mpd_fixed_target_correct(std::string list, std::string collision_energy="2.
             }
             return vec_y;
           }, {"tr_pdg", "recotracks.fMom"} )
-          .Define( "n_hits", "std::vector<int> vec_nhits; for( auto n : recotracks.fNhits ){ vec_nhits.push_back( n ); } return vec_nhits;" )
-          .Define( "n_hits_possible", "std::vector<int> vec_nhits; for( auto n : recotracks.fNhitsPoss ){ vec_nhits.push_back( n ); } return vec_nhits;" )
-          .Define( "n_hits_relative", "std::vector<float> vec_nhits; for( int i=0; i<recotracks.fNhitsPoss.size(); ++i ){ vec_nhits.push_back(  static_cast<float>(recotracks.fNhits.at(i)) / recotracks.fNhitsPoss.at(i) ); } return vec_nhits;" )
+          .Define( "tr_nhits", "std::vector<int> vec_nhits; for( auto n : recotracks.fNhits ){ vec_nhits.push_back( n ); } return vec_nhits;" )
           .Define( "fhcal_module_id", "std::vector<int> module_id( FHCalModules.fEnergy.size() ); std::iota( module_id.begin(), module_id.end(), 0 ); return module_id;" )
           .Define( "fhcal_module_pos", []( std::vector<int> vec_id ){
             std::vector<TVector3> vec_module_pos{};
@@ -124,7 +122,7 @@ void mpd_fixed_target_correct(std::string list, std::string collision_energy="2.
           }, {"fhcal_module_id"} )
           .Define( "fhcal_module_phi", "std::vector<float> vec_phi{}; for( auto pos : fhcal_module_pos ){ vec_phi.push_back( pos.Phi() ); }; return vec_phi;" )
           .Define( "fhcal_module_energy", "std::vector<float> vec_phi{FHCalModules.fEnergy.data(), FHCalModules.fEnergy.data()+FHCalModules.fEnergy.size()}; return vec_phi;" )
-          .Filter("tru_b < 16."); // at least one filter is mandatory!!!
+          .Filter("b_norm < 16."); // at least one filter is mandatory!!!
 
   auto correction_task = CorrectionTask( dd, "correction_out.root", "qa.root" );
   correction_task.SetEventVariables(std::regex("b_norm|psi_rp"));
