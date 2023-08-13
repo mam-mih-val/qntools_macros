@@ -33,13 +33,14 @@ void mpd_fixed_target_correct(std::string list, std::string collision_energy="2.
 
   const double T = std::stod( collision_energy );
   const double M = 0.938;
-  const double GAMMA = (T + M) / M;
-  const double BETA = sqrt(1 - (M * M) / (M + T) / (M + T));
-  const double PZ = M * BETA * GAMMA;
   const double E = T + M;
-  const double Y_BEAM = 0.25 * log((E + PZ) / (E - PZ));
+  const double P = sqrt( E*E - M*M );
+  const double Y_BEAM = 0.25 * log( (E + P) / (E - P) );
   const double nucleus_mass = std::stod(str_nucleus_mass);
   const double NUCLEUS_RADIUS = 1.25 * pow( nucleus_mass, 1.0 / 3.0 );
+
+  std::cout << "T = " << T << "; Y_BEAM = " << Y_BEAM << std::endl;
+  std::cout << "A = " << nucleus_mass << "; R = " << NUCLEUS_RADIUS << std::endl;
 
   std::vector<int> f1_modules = { 14, 15, 16, 21, 23, 28, 29, 30 };
   std::vector<int> f2_modules = { 6, 7, 8, 9, 10, 13, 17, 20, 24, 27, 31, 34, 35, 36, 37, 38 };
