@@ -113,6 +113,7 @@ void mpd_fixed_target_correct(std::string list, std::string collision_energy="2.
             }
             return vec_y;
           }, {"tr_pdg", "recotracks.fMom"} )
+          .Define( "tr_is_proton", "std::vector<int> vec_is; std::transform(tr_tru_pdg.begin(), tr_tru_pdg.end(), std::back_inserter(vec_is), [](int pdg){ return pdg==2212; } ); return vec_is;" )
           .Define( "tr_nhits", "std::vector<int> vec_nhits; for( auto n : recotracks.fNhits ){ vec_nhits.push_back( n ); } return vec_nhits;" )
           .Define( "fhcal_module_id", "std::vector<int> module_id( FHCalModules.fEnergy.size() ); std::iota( module_id.begin(), module_id.end(), 0 ); return module_id;" )
           .Define( "fhcal_module_pos", []( std::vector<int> vec_id ){
@@ -121,15 +122,18 @@ void mpd_fixed_target_correct(std::string list, std::string collision_energy="2.
               vec_module_pos.push_back( GetFHCalPos(id) );
             return vec_module_pos;
           }, {"fhcal_module_id"} )
+          .Define( "fhcal_module_x", "std::vector<float> vec_x{}; for( auto pos : fhcal_module_pos ){ vec_x.push_back( pos.X() ); }; return vec_x;" )
+          .Define( "fhcal_module_y", "std::vector<float> vec_y{}; for( auto pos : fhcal_module_pos ){ vec_y.push_back( pos.Y() ); }; return vec_y;" )
+          .Define( "fhcal_module_z", "std::vector<float> vec_z{}; for( auto pos : fhcal_module_pos ){ vec_z.push_back( pos.Z() ); }; return vec_z;" )
           .Define( "fhcal_module_phi", "std::vector<float> vec_phi{}; for( auto pos : fhcal_module_pos ){ vec_phi.push_back( pos.Phi() ); }; return vec_phi;" )
           .Define( "fhcal_module_energy", "std::vector<float> vec_phi{FHCalModules.fEnergy.data(), FHCalModules.fEnergy.data()+FHCalModules.fEnergy.size()}; return vec_phi;" )
-          .Filter("b_norm < 16."); // at least one filter is mandatory!!!
+          .Filter("b_norm < 20."); // at least one filter is mandatory!!!
 
   auto correction_task = CorrectionTask( dd, "correction_out.root", "qa.root" );
   correction_task.SetEventVariables(std::regex("b_norm|psi_rp"));
-  correction_task.SetChannelVariables({std::regex("fhcal_module_(id|phi|energy)")});
+  correction_task.SetChannelVariables({std::regex("fhcal_module_(id|phi|energy|x|y|z)")});
   correction_task.SetTrackVariables({
-                                            std::regex("tr_(pT|y|phi|charge|pdg)"),
+                                            std::regex("tr_(pT|y|phi|charge|pdg|is_proton)"),
                                             std::regex("sim_(pT|y|phi|pdg|mother_id)")
                                     });
 
@@ -143,6 +147,7 @@ void mpd_fixed_target_correct(std::string list, std::string collision_energy="2.
     auto id = std::round(mod_id);
     return std::find( f1_modules.begin(), f1_modules.end(), id) != f1_modules.end();
     }, "F1 Cut" );
+  f1.AddHisto2D({{"fhcal_module_x", 100, -100, 100}, {"fhcal_module_y", 100, -100, 100}});
   correction_task.AddVector(f1);
 
   VectorConfig f2( "F2", "fhcal_module_phi", "fhcal_module_energy", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
@@ -152,6 +157,7 @@ void mpd_fixed_target_correct(std::string list, std::string collision_energy="2.
     auto id = std::round(mod_id);
     return std::find( f2_modules.begin(), f2_modules.end(), id) != f2_modules.end();
     }, "F2 Cut" );
+  f2.AddHisto2D({{"fhcal_module_x", 100, -100, 100}, {"fhcal_module_y", 100, -100, 100}});
   correction_task.AddVector(f2);
 
   VectorConfig f3( "F3", "fhcal_module_phi", "fhcal_module_energy", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
@@ -161,6 +167,7 @@ void mpd_fixed_target_correct(std::string list, std::string collision_energy="2.
     auto id = std::round(mod_id);
     return std::find( f3_modules.begin(), f3_modules.end(), id) != f3_modules.end();
     }, "F3 Cut" );
+  f3.AddHisto2D({{"fhcal_module_x", 100, -100, 100}, {"fhcal_module_y", 100, -100, 100}});
   correction_task.AddVector(f3);
 
   std::vector<Qn::AxisD> proton_axes{
@@ -177,6 +184,8 @@ void mpd_fixed_target_correct(std::string list, std::string collision_energy="2.
     return pdg_code == 2212;
     }, "proton cut" );
   proton.AddCut( "tr_charge", [](double charge){ return charge > 0; }, "q > 0" );
+  proton.AddCut( "tr_nhits", [](double nhits){ return nhits > 16; }, "Nhits > 16" );
+  proton.AddHisto2D({{"tr_y", 100, -0.5, 1.5}, {"tr_pT", 100, 0.0, 2.0}}, "tr_is_proton");
   correction_task.AddVector(proton);
 
   VectorConfig Tp( "Tp", "tr_phi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
@@ -190,6 +199,7 @@ void mpd_fixed_target_correct(std::string list, std::string collision_energy="2.
   Tp.AddCut( "tr_y", [](double ycm){
     return -1.2 < ycm && ycm < 0.8;
     }, "Tp ycm cut" );
+  Tp.AddCut( "tr_nhits", [](double nhits){ return nhits > 16; }, "Nhits > 16" );
   correction_task.AddVector(Tp);
 
   VectorConfig Tneg( "Tpi", "tr_phi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
@@ -202,12 +212,13 @@ void mpd_fixed_target_correct(std::string list, std::string collision_energy="2.
   Tneg.AddCut( "tr_y", [](double eta){
     return -1.5 < eta && eta < 0.2;
     }, "Tpi y cut" );
+  Tneg.AddCut( "tr_nhits", [](double nhits){ return nhits > 16; }, "Nhits > 16" );
   correction_task.AddVector(Tneg);
+
   std::vector<Qn::AxisD> sim_proton_axes{
           { "sim_y", 15, -1.5, 1.5 },
           { "sim_pT", 15, 0.0, 1.5 },
   };
-
   VectorConfig tru_proton( "tru_proton", "sim_phi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   tru_proton.SetHarmonicArray( {1, 2} );
   tru_proton.SetCorrections( {CORRECTION::PLAIN } );
