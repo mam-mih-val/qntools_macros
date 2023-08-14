@@ -113,7 +113,7 @@ void mpd_fixed_target_correct(std::string list, std::string collision_energy="2.
             }
             return vec_y;
           }, {"tr_pdg", "recotracks.fMom"} )
-          .Define( "tr_is_proton", "std::vector<int> vec_is; std::transform(tr_tru_pdg.begin(), tr_tru_pdg.end(), std::back_inserter(vec_is), [](int pdg){ return pdg==2212; } ); return vec_is;" )
+          .Define( "tr_is_proton", "std::vector<int> vec_is; std::transform(tr_pdg.begin(), tr_pdg.end(), std::back_inserter(vec_is), [](int pdg){ return pdg==2212; } ); return vec_is;" )
           .Define( "tr_nhits", "std::vector<int> vec_nhits; for( auto n : recotracks.fNhits ){ vec_nhits.push_back( n ); } return vec_nhits;" )
           .Define( "fhcal_module_id", "std::vector<int> module_id( FHCalModules.fEnergy.size() ); std::iota( module_id.begin(), module_id.end(), 0 ); return module_id;" )
           .Define( "fhcal_module_pos", []( std::vector<int> vec_id ){
