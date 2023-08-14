@@ -133,7 +133,7 @@ void mpd_fixed_target_correct(std::string list, std::string collision_energy="2.
   correction_task.SetEventVariables(std::regex("b_norm|psi_rp"));
   correction_task.SetChannelVariables({std::regex("fhcal_module_(id|phi|energy|x|y|z)")});
   correction_task.SetTrackVariables({
-                                            std::regex("tr_(pT|y|phi|charge|pdg|is_proton)"),
+                                            std::regex("tr_(pT|y|phi|charge|pdg|is_proton|nhits)"),
                                             std::regex("sim_(pT|y|phi|pdg|mother_id)")
                                     });
 
