@@ -174,6 +174,10 @@ void mpd_fixed_target_correct(std::string list, std::string collision_energy="2.
           { "tr_y", 15, -1.5, 1.5 },
           { "tr_pT", 15, 0.0, 1.5 },
   };
+  std::vector<Qn::AxisD> pion_axes{
+          { "tr_y", 15, -1.5, 1.5 },
+          { "tr_pT", 10, 0.0, 1.0 },
+  };
 
   VectorConfig proton( "proton", "tr_phi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   proton.SetHarmonicArray( {1, 2} );
@@ -187,6 +191,30 @@ void mpd_fixed_target_correct(std::string list, std::string collision_energy="2.
   proton.AddCut( "tr_nhits", [](double nhits){ return nhits > 16; }, "Nhits > 16" );
   proton.AddHisto2D({{"tr_y", 100, -0.5, 1.5}, {"tr_pT", 100, 0.0, 2.0}}, "tr_is_proton");
   correction_task.AddVector(proton);
+
+  VectorConfig pi_pos( "pi_pos", "tr_phi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  pi_pos.SetHarmonicArray( {1, 2} );
+  pi_pos.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
+  pi_pos.SetCorrectionAxes( pion_axes );
+  pi_pos.AddCut( "tr_pdg", [](double pid){
+    auto pdg_code = std::round(pid);
+    return pdg_code == 211;
+    }, "pi_pos cut" );
+  pi_pos.AddCut( "tr_charge", [](double charge){ return charge > 0; }, "q > 0" );
+  pi_pos.AddCut( "tr_nhits", [](double nhits){ return nhits > 16; }, "Nhits > 16" );
+  correction_task.AddVector(pi_pos);
+
+  VectorConfig pi_neg( "pi_neg", "tr_phi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  pi_neg.SetHarmonicArray( {1, 2} );
+  pi_neg.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
+  pi_neg.SetCorrectionAxes( pion_axes );
+  pi_neg.AddCut( "tr_pdg", [](double pid){
+    auto pdg_code = std::round(pid);
+    return pdg_code == -211;
+    }, "pi_neg cut" );
+  pi_neg.AddCut( "tr_charge", [](double charge){ return charge < 0; }, "q < 0" );
+  pi_neg.AddCut( "tr_nhits", [](double nhits){ return nhits > 16; }, "Nhits > 16" );
+  correction_task.AddVector(pi_neg);
 
   VectorConfig Tp( "Tp", "tr_phi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   Tp.SetHarmonicArray( {1, 2} );
@@ -219,6 +247,12 @@ void mpd_fixed_target_correct(std::string list, std::string collision_energy="2.
           { "sim_y", 15, -1.5, 1.5 },
           { "sim_pT", 15, 0.0, 1.5 },
   };
+
+  std::vector<Qn::AxisD> sim_pion_axes{
+          { "sim_y", 15, -1.5, 1.5 },
+          { "sim_pT", 15, 0.0, 1.0 },
+  };
+
   VectorConfig tru_proton( "tru_proton", "sim_phi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   tru_proton.SetHarmonicArray( {1, 2} );
   tru_proton.SetCorrections( {CORRECTION::PLAIN } );
@@ -232,6 +266,34 @@ void mpd_fixed_target_correct(std::string list, std::string collision_energy="2.
     return pdg_code == -1;
   }, "cut on primary" );
   correction_task.AddVector(tru_proton);
+
+  VectorConfig tru_pi_pos( "tru_pi_pos", "sim_phi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  tru_pi_pos.SetHarmonicArray( {1, 2} );
+  tru_pi_pos.SetCorrections( {CORRECTION::PLAIN } );
+  tru_pi_pos.SetCorrectionAxes( sim_pion_axes );
+  tru_pi_pos.AddCut( "sim_pdg", [](double pid){
+    auto pdg_code = std::round(pid);
+    return pdg_code == 211;
+  }, "tru_pi_pos cut" );
+  tru_pi_pos.AddCut( "sim_mother_id", [](double pid){
+    auto pdg_code = std::round(pid);
+    return pdg_code == -1;
+  }, "cut on primary" );
+  correction_task.AddVector(tru_pi_pos);
+
+  VectorConfig tru_pi_neg( "tru_pi_neg", "sim_phi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  tru_pi_neg.SetHarmonicArray( {1, 2} );
+  tru_pi_neg.SetCorrections( {CORRECTION::PLAIN } );
+  tru_pi_neg.SetCorrectionAxes( sim_pion_axes );
+  tru_pi_neg.AddCut( "sim_pdg", [](double pid){
+    auto pdg_code = std::round(pid);
+    return pdg_code == -211;
+  }, "tru_pi_neg cut" );
+  tru_pi_neg.AddCut( "sim_mother_id", [](double pid){
+    auto pdg_code = std::round(pid);
+    return pdg_code == -1;
+  }, "cut on primary" );
+  correction_task.AddVector(tru_pi_neg);
 
   VectorConfig psi_rp( "psi_rp", "psi_rp", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   psi_rp.SetHarmonicArray( {1, 2} );
