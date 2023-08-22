@@ -88,10 +88,10 @@ void mpd_fixed_target_correlate(string inputFiles="qn.root", string outputFile="
   for (auto &corr:u2Q2){
     std::array<std::string, 2> qn{corr.at(0), corr.at(1)};
     string corrName=corr.at(0)+"."+corr.at(1);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1x1", P2::xx(2, 2), wSumWu, wy, qn, qn);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1y1", P2::yy(2, 2), wSumWu, wy, qn, qn);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1y1", P2::xy(2, 2), wSumWu, wy, qn, qn);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1x1", P2::yx(2, 2), wSumWu, wy, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x2x2", P2::xx(2, 2), wSumWu, wy, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y2y2", P2::yy(2, 2), wSumWu, wy, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x2y2", P2::xy(2, 2), wSumWu, wy, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y2x2", P2::yx(2, 2), wSumWu, wy, qn, qn);
   }
 
   for (auto &corr : u2Q1Q1 ){
