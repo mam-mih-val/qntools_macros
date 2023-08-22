@@ -29,6 +29,12 @@ vector <vector<string>> u1Q1{
 
   {"proton_RESCALED", "psi_rp_PLAIN"},
   {"tru_proton_PLAIN", "psi_rp_PLAIN"},
+
+  {"pi_pos_RESCALED", "psi_rp_PLAIN"},
+  {"tru_pi_pos_PLAIN", "psi_rp_PLAIN"},
+
+  {"pi_neg_RESCALED", "psi_rp_PLAIN"},
+  {"tru_pi_neg_PLAIN", "psi_rp_PLAIN"},
 };
 
 vector <vector<string>> u2Q1Q1{
