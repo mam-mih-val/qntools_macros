@@ -250,7 +250,7 @@ void mpd_fixed_target_correct(std::string list, std::string collision_energy="2.
 
   std::vector<Qn::AxisD> sim_pion_axes{
           { "sim_y", 15, -1.5, 1.5 },
-          { "sim_pT", 15, 0.0, 1.0 },
+          { "sim_pT", 10, 0.0, 1.0 },
   };
 
   VectorConfig tru_proton( "tru_proton", "sim_phi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
