@@ -225,7 +225,7 @@ void mpd_fixed_target_correct(std::string list, std::string collision_energy="2.
     }, "proton cut" );
   Tp.AddCut( "tr_charge", [](double charge){ return charge > 0; }, "proton cut" );
   Tp.AddCut( "tr_y", [](double ycm){
-    return -1.2 < ycm && ycm < 0.8;
+    return -1.2 < ycm && ycm < -0.6;
     }, "Tp ycm cut" );
   Tp.AddCut( "tr_nhits", [](double nhits){ return nhits > 16; }, "Nhits > 16" );
   correction_task.AddVector(Tp);
@@ -238,7 +238,7 @@ void mpd_fixed_target_correct(std::string list, std::string collision_energy="2.
     return abs(pdg_code) == 211;
   }, "pion cut" );
   Tneg.AddCut( "tr_y", [](double eta){
-    return -1.5 < eta && eta < 0.2;
+    return -1.5 < eta && eta < -0.2;
     }, "Tpi y cut" );
   Tneg.AddCut( "tr_nhits", [](double nhits){ return nhits > 16; }, "Nhits > 16" );
   correction_task.AddVector(Tneg);
