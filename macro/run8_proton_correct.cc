@@ -144,7 +144,7 @@ void run8_proton_correct(std::string list){
                 }, {"pz", "pq"} )
           .Define("trEta","ROOT::VecOps::RVec<float> eta; for(auto& mom : trMom) eta.push_back(mom.eta()); return eta;")
           .Define("trPhi","ROOT::VecOps::RVec<float> phi;for(auto& mom : trMom) phi.push_back(mom.phi()); return phi;")
-          .Filter("1e4 < bc1Integral.at(0) && bc1Integral.at(0) < 4e4" )
+          .Filter("1e4 < bc1Integral && bc1Integral < 4e4" )
           .Filter("vtxChi2/vtxNdf > 0.1")
   ; // at least one filter is mandatory!!!
 
