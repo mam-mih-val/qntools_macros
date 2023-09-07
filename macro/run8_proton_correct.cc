@@ -148,10 +148,10 @@ void run8_proton_correct(std::string list){
           .Define("trEta","ROOT::VecOps::RVec<float> eta; for(auto& mom : trMom) eta.push_back(mom.eta()); return eta;")
           .Define("trPhi","ROOT::VecOps::RVec<float> phi;for(auto& mom : trMom) phi.push_back(mom.phi()); return phi;")
           .Filter("1e4 < bc1Integral && bc1Integral < 4e4" )
-          .Filter("vtxChi2/vtxNdf > 0.1")
           .Filter([&physical_runs]( UInt_t run_id ){ 
             return std::find( physical_runs.begin(), physical_runs.end(), run_id) != physical_runs.end();
-           }, {"runId"})
+           }, {"runId"} )
+          .Filter("vtxChi2/vtxNdf > 0.1")
   ; // at least one filter is mandatory!!!
 
   auto correction_task = CorrectionTask( dd, "correction_out.root", "qa.root" );
