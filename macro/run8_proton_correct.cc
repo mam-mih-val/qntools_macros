@@ -146,6 +146,7 @@ void run8_proton_correct(std::string list){
           .Define("trPhi","ROOT::VecOps::RVec<float> phi;for(auto& mom : trMom) phi.push_back(mom.phi()); return phi;")
           .Filter("1e4 < bc1Integral && bc1Integral < 4e4" )
           .Filter("vtxChi2/vtxNdf > 0.1")
+          .Filter("runId < 8312")
   ; // at least one filter is mandatory!!!
 
   auto correction_task = CorrectionTask( dd, "correction_out.root", "qa.root" );
