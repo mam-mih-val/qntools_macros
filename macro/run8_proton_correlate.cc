@@ -47,16 +47,16 @@ vector <vector<string>> Q1Q1_rescaled =
 
 vector <vector<string>> u1Q1_plain=
 {
-  {"proton_PLAIN", "F1_RESCALED"},
-  {"proton_PLAIN", "F2_RESCALED"},
-  {"proton_PLAIN", "F3_RESCALED"},
+  {"proton_RESCALED", "F1_PLAIN"},
+  {"proton_RESCALED", "F2_PLAIN"},
+  {"proton_RESCALED", "F3_PLAIN"},
 };
 
 vector <vector<string>> u1Q1_recentered=
 {
-  {"proton_RECENTERED", "F1_RESCALED"},
-  {"proton_RECENTERED", "F2_RESCALED"},
-  {"proton_RECENTERED", "F3_RESCALED"},
+  {"proton_RESCALED", "F1_RECENTERED"},
+  {"proton_RESCALED", "F2_RECENTERED"},
+  {"proton_RESCALED", "F3_RECENTERED"},
 };
 
 vector <vector<string>> u1Q1_rescaled=
