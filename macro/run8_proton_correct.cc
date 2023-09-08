@@ -65,6 +65,7 @@ void run8_proton_correct(std::string list){
           .Define("trPt","ROOT::VecOps::RVec<float> pt; for(auto& mom:trMom) pt.push_back(mom.pt()); return pt;")
           .Define( "trDcaX", " std::vector<float> vec_par; for( auto par : trParamFirst ){ vec_par.push_back( par.at(0) - vtxX ); } return vec_par; " )
 		      .Define( "trDcaY", " std::vector<float> vec_par; for( auto par : trParamFirst ){ vec_par.push_back( par.at(1) - vtxY ); } return vec_par; " )
+          .Define( "trChi2Ndf", " std::vector<float> vec_par; for( int i=0; i<trChi2.size(); ++i ){ vec_par.push_back( trChi2.at(i)/trNdf.at(i) ); } return vec_par; " )
           .Define( "pz", " std::vector<float> pz; for( auto mom : trMom ){ pz.push_back( mom.Pz() ); } return pz; " )
           .Define( "pq", " std::vector<float> pq; for( int i=0; i<trMom.size(); i++ ){ pq.push_back( trMom.at(i).P()/trCharge.at(i) ); } return pq;" )
           .Define( "trM2Tof400","std::vector<float> vec_m2;\n"
@@ -158,7 +159,7 @@ void run8_proton_correct(std::string list){
   correction_task.SetEventVariables(std::regex("centrality"));
   correction_task.SetChannelVariables({std::regex("fhcalMod(X|Y|Phi|E|Id)")});
   correction_task.SetTrackVariables({
-                                            std::regex("tr(Pt|Eta|Phi|IsProton|Charge|ProtonY|IsProton|DcaX|DcaY)"),
+                                            std::regex("tr(Pt|Eta|Phi|IsProton|Charge|ProtonY|IsProton|DcaX|DcaY|Chi2Ndf|Nhits)"),
                                     });
 
   correction_task.InitVariables();
@@ -241,6 +242,12 @@ void run8_proton_correct(std::string list){
   proton.AddCut( "trDcaY", [](double dca){
     return fabs(dca) < 5.0;
     }, "cut on dca y" );
+  proton.AddCut( "trChi2Ndf", [](double chi2){
+    return chi2 < 3.0;
+    }, "cut on chi2" );
+  proton.AddCut( "trNhits", [](double nhits){
+    return nhits > 6.0;
+    }, "cut on number of hits" );
   proton.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
   correction_task.AddVector(proton);
 
