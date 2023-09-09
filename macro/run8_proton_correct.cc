@@ -179,7 +179,7 @@ void run8_proton_correct(std::string list, std::string str_effieciency_file){
                   }
                   return vec_y;
                 }, {"pz", "pq"} )
-          .Defile( "trWeight", [efficiency_histo](std::vector<float> vec_y, ROOT::VecOps::RVec<float> vec_pT){
+          .Define( "trWeight", [efficiency_histo](std::vector<float> vec_y, ROOT::VecOps::RVec<float> vec_pT){
                   if( !efficiency_histo ){
                       return std::vector<float>(vec_y.size(), 1);
                     }
