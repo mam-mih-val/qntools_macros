@@ -123,6 +123,24 @@ void run8_proton_correct(std::string list, std::string str_effieciency_file){
                     " vec_m2.push_back( m2 );\n"
                     "}\n"
                     "return vec_m2;" )
+          .Define( "trM2", [](std::vector<float> vec_400, std::vector<float> vec_700){
+                  std::vector<float> vec_m2{};
+                  vec_m2.reserve( vec_400.size() );
+                  for( int i=0; i<vec_400.size(); ++i ){
+                    auto m2_400 = vec_400.at(i);
+                    auto m2_700 = vec_700.at(i);
+                    if( m2_400 < -990. ){
+                      vec_m2.push_back( m2_700 );
+                      continue;
+                    }
+                    if( m2_700 < -990. ){
+                      vec_m2.push_back( m2_400 );
+                      continue;
+                    }
+                    vec_m2.push_back( 0.5*(m2_400 + m2_700) );
+                  }
+                  return vec_m2;
+                }, { "trM2Tof400", "trM2Tof700" } )
           .Define( "trIsProton400", [ f1_m2_400, f1_s_400 ]( 
                 std::vector<float> vec_m2, 
                 std::vector<float> vec_pq 
@@ -135,8 +153,8 @@ void run8_proton_correct(std::string list, std::string str_effieciency_file){
                     if( pq < 0 ){ vec_is.push_back(0); continue; }
                     auto mean = f1_m2_400->Eval(pq);
                     auto sigma = f1_s_400->Eval(pq);
-                    auto lo = mean - 2*sigma;
-                    auto hi = mean + 2*sigma;
+                    auto lo = mean - 3*sigma;
+                    auto hi = mean + 3*sigma;
                     vec_is.push_back( lo < m2 && m2 < hi ? 1 : 0 );
                   }
                   return vec_is;
@@ -154,8 +172,8 @@ void run8_proton_correct(std::string list, std::string str_effieciency_file){
                     if( pq < 0 ){ vec_is.push_back(0); continue; }
                     auto mean = f1_m2_700->Eval(pq);
                     auto sigma = f1_s_700->Eval(pq);
-                    auto lo = mean - 2*sigma;
-                    auto hi = mean + 2*sigma;
+                    auto lo = mean - 3*sigma;
+                    auto hi = mean + 3*sigma;
                     vec_is.push_back( lo < m2 && m2 < hi ? 1 : 0 );
                   }
                   return vec_is;
@@ -276,18 +294,16 @@ void run8_proton_correct(std::string list, std::string str_effieciency_file){
   std::vector<Qn::AxisD> proton_axes{
         { "trProtonY", 12, -0.2, 1.0 },
         { "trPt", 15, 0.0, 1.5 },
+        { "trM2", 10, 0.0, 2.0 },
   };
 
   VectorConfig proton( "proton", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   proton.SetHarmonicArray( {1, 2} );
   proton.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
   proton.SetCorrectionAxes( proton_axes );
-  // proton.AddCut( "trIsProton", [](double pid){
-  //   auto pdg_code = static_cast<int>(pid);
-  //   return pdg_code == 1;
-  //   }, "proton cut" );
-  proton.AddCut( "trCharge", [](double pid){
-    return pid > 0.0;
+  proton.AddCut( "trIsProton", [](double pid){
+    auto pdg_code = static_cast<int>(pid);
+    return pdg_code == 1;
     }, "proton cut" );
   proton.AddCut( "trDcaX", [](double dca){
     return fabs(dca) < 3.0;
