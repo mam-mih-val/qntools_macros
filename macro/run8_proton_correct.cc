@@ -282,9 +282,12 @@ void run8_proton_correct(std::string list, std::string str_effieciency_file){
   proton.SetHarmonicArray( {1, 2} );
   proton.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
   proton.SetCorrectionAxes( proton_axes );
-  proton.AddCut( "trIsProton", [](double pid){
-    auto pdg_code = static_cast<int>(pid);
-    return pdg_code == 1;
+  // proton.AddCut( "trIsProton", [](double pid){
+  //   auto pdg_code = static_cast<int>(pid);
+  //   return pdg_code == 1;
+  //   }, "proton cut" );
+  proton.AddCut( "trCharge", [](double pid){
+    return pid > 0.0;
     }, "proton cut" );
   proton.AddCut( "trDcaX", [](double dca){
     return fabs(dca) < 3.0;

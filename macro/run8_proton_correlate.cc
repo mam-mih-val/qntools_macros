@@ -101,7 +101,7 @@ void run8_proton_correlate(string inputFiles="qn.root", string outputFile="corr.
   auto corrBuilder =
     Qn::Correlation::CorrelationBuilder{&d_samples, nSamples, axes_correlation};
 
-  for (auto &corr: Q1Q1_recentered)
+  for (auto &corr: Q1Q1_rescaled)
   {
     std::array<std::string, 2> qn{corr.at(0), corr.at(1)};
     string corrName=corr.at(0)+"."+corr.at(1);
@@ -111,7 +111,7 @@ void run8_proton_correlate(string inputFiles="qn.root", string outputFile="corr.
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y1x1", P2::yx(1, 1), wUnity, wn, qn, qn);
   }
 
-  for ( auto &corr: u1Q1_recentered )
+  for ( auto &corr: u1Q1_rescaled )
   {
     std::array<std::string, 2> qn{corr.at(0), corr.at(1)};
     string corrName=corr.at(0)+"."+corr.at(1);
