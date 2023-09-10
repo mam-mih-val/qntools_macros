@@ -21,13 +21,13 @@ vector <vector<string>> Q1Q1_recentered =
   {"F1_RECENTERED", "F3_RECENTERED"},
   {"F2_RECENTERED", "F3_RECENTERED"},
 
-  {"Tneg_RECENTERED", "F1_RECENTERED"},
-  {"Tneg_RECENTERED", "F2_RECENTERED"},
-  {"Tneg_RECENTERED", "F3_RECENTERED"},
+  {"Tneg_RESCALED", "F1_RECENTERED"},
+  {"Tneg_RESCALED", "F2_RECENTERED"},
+  {"Tneg_RESCALED", "F3_RECENTERED"},
 
-  {"Tpos_RECENTERED", "F1_RECENTERED"},
-  {"Tpos_RECENTERED", "F2_RECENTERED"},
-  {"Tpos_RECENTERED", "F3_RECENTERED"},
+  {"Tpos_RESCALED", "F1_RECENTERED"},
+  {"Tpos_RESCALED", "F2_RECENTERED"},
+  {"Tpos_RESCALED", "F3_RECENTERED"},
 };
 
 vector <vector<string>> Q1Q1_rescaled =
@@ -57,6 +57,14 @@ vector <vector<string>> u1Q1_recentered=
   {"proton_RESCALED", "F1_RECENTERED"},
   {"proton_RESCALED", "F2_RECENTERED"},
   {"proton_RESCALED", "F3_RECENTERED"},
+
+  {"proton700_RESCALED", "F1_RECENTERED"},
+  {"proton700_RESCALED", "F2_RECENTERED"},
+  {"proton700_RESCALED", "F3_RECENTERED"},
+
+  {"proton400_RESCALED", "F1_RECENTERED"},
+  {"proton400_RESCALED", "F2_RECENTERED"},
+  {"proton400_RESCALED", "F3_RECENTERED"},
 };
 
 vector <vector<string>> u1Q1_rescaled=
@@ -93,7 +101,7 @@ void run8_proton_correlate(string inputFiles="qn.root", string outputFile="corr.
   auto corrBuilder =
     Qn::Correlation::CorrelationBuilder{&d_samples, nSamples, axes_correlation};
 
-  for (auto &corr: Q1Q1_rescaled)
+  for (auto &corr: Q1Q1_recentered)
   {
     std::array<std::string, 2> qn{corr.at(0), corr.at(1)};
     string corrName=corr.at(0)+"."+corr.at(1);
@@ -103,7 +111,7 @@ void run8_proton_correlate(string inputFiles="qn.root", string outputFile="corr.
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y1x1", P2::yx(1, 1), wUnity, wn, qn, qn);
   }
 
-  for ( auto &corr: u1Q1_rescaled )
+  for ( auto &corr: u1Q1_recentered )
   {
     std::array<std::string, 2> qn{corr.at(0), corr.at(1)};
     string corrName=corr.at(0)+"."+corr.at(1);
