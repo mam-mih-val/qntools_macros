@@ -278,7 +278,7 @@ void run8_proton_correct(std::string list, std::string str_effieciency_file){
         { "trPt", 15, 0.0, 1.5 },
   };
 
-  VectorConfig proton( "proton", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  VectorConfig proton( "proton", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   proton.SetHarmonicArray( {1, 2} );
   proton.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
   proton.SetCorrectionAxes( proton_axes );
