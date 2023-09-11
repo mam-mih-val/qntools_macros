@@ -227,7 +227,7 @@ void run8_proton_correct(std::string list, std::string str_effieciency_file){
   correction_task.SetEventVariables(std::regex("centrality"));
   correction_task.SetChannelVariables({std::regex("fhcalMod(X|Y|Phi|E|Id)")});
   correction_task.SetTrackVariables({
-                                            std::regex("tr(Pt|Eta|Phi|IsProton|IsProton700|IsProton400|Charge|ProtonY|DcaX|DcaY|Chi2Ndf|Nhits|Weight|FhcalX|FhcalY)"),
+                                            std::regex("tr(Pt|Eta|Phi|IsProton|IsProton700|IsProton400|Charge|ProtonY|DcaX|DcaY|Chi2Ndf|Nhits|Weight|FhcalX|FhcalY|M2)"),
                                     });
 
   correction_task.InitVariables();
