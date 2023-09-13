@@ -153,8 +153,8 @@ void run8_proton_correct(std::string list, std::string str_effieciency_file){
                     if( pq < 0 ){ vec_is.push_back(0); continue; }
                     auto mean = f1_m2_400->Eval(pq);
                     auto sigma = f1_s_400->Eval(pq);
-                    auto lo = mean - sigma;
-                    auto hi = mean + sigma;
+                    auto lo = mean - 3*sigma;
+                    auto hi = mean + 3*sigma;
                     vec_is.push_back( lo < m2 && m2 < hi ? 1 : 0 );
                   }
                   return vec_is;
@@ -172,8 +172,8 @@ void run8_proton_correct(std::string list, std::string str_effieciency_file){
                     if( pq < 0 ){ vec_is.push_back(0); continue; }
                     auto mean = f1_m2_700->Eval(pq);
                     auto sigma = f1_s_700->Eval(pq);
-                    auto lo = mean - sigma;
-                    auto hi = mean + sigma;
+                    auto lo = mean - 3*sigma;
+                    auto hi = mean + 3*sigma;
                     vec_is.push_back( lo < m2 && m2 < hi ? 1 : 0 );
                   }
                   return vec_is;
@@ -215,6 +215,7 @@ void run8_proton_correct(std::string list, std::string str_effieciency_file){
                   return vec_weight;
           }, {"trProtonY", "trPt"} )
           .Alias("trStsNhits", "stsTrackNhits")
+          .Alias("trStsChi2", "stsTrackChi2Ndf")
           .Define("trEta","ROOT::VecOps::RVec<float> eta; for(auto& mom : trMom) eta.push_back(mom.eta()); return eta;")
           .Define("trPhi","ROOT::VecOps::RVec<float> phi;for(auto& mom : trMom) phi.push_back(mom.phi()); return phi;")
           .Filter("1e4 < bc1Integral && bc1Integral < 4e4" )
@@ -228,7 +229,7 @@ void run8_proton_correct(std::string list, std::string str_effieciency_file){
   correction_task.SetEventVariables(std::regex("centrality"));
   correction_task.SetChannelVariables({std::regex("fhcalMod(X|Y|Phi|E|Id)")});
   correction_task.SetTrackVariables({
-                                            std::regex("tr(Pt|Eta|Phi|IsProton|IsProton700|IsProton400|Charge|ProtonY|DcaX|DcaY|Chi2Ndf|Nhits|Weight|FhcalX|FhcalY|M2|StsNhits)"),
+                                            std::regex("tr(Pt|Eta|Phi|IsProton|IsProton700|IsProton400|Charge|ProtonY|DcaX|DcaY|Chi2Ndf|Nhits|Weight|FhcalX|FhcalY|M2|StsNhits|StsChi2)"),
                                     });
 
   correction_task.InitVariables();
@@ -326,6 +327,9 @@ void run8_proton_correct(std::string list, std::string str_effieciency_file){
   proton.AddCut( "trStsNhits", [](double nhits){
     return nhits > 5.5;
     }, "cut on number of hits in inner tracker" );
+  proton.AddCut( "trStsChi2", [](double chi2){
+    return nhits < 3.0;
+    }, "cut on chi2 of track approximation in inner tracker" );
   proton.AddCut( "trFhcalX", [](double pos){
     return pos < 10.0 || pos > 120;
     }, "cut on x-pos in fhcal plane" );
