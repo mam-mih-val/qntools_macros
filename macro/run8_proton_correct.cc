@@ -321,6 +321,7 @@ void run8_proton_correct(std::string list, std::string str_effieciency_file){
   std::vector<Qn::AxisD> proton_axes{
         { "trProtonY", 12, -0.2, 1.0 },
         { "trPt", 15, 0.0, 1.5 },
+        { "trDcaR", 4, 0.0, 4.0 },
   };
 
   VectorConfig proton( "proton", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
@@ -331,9 +332,9 @@ void run8_proton_correct(std::string list, std::string str_effieciency_file){
     auto pdg_code = static_cast<int>(pid);
     return pdg_code == 1;
     }, "proton cut" );
-  proton.AddCut( "trDcaR", [](double dca){
-    return fabs(dca) < 2.0;
-    }, "cut on dca r = sqrt(x*x + y*y)" );
+  // proton.AddCut( "trDcaR", [](double dca){
+  //   return fabs(dca) < 2.0;
+  //   }, "cut on dca r = sqrt(x*x + y*y)" );
   // proton.AddCut( "trStsNhits", [](double nhits){
   //   return nhits > 5.5;
   //   }, "cut on number of hits in inner tracker" );
