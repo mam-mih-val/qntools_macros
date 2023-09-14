@@ -74,7 +74,7 @@ void run8_proton_correct(std::string list, std::string str_effieciency_file){
           .Define("trPt","ROOT::VecOps::RVec<float> pt; for(auto& mom:trMom) pt.push_back(mom.pt()); return pt;")
           .Define( "trDcaX", " std::vector<float> vec_par; for( auto par : trParamFirst ){ vec_par.push_back( par.at(0) - vtxX ); } return vec_par; " )
 		      .Define( "trDcaY", " std::vector<float> vec_par; for( auto par : trParamFirst ){ vec_par.push_back( par.at(1) - vtxY ); } return vec_par; " )
-          .Definew( "trDcaR", [](std::vector<float> vec_x, std::vector<float> vec_y){
+          .Define( "trDcaR", [](std::vector<float> vec_x, std::vector<float> vec_y){
                     std::vector<float> vec_r{};
                     vec_r.reserve(vec_x.size());
                     for (int i=0; i<vec_x.size(); ++i) {
