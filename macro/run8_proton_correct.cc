@@ -2,6 +2,8 @@
 // Created by Misha on 3/7/2023.
 //
 
+#include <cmath>
+#include <vector>
 void run8_proton_correct(std::string list, std::string str_effieciency_file){
   
   const float PROTON_M = 0.938; // GeV/c2
@@ -72,7 +74,18 @@ void run8_proton_correct(std::string list, std::string str_effieciency_file){
           .Define("trPt","ROOT::VecOps::RVec<float> pt; for(auto& mom:trMom) pt.push_back(mom.pt()); return pt;")
           .Define( "trDcaX", " std::vector<float> vec_par; for( auto par : trParamFirst ){ vec_par.push_back( par.at(0) - vtxX ); } return vec_par; " )
 		      .Define( "trDcaY", " std::vector<float> vec_par; for( auto par : trParamFirst ){ vec_par.push_back( par.at(1) - vtxY ); } return vec_par; " )
-          .Define( "trFhcalX", [FHCAL_Z]( ROOT::VecOps::RVec<vector<float>> vec_param ){
+          .Definew( "trDcaR", [](std::vector<float> vec_x, std::vector<float> vec_y){
+                    std::vector<float> vec_r{};
+                    vec_r.reserve(vec_x.size());
+                    for (int i=0; i<vec_x.size(); ++i) {
+                      auto x = vec_x.at(i);
+                      auto y = vec_y.at(i);
+                      auto r = std::sqrt( x*x + y*y );
+                      vec_r.push_back(r);
+                    }
+                    return vec_r;
+          }, {"trDcaX", "trDcaY"} )
+          .Define( "trFhcalX", [FHCAL_Z]( ROOT::VecOps::RVec<std::vector<float>> vec_param ){
                     std::vector<float> vec_x{};
                     vec_x.reserve( vec_param.size() );
                     for( auto par : vec_param ){
@@ -229,7 +242,7 @@ void run8_proton_correct(std::string list, std::string str_effieciency_file){
   correction_task.SetEventVariables(std::regex("centrality"));
   correction_task.SetChannelVariables({std::regex("fhcalMod(X|Y|Phi|E|Id)")});
   correction_task.SetTrackVariables({
-                                            std::regex("tr(Pt|Eta|Phi|IsProton|IsProton700|IsProton400|Charge|ProtonY|DcaX|DcaY|Chi2Ndf|Nhits|Weight|FhcalX|FhcalY|M2|StsNhits|StsChi2)"),
+                                            std::regex("tr(Pt|Eta|Phi|IsProton|IsProton700|IsProton400|Charge|ProtonY|DcaR|Chi2Ndf|Nhits|Weight|FhcalX|FhcalY|M2|StsNhits|StsChi2)"),
                                     });
 
   correction_task.InitVariables();
@@ -318,18 +331,15 @@ void run8_proton_correct(std::string list, std::string str_effieciency_file){
     auto pdg_code = static_cast<int>(pid);
     return pdg_code == 1;
     }, "proton cut" );
-  proton.AddCut( "trDcaX", [](double dca){
-    return fabs(dca) < 3.0;
-    }, "cut on dca x" );
-  proton.AddCut( "trDcaY", [](double dca){
-    return fabs(dca) < 5.0;
-    }, "cut on dca y" );
-  proton.AddCut( "trStsNhits", [](double nhits){
-    return nhits > 5.5;
-    }, "cut on number of hits in inner tracker" );
-  proton.AddCut( "trStsChi2", [](double chi2){
-    return chi2 < 4.0;
-    }, "cut on chi2 of track approximation in inner tracker" );
+  proton.AddCut( "trDcaR", [](double dca){
+    return fabs(dca) < 2.0;
+    }, "cut on dca r = sqrt(x*x + y*y)" );
+  // proton.AddCut( "trStsNhits", [](double nhits){
+  //   return nhits > 5.5;
+  //   }, "cut on number of hits in inner tracker" );
+  // proton.AddCut( "trStsChi2", [](double chi2){
+  //   return chi2 < 4.0;
+  //   }, "cut on chi2 of track approximation in inner tracker" );
   proton.AddCut( "trFhcalX", [](double pos){
     return pos < 10.0 || pos > 120;
     }, "cut on x-pos in fhcal plane" );
