@@ -328,7 +328,7 @@ void run8_proton_correct(std::string list, std::string str_effieciency_file){
     return nhits > 5.5;
     }, "cut on number of hits in inner tracker" );
   proton.AddCut( "trStsChi2", [](double chi2){
-    return nhits < 4.0;
+    return chi < 4.0;
     }, "cut on chi2 of track approximation in inner tracker" );
   proton.AddCut( "trFhcalX", [](double pos){
     return pos < 10.0 || pos > 120;
