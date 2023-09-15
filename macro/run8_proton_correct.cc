@@ -321,7 +321,7 @@ void run8_proton_correct(std::string list, std::string str_effieciency_file){
   std::vector<Qn::AxisD> proton_axes{
         { "trProtonY", 12, -0.2, 1.0 },
         { "trPt", 15, 0.0, 1.5 },
-        { "trStsChi2", 3, 0.0, 6.0 },
+        { "trStsNhits", { 4., 6., 8., 12. } },
   };
 
   VectorConfig proton( "proton", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
