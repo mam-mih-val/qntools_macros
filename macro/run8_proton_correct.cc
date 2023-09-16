@@ -321,6 +321,7 @@ void run8_proton_correct(std::string list, std::string str_effieciency_file){
   std::vector<Qn::AxisD> proton_axes{
         { "trProtonY", 12, -0.2, 1.0 },
         { "trPt", 15, 0.0, 1.5 },
+        { "trStsNhits", { 4., 6., 8., 12 } },
   };
 
   VectorConfig proton( "proton", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
@@ -331,15 +332,15 @@ void run8_proton_correct(std::string list, std::string str_effieciency_file){
     auto pdg_code = static_cast<int>(pid);
     return pdg_code == 1;
     }, "proton cut" );
-  proton.AddCut( "trDcaR", [](double dca){
-    return fabs(dca) < 2.0;
-    }, "cut on dca r = sqrt(x*x + y*y)" );
-  proton.AddCut( "trStsNhits", [](double nhits){
-    return nhits >= 6.0;
-    }, "cut on number of hits in inner tracker" );
-  proton.AddCut( "trStsChi2", [](double chi2){
-    return chi2 < 3.0;
-    }, "cut on chi2 of track approximation in inner tracker" );
+  // proton.AddCut( "trDcaR", [](double dca){
+  //   return fabs(dca) < 2.0;
+  //   }, "cut on dca r = sqrt(x*x + y*y)" );
+  // proton.AddCut( "trStsNhits", [](double nhits){
+  //   return nhits >= 6.0;
+  //   }, "cut on number of hits in inner tracker" );
+  // proton.AddCut( "trStsChi2", [](double chi2){
+  //   return chi2 < 3.0;
+  //   }, "cut on chi2 of track approximation in inner tracker" );
   proton.AddCut( "trFhcalX", [](double pos){
     return pos < 10.0 || pos > 120;
     }, "cut on x-pos in fhcal plane" );
