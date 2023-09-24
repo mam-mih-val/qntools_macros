@@ -115,7 +115,7 @@ void fhcal65_correct(std::string list){
   correction_task.SetEventVariables(std::regex("centrality|bNorm"));
   correction_task.SetChannelVariables({std::regex("fhcalMod(X|Y|Phi|E|Id)")});
   correction_task.SetTrackVariables({
-                                            std::regex("tr(Pt|Eta|Phi|BetaTof400|BetaTof700|SimIndex|Y|Pid|IsProton|MotherId|Charge)"),
+                                            std::regex("tr(Pt|Eta|Phi|SimIndex|Y|Pid|IsProton|MotherId|Charge)"),
                                             std::regex("sim(Pt|Eta|Phi|Pdg|MotherId|Y)")
                                     });
 
@@ -172,25 +172,6 @@ void fhcal65_correct(std::string list){
   proton.AddHisto2D({{"trY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
   correction_task.AddVector(proton);
 
-  VectorConfig Tp( "Tp", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
-  Tp.SetHarmonicArray( {1, 2} );
-  Tp.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
-  Tp.AddCut( "trPid", [](double pid){
-    auto pdg_code = static_cast<int>(pid);
-    return pdg_code == 2212;
-    }, "proton cut" );
-  Tp.AddCut( "trY", [](double ycm){
-    return 0.4 < ycm && ycm < 0.6;
-    }, "Tp ycm cut" );
-  Tp.AddCut( "trPt", [](double pT){
-    return 0.4 < pT && pT < 2.0;
-    }, "Tp pT cut" );
-  Tp.AddCut( "trMotherId", [](double mother_id){
-    auto int_mother_id = static_cast<int>(mother_id);
-    return int_mother_id == -1;
-  }, "cut on primary" );
-  correction_task.AddVector(Tp);
-
   VectorConfig Tneg( "Tneg", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   Tneg.SetHarmonicArray( {1, 2} );
   Tneg.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
@@ -198,13 +179,26 @@ void fhcal65_correct(std::string list){
     return charge < 0.0;
     }, "charge" );
   Tneg.AddCut( "trEta", [](double eta){
-    return 1.0 < eta && eta < 2.0;
-    }, "Tneg eta cut" );
+    return 1.5 < eta && eta < 4.0;
+    }, "eta cut" );
   Tneg.AddCut( "trPt", [](double pT){
-    return 0.1 < pT && pT < 0.5;
-    }, "Tneg pT cut" );
+    return pT > 0.2;
+    }, "pT cut" );
   correction_task.AddVector(Tneg);
 
+  VectorConfig Tpos( "Tpos", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  Tpos.SetHarmonicArray( {1, 2} );
+  Tpos.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
+  Tpos.AddCut( "trCharge", [](double charge){
+    return charge >= 0.0;
+    }, "charge" );
+  Tpos.AddCut( "trEta", [](double eta){
+    return 2.0 < eta && eta < 3.0;
+  }, "eta cut" );
+  Tpos.AddCut( "trPt", [](double pT){
+    return pT > 0.2;
+  }, "pT cut" );
+  correction_task.AddVector(Tpos);
 
   correction_task.Run();
 }

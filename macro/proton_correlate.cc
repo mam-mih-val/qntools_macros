@@ -6,9 +6,9 @@ vector <vector<string>> Q1Q1=
   {"F1_RESCALED", "F3_RESCALED"},
   {"F2_RESCALED", "F3_RESCALED"},
 
-  {"Tp_RESCALED", "F1_RESCALED"},
-  {"Tp_RESCALED", "F2_RESCALED"},
-  {"Tp_RESCALED", "F3_RESCALED"},
+  {"Tpos_RESCALED", "F1_RESCALED"},
+  {"Tpos_RESCALED", "F2_RESCALED"},
+  {"Tpos_RESCALED", "F3_RESCALED"},
 
   {"Tneg_RESCALED", "F1_RESCALED"},
   {"Tneg_RESCALED", "F2_RESCALED"},
