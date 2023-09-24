@@ -50,7 +50,7 @@ void fhcal65_correct(std::string list){
                   "}\n"
                   "centrality = (centrality_percentage[idx-1] + centrality_percentage[idx])/2.0f;\n"
                   "return centrality;")
-          .Define( "bNorm", [XE_RADIUS]( float b ){ return b / XE_RADIUS; }, {"b"}  )
+          .Define( "bNorm", [XE_RADIUS]( double b ){ return b / XE_RADIUS; }, {"b"}  )
           .Define("fhcalModPhi","ROOT::VecOps::RVec<float> phi; for(auto& pos:fhcalModPos) phi.push_back(pos.phi()); return phi;")
           .Define("fhcalModX","ROOT::VecOps::RVec<float> x; for(auto& pos:fhcalModPos) x.push_back(pos.x()); return x;")
           .Define("fhcalModY","ROOT::VecOps::RVec<float> y; for(auto& pos:fhcalModPos) y.push_back(pos.y()); return y;")
