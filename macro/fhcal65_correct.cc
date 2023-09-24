@@ -2,6 +2,7 @@
 // Created by Misha on 3/7/2023.
 //
 
+#include <cmath>
 void fhcal65_correct(std::string list){
   std::vector<int> f1_modules = {
     22, 23, 24, 
@@ -24,6 +25,9 @@ void fhcal65_correct(std::string list){
     48, 49,                         56, 57,
         58, 59, 60, 61, 62, 63, 64, 65,    
   };
+  const double R0 = 1.25; // fm
+  const double XE_A = 131.0;
+  const double XE_RADIUS = R0 * std::pow( XE_A, 1.0 / 3.0 );
   TStopwatch timer;
   timer.Start();
   std::string treename = "t";
@@ -46,6 +50,7 @@ void fhcal65_correct(std::string list){
                   "}\n"
                   "centrality = (centrality_percentage[idx-1] + centrality_percentage[idx])/2.0f;\n"
                   "return centrality;")
+          .Define( "bNorm", [XE_RADIUS]( float b ){ return b / XE_RADIUS; }, {"b"}  )
           .Define("fhcalModPhi","ROOT::VecOps::RVec<float> phi; for(auto& pos:fhcalModPos) phi.push_back(pos.phi()); return phi;")
           .Define("fhcalModX","ROOT::VecOps::RVec<float> x; for(auto& pos:fhcalModPos) x.push_back(pos.x()); return x;")
           .Define("fhcalModY","ROOT::VecOps::RVec<float> y; for(auto& pos:fhcalModPos) y.push_back(pos.y()); return y;")
@@ -107,7 +112,7 @@ void fhcal65_correct(std::string list){
           .Filter("vtxChi2>0.0001"); // at least one filter is mandatory!!!
 
   auto correction_task = CorrectionTask( dd, "correction_out.root", "qa.root" );
-  correction_task.SetEventVariables(std::regex("centrality"));
+  correction_task.SetEventVariables(std::regex("centrality|bNorm"));
   correction_task.SetChannelVariables({std::regex("fhcalMod(X|Y|Phi|E|Id)")});
   correction_task.SetTrackVariables({
                                             std::regex("tr(Pt|Eta|Phi|BetaTof400|BetaTof700|SimIndex|Y|Pid|IsProton|MotherId|Charge)"),
@@ -115,7 +120,7 @@ void fhcal65_correct(std::string list){
                                     });
 
   correction_task.InitVariables();
-  correction_task.AddEventAxis( {"centrality", 8, 0, 40} );
+  correction_task.AddEventAxis( {"bNorm", 10, 0, 2} );
 
   VectorConfig f1( "F1", "fhcalModPhi", "fhcalModE", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
   f1.SetHarmonicArray( {1, 2} );
