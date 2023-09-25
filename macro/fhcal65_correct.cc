@@ -109,6 +109,32 @@ void fhcal65_correct(std::string list){
           .Define("simEta","ROOT::VecOps::RVec<float> eta;for(auto& mom:simMom) eta.push_back(mom.eta()); return eta;")
           .Define("simPhi","ROOT::VecOps::RVec<float> phi;for(auto& mom:simMom) phi.push_back(mom.phi()); return phi;")
           .Define("simY","ROOT::VecOps::RVec<float> y;for(auto& mom:simMom) y.push_back(mom.Rapidity()); return y;")
+          .Define( "trFhcalX", [FHCAL_Z]( ROOT::VecOps::RVec<std::vector<float>> vec_param ){
+                    std::vector<float> vec_x{};
+                    vec_x.reserve( vec_param.size() );
+                    for( auto par : vec_param ){
+                      auto x = par.at(0);
+                      auto z = par.at(2);
+                      auto tx = par.at(3);
+                      auto dz = FHCAL_Z - z;
+                      auto dx = tx * dz;
+                      vec_x.push_back( x+dx );
+                    }
+                    return vec_x;
+          }, {"trParamLast"} )
+          .Define( "trFhcalY", [FHCAL_Z]( ROOT::VecOps::RVec<vector<float>> vec_param ){
+                    std::vector<float> vec_y{};
+                    vec_y.reserve( vec_param.size() );
+                    for( auto par : vec_param ){
+                      auto y = par.at(1);
+                      auto z = par.at(2);
+                      auto ty = par.at(4);
+                      auto dz = FHCAL_Z - z;
+                      auto dy = ty * dz;
+                      vec_y.push_back( y+dy );
+                    }
+                    return vec_y;
+          }, {"trParamLast"} )
           .Filter("vtxChi2>0.0001"); // at least one filter is mandatory!!!
 
   auto correction_task = CorrectionTask( dd, "correction_out.root", "qa.root" );
@@ -190,6 +216,12 @@ void fhcal65_correct(std::string list){
   Tneg.AddCut( "trPt", [](double pT){
     return 0.1 < pT && pT < 0.5;
     }, "pT cut" );
+  Tneg.AddCut( "trFhcalX", [](double pos){
+    return pos < -80.0 || pos > 80;
+    }, "cut on x-pos in fhcal plane" );
+  Tneg.AddCut( "trFhcalY", [](double pos){
+    return pos < -50.0 || pos > 50;
+    }, "cut on y-pos in fhcal plane" );
   correction_task.AddVector(Tneg);
 
   VectorConfig Tpos( "Tpos", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
@@ -205,6 +237,12 @@ void fhcal65_correct(std::string list){
   Tpos.AddCut( "trPt", [](double pT){
     return pT > 0.2;
   }, "pT cut" );
+  Tneg.AddCut( "trFhcalX", [](double pos){
+    return pos < -80.0 || pos > 80;
+    }, "cut on x-pos in fhcal plane" );
+  Tneg.AddCut( "trFhcalY", [](double pos){
+    return pos < -50.0 || pos > 50;
+    }, "cut on y-pos in fhcal plane" );
   correction_task.AddVector(Tpos);
 
   correction_task.Run();
