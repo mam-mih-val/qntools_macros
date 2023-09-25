@@ -142,7 +142,7 @@ void fhcal65_correct(std::string list){
   correction_task.SetEventVariables(std::regex("centrality|bNorm"));
   correction_task.SetChannelVariables({std::regex("fhcalMod(X|Y|Phi|E|Id)")});
   correction_task.SetTrackVariables({
-                                            std::regex("tr(Pt|Eta|Phi|SimIndex|Y|Pid|IsProton|MotherId|Charge)"),
+                                            std::regex("tr(Pt|Eta|Phi|SimIndex|Y|Pid|IsProton|MotherId|Charge|FhcalX|FhcalY)"),
                                             std::regex("sim(Pt|Eta|Phi|Pdg|MotherId|Y)")
                                     });
 
