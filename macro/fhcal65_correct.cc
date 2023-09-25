@@ -28,6 +28,7 @@ void fhcal65_correct(std::string list){
   const double R0 = 1.25; // fm
   const double XE_A = 131.0;
   const double XE_RADIUS = R0 * std::pow( XE_A, 1.0 / 3.0 );
+  const float FHCAL_Z = 980; // cm
   TStopwatch timer;
   timer.Start();
   std::string treename = "t";
