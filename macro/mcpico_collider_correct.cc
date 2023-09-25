@@ -172,7 +172,7 @@ void mcpico_collider_correct(std::string list, std::string str_sqrt_snn="2.4", s
   correction_task.AddVector(Tn);
 
   VectorConfig Tp2( "Tp2", "phi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
-  Tp2.SetHarmonicArray( {2} );
+  Tp2.SetHarmonicArray( {1, 2} );
   Tp2.SetCorrections( {CORRECTION::PLAIN } );
   Tp2.AddCut( "pdg", [](double pid){
     auto pdg_code = static_cast<int>(pid);
@@ -187,7 +187,7 @@ void mcpico_collider_correct(std::string list, std::string str_sqrt_snn="2.4", s
   correction_task.AddVector(Tp2);
 
   VectorConfig Tn2( "Tn2", "phi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
-  Tn2.SetHarmonicArray( { 2} );
+  Tn2.SetHarmonicArray( {1, 2} );
   Tn2.SetCorrections( {CORRECTION::PLAIN } );
   Tn2.AddCut( "pdg", [](double pid){
     auto pdg_code = static_cast<int>(pid);
