@@ -180,31 +180,31 @@ void fhcal65_correct(std::string list){
   VectorConfig Tneg( "Tneg", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   Tneg.SetHarmonicArray( {1, 2} );
   Tneg.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
-  Tneg.SetCorrectionAxes( t_axes );
+  // Tneg.SetCorrectionAxes( t_axes );
   Tneg.AddCut( "trCharge", [](double charge){
     return charge < 0.0;
     }, "charge" );
-  // Tneg.AddCut( "trEta", [](double eta){
-  //   return 1.5 < eta && eta < 4.0;
-  //   }, "eta cut" );
-  // Tneg.AddCut( "trPt", [](double pT){
-  //   return pT > 0.2;
-  //   }, "pT cut" );
+  Tneg.AddCut( "trEta", [](double eta){
+    return 1.5 < eta && eta < 4.0;
+    }, "eta cut" );
+  Tneg.AddCut( "trPt", [](double pT){
+    return 0.1 < pT && pT < 0.5;
+    }, "pT cut" );
   correction_task.AddVector(Tneg);
 
   VectorConfig Tpos( "Tpos", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   Tpos.SetHarmonicArray( {1, 2} );
   Tpos.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
-  Tpos.SetCorrectionAxes( t_axes );
+  // Tpos.SetCorrectionAxes( t_axes );
   Tpos.AddCut( "trCharge", [](double charge){
     return charge >= 0.0;
     }, "charge" );
-  // Tpos.AddCut( "trEta", [](double eta){
-  //   return 2.0 < eta && eta < 3.0;
-  // }, "eta cut" );
-  // Tpos.AddCut( "trPt", [](double pT){
-  //   return pT > 0.2;
-  // }, "pT cut" );
+  Tpos.AddCut( "trEta", [](double eta){
+    return 2.0 < eta && eta < 4.0;
+  }, "eta cut" );
+  Tpos.AddCut( "trPt", [](double pT){
+    return pT > 0.2;
+  }, "pT cut" );
   correction_task.AddVector(Tpos);
 
   correction_task.Run();
