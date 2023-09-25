@@ -2,24 +2,24 @@
 
 vector <vector<string>> Q1Q1=
 {
-  {"F1_RECENTERED", "F2_RECENTERED"},
-  {"F1_RECENTERED", "F3_RECENTERED"},
-  {"F2_RECENTERED", "F3_RECENTERED"},
+  {"F1_RESCALED", "F2_RESCALED"},
+  {"F1_RESCALED", "F3_RESCALED"},
+  {"F2_RESCALED", "F3_RESCALED"},
 
-  {"Tpos_RECENTERED", "F1_RECENTERED"},
-  {"Tpos_RECENTERED", "F2_RECENTERED"},
-  {"Tpos_RECENTERED", "F3_RECENTERED"},
+  {"Tpos_RESCALED", "F1_RESCALED"},
+  {"Tpos_RESCALED", "F2_RESCALED"},
+  {"Tpos_RESCALED", "F3_RESCALED"},
 
-  {"Tneg_RECENTERED", "F1_RECENTERED"},
-  {"Tneg_RECENTERED", "F2_RECENTERED"},
-  {"Tneg_RECENTERED", "F3_RECENTERED"},
+  {"Tneg_RESCALED", "F1_RESCALED"},
+  {"Tneg_RESCALED", "F2_RESCALED"},
+  {"Tneg_RESCALED", "F3_RESCALED"},
 };
 
 vector <vector<string>> u1Q1=
 {
-  {"proton_RECENTERED", "F1_RECENTERED"},
-  {"proton_RECENTERED", "F2_RECENTERED"},
-  {"proton_RECENTERED", "F3_RECENTERED"},
+  {"proton_RESCALED", "F1_RESCALED"},
+  {"proton_RESCALED", "F2_RESCALED"},
+  {"proton_RESCALED", "F3_RESCALED"},
 };
 
 void proton_correlate(string inputFiles="qn.root", string outputFile="corr.root")

@@ -173,7 +173,7 @@ void fhcal65_correct(std::string list){
   correction_task.AddVector(proton);
 
   std::vector<Qn::AxisD> t_axes{
-          { "trEta", 5, 0.5, 4.5 },
+          { "trEta", 4, 0.5, 4.5 },
           { "trPt", 5, 0.0, 1.0 },
   };
 
@@ -184,12 +184,12 @@ void fhcal65_correct(std::string list){
   Tneg.AddCut( "trCharge", [](double charge){
     return charge < 0.0;
     }, "charge" );
-  Tneg.AddCut( "trEta", [](double eta){
-    return 1.5 < eta && eta < 4.0;
-    }, "eta cut" );
-  Tneg.AddCut( "trPt", [](double pT){
-    return pT > 0.2;
-    }, "pT cut" );
+  // Tneg.AddCut( "trEta", [](double eta){
+  //   return 1.5 < eta && eta < 4.0;
+  //   }, "eta cut" );
+  // Tneg.AddCut( "trPt", [](double pT){
+  //   return pT > 0.2;
+  //   }, "pT cut" );
   correction_task.AddVector(Tneg);
 
   VectorConfig Tpos( "Tpos", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
@@ -199,12 +199,12 @@ void fhcal65_correct(std::string list){
   Tpos.AddCut( "trCharge", [](double charge){
     return charge >= 0.0;
     }, "charge" );
-  Tpos.AddCut( "trEta", [](double eta){
-    return 2.0 < eta && eta < 3.0;
-  }, "eta cut" );
-  Tpos.AddCut( "trPt", [](double pT){
-    return pT > 0.2;
-  }, "pT cut" );
+  // Tpos.AddCut( "trEta", [](double eta){
+  //   return 2.0 < eta && eta < 3.0;
+  // }, "eta cut" );
+  // Tpos.AddCut( "trPt", [](double pT){
+  //   return pT > 0.2;
+  // }, "pT cut" );
   correction_task.AddVector(Tpos);
 
   correction_task.Run();
