@@ -212,7 +212,7 @@ void fhcal65_correct(std::string list){
     return charge < 0.0;
     }, "charge" );
   Tneg.AddCut( "trEta", [](double eta){
-    return 1.5 < eta && eta < 4.0;
+    return 2.0 < eta && eta < 3.5;
     }, "eta cut" );
   Tneg.AddCut( "trPt", [](double pT){
     return 0.1 < pT && pT < 0.5;
@@ -233,7 +233,7 @@ void fhcal65_correct(std::string list){
     return charge >= 0.0;
     }, "charge" );
   Tpos.AddCut( "trEta", [](double eta){
-    return 2.0 < eta && eta < 4.0;
+    return 2.0 < eta && eta < 3.5;
   }, "eta cut" );
   Tpos.AddCut( "trPt", [](double pT){
     return pT > 0.2;
