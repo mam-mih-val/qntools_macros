@@ -54,6 +54,8 @@ void run8_proton_correct(std::string list, std::string str_effieciency_file){
   chain->AddFileInfoList( collection.GetList() );
   ROOT::RDataFrame d( *chain );
   auto dd=d
+          .Define("track_multiplicity", "return trMom.size();")
+          .Define( "stsNdigits","return stsDigits.size()" )
           .Define("centrality",
                   "float centrality;"
                   "std::vector<float> centrality_percentage{ 0, 5, 10, 15, 20, 25, 30, 35, 40, 50, 60, 70, 80, 90, 100 };\n"
@@ -239,6 +241,11 @@ void run8_proton_correct(std::string list, std::string str_effieciency_file){
             return std::find( physical_runs.begin(), physical_runs.end(), run_id) != physical_runs.end();
           }, {"runId"} )
           .Filter( []( ROOT::VecOps::RVec<unsigned int> map ){ return map[0] & (1<<7); }, {"triggerMapAR"} )
+          .Filter([]( unsigned long sts_digits, unsigned long n_tracks ){ 
+            double sts_min = sts_digits-n_tracks*(4.81632+0.0332792*n_tracks-9.62078e-05*n_tracks*n_tracks);
+            double sts_max = sts_digits-n_tracks*(19.4203-0.0518774*n_tracks+4.56033e-05*n_tracks*n_tracks);
+            return -74.0087 < sts_min && sts_max < 188.248; 
+          }, {"stsNdigits", "track_multiplicity"} )
           .Filter("vtxChi2/vtxNdf > 0.1")
   ; // at least one filter is mandatory!!!
 
