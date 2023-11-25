@@ -4,9 +4,20 @@
 
 #include <cmath>
 #include <vector>
-void run8_proton_correct(std::string list, std::string str_effieciency_file){
+
+struct PidFunctions{
+	TF1* mean_400;
+	TF1* sigma_400;
+	TF1* mean_700;
+	TF1* sigma_700;
+};
+
+
+void run8_proton_correct(std::string list, std::string str_pid_file, std::string str_effieciency_file){
   
   const float PROTON_M = 0.938; // GeV/c2
+  const float PI_POS_M = 0.134;
+  const float DEUTERON_M = 1.875;  
   const float Y_CM = 1.15141;
   const float FHCAL_Z = 980; // cm
 
@@ -34,6 +45,271 @@ void run8_proton_correct(std::string list, std::string str_effieciency_file){
   f1_s_700->SetParameter( 2,  0.088186 );
   f1_s_700->SetParameter( 3,  -0.0115386 );
 
+  std::unique_ptr<TFile> pid_file{TFile::Open( str_pid_file.c_str(), "READ" )};
+
+  PidFunctions pid_proton;
+	pid_file->GetObject( "proton_400_mean", pid_proton.mean_400 );
+	pid_file->GetObject( "proton_400_sigma", pid_proton.sigma_400 );
+	pid_file->GetObject( "proton_700_mean", pid_proton.mean_700 );
+	pid_file->GetObject( "proton_700_sigma", pid_proton.sigma_700 );
+	
+	PidFunctions pid_pi_pos;
+	pid_file->GetObject( "pionPos_400_mean", pid_pi_pos.mean_400 );
+	pid_file->GetObject( "pionPos_400_sigma", pid_pi_pos.sigma_400 );
+	pid_file->GetObject( "pionPos_700_mean", pid_pi_pos.mean_700 );
+	pid_file->GetObject( "pionPos_700_sigma", pid_pi_pos.sigma_700 );
+
+	PidFunctions pid_deuteron;
+	pid_file->GetObject( "deuteron_400_mean", pid_deuteron.mean_400 );
+  pid_file->GetObject( "deuteron_400_sigma", pid_deuteron.sigma_400 );
+  pid_file->GetObject( "deuteron_700_mean", pid_deuteron.mean_700 );
+  pid_file->GetObject( "deuteron_700_sigma", pid_deuteron.sigma_700 );
+
+  auto m2_function = 
+  []
+  ( ROOT::VecOps::RVec<ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiE4D<double> >> vec_mom, 
+    ROOT::VecOps::RVec<double> vec_beta){
+      ROOT::VecOps::RVec<double> vec_m2;
+      vec_m2.reserve( vec_beta.size() );
+      for( size_t i=0; i<vec_mom.size(); i++ ){
+        auto p = vec_mom.at(i).P();
+        auto p2 = p*p;
+        auto beta = vec_beta.at(i);
+        auto beta2 = beta*beta;
+        auto gamma2 = 1 - beta2;
+        auto m2 = beta > -990. ? p2 / beta2 * gamma2 : -999.0;
+        vec_m2.push_back( m2 );
+      }
+      return vec_m2;
+    };
+  auto is_proton400_function = 
+  [&pid_proton]
+  ( std::vector<float> vec_pq,
+    ROOT::VecOps::RVec<double> vec_m2 ){
+      ROOT::VecOps::RVec<int> vec_is;
+      vec_is.reserve( vec_pq.size() );
+      for( size_t i=0; i<vec_pq.size(); ++i ){
+        auto pq = vec_pq.at(i);
+        auto m2 = vec_m2.at(i);
+        if( pq < 0 ){ vec_is.push_back(0); continue; }
+        auto mean = pid_proton.mean_400->Eval(pq);
+        auto sigma = pid_proton.sigma_400->Eval(pq);
+        auto lo = mean - 2*sigma;
+        auto hi = mean + 2*sigma;
+        vec_is.push_back( lo < m2 && m2 < hi ? 1 : 0 );
+      }
+      return vec_is;
+    };					 
+	auto is_proton700_function = 
+  [&pid_proton]
+  ( std::vector<float> vec_pq,
+    ROOT::VecOps::RVec<double> vec_m2 ){
+      ROOT::VecOps::RVec<int> vec_is;
+      vec_is.reserve( vec_pq.size() );
+      for( size_t i=0; i<vec_pq.size(); ++i ){
+        auto pq = vec_pq.at(i);
+        auto m2 = vec_m2.at(i);
+        if( pq < 0 ){ vec_is.push_back(0); continue; }
+        auto mean = pid_proton.mean_700->Eval(pq);
+        auto sigma = pid_proton.sigma_700->Eval(pq);
+        auto lo = mean - 2*sigma;
+        auto hi = mean + 2*sigma;
+        vec_is.push_back( lo < m2 && m2 < hi ? 1 : 0 );
+      }
+      return vec_is;
+    };								 
+	auto is_pi_pos400_function = 
+  [&pid_pi_pos]
+  ( std::vector<float> vec_pq,
+    ROOT::VecOps::RVec<double> vec_m2 ){
+      ROOT::VecOps::RVec<int> vec_is;
+      vec_is.reserve( vec_pq.size() );
+      for( size_t i=0; i<vec_pq.size(); ++i ){
+        auto pq = vec_pq.at(i);
+        auto m2 = vec_m2.at(i);
+        if( pq < 0 ){ vec_is.push_back(0); continue; }
+        if( pq > 2.220286 ){ vec_is.push_back(0); continue; }
+        auto mean = pid_pi_pos.mean_400->Eval(pq);
+        auto sigma = pid_pi_pos.sigma_400->Eval(pq);
+        auto lo = mean - 2*sigma;
+        auto hi = mean + 2*sigma;
+        vec_is.push_back( lo < m2 && m2 < hi ? 1 : 0 );
+      }
+      return vec_is;
+  };
+	auto is_pi_pos700_function = 
+  [&pid_pi_pos]
+  ( std::vector<float> vec_pq,
+    ROOT::VecOps::RVec<double> vec_m2 ){
+    ROOT::VecOps::RVec<int> vec_is;
+    vec_is.reserve( vec_pq.size() );
+    for( size_t i=0; i<vec_pq.size(); ++i ){
+      auto pq = vec_pq.at(i);
+      auto m2 = vec_m2.at(i);
+      if( pq < 0 ){ vec_is.push_back(0); continue; }
+      if( pq > 2.5 ){ vec_is.push_back(0); continue; }
+    auto mean = pid_pi_pos.mean_700->Eval(pq);
+    auto sigma = pid_pi_pos.sigma_700->Eval(pq);
+    auto lo = mean - 2*sigma;
+    auto hi = mean + 2*sigma;
+    vec_is.push_back( lo < m2 && m2 < hi ? 1 : 0 );
+    }
+    return vec_is;
+  };
+	 auto is_deuteron400_function = 
+   [&pid_deuteron]
+   (std::vector<float> vec_pq,
+    ROOT::VecOps::RVec<double> vec_m2 ){
+    ROOT::VecOps::RVec<int> vec_is;
+    vec_is.reserve( vec_pq.size() );
+    for( size_t i=0; i<vec_pq.size(); ++i ){
+      auto pq = vec_pq.at(i);
+      auto m2 = vec_m2.at(i);
+      if( pq < 0 ){ vec_is.push_back(0); continue; }
+      if( pq > 4.2 ){ vec_is.push_back(0); continue; }				 									
+      auto mean = pid_deuteron.mean_400->Eval(pq);
+    auto sigma = pid_deuteron.sigma_400->Eval(pq);
+    auto lo = mean - 2*sigma;
+    auto hi = mean + 2*sigma;
+    vec_is.push_back( lo < m2 && m2 < hi ? 1 : 0 );
+    }
+    return vec_is;
+  };
+	   										 
+	auto is_deuteron700_function = 
+  [&pid_deuteron]
+  ( std::vector<float> vec_pq,
+    ROOT::VecOps::RVec<double> vec_m2 ){
+      ROOT::VecOps::RVec<int> vec_is;
+      vec_is.reserve( vec_pq.size() );
+      for( size_t i=0; i<vec_pq.size(); ++i ){
+        auto pq = vec_pq.at(i);
+        auto m2 = vec_m2.at(i);
+        if( pq < 0 ){ vec_is.push_back(0); continue; }
+        if( pq > 4.4 ){ vec_is.push_back(0); continue; }					 									
+        auto mean = pid_deuteron.mean_700->Eval(pq);
+      auto sigma = pid_deuteron.sigma_700->Eval(pq);
+      auto lo = mean - 2*sigma;
+      auto hi = mean + 2*sigma;
+      vec_is.push_back( lo < m2 && m2 < hi ? 1 : 0 );
+      }
+      return vec_is;
+    };
+	auto is_particle_function = 
+  []
+  ( ROOT::VecOps::RVec<int> is_400, 
+    ROOT::VecOps::RVec<int> is_700 ){
+      std::vector<int> vec_is{};
+      vec_is.reserve( is_400.size() );
+      for( int i=0; i<is_400.size(); ++i ){ vec_is.push_back( is_400.at(i) == 1 || is_700.at(i) == 1 ? 1 : 0 ); }
+      return vec_is;
+    };
+	auto proton_ycm_function = 
+  [PROTON_M, Y_CM]
+  ( std::vector<float> vec_pz, std::vector<float> vec_pq ){
+      std::vector<float> vec_y{};
+      vec_y.reserve( vec_pz.size() );
+      for( int i=0; i<vec_pz.size(); ++i ){
+        auto pz = vec_pz.at(i);
+        auto p = vec_pq.at(i);
+        auto E = sqrt( p*p + PROTON_M*PROTON_M );
+        auto y = 0.5 * log( ( E + pz )/( E - pz ) ) - Y_CM;
+        vec_y.push_back( y );
+      }
+      return vec_y;
+    };
+	 auto pi_pos_ycm_function = 
+   [PI_POS_M, Y_CM]
+   ( std::vector<float> vec_pz, std::vector<float> vec_pq ){
+      std::vector<float> vec_y{};
+      vec_y.reserve( vec_pz.size() );
+      for( int i=0; i<vec_pz.size(); ++i ){
+        auto pz = vec_pz.at(i);
+        auto p = vec_pq.at(i);
+        auto E = sqrt( p*p + PI_POS_M*PI_POS_M );
+        auto y = 0.5 * log( ( E + pz )/( E - pz ) ) - Y_CM;
+        vec_y.push_back( y );
+      }
+    return vec_y;
+  };
+	auto deuteron_ycm_function = 
+  [DEUTERON_M, Y_CM]
+  ( std::vector<float> vec_pz, std::vector<float> vec_pq ){
+      std::vector<float> vec_y{};
+      vec_y.reserve( vec_pz.size() );
+      for( int i=0; i<vec_pz.size(); ++i ){
+        auto pz = vec_pz.at(i);
+        auto p = vec_pq.at(i);
+        auto E = sqrt( p*p + DEUTERON_M*DEUTERON_M );
+        auto y = 0.5 * log( ( E + pz )/( E - pz ) ) - Y_CM;
+        vec_y.push_back( y );
+      }
+      return vec_y;
+    };
+  
+  auto function_fhcal_x = 
+  [FHCAL_Z]
+  ( ROOT::VecOps::RVec<std::vector<float>> vec_param ){
+      std::vector<float> vec_x{};
+      vec_x.reserve( vec_param.size() );
+      for( auto par : vec_param ){
+        auto x = par.at(0);
+        auto z = par.at(2);
+        auto tx = par.at(3);
+        auto dz = FHCAL_Z - z;
+        auto dx = tx * dz;
+        vec_x.push_back( x+dx );
+      }
+      return vec_x;
+    };
+  auto function_fhcal_y = 
+  [FHCAL_Z]
+  ( ROOT::VecOps::RVec<vector<float>> vec_param ){
+      std::vector<float> vec_y{};
+      vec_y.reserve( vec_param.size() );
+      for( auto par : vec_param ){
+        auto y = par.at(1);
+        auto z = par.at(2);
+        auto ty = par.at(4);
+        auto dz = FHCAL_Z - z;
+        auto dy = ty * dz;
+        vec_y.push_back( y+dy );
+      }
+      return vec_y;
+    };
+
+  auto centrality_function = 
+  []
+  (ROOT::VecOps::RVec<ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiE4D<double> >> vec_mom){
+      float centrality;
+      std::vector<float> centrality_percentage{ 0, 5, 10, 15, 20, 25, 30, 35, 40, 50, 60, 70, 80, 90, 100 };
+      std::vector<int> multiplicity_edges{ 248, 150, 122, 100, 82, 67, 54, 43, 34, 21, 13, 8, 4, 3, 1 };
+      auto multiplicity = vec_mom.size();
+      if( multiplicity > multiplicity_edges[0] )
+        return -1.0f;
+      int idx = 0;
+      float bin_edge = multiplicity_edges[idx];
+      while( multiplicity < bin_edge &&
+        idx < multiplicity_edges.size()-1 ){
+        idx++;
+        bin_edge = multiplicity_edges[idx];
+      }
+      centrality = (centrality_percentage[idx-1] + centrality_percentage[idx])/2.0f;
+      return centrality;
+    };
+  auto dca_function = 
+  [](std::vector<float> vec_x, std::vector<float> vec_y){
+      std::vector<float> vec_r{};
+      vec_r.reserve(vec_x.size());
+      for (int i=0; i<vec_x.size(); ++i) {
+        auto x = vec_x.at(i);
+        auto y = vec_y.at(i);
+        auto r = std::sqrt( x*x + y*y );
+        vec_r.push_back(r);
+      }
+      return vec_r;
+    };
+
   std::unique_ptr<TFile> effieciency_file{TFile::Open( str_effieciency_file.c_str(), "READ" )};
   TH2F* efficiency_histo{nullptr};
   effieciency_file->GetObject("efficiency_2212_tof", efficiency_histo);
@@ -56,162 +332,33 @@ void run8_proton_correct(std::string list, std::string str_effieciency_file){
   auto dd=d
           .Define("track_multiplicity", "return trMom.size();")
           .Define( "stsNdigits","return stsDigits.size()" )
-          .Define("centrality",
-                  "float centrality;"
-                  "std::vector<float> centrality_percentage{ 0, 5, 10, 15, 20, 25, 30, 35, 40, 50, 60, 70, 80, 90, 100 };\n"
-                  "std::vector<int> multiplicity_edges{ 269, 170, 143, 121, 103, 86, 72, 60, 49, 33, 21, 12, 7, 4, 0 };\n"
-                  "auto multiplicity = trMom.size();\n"
-                  "int idx = 0;\n"
-                  "float bin_edge = multiplicity_edges[idx];\n"
-                  "while( multiplicity < bin_edge &&\n"
-                    "idx < multiplicity_edges.size()-1 ){\n"
-                    "idx++;\n"
-                    "bin_edge = multiplicity_edges[idx];\n"
-                  "}\n"
-                  "centrality = (centrality_percentage[idx-1] + centrality_percentage[idx])/2.0f;\n"
-                  "return centrality;")
+          .Define("centrality", centrality_function, {"trMom"} )
           .Define("fhcalModPhi","ROOT::VecOps::RVec<float> phi; for(auto& pos:fhcalModPos) phi.push_back(pos.phi()); return phi;")
           .Define("fhcalModX","ROOT::VecOps::RVec<float> x; for(auto& pos:fhcalModPos) x.push_back(pos.x()); return x;")
           .Define("fhcalModY","ROOT::VecOps::RVec<float> y; for(auto& pos:fhcalModPos) y.push_back(pos.y()); return y;")
           .Define("trPt","ROOT::VecOps::RVec<float> pt; for(auto& mom:trMom) pt.push_back(mom.pt()); return pt;")
           .Define( "trDcaX", " std::vector<float> vec_par; for( auto par : trParamFirst ){ vec_par.push_back( par.at(0) - vtxX ); } return vec_par; " )
 		      .Define( "trDcaY", " std::vector<float> vec_par; for( auto par : trParamFirst ){ vec_par.push_back( par.at(1) - vtxY ); } return vec_par; " )
-          .Define( "trDcaR", [](std::vector<float> vec_x, std::vector<float> vec_y){
-                    std::vector<float> vec_r{};
-                    vec_r.reserve(vec_x.size());
-                    for (int i=0; i<vec_x.size(); ++i) {
-                      auto x = vec_x.at(i);
-                      auto y = vec_y.at(i);
-                      auto r = std::sqrt( x*x + y*y );
-                      vec_r.push_back(r);
-                    }
-                    return vec_r;
-          }, {"trDcaX", "trDcaY"} )
-          .Define( "trFhcalX", [FHCAL_Z]( ROOT::VecOps::RVec<std::vector<float>> vec_param ){
-                    std::vector<float> vec_x{};
-                    vec_x.reserve( vec_param.size() );
-                    for( auto par : vec_param ){
-                      auto x = par.at(0);
-                      auto z = par.at(2);
-                      auto tx = par.at(3);
-                      auto dz = FHCAL_Z - z;
-                      auto dx = tx * dz;
-                      vec_x.push_back( x+dx );
-                    }
-                    return vec_x;
-          }, {"trParamLast"} )
-          .Define( "trFhcalY", [FHCAL_Z]( ROOT::VecOps::RVec<vector<float>> vec_param ){
-                    std::vector<float> vec_y{};
-                    vec_y.reserve( vec_param.size() );
-                    for( auto par : vec_param ){
-                      auto y = par.at(1);
-                      auto z = par.at(2);
-                      auto ty = par.at(4);
-                      auto dz = FHCAL_Z - z;
-                      auto dy = ty * dz;
-                      vec_y.push_back( y+dy );
-                    }
-                    return vec_y;
-          }, {"trParamLast"} )
+          .Define( "trDcaR", dca_function, {"trDcaX", "trDcaY"} )
+          .Define( "trFhcalX", function_fhcal_x, {"trParamLast"} )
+          .Define( "trFhcalY", function_fhcal_y, {"trParamLast"} )
           .Define( "trChi2Ndf", " std::vector<float> vec_par; for( int i=0; i<trChi2.size(); ++i ){ vec_par.push_back( trChi2.at(i)/trNdf.at(i) ); } return vec_par; " )
           .Define( "pz", " std::vector<float> pz; for( auto mom : trMom ){ pz.push_back( mom.Pz() ); } return pz; " )
           .Define( "pq", " std::vector<float> pq; for( int i=0; i<trMom.size(); i++ ){ pq.push_back( trMom.at(i).P() / trCharge.at(i) ); } return pq;" )
-          .Define( "trM2Tof400","std::vector<float> vec_m2;\n"
-                    "for( int i=0; i<trMom.size(); i++ ){\n"
-                    " auto p = trMom.at(i).P();\n"
-                    " auto p2 = p*p;\n"
-                    " auto beta = trBetaTof400.at(i);\n"
-                    " auto beta2 = beta*beta;\n"
-                    " auto gamma2 = 1 - beta2;\n"
-                    " auto m2 = beta > -990. ? p2 / beta2 * gamma2 : -999.0;\n"
-                    " vec_m2.push_back( m2 );\n"
-                    "}\n"
-                    "return vec_m2;" )
-          .Define( "trM2Tof700","std::vector<float> vec_m2;\n"
-                    "for( int i=0; i<trMom.size(); i++ ){\n"
-                    " auto p = trMom.at(i).P();\n"
-                    " auto p2 = p*p;\n"
-                    " auto beta = trBetaTof700.at(i);\n"
-                    " auto beta2 = beta*beta;\n"
-                    " auto gamma2 = 1 - beta2;\n"
-                    " auto m2 = beta > -990. ? p2 / beta2 * gamma2 : -999.0;\n"
-                    " vec_m2.push_back( m2 );\n"
-                    "}\n"
-                    "return vec_m2;" )
-          .Define( "trM2", [](std::vector<float> vec_400, std::vector<float> vec_700){
-                  std::vector<float> vec_m2{};
-                  vec_m2.reserve( vec_400.size() );
-                  for( int i=0; i<vec_400.size(); ++i ){
-                    auto m2_400 = vec_400.at(i);
-                    auto m2_700 = vec_700.at(i);
-                    if( m2_400 < -990. ){
-                      vec_m2.push_back( m2_700 );
-                      continue;
-                    }
-                    if( m2_700 < -990. ){
-                      vec_m2.push_back( m2_400 );
-                      continue;
-                    }
-                    vec_m2.push_back( 0.5*(m2_400 + m2_700) );
-                  }
-                  return vec_m2;
-                }, { "trM2Tof400", "trM2Tof700" } )
-          .Define( "trIsProton400", [ f1_m2_400, f1_s_400 ]( 
-                std::vector<float> vec_m2, 
-                std::vector<float> vec_pq 
-                ){
-                  std::vector<int> vec_is{};
-                  vec_is.reserve( vec_pq.size() );
-                  for( int i=0; i < vec_pq.size(); ++i ){
-                    auto pq = vec_pq.at(i);
-                    auto m2 = vec_m2.at(i);
-                    if( pq < 0 ){ vec_is.push_back(0); continue; }
-                    auto mean = f1_m2_400->Eval(pq);
-                    auto sigma = f1_s_400->Eval(pq);
-                    auto lo = mean - 3*sigma;
-                    auto hi = mean + 3*sigma;
-                    vec_is.push_back( lo < m2 && m2 < hi ? 1 : 0 );
-                  }
-                  return vec_is;
-                }
-                ,{ "trM2Tof400", "pq" } )
-          .Define( "trIsProton700", [ f1_m2_700, f1_s_700 ]( 
-                std::vector<float> vec_m2, 
-                std::vector<float> vec_pq 
-                ){
-                  std::vector<int> vec_is{};
-                  vec_is.reserve( vec_pq.size() );
-                  for( int i=0; i < vec_pq.size(); ++i ){
-                    auto pq = vec_pq.at(i);
-                    auto m2 = vec_m2.at(i);
-                    if( pq < 0 ){ vec_is.push_back(0); continue; }
-                    auto mean = f1_m2_700->Eval(pq);
-                    auto sigma = f1_s_700->Eval(pq);
-                    auto lo = mean - 3*sigma;
-                    auto hi = mean + 3*sigma;
-                    vec_is.push_back( lo < m2 && m2 < hi ? 1 : 0 );
-                  }
-                  return vec_is;
-                }
-                ,{ "trM2Tof700", "pq" } )
-          .Define( "trIsProton", []( std::vector<int> is_400, std::vector<int> is_700 ){
-                  std::vector<int> vec_is{};
-                  vec_is.reserve( is_400.size() );
-                  for( int i=0; i<is_400.size(); ++i ){ vec_is.push_back( is_400.at(i) == 1 || is_700.at(i) == 1 ? 1 : 0 ); }
-                  return vec_is;
-                }, {"trIsProton400", "trIsProton700"} )
-          .Define( "trProtonY", [PROTON_M, Y_CM]( std::vector<float> vec_pz, std::vector<float> vec_pq ){
-                  std::vector<float> vec_y{};
-                  vec_y.reserve( vec_pz.size() );
-                  for( int i=0; i<vec_pz.size(); ++i ){
-                    auto pz = vec_pz.at(i);
-                    auto p = vec_pq.at(i);
-                    auto E = sqrt( p*p + PROTON_M*PROTON_M );
-                    auto y = 0.5 * log( ( E + pz )/( E - pz ) ) - Y_CM;
-                    vec_y.push_back( y );
-                  }
-                  return vec_y;
-                }, {"pz", "pq"} )
+          .Define( "trM2Tof700", m2_function, { "trMom", "trBetaTof700" } )
+          .Define( "trM2Tof400", m2_function, { "trMom", "trBetaTof400" } )
+          .Define( "trIsProton400", is_proton400_function, { "pq", "trM2Tof400" } )
+          .Define( "trIsProton700", is_proton700_function, { "pq", "trM2Tof700" } )
+          .Define( "trIsPiPos400", is_pi_pos400_function, { "pq", "trM2Tof400" } )
+          .Define( "trIsPiPos700", is_pi_pos700_function, { "pq", "trM2Tof700" } )
+          .Define( "trIsDeuteron400", is_deuteron400_function, { "pq", "trM2Tof400" } )
+          .Define( "trIsDeuteron700", is_deuteron700_function, { "pq", "trM2Tof700" } )
+          .Define( "trIsProton", is_particle_function, {"trIsProton400", "trIsProton700"} )
+          .Define( "trIsPiPos", is_particle_function, {"trIsPiPos400", "trIsPiPos700"} )
+          .Define( "trIsDeuteron", is_particle_function, {"trIsDeuteron400", "trIsDeuteron700"} )
+          .Define( "trProtonY", proton_ycm_function, {"pz", "pq"} )
+          .Define( "trPiPosY", pi_pos_ycm_function, {"pz", "pq"} )
+          .Define( "trDeuteronY", deuteron_ycm_function, {"pz", "pq"} )
           .Define( "trWeight", [efficiency_histo](std::vector<float> vec_y, ROOT::VecOps::RVec<float> vec_pT){
                   if( !efficiency_histo ){
                       return std::vector<float>(vec_y.size(), 1);
@@ -253,7 +400,7 @@ void run8_proton_correct(std::string list, std::string str_effieciency_file){
   correction_task.SetEventVariables(std::regex("centrality"));
   correction_task.SetChannelVariables({std::regex("fhcalMod(X|Y|Phi|E|Id)")});
   correction_task.SetTrackVariables({
-                                            std::regex("tr(Pt|Eta|Phi|IsProton|IsProton700|IsProton400|Charge|ProtonY|DcaR|Chi2Ndf|Nhits|Weight|FhcalX|FhcalY|M2|StsNhits|StsChi2)"),
+                                            std::regex("tr(Pt|Eta|Phi|IsProton|IsPiPos|IsDeuteron|Charge|ProtonY|PiPosY|Deuteron|DcaR|Chi2Ndf|Nhits|Weight|FhcalX|FhcalY|StsNhits|StsChi2)"),
                                     });
 
   correction_task.InitVariables();
@@ -333,6 +480,16 @@ void run8_proton_correct(std::string list, std::string str_effieciency_file){
         { "trProtonY", 12, -0.2, 1.0 },
         { "trPt", 15, 0.0, 1.5 },
   };
+  
+  std::vector<Qn::AxisD> deuteron_axes{
+        { "trDeuteronY", 12, -0.2, 1.0 },
+        { "trPt", 15, 0.0, 1.5 },
+  };
+  
+  std::vector<Qn::AxisD> pi_pos_axes{
+        { "trPiPosY", 12, -0.2, 1.0 },
+        { "trPt", 20, 0.0, 1.0 },
+  };
 
   VectorConfig proton( "proton", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   proton.SetHarmonicArray( {1, 2} );
@@ -350,6 +507,57 @@ void run8_proton_correct(std::string list, std::string str_effieciency_file){
     }, "cut on y-pos in fhcal plane" );
   proton.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
   correction_task.AddVector(proton);
+
+  VectorConfig pi_pos( "pi_pos", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  pi_pos.SetHarmonicArray( {1, 2} );
+  pi_pos.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
+  pi_pos.SetCorrectionAxes( pi_pos_axes );
+  pi_pos.AddCut( "trIsPiPos", [](double pid){
+    auto pdg_code = static_cast<int>(pid);
+    return pdg_code == 1;
+    }, "pi_pos cut" );
+  pi_pos.AddCut( "trFhcalX", [](double pos){
+    return pos < 10.0 || pos > 120;
+    }, "cut on x-pos in fhcal plane" );
+  pi_pos.AddCut( "trFhcalY", [](double pos){
+    return pos < -50.0 || pos > 50;
+    }, "cut on y-pos in fhcal plane" );
+  pi_pos.AddHisto2D({{"trPiPosY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsPiPos");
+  correction_task.AddVector(pi_pos);
+
+  VectorConfig pi_neg( "pi_neg", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  pi_neg.SetHarmonicArray( {1, 2} );
+  pi_neg.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
+  pi_neg.SetCorrectionAxes( pi_pos_axes );
+  Tneg.AddCut( "trCharge", [](double charge){
+    return charge < 0.0;
+    }, "pi neg cut" );
+  pi_neg.AddCut( "trFhcalX", [](double pos){
+    return pos < 10.0 || pos > 120;
+    }, "cut on x-pos in fhcal plane" );
+  pi_neg.AddCut( "trFhcalY", [](double pos){
+    return pos < -50.0 || pos > 50;
+    }, "cut on y-pos in fhcal plane" );
+  pi_neg.AddHisto2D({{"trPiPosY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsPiPos");
+  correction_task.AddVector(pi_neg);
+  
+  VectorConfig deuteron( "deuteron", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  deuteron.SetHarmonicArray( {1, 2} );
+  deuteron.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
+  deuteron.SetCorrectionAxes( deuteron_axes );
+  deuteron.AddCut( "trIsDeuteron", [](double pid){
+    auto pdg_code = static_cast<int>(pid);
+    return pdg_code == 1;
+    }, "deuteron cut" );
+  deuteron.AddCut( "trFhcalX", [](double pos){
+    return pos < 10.0 || pos > 120;
+    }, "cut on x-pos in fhcal plane" );
+  deuteron.AddCut( "trFhcalY", [](double pos){
+    return pos < -50.0 || pos > 50;
+    }, "cut on y-pos in fhcal plane" );
+  deuteron.AddHisto2D({{"trDeuteronY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsDeuteron");
+  correction_task.AddVector(deuteron);
+
 
   correction_task.Run();
 }
