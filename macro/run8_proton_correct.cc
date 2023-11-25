@@ -558,6 +558,7 @@ void run8_proton_correct(std::string list, std::string str_pid_file, std::string
   deuteron.AddHisto2D({{"trDeuteronY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsDeuteron");
   correction_task.AddVector(deuteron);
 
-
   correction_task.Run();
+  auto n_events_filtered = *(dd.Count());
+  std::cout << "Number of filtered events: " << n_events_filtered << std::endl;
 }
