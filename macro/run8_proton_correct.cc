@@ -400,7 +400,7 @@ void run8_proton_correct(std::string list, std::string str_pid_file, std::string
   correction_task.SetEventVariables(std::regex("centrality"));
   correction_task.SetChannelVariables({std::regex("fhcalMod(X|Y|Phi|E|Id)")});
   correction_task.SetTrackVariables({
-                                            std::regex("tr(Pt|Eta|Phi|IsProton|IsPiPos|IsDeuteron|Charge|ProtonY|PiPosY|Deuteron|DcaR|Chi2Ndf|Nhits|Weight|FhcalX|FhcalY|StsNhits|StsChi2)"),
+                                            std::regex("tr(Pt|Eta|Phi|IsProton|IsPiPos|IsDeuteron|Charge|ProtonY|PiPosY|DeuteronY|DcaR|Chi2Ndf|Nhits|Weight|FhcalX|FhcalY|StsNhits|StsChi2)"),
                                     });
 
   correction_task.InitVariables();
@@ -540,7 +540,7 @@ void run8_proton_correct(std::string list, std::string str_pid_file, std::string
     }, "cut on y-pos in fhcal plane" );
   pi_neg.AddHisto2D({{"trPiPosY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsPiPos");
   correction_task.AddVector(pi_neg);
-  
+
   VectorConfig deuteron( "deuteron", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   deuteron.SetHarmonicArray( {1, 2} );
   deuteron.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
