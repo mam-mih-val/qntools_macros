@@ -156,23 +156,37 @@ void run8_proton_correct(std::string list, std::string str_pid_file, std::string
     }
     return vec_is;
   };
-	 auto is_deuteron400_function = 
-   [&pid_deuteron]
-   (std::vector<float> vec_pq,
+  auto is_pi_neg_function = 
+  []
+  ( std::vector<float> vec_pq,
     ROOT::VecOps::RVec<double> vec_m2 ){
-    ROOT::VecOps::RVec<int> vec_is;
-    vec_is.reserve( vec_pq.size() );
-    for( size_t i=0; i<vec_pq.size(); ++i ){
-      auto pq = vec_pq.at(i);
-      auto m2 = vec_m2.at(i);
-      if( pq < 0 ){ vec_is.push_back(0); continue; }
-      if( pq > 4.2 ){ vec_is.push_back(0); continue; }				 									
-      auto mean = pid_deuteron.mean_400->Eval(pq);
-    auto sigma = pid_deuteron.sigma_400->Eval(pq);
-    auto lo = mean - 2*sigma;
-    auto hi = mean + 2*sigma;
-    vec_is.push_back( lo < m2 && m2 < hi ? 1 : 0 );
-    }
+      ROOT::VecOps::RVec<int> vec_is;
+      vec_is.reserve( vec_pq.size() );
+      for( size_t i=0; i<vec_pq.size(); ++i ){
+        auto pq = vec_pq.at(i);
+        auto m2 = vec_m2.at(i);
+        if( pq > 0 ){ vec_is.push_back(0); continue; }
+        vec_is.push_back( m2 < 0.4 ? 1 : 0 );
+      }
+      return vec_is;
+  };
+  auto is_deuteron400_function = 
+  [&pid_deuteron]
+  ( std::vector<float> vec_pq,
+    ROOT::VecOps::RVec<double> vec_m2 ){
+      ROOT::VecOps::RVec<int> vec_is;
+      vec_is.reserve( vec_pq.size() );
+      for( size_t i=0; i<vec_pq.size(); ++i ){
+        auto pq = vec_pq.at(i);
+        auto m2 = vec_m2.at(i);
+        if( pq < 0 ){ vec_is.push_back(0); continue; }
+        if( pq > 4.2 ){ vec_is.push_back(0); continue; }				 									
+        auto mean = pid_deuteron.mean_400->Eval(pq);
+      auto sigma = pid_deuteron.sigma_400->Eval(pq);
+      auto lo = mean - 2*sigma;
+      auto hi = mean + 2*sigma;
+      vec_is.push_back( lo < m2 && m2 < hi ? 1 : 0 );
+      }
     return vec_is;
   };
 	   										 
@@ -351,13 +365,16 @@ void run8_proton_correct(std::string list, std::string str_pid_file, std::string
           .Define( "trIsProton700", is_proton700_function, { "pq", "trM2Tof700" } )
           .Define( "trIsPiPos400", is_pi_pos400_function, { "pq", "trM2Tof400" } )
           .Define( "trIsPiPos700", is_pi_pos700_function, { "pq", "trM2Tof700" } )
+          .Define( "trIsPiNeg400", is_pi_neg_function, { "pq", "trM2Tof400" } )
+          .Define( "trIsPiNeg700", is_pi_neg_function, { "pq", "trM2Tof700" } )
           .Define( "trIsDeuteron400", is_deuteron400_function, { "pq", "trM2Tof400" } )
           .Define( "trIsDeuteron700", is_deuteron700_function, { "pq", "trM2Tof700" } )
           .Define( "trIsProton", is_particle_function, {"trIsProton400", "trIsProton700"} )
           .Define( "trIsPiPos", is_particle_function, {"trIsPiPos400", "trIsPiPos700"} )
+          .Define( "trIsPiNeg", is_particle_function, {"trIsPiNeg400", "trIsPiNeg700"} )
           .Define( "trIsDeuteron", is_particle_function, {"trIsDeuteron400", "trIsDeuteron700"} )
           .Define( "trProtonY", proton_ycm_function, {"pz", "pq"} )
-          .Define( "trPiPosY", pi_pos_ycm_function, {"pz", "pq"} )
+          .Define( "trPionY", pi_pos_ycm_function, {"pz", "pq"} )
           .Define( "trDeuteronY", deuteron_ycm_function, {"pz", "pq"} )
           .Define( "trWeight", [efficiency_histo](std::vector<float> vec_y, ROOT::VecOps::RVec<float> vec_pT){
                   if( !efficiency_histo ){
@@ -400,7 +417,7 @@ void run8_proton_correct(std::string list, std::string str_pid_file, std::string
   correction_task.SetEventVariables(std::regex("centrality"));
   correction_task.SetChannelVariables({std::regex("fhcalMod(X|Y|Phi|E|Id)")});
   correction_task.SetTrackVariables({
-                                            std::regex("tr(Pt|Eta|Phi|IsProton|IsPiPos|IsDeuteron|Charge|ProtonY|PiPosY|DeuteronY|DcaR|Chi2Ndf|Nhits|Weight|FhcalX|FhcalY|StsNhits|StsChi2)"),
+                                            std::regex("tr(Pt|Eta|Phi|IsProton|IsPiPos|IsPiNeg|IsDeuteron|Charge|ProtonY|PionY|DeuteronY|DcaR|Chi2Ndf|Nhits|Weight|FhcalX|FhcalY|StsNhits|StsChi2)"),
                                     });
 
   correction_task.InitVariables();
@@ -477,17 +494,17 @@ void run8_proton_correct(std::string list, std::string str_pid_file, std::string
   correction_task.AddVector(Tpos);
 
   std::vector<Qn::AxisD> proton_axes{
-        { "trProtonY", 12, -0.2, 1.0 },
+        { "trProtonY", 15, -0.5, 1.0 },
         { "trPt", 15, 0.0, 1.5 },
   };
   
   std::vector<Qn::AxisD> deuteron_axes{
-        { "trDeuteronY", 12, -0.2, 1.0 },
+        { "trDeuteronY", 15, -0.5, 1.0 },
         { "trPt", 15, 0.0, 1.5 },
   };
   
   std::vector<Qn::AxisD> pi_pos_axes{
-        { "trPiPosY", 12, -0.2, 1.0 },
+        { "trPionY", 15, -0.5, 1.0 },
         { "trPt", 20, 0.0, 1.0 },
   };
 
@@ -522,7 +539,7 @@ void run8_proton_correct(std::string list, std::string str_pid_file, std::string
   pi_pos.AddCut( "trFhcalY", [](double pos){
     return pos < -50.0 || pos > 50;
     }, "cut on y-pos in fhcal plane" );
-  pi_pos.AddHisto2D({{"trPiPosY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsPiPos");
+  pi_pos.AddHisto2D({{"trPionY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsPiPos");
   correction_task.AddVector(pi_pos);
 
   VectorConfig pi_neg( "pi_neg", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
@@ -538,7 +555,7 @@ void run8_proton_correct(std::string list, std::string str_pid_file, std::string
   pi_neg.AddCut( "trFhcalY", [](double pos){
     return pos < -50.0 || pos > 50;
     }, "cut on y-pos in fhcal plane" );
-  pi_neg.AddHisto2D({{"trPiPosY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsPiPos");
+  pi_neg.AddHisto2D({{"trPionY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsPiPos");
   correction_task.AddVector(pi_neg);
 
   VectorConfig deuteron( "deuteron", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
