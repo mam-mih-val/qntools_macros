@@ -404,6 +404,7 @@ void run8_proton_correct(std::string list, std::string str_pid_file, std::string
           .Filter([&physical_runs]( UInt_t run_id ){ 
             return std::find( physical_runs.begin(), physical_runs.end(), run_id) != physical_runs.end();
           }, {"runId"} )
+          .Filter("runId < 8312")
           .Filter( []( ROOT::VecOps::RVec<unsigned int> map ){ return map[0] & (1<<7); }, {"triggerMapAR"} )
           .Filter([]( unsigned long sts_digits, unsigned long n_tracks ){ 
             double sts_min = sts_digits-n_tracks*(4.81632+0.0332792*n_tracks-9.62078e-05*n_tracks*n_tracks);
