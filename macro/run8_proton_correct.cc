@@ -509,7 +509,7 @@ void run8_proton_correct(std::string list, std::string str_pid_file, std::string
         { "trPt", 20, 0.0, 1.0 },
   };
 
-  VectorConfig proton( "proton", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  VectorConfig proton( "proton", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   proton.SetHarmonicArray( {1, 2} );
   proton.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
   proton.SetCorrectionAxes( proton_axes );
@@ -526,7 +526,7 @@ void run8_proton_correct(std::string list, std::string str_pid_file, std::string
   proton.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
   correction_task.AddVector(proton);
 
-  VectorConfig pi_pos( "pi_pos", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  VectorConfig pi_pos( "pi_pos", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   pi_pos.SetHarmonicArray( {1, 2} );
   pi_pos.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
   pi_pos.SetCorrectionAxes( pi_pos_axes );
@@ -543,7 +543,7 @@ void run8_proton_correct(std::string list, std::string str_pid_file, std::string
   pi_pos.AddHisto2D({{"trPionY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsPiPos");
   correction_task.AddVector(pi_pos);
 
-  VectorConfig pi_neg( "pi_neg", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  VectorConfig pi_neg( "pi_neg", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   pi_neg.SetHarmonicArray( {1, 2} );
   pi_neg.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
   pi_neg.SetCorrectionAxes( pi_pos_axes );
@@ -559,7 +559,7 @@ void run8_proton_correct(std::string list, std::string str_pid_file, std::string
   pi_neg.AddHisto2D({{"trPionY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsPiPos");
   correction_task.AddVector(pi_neg);
 
-  VectorConfig deuteron( "deuteron", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  VectorConfig deuteron( "deuteron", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   deuteron.SetHarmonicArray( {1, 2} );
   deuteron.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
   deuteron.SetCorrectionAxes( deuteron_axes );
