@@ -325,7 +325,7 @@ void run8_proton_correct(std::string list, std::string str_pid_file, std::string
     };
 
   std::unique_ptr<TFile> effieciency_file{TFile::Open( str_effieciency_file.c_str(), "READ" )};
-  TH2F* efficiency_histo{nullptr};
+  TH2D* efficiency_histo{nullptr};
   effieciency_file->GetObject("efficiency_2212_tof", efficiency_histo);
   if( !efficiency_histo )
     std::cerr << "Warning: No efficiency histogram was found in file " << str_effieciency_file << "\n";
