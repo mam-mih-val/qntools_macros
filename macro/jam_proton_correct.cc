@@ -177,7 +177,6 @@ void jam_proton_correct(std::string list, std::string str_pid_file, std::string 
   ROOT::RDataFrame d( *chain );
   auto dd=d
           .Define("track_multiplicity", "return trMom.size();")
-          .Define( "stsNdigits","return stsDigits.size()" )
           .Define("centrality", centrality_function, {"trMom"} )
           .Define( "simPz", " std::vector<float> pz; for( auto mom : simMom ){ pz.push_back( mom.Pz() ); } return pz; " )
           .Define( "simPt", " std::vector<float> pT; for( auto mom : simMom ){ pT.push_back( mom.Pt() ); } return pT; " )
