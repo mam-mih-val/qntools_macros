@@ -131,7 +131,7 @@ void jam_proton_correct(std::string list, std::string str_pid_file, std::string 
       std::vector<float> centrality_percentage{ 0, 5, 10, 15, 20, 25, 30, 35, 40, 50, 60, 70, 80, 90, 100 };
       std::vector<int> multiplicity_edges{ 248, 150, 122, 100, 82, 67, 54, 43, 34, 21, 13, 8, 4, 3, 1 };
       auto multiplicity = vec_mom.size();
-      if( multiplicity > multiplicity_edges.at(0) )
+      if( multiplicity >= multiplicity_edges.at(0) )
         return -1.0f;
       int idx = 0;
       float bin_edge = multiplicity_edges[idx];
