@@ -22,7 +22,7 @@ vector <vector<string>> u1Q1 =
   {"proton_RESCALED", "F3_RESCALED"},
 
   {"proton_RESCALED", "psi_rp_PLAIN"},
-  {"sim_proton_PLAIN", "psi_rp_PLAIN"},
+  {"tru_proton_PLAIN", "psi_rp_PLAIN"},
 };
 
 vector <vector<string>> u2Q1Q1=
