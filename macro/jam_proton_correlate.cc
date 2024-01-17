@@ -17,11 +17,11 @@ vector <vector<string>> Q1Q1 =
 
 vector <vector<string>> u1Q1 =
 {
-  {"proton_RESCALED", "F1_RESCALED"},
-  {"proton_RESCALED", "F2_RESCALED"},
-  {"proton_RESCALED", "F3_RESCALED"},
+  // {"proton_RESCALED", "F1_RESCALED"},
+  // {"proton_RESCALED", "F2_RESCALED"},
+  // {"proton_RESCALED", "F3_RESCALED"},
 
-  {"proton_RESCALED", "psi_rp_PLAIN"},
+  // {"proton_RESCALED", "psi_rp_PLAIN"},
   {"tru_proton_PLAIN", "psi_rp_PLAIN"},
 };
 
@@ -50,15 +50,15 @@ void jam_proton_correlate(string inputFiles="qn.root", string outputFile="corr.r
   auto corrBuilder =
     Qn::Correlation::CorrelationBuilder{&d_samples, nSamples, axes_correlation};
 
-  for (auto &corr: Q1Q1)
-  {
-    std::array<std::string, 2> qn{corr.at(0), corr.at(1)};
-    string corrName=corr.at(0)+"."+corr.at(1);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1x1", P2::xx(1, 1), wUnity, wn, qn, qn);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1y1", P2::yy(1, 1), wUnity, wn, qn, qn);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1y1", P2::xy(1, 1), wUnity, wn, qn, qn);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1x1", P2::yx(1, 1), wUnity, wn, qn, qn);
-  }
+  // for (auto &corr: Q1Q1)
+  // {
+  //   std::array<std::string, 2> qn{corr.at(0), corr.at(1)};
+  //   string corrName=corr.at(0)+"."+corr.at(1);
+  //   corrBuilder.AddCorrelationWithInternalReader(corrName+".x1x1", P2::xx(1, 1), wUnity, wn, qn, qn);
+  //   corrBuilder.AddCorrelationWithInternalReader(corrName+".y1y1", P2::yy(1, 1), wUnity, wn, qn, qn);
+  //   corrBuilder.AddCorrelationWithInternalReader(corrName+".x1y1", P2::xy(1, 1), wUnity, wn, qn, qn);
+  //   corrBuilder.AddCorrelationWithInternalReader(corrName+".y1x1", P2::yx(1, 1), wUnity, wn, qn, qn);
+  // }
 
   for ( auto &corr: u1Q1  )
   {
