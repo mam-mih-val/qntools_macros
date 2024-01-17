@@ -526,55 +526,55 @@ void run8_proton_correct(std::string list, std::string str_pid_file, std::string
   proton.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
   correction_task.AddVector(proton);
 
-  VectorConfig pi_pos( "pi_pos", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
-  pi_pos.SetHarmonicArray( {1, 2} );
-  pi_pos.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
-  pi_pos.SetCorrectionAxes( pi_pos_axes );
-  pi_pos.AddCut( "trIsPiPos", [](double pid){
-    auto pdg_code = static_cast<int>(pid);
-    return pdg_code == 1;
-    }, "pi_pos cut" );
-  pi_pos.AddCut( "trFhcalX", [](double pos){
-    return pos < 10.0 || pos > 120;
-    }, "cut on x-pos in fhcal plane" );
-  pi_pos.AddCut( "trFhcalY", [](double pos){
-    return pos < -50.0 || pos > 50;
-    }, "cut on y-pos in fhcal plane" );
-  pi_pos.AddHisto2D({{"trPionY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsPiPos");
-  correction_task.AddVector(pi_pos);
+  // VectorConfig pi_pos( "pi_pos", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  // pi_pos.SetHarmonicArray( {1, 2} );
+  // pi_pos.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
+  // pi_pos.SetCorrectionAxes( pi_pos_axes );
+  // pi_pos.AddCut( "trIsPiPos", [](double pid){
+  //   auto pdg_code = static_cast<int>(pid);
+  //   return pdg_code == 1;
+  //   }, "pi_pos cut" );
+  // pi_pos.AddCut( "trFhcalX", [](double pos){
+  //   return pos < 10.0 || pos > 120;
+  //   }, "cut on x-pos in fhcal plane" );
+  // pi_pos.AddCut( "trFhcalY", [](double pos){
+  //   return pos < -50.0 || pos > 50;
+  //   }, "cut on y-pos in fhcal plane" );
+  // pi_pos.AddHisto2D({{"trPionY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsPiPos");
+  // correction_task.AddVector(pi_pos);
 
-  VectorConfig pi_neg( "pi_neg", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
-  pi_neg.SetHarmonicArray( {1, 2} );
-  pi_neg.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
-  pi_neg.SetCorrectionAxes( pi_pos_axes );
-  Tneg.AddCut( "trCharge", [](double charge){
-    return charge < 0.0;
-    }, "pi neg cut" );
-  pi_neg.AddCut( "trFhcalX", [](double pos){
-    return pos < 10.0 || pos > 120;
-    }, "cut on x-pos in fhcal plane" );
-  pi_neg.AddCut( "trFhcalY", [](double pos){
-    return pos < -50.0 || pos > 50;
-    }, "cut on y-pos in fhcal plane" );
-  pi_neg.AddHisto2D({{"trPionY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsPiPos");
-  correction_task.AddVector(pi_neg);
+  // VectorConfig pi_neg( "pi_neg", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  // pi_neg.SetHarmonicArray( {1, 2} );
+  // pi_neg.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
+  // pi_neg.SetCorrectionAxes( pi_pos_axes );
+  // Tneg.AddCut( "trCharge", [](double charge){
+  //   return charge < 0.0;
+  //   }, "pi neg cut" );
+  // pi_neg.AddCut( "trFhcalX", [](double pos){
+  //   return pos < 10.0 || pos > 120;
+  //   }, "cut on x-pos in fhcal plane" );
+  // pi_neg.AddCut( "trFhcalY", [](double pos){
+  //   return pos < -50.0 || pos > 50;
+  //   }, "cut on y-pos in fhcal plane" );
+  // pi_neg.AddHisto2D({{"trPionY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsPiPos");
+  // correction_task.AddVector(pi_neg);
 
-  VectorConfig deuteron( "deuteron", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
-  deuteron.SetHarmonicArray( {1, 2} );
-  deuteron.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
-  deuteron.SetCorrectionAxes( deuteron_axes );
-  deuteron.AddCut( "trIsDeuteron", [](double pid){
-    auto pdg_code = static_cast<int>(pid);
-    return pdg_code == 1;
-    }, "deuteron cut" );
-  deuteron.AddCut( "trFhcalX", [](double pos){
-    return pos < 10.0 || pos > 120;
-    }, "cut on x-pos in fhcal plane" );
-  deuteron.AddCut( "trFhcalY", [](double pos){
-    return pos < -50.0 || pos > 50;
-    }, "cut on y-pos in fhcal plane" );
-  deuteron.AddHisto2D({{"trDeuteronY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsDeuteron");
-  correction_task.AddVector(deuteron);
+  // VectorConfig deuteron( "deuteron", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  // deuteron.SetHarmonicArray( {1, 2} );
+  // deuteron.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
+  // deuteron.SetCorrectionAxes( deuteron_axes );
+  // deuteron.AddCut( "trIsDeuteron", [](double pid){
+  //   auto pdg_code = static_cast<int>(pid);
+  //   return pdg_code == 1;
+  //   }, "deuteron cut" );
+  // deuteron.AddCut( "trFhcalX", [](double pos){
+  //   return pos < 10.0 || pos > 120;
+  //   }, "cut on x-pos in fhcal plane" );
+  // deuteron.AddCut( "trFhcalY", [](double pos){
+  //   return pos < -50.0 || pos > 50;
+  //   }, "cut on y-pos in fhcal plane" );
+  // deuteron.AddHisto2D({{"trDeuteronY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsDeuteron");
+  // correction_task.AddVector(deuteron);
 
   correction_task.Run();
   auto n_events_filtered = *(dd.Count());
