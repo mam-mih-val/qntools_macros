@@ -308,7 +308,7 @@ void jam_proton_correct(std::string list, std::string str_pid_file, std::string 
   VectorConfig psi_rp( "psi_rp", "psiRP", "Ones", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
   psi_rp.SetHarmonicArray( {1, 2} );
   psi_rp.SetCorrections( {CORRECTION::PLAIN } );
-  psi_rp.AddHisto1D({"psi_rp", 100, -3.5, 3.5}, "psiRP");
+  // psi_rp.AddHisto1D({"psiRp", 100, -3.5, 3.5}, "psiRP");
   correction_task.AddVector(psi_rp);
 
   std::vector<Qn::AxisD> proton_axes{
