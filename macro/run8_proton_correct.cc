@@ -523,6 +523,9 @@ void run8_proton_correct(std::string list, std::string str_pid_file, std::string
   proton.AddCut( "trFhcalY", [](double pos){
     return pos < -50.0 || pos > 50;
     }, "cut on y-pos in fhcal plane" );
+  proton.AddCut( "trStsNhits", [](double nhits){
+    return nhits > 4.5;
+    }, "cut on fake tracks" );
   proton.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
   correction_task.AddVector(proton);
 
