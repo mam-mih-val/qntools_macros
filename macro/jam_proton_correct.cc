@@ -180,6 +180,7 @@ void jam_proton_correct(std::string list, std::string str_pid_file, std::string 
           .Define("centrality", centrality_function, {"trMom"} )
           .Define( "simPz", " std::vector<float> pz; for( auto mom : simMom ){ pz.push_back( mom.Pz() ); } return pz; " )
           .Define( "simPt", " std::vector<float> pT; for( auto mom : simMom ){ pT.push_back( mom.Pt() ); } return pT; " )
+          .Define( "simPhi", " std::vector<float> phi; for( auto mom : simMom ){ phi.push_back( mom.Phi() ); } return phi; " )
           .Define( "simEta", " std::vector<float> eta; for( auto mom : simMom ){ eta.push_back( mom.Eta() ); } return eta; " )
           .Define( "simPq", " std::vector<float> pq; for( int i=0; i<simMom.size(); i++ ){ pq.push_back( simMom.at(i).P()*simPdg.at(i)/abs(simPdg.at(i)) ); } return pq;" )
           .Define( "simIsProton", simIsProton, {"simPdg", "simMotherId"} )
