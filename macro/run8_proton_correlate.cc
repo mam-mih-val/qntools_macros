@@ -116,7 +116,7 @@ vector <vector<string>> u2Q1Q1_rescaled=
 void run8_proton_correlate(string inputFiles="qn.root", string outputFile="corr.root")
 {
   int nSamples = 100;
-  Qn::AxisD centAxis({"centrality", 8, 0, 40});
+  Qn::AxisD centAxis({"centrality", 4, 0, 40});
   auto axes_correlation = Qn::MakeAxes(centAxis);
   ROOT::RDataFrame d( "tree", inputFiles.c_str() );
   auto d_samples = Qn::Correlation::Resample(d, nSamples);

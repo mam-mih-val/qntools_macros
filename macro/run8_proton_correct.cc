@@ -464,7 +464,7 @@ void run8_proton_correct(std::string list, std::string str_pid_file, std::string
                                     });
 
   correction_task.InitVariables();
-  correction_task.AddEventAxis( {"centrality", 8, 0, 40} );
+  correction_task.AddEventAxis( {"centrality", 4, 0, 40} );
 
   VectorConfig f1( "F1", "fhcalModPhi", "fhcalModE", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
   f1.SetHarmonicArray( {1, 2} );
@@ -537,8 +537,8 @@ void run8_proton_correct(std::string list, std::string str_pid_file, std::string
   correction_task.AddVector(Tpos);
 
   std::vector<Qn::AxisD> proton_axes{
-        { "trProtonY", 15, -0.5, 1.0 },
-        { "trPt", 15, 0.0, 1.5 },
+        { "trProtonY", 4, -0.5, 1.5 },
+        { "trPt", 4, 0.0, 2.0 },
   };
   
   std::vector<Qn::AxisD> deuteron_axes{
