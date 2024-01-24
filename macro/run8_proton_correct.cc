@@ -566,7 +566,7 @@ void run8_proton_correct(std::string list, std::string str_pid_file, std::string
     return pos < -50.0 || pos > 50;
     }, "cut on y-pos in fhcal plane" );
   proton.AddCut( "trStsNhits", [](double nhits){
-    return nhits > 4.5;
+    return nhits > 5.5;
     }, "cut on fake tracks" );
   proton.AddCut( "trDcaR", [](double dca){
     return dca < 2.0;
@@ -589,7 +589,7 @@ void run8_proton_correct(std::string list, std::string str_pid_file, std::string
     return pos < -50.0 || pos > 50;
     }, "cut on y-pos in fhcal plane" );
   proton400.AddCut( "trStsNhits", [](double nhits){
-    return nhits > 4.5;
+    return nhits > 5.5;
     }, "cut on fake tracks" );
   proton400.AddCut( "trDcaR", [](double dca){
     return dca < 2.0;
@@ -612,7 +612,7 @@ void run8_proton_correct(std::string list, std::string str_pid_file, std::string
     return pos < -50.0 || pos > 50;
     }, "cut on y-pos in fhcal plane" );
   proton700.AddCut( "trStsNhits", [](double nhits){
-    return nhits > 4.5;
+    return nhits > 5.5;
     }, "cut on fake tracks" );
   proton700.AddCut( "trDcaR", [](double dca){
     return dca < 2.0;
