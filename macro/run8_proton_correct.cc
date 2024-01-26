@@ -13,7 +13,10 @@ struct PidFunctions{
 };
 
 
-void run8_proton_correct(std::string list, std::string str_pid_file, std::string str_effieciency_file){
+void run8_proton_correct( std::string list, 
+                          std::string str_pid_file, 
+                          std::string str_effieciency_file,
+                          std::string calib_in_file="qa.root" ){
   
   const float PROTON_M = 0.938; // GeV/c2
   const float PI_POS_M = 0.134;
@@ -456,7 +459,7 @@ void run8_proton_correct(std::string list, std::string str_pid_file, std::string
           .Filter("vtxChi2/vtxNdf > 0.1")
   ; // at least one filter is mandatory!!!
 
-  auto correction_task = CorrectionTask( dd, "correction_out.root", "qa.root" );
+  auto correction_task = CorrectionTask( dd, "correction_out.root", calib_in_file );
   correction_task.SetEventVariables(std::regex("centrality"));
   correction_task.SetChannelVariables({std::regex("fhcalMod(X|Y|Phi|E|Id)")});
   correction_task.SetTrackVariables({
