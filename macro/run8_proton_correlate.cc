@@ -69,17 +69,17 @@ vector <vector<string>> u1Q1_recentered=
 
 vector <vector<string>> u1Q1_rescaled=
 {
-  {"proton_RECENTERED", "F1_RESCALED"},
-  {"proton_RECENTERED", "F2_RESCALED"},
-  {"proton_RECENTERED", "F3_RESCALED"},
+  {"proton_RESCALED", "F1_RESCALED"},
+  {"proton_RESCALED", "F2_RESCALED"},
+  {"proton_RESCALED", "F3_RESCALED"},
 
-  {"proton400_RECENTERED", "F1_RESCALED"},
-  {"proton400_RECENTERED", "F2_RESCALED"},
-  {"proton400_RECENTERED", "F3_RESCALED"},
+  {"proton400_RESCALED", "F1_RESCALED"},
+  {"proton400_RESCALED", "F2_RESCALED"},
+  {"proton400_RESCALED", "F3_RESCALED"},
 
-  {"proton700_RECENTERED", "F1_RESCALED"},
-  {"proton700_RECENTERED", "F2_RESCALED"},
-  {"proton700_RECENTERED", "F3_RESCALED"},
+  {"proton700_RESCALED", "F1_RESCALED"},
+  {"proton700_RESCALED", "F2_RESCALED"},
+  {"proton700_RESCALED", "F3_RESCALED"},
 
 
   // {"pi_pos_RESCALED", "F1_RESCALED"},
