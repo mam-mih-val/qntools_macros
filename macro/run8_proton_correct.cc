@@ -115,8 +115,8 @@ void run8_proton_correct( std::string list,
         if( pq < 0 ){ vec_is.push_back(0); continue; }
         auto mean = pid_proton.mean_700->Eval(pq);
         auto sigma = pid_proton.sigma_700->Eval(pq);
-        auto lo = mean - 2*sigma;
-        auto hi = mean + 2*sigma;
+        auto lo = mean - sigma;
+        auto hi = mean + sigma;
         vec_is.push_back( lo < m2 && m2 < hi ? 1 : 0 );
       }
       return vec_is;
@@ -134,8 +134,8 @@ void run8_proton_correct( std::string list,
         if( pq > 2.220286 ){ vec_is.push_back(0); continue; }
         auto mean = pid_pi_pos.mean_400->Eval(pq);
         auto sigma = pid_pi_pos.sigma_400->Eval(pq);
-        auto lo = mean - 2*sigma;
-        auto hi = mean + 2*sigma;
+        auto lo = mean - sigma;
+        auto hi = mean + sigma;
         vec_is.push_back( lo < m2 && m2 < hi ? 1 : 0 );
       }
       return vec_is;
