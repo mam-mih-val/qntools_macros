@@ -230,7 +230,7 @@ void run8_proton_correct( std::string list,
         auto pz = vec_pz.at(i);
         auto p = vec_pq.at(i);
         auto E = sqrt( p*p + PROTON_M*PROTON_M );
-        auto y = 0.5 * log( ( E + pz )/( E - pz ) ) - Y_CM;
+        auto y = 0.5 * log( ( E + pz ) / ( E - pz ) ) - Y_CM;
         vec_y.push_back( y );
       }
       return vec_y;
@@ -399,7 +399,7 @@ void run8_proton_correct( std::string list,
                     auto y_bin = efficiency_histo->GetXaxis()->FindBin( y );
                     auto pT_bin = efficiency_histo->GetYaxis()->FindBin( pT );
                     auto efficiency = efficiency_histo->GetBinContent( y_bin, pT_bin );
-                    auto weight = efficiency > 1e-2 ? 1.0 / efficiency : 0.0;
+                    auto weight = efficiency > 5e-2 ? 1.0 / efficiency : 0.0;
                     vec_weight.push_back( weight );
                   }
                   return vec_weight;
@@ -416,7 +416,7 @@ void run8_proton_correct( std::string list,
                     auto y_bin = efficiency_tof400->GetXaxis()->FindBin( y );
                     auto pT_bin = efficiency_tof400->GetYaxis()->FindBin( pT );
                     auto efficiency = efficiency_tof400->GetBinContent( y_bin, pT_bin );
-                    auto weight = efficiency > 1e-2 ? 1.0 / efficiency : 0.0;
+                    auto weight = efficiency > 5e-2 ? 1.0 / efficiency : 0.0;
                     vec_weight.push_back( weight );
                   }
                   return vec_weight;
@@ -433,7 +433,7 @@ void run8_proton_correct( std::string list,
                     auto y_bin = efficiency_tof700->GetXaxis()->FindBin( y );
                     auto pT_bin = efficiency_tof700->GetYaxis()->FindBin( pT );
                     auto efficiency = efficiency_tof700->GetBinContent( y_bin, pT_bin );
-                    auto weight = efficiency > 1e-2 ? 1.0 / efficiency : 0.0;
+                    auto weight = efficiency > 5e-2 ? 1.0 / efficiency : 0.0;
                     vec_weight.push_back( weight );
                   }
                   return vec_weight;
@@ -540,8 +540,8 @@ void run8_proton_correct( std::string list,
   correction_task.AddVector(Tpos);
 
   std::vector<Qn::AxisD> proton_axes{
-        { "trProtonY", 10, -0.6, 1.4 },
-        { "trPt", 10, 0.0, 2.0 },
+        { "trProtonY", 20, -0.6, 1.4 },
+        { "trPt", 20, 0.0, 2.0 },
   };
   
   std::vector<Qn::AxisD> deuteron_axes{
