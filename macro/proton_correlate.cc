@@ -22,6 +22,11 @@ vector <vector<string>> u1Q1=
   {"proton_RESCALED", "F3_RESCALED"},
 };
 
+vector <vector<string>> u2Q1Q1=
+{
+  {"proton_RESCALED", "F1_RESCALED", "F3_RESCALED"},
+};
+
 void proton_correlate(string inputFiles="qn.root", string outputFile="corr.root")
 {
   int nSamples = 100;
