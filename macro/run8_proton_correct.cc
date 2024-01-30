@@ -562,12 +562,12 @@ void run8_proton_correct( std::string list,
     auto pdg_code = static_cast<int>(pid);
     return pdg_code == 1;
     }, "proton cut" );
-  // proton.AddCut( "trFhcalX", [](double pos){
-  //   return pos < 10.0 || pos > 120;
-  //   }, "cut on x-pos in fhcal plane" );
-  // proton.AddCut( "trFhcalY", [](double pos){
-  //   return pos < -50.0 || pos > 50;
-  //   }, "cut on y-pos in fhcal plane" );
+  proton.AddCut( "trFhcalX", [](double pos){
+    return pos < 0.0 || pos > 130;
+    }, "cut on x-pos in fhcal plane" );
+  proton.AddCut( "trFhcalY", [](double pos){
+    return pos < -60.0 || pos > 60;
+    }, "cut on y-pos in fhcal plane" );
   proton.AddCut( "trStsNhits", [](double nhits){
     return nhits > 5.5;
     }, "cut on fake tracks" );
@@ -585,12 +585,12 @@ void run8_proton_correct( std::string list,
     auto pdg_code = static_cast<int>(pid);
     return pdg_code == 1;
     }, "proton cut" );
-  // proton400.AddCut( "trFhcalX", [](double pos){
-  //   return pos < 10.0 || pos > 120;
-  //   }, "cut on x-pos in fhcal plane" );
-  // proton400.AddCut( "trFhcalY", [](double pos){
-  //   return pos < -50.0 || pos > 50;
-  //   }, "cut on y-pos in fhcal plane" );
+  proton400.AddCut( "trFhcalX", [](double pos){
+    return pos < 0.0 || pos > 130;
+    }, "cut on x-pos in fhcal plane" );
+  proton400.AddCut( "trFhcalY", [](double pos){
+    return pos < -60.0 || pos > 60;
+    }, "cut on y-pos in fhcal plane" );
   proton400.AddCut( "trStsNhits", [](double nhits){
     return nhits > 5.5;
     }, "cut on fake tracks" );
@@ -608,12 +608,12 @@ void run8_proton_correct( std::string list,
     auto pdg_code = static_cast<int>(pid);
     return pdg_code == 1;
     }, "proton cut" );
-  // proton700.AddCut( "trFhcalX", [](double pos){
-  //   return pos < 10.0 || pos > 120;
-  //   }, "cut on x-pos in fhcal plane" );
-  // proton700.AddCut( "trFhcalY", [](double pos){
-  //   return pos < -50.0 || pos > 50;
-  //   }, "cut on y-pos in fhcal plane" );
+  proton700.AddCut( "trFhcalX", [](double pos){
+    return pos < 0.0 || pos > 130;
+    }, "cut on x-pos in fhcal plane" );
+  proton700.AddCut( "trFhcalY", [](double pos){
+    return pos < -60.0 || pos > 60;
+    }, "cut on y-pos in fhcal plane" );
   proton700.AddCut( "trStsNhits", [](double nhits){
     return nhits > 5.5;
     }, "cut on fake tracks" );
