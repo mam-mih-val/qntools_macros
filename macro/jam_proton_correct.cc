@@ -13,7 +13,10 @@ struct PidFunctions{
 };
 
 
-void jam_proton_correct(std::string list, std::string str_pid_file, std::string str_effieciency_file){
+void jam_proton_correct(  std::string list, 
+                          std::string str_pid_file, 
+                          std::string str_effieciency_file,
+                          std::string calib_in_file="qa.root"){
   
   const float PROTON_M = 0.938; // GeV/c2
   const float PI_POS_M = 0.134;
@@ -224,7 +227,7 @@ void jam_proton_correct(std::string list, std::string str_pid_file, std::string 
           .Filter("vtxChi2/vtxNdf > 0.1")
   ; // at least one filter is mandatory!!!
 
-  auto correction_task = CorrectionTask( dd, "correction_out.root", "qa.root" );
+  auto correction_task = CorrectionTask( dd, "correction_out.root", calib_in_file );
   correction_task.SetEventVariables(std::regex("centrality|psiRP"));
   correction_task.SetChannelVariables({std::regex("fhcalMod(X|Y|Phi|E|Id)")});
   correction_task.SetTrackVariables({
@@ -233,7 +236,7 @@ void jam_proton_correct(std::string list, std::string str_pid_file, std::string 
                                     });
 
   correction_task.InitVariables();
-  correction_task.AddEventAxis( {"centrality", 8, 0, 40} );
+  correction_task.AddEventAxis( {"centrality", 4, 0, 40} );
 
   VectorConfig f1( "F1", "fhcalModPhi", "fhcalModE", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
   f1.SetHarmonicArray( {1, 2} );
