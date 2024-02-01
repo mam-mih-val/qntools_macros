@@ -215,7 +215,7 @@ void jam_proton_correct(  std::string list,
                     auto y_bin = efficiency_histo->GetXaxis()->FindBin( y );
                     auto pT_bin = efficiency_histo->GetYaxis()->FindBin( pT );
                     auto efficiency = efficiency_histo->GetBinContent( y_bin, pT_bin );
-                    auto weight = efficiency > 1e-3 ? 1.0 / efficiency : 0.0;
+                    auto weight = efficiency > 1e-2 ? 1.0 / efficiency : 0.0;
                     vec_weight.push_back( weight );
                   }
                   return vec_weight;
@@ -231,7 +231,7 @@ void jam_proton_correct(  std::string list,
   correction_task.SetEventVariables(std::regex("centrality|psiRP"));
   correction_task.SetChannelVariables({std::regex("fhcalMod(X|Y|Phi|E|Id)")});
   correction_task.SetTrackVariables({
-                                            std::regex("tr(Pt|Eta|Phi|IsProton|Charge|ProtonY|DcaR|Chi2Ndf|Nhits|Weight|FhcalX|FhcalY|StsNhits|StsChi2)"),
+                                            std::regex("tr(Pt|Eta|Phi|IsProton|IsProtonTof|Charge|ProtonY|DcaR|Chi2Ndf|Nhits|Weight|FhcalX|FhcalY|StsNhits|StsChi2)"),
                                             std::regex("sim(Pt|Eta|Phi|IsProton|ProtonY)"),
                                     });
 
@@ -328,11 +328,17 @@ void jam_proton_correct(  std::string list,
     return pdg_code == 1;
     }, "proton cut" );
   proton.AddCut( "trFhcalX", [](double pos){
-    return pos < 10.0 || pos > 120;
+    return pos < -40.0 || pos > 170;
     }, "cut on x-pos in fhcal plane" );
   proton.AddCut( "trFhcalY", [](double pos){
-    return pos < -50.0 || pos > 50;
+    return pos < -100.0 || pos > 100;
     }, "cut on y-pos in fhcal plane" );
+  proton.AddCut( "trStsNhits", [](double nhits){
+    return nhits > 5.5;
+    }, "cut on fake tracks" );
+  proton.AddCut( "trDcaR", [](double dca){
+    return dca < 2.0;
+    }, "DCA cut" );
   proton.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
   correction_task.AddVector(proton);
 
