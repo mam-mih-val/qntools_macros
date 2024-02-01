@@ -21,7 +21,17 @@ vector <vector<string>> u1Q1 =
   {"proton_RESCALED", "F2_RESCALED"},
   {"proton_RESCALED", "F3_RESCALED"},
 
+  {"proton400_RESCALED", "F1_RESCALED"},
+  {"proton400_RESCALED", "F2_RESCALED"},
+  {"proton400_RESCALED", "F3_RESCALED"},
+
+  {"proton700_RESCALED", "F1_RESCALED"},
+  {"proton700_RESCALED", "F2_RESCALED"},
+  {"proton700_RESCALED", "F3_RESCALED"},
+
   {"proton_RESCALED", "psi_rp_PLAIN"},
+  {"proton400_RESCALED", "psi_rp_PLAIN"},
+  {"proton700_RESCALED", "psi_rp_PLAIN"},
   {"tru_proton_PLAIN", "psi_rp_PLAIN"},
 };
 
