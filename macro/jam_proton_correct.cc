@@ -323,7 +323,7 @@ void jam_proton_correct(  std::string list,
   proton.SetHarmonicArray( {1, 2} );
   proton.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
   proton.SetCorrectionAxes( proton_axes );
-  proton.AddCut( "trIsProton", [](double pid){
+  proton.AddCut( "IsProtonTof", [](double pid){
     auto pdg_code = static_cast<int>(pid);
     return pdg_code == 1;
     }, "proton cut" );
