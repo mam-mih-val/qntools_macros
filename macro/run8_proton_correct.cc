@@ -512,10 +512,10 @@ void run8_proton_correct( std::string list,
     return pT > 0.2;
     }, "pT cut" );
   Tneg.AddCut( "trFhcalX", [](double pos){
-    return pos < 10.0 || pos > 120;
+    return pos < -40.0 || pos > 170;
     }, "cut on x-pos in fhcal plane" );
   Tneg.AddCut( "trFhcalY", [](double pos){
-    return pos < -50.0 || pos > 50;
+    return pos < -100.0 || pos > 100;
     }, "cut on y-pos in fhcal plane" );
   correction_task.AddVector(Tneg);
 
@@ -532,10 +532,10 @@ void run8_proton_correct( std::string list,
     return pT > 0.2;
   }, "pT cut" );
   Tpos.AddCut( "trFhcalX", [](double pos){
-    return pos < 10.0 || pos > 120;
+    return pos < -40.0 || pos > 170;
     }, "cut on x-pos in fhcal plane" );
   Tpos.AddCut( "trFhcalY", [](double pos){
-    return pos < -50.0 || pos > 50;
+    return pos < -100.0 || pos > 100;
     }, "cut on y-pos in fhcal plane" );
   correction_task.AddVector(Tpos);
 
