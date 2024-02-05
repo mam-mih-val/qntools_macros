@@ -300,10 +300,10 @@ void jam_proton_correct(  std::string list,
   Tpos.AddCut( "trPt", [](double pT){
     return pT > 0.2;
   }, "pT cut" );
-  Tpos.AddCut( "trFhcalX", [](double pos){
+  Tneg.AddCut( "trFhcalX", [](double pos){
     return pos < -40.0 || pos > 170;
     }, "cut on x-pos in fhcal plane" );
-  Tpos.AddCut( "trFhcalY", [](double pos){
+  Tneg.AddCut( "trFhcalY", [](double pos){
     return pos < -100.0 || pos > 100;
     }, "cut on y-pos in fhcal plane" );
   correction_task.AddVector(Tpos);
@@ -328,10 +328,10 @@ void jam_proton_correct(  std::string list,
     return pdg_code == 1;
     }, "proton cut" );
   proton.AddCut( "trFhcalX", [](double pos){
-    return pos < -40.0 || pos > 170;
+    return pos < 10.0 || pos > 120;
     }, "cut on x-pos in fhcal plane" );
   proton.AddCut( "trFhcalY", [](double pos){
-    return pos < -100.0 || pos > 100;
+    return pos < -50.0 || pos > 50;
     }, "cut on y-pos in fhcal plane" );
   proton.AddCut( "trStsNhits", [](double nhits){
     return nhits > 5.5;
