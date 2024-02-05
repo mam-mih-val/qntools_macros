@@ -9,11 +9,11 @@ To compile this project the installed QnTools framework is required. We recomend
 https://github.com/FlowNICA/QnTools/tree/master
 
 When the QnTools is installed, export the framework
-'
+`
   $ export QnTools_DIR=/path/to/QnTools/install/lib/cmake/QnTools/
   $ cd /path/to/qntools_macros
   $ mkdir build
   $ cd build
   $ cmake ..
   $ make
-'
+`
