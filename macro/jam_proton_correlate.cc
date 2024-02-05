@@ -13,6 +13,10 @@ vector <vector<string>> Q1Q1 =
   {"Tpos_RESCALED", "F1_RESCALED"},
   {"Tpos_RESCALED", "F2_RESCALED"},
   {"Tpos_RESCALED", "F3_RESCALED"},
+
+  {"F1_RESCALED", "psi_rp_PLAIN"},
+  {"F2_RESCALED", "psi_rp_PLAIN"},
+  {"F3_RESCALED", "psi_rp_PLAIN"},
 };
 
 vector <vector<string>> u1Q1 =
