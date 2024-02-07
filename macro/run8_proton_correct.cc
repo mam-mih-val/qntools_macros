@@ -574,7 +574,7 @@ void run8_proton_correct( std::string list,
   proton.AddCut( "trDcaR", [](double dca){
     return dca < 2.0;
     }, "DCA cut" );
-  proton.AddCut( "StsChi2", [](double chi2){
+  proton.AddCut( "trStsChi2", [](double chi2){
     return chi2 < 3.0;
     }, "Chi2 cut" );
   proton.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
@@ -600,7 +600,7 @@ void run8_proton_correct( std::string list,
   proton400.AddCut( "trDcaR", [](double dca){
     return dca < 2.0;
     }, "DCA cut" );
-  proton.AddCut( "StsChi2", [](double chi2){
+  proton400.AddCut( "trStsChi2", [](double chi2){
     return chi2 < 3.0;
     }, "Chi2 cut" );
   proton400.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
@@ -626,7 +626,7 @@ void run8_proton_correct( std::string list,
   proton700.AddCut( "trDcaR", [](double dca){
     return dca < 2.0;
     }, "DCA cut" );
-  proton.AddCut( "StsChi2", [](double chi2){
+  proton700.AddCut( "trStsChi2", [](double chi2){
     return chi2 < 3.0;
     }, "Chi2 cut" );
   proton700.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
