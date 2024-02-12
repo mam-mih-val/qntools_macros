@@ -33,9 +33,8 @@ void run8_proton_correct( std::string list,
     std::map<size_t, TF1*> mean700{};
     std::map<size_t, TF1*> sigma700{};
 
-  std::unique_ptr<TFile> pid_file{TFile::Open( str_pid_file.c_str(), "READ" )};
-
   auto pid_file = std::make_unique<TFile>(str_pid_file.c_str(), "READ");
+
 	TF1* f1_ptr{nullptr};
 	pid_file->GetObject( "pionPos_400_amplitude", f1_ptr );
 	amplitude400[211] = f1_ptr;
@@ -187,7 +186,7 @@ void run8_proton_correct( std::string list,
       return vec_m2;
     };
   auto is_proton400_function = 
-  [ f1_m2_400, f1_s_400 ]( 
+  []( 
     std::vector<float> vec_prob,
     std::vector<float> vec_pq
   ){
@@ -206,7 +205,7 @@ void run8_proton_correct( std::string list,
     return vec_is;
   }
 	auto is_proton700_function = 
-  [ f1_m2_400, f1_s_400 ]( 
+  []( 
     std::vector<float> vec_prob,
     std::vector<float> vec_pq
   ){
@@ -435,7 +434,7 @@ void run8_proton_correct( std::string list,
   correction_task.SetEventVariables(std::regex("centrality"));
   correction_task.SetChannelVariables({std::regex("fhcalMod(X|Y|Phi|E|Id)")});
   correction_task.SetTrackVariables({
-                                            std::regex("tr(Pt|Eta|Phi|IsProton|IsProton400|IsProton700|IsPiPos|IsPiNeg|IsDeuteron|Charge|ProtonY|PionY|DeuteronY|DcaR|Chi2Ndf|Nhits|Weight|WeightTof400|WeightTof700|FhcalX|FhcalY|StsNhits|StsChi2)"),
+                                            std::regex("tr(Pt|Eta|Phi|IsProton|IsProton400|IsProton700|Charge|ProtonY|DcaR|Chi2Ndf|Nhits|Weight|WeightTof400|WeightTof700|FhcalX|FhcalY|StsNhits|StsChi2)"),
                                     });
 
   correction_task.InitVariables();
