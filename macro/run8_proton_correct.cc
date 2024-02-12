@@ -203,7 +203,7 @@ void run8_proton_correct( std::string list,
       vec_is.at(i) = 1;
     }
     return vec_is;
-  }
+  };
 	auto is_proton700_function = 
   []( 
     std::vector<float> vec_prob,
@@ -220,7 +220,7 @@ void run8_proton_correct( std::string list,
       vec_is.at(i) = 1;
     }
     return vec_is;
-  }			 
+  }; 
 	auto is_particle_function = 
   []
   ( ROOT::VecOps::RVec<int> is_400, 
