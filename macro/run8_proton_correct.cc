@@ -387,7 +387,7 @@ void run8_proton_correct( std::string list,
                     auto y_bin = efficiency_tof400->GetXaxis()->FindBin( y );
                     auto pT_bin = efficiency_tof400->GetYaxis()->FindBin( pT );
                     auto efficiency = efficiency_tof400->GetBinContent( y_bin, pT_bin );
-                    auto weight = efficiency > 5e-2 ? 1.0 / efficiency : 0.0;
+                    auto weight = efficiency > 1e-1 ? 1.0 / efficiency : 0.0;
                     vec_weight.push_back( weight );
                   }
                   return vec_weight;
@@ -404,7 +404,7 @@ void run8_proton_correct( std::string list,
                     auto y_bin = efficiency_tof700->GetXaxis()->FindBin( y );
                     auto pT_bin = efficiency_tof700->GetYaxis()->FindBin( pT );
                     auto efficiency = efficiency_tof700->GetBinContent( y_bin, pT_bin );
-                    auto weight = efficiency > 5e-2 ? 1.0 / efficiency : 0.0;
+                    auto weight = efficiency > 1e-1 ? 1.0 / efficiency : 0.0;
                     vec_weight.push_back( weight );
                   }
                   return vec_weight;
