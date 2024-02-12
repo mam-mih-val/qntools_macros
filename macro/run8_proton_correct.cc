@@ -172,7 +172,7 @@ void run8_proton_correct( std::string list,
   []
   ( ROOT::VecOps::RVec<ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiE4D<double> >> vec_mom, 
     ROOT::VecOps::RVec<double> vec_beta){
-      ROOT::VecOps::RVec<double> vec_m2;
+      std::vector<float> vec_m2;
       vec_m2.reserve( vec_beta.size() );
       for( size_t i=0; i<vec_mom.size(); i++ ){
         auto p = vec_mom.at(i).P();
