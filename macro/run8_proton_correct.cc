@@ -223,8 +223,8 @@ void run8_proton_correct( std::string list,
   }; 
 	auto is_particle_function = 
   []
-  ( ROOT::VecOps::RVec<int> is_400, 
-    ROOT::VecOps::RVec<int> is_700 ){
+  ( std::vector<int> is_400, 
+    std::vector<int> is_700 ){
       std::vector<int> vec_is{};
       vec_is.reserve( is_400.size() );
       for( int i=0; i<is_400.size(); ++i ){ vec_is.push_back( is_400.at(i) == 1 || is_700.at(i) == 1 ? 1 : 0 ); }
