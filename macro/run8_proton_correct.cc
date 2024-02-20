@@ -198,7 +198,7 @@ void run8_proton_correct( std::string list,
         continue;
       if( pq > 3.0 )
         continue;
-      if( prob < 0.95 )
+      if( prob < 0.99 )
         continue;
       vec_is.at(i) = 1;
     }
@@ -215,7 +215,7 @@ void run8_proton_correct( std::string list,
       auto pq = vec_pq.at(i);
       if( pq < 0 )
         continue;
-      if( prob < 0.95 )
+      if( prob < 0.99 )
         continue;
       vec_is.at(i) = 1;
     }
@@ -370,7 +370,7 @@ void run8_proton_correct( std::string list,
                     auto y_bin = efficiency_histo->GetXaxis()->FindBin( y );
                     auto pT_bin = efficiency_histo->GetYaxis()->FindBin( pT );
                     auto efficiency = efficiency_histo->GetBinContent( y_bin, pT_bin );
-                    auto weight = efficiency > 5e-2 ? 1.0 / efficiency : 0.0;
+                    auto weight = efficiency > 1e-2 ? 1.0 / efficiency : 0.0;
                     vec_weight.push_back( weight );
                   }
                   return vec_weight;
@@ -525,7 +525,7 @@ void run8_proton_correct( std::string list,
         { "trPt", 20, 0.0, 1.0 },
   };
 
-  VectorConfig proton( "proton", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  VectorConfig proton( "proton", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   proton.SetHarmonicArray( {1, 2} );
   proton.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
   proton.SetCorrectionAxes( proton_axes );
@@ -548,7 +548,7 @@ void run8_proton_correct( std::string list,
   proton.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
   correction_task.AddVector(proton);
 
-  VectorConfig proton400( "proton400", "trPhi", "trWeightTof400", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  VectorConfig proton400( "proton400", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   proton400.SetHarmonicArray( {1, 2} );
   proton400.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
   proton400.SetCorrectionAxes( proton_axes );
@@ -571,7 +571,7 @@ void run8_proton_correct( std::string list,
   proton400.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
   correction_task.AddVector(proton400);
 
-  VectorConfig proton700( "proton700", "trPhi", "trWeightTof700", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  VectorConfig proton700( "proton700", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   proton700.SetHarmonicArray( {1, 2} );
   proton700.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
   proton700.SetCorrectionAxes( proton_axes );
