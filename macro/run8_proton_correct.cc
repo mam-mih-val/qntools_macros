@@ -511,8 +511,8 @@ void run8_proton_correct( std::string list,
   correction_task.AddVector(Tpos);
 
   std::vector<Qn::AxisD> proton_axes{
-        { "trProtonY", 10, -0.6, 1.4 },
-        { "trPt", 10, 0.0, 2.0 },
+        { "trProtonY", 5, -0.6, 1.4 },
+        { "trPt", 5, 0.0, 2.0 },
   };
   
   std::vector<Qn::AxisD> deuteron_axes{
@@ -525,7 +525,7 @@ void run8_proton_correct( std::string list,
         { "trPt", 20, 0.0, 1.0 },
   };
 
-  VectorConfig proton( "proton", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  VectorConfig proton( "proton", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   proton.SetHarmonicArray( {1, 2} );
   proton.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
   proton.SetCorrectionAxes( proton_axes );
@@ -548,7 +548,7 @@ void run8_proton_correct( std::string list,
   proton.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
   correction_task.AddVector(proton);
 
-  VectorConfig proton400( "proton400", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  VectorConfig proton400( "proton400", "trPhi", "trWeightTof400", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   proton400.SetHarmonicArray( {1, 2} );
   proton400.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
   proton400.SetCorrectionAxes( proton_axes );
@@ -571,7 +571,7 @@ void run8_proton_correct( std::string list,
   proton400.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
   correction_task.AddVector(proton400);
 
-  VectorConfig proton700( "proton700", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  VectorConfig proton700( "proton700", "trPhi", "trWeightTof700", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   proton700.SetHarmonicArray( {1, 2} );
   proton700.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
   proton700.SetCorrectionAxes( proton_axes );
