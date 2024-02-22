@@ -36,6 +36,7 @@ void VectorConfig::Decorate(const std::shared_ptr<Qn::CorrectionManager>& man) c
 
   auto plain=Qn::QVector::CorrectionStep::PLAIN;
   auto recentered=Qn::QVector::CorrectionStep::RECENTERED;
+  auto twist=Qn::QVector::CorrectionStep::TWIST;
   auto rescaled=Qn::QVector::CorrectionStep::RESCALED;
 
   Qn::Recentering recentering;
@@ -68,6 +69,7 @@ void VectorConfig::Decorate(const std::shared_ptr<Qn::CorrectionManager>& man) c
     }
     if( corr == CORRECTION::RESCALING ){
       man->AddCorrectionOnQnVector( name_, twistRescale );
+      correction_output.push_back( twist );
       correction_output.push_back( rescaled );
     }
   }
