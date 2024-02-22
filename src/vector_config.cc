@@ -43,6 +43,7 @@ void VectorConfig::Decorate(const std::shared_ptr<Qn::CorrectionManager>& man) c
 
   Qn::TwistAndRescale twistRescale;
   twistRescale.SetApplyRescale(true);
+  twistRescale.SetApplyTwist(true);
   twistRescale.SetTwistAndRescaleMethod(Qn::TwistAndRescale::Method::DOUBLE_HARMONIC);
 
   std::bitset<Qn::QVector::kmaxharmonics> harmonics_bitset{};
