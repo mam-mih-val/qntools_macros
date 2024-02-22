@@ -17,6 +17,14 @@ vector <vector<string>> u1_recentered_Q1_plain=
   {"proton_RECENTERED", "F3_PLAIN"},
 };
 
+vector <vector<string>> u1_twist_Q1_plain=
+{
+  {"proton_TWIST", "F1_PLAIN"},
+  {"proton_TWIST", "F2_PLAIN"},
+  {"proton_TWIST", "F3_PLAIN"},
+};
+
+
 vector <vector<string>> u1_rescaled_Q1_plain=
 {
   {"proton_RESCALED", "F1_PLAIN"},
@@ -55,6 +63,13 @@ vector <vector<string>> u1_recentered_Q1_recentered=
   {"proton_RECENTERED", "F1_RECENTERED"},
   {"proton_RECENTERED", "F2_RECENTERED"},
   {"proton_RECENTERED", "F3_RECENTERED"},
+};
+
+vector <vector<string>> u1_twist_Q1_recentered=
+{
+  {"proton_TWIST", "F1_RECENTERED"},
+  {"proton_TWIST", "F2_RECENTERED"},
+  {"proton_TWIST", "F3_RECENTERED"},
 };
 
 vector <vector<string>> u1_rescaled_Q1_recentered=
@@ -97,6 +112,13 @@ vector <vector<string>> u1_recentered_Q1_twist=
   {"proton_RECENTERED", "F3_TWIST"},
 };
 
+vector <vector<string>> u1_twist_Q1_twist=
+{
+  {"proton_TWIST", "F1_TWIST"},
+  {"proton_TWIST", "F2_TWIST"},
+  {"proton_TWIST", "F3_TWIST"},
+};
+
 vector <vector<string>> u1_rescaled_Q1_twist=
 {
   {"proton_RESCALED", "F1_TWIST"},
@@ -120,6 +142,7 @@ vector <vector<string>> Q1_twist_Q1_twist =
 };
 
 
+
 // *************************************
 // ----------- Q1_rescaled ----------- 
 // *************************************
@@ -136,6 +159,13 @@ vector <vector<string>> u1_recentered_Q1_rescaled=
   {"proton_RECENTERED", "F1_RESCALED"},
   {"proton_RECENTERED", "F2_RESCALED"},
   {"proton_RECENTERED", "F3_RESCALED"},
+};
+
+vector <vector<string>> u1_twist_Q1_rescaled=
+{
+  {"proton_TWIST", "F1_RESCALED"},
+  {"proton_TWIST", "F2_RESCALED"},
+  {"proton_TWIST", "F3_RESCALED"},
 };
 
 vector <vector<string>> u1_rescaled_Q1_rescaled=
@@ -222,6 +252,16 @@ void run8_proton_correlate(string inputFiles="qn.root", string outputFile="corr.
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x1y1", P2::xy(1, 1), wSumWu, wy, qn, qn);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y1x1", P2::yx(1, 1), wSumWu, wy, qn, qn);
   }
+
+  for ( auto &corr: u1_twist_Q1_plain )
+  {
+    std::array<std::string, 2> qn{corr.at(0), corr.at(1)};
+    string corrName=corr.at(0)+"."+corr.at(1);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1x1", P2::xx(1, 1), wSumWu, wy, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1y1", P2::yy(1, 1), wSumWu, wy, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1y1", P2::xy(1, 1), wSumWu, wy, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1x1", P2::yx(1, 1), wSumWu, wy, qn, qn);
+  }
   
   for ( auto &corr: u1_rescaled_Q1_plain )
   {
@@ -258,6 +298,16 @@ void run8_proton_correlate(string inputFiles="qn.root", string outputFile="corr.
   }
 
   for ( auto &corr: u1_recentered_Q1_recentered )
+  {
+    std::array<std::string, 2> qn{corr.at(0), corr.at(1)};
+    string corrName=corr.at(0)+"."+corr.at(1);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1x1", P2::xx(1, 1), wSumWu, wy, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1y1", P2::yy(1, 1), wSumWu, wy, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1y1", P2::xy(1, 1), wSumWu, wy, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1x1", P2::yx(1, 1), wSumWu, wy, qn, qn);
+  }
+
+  for ( auto &corr: u1_twist_Q1_recentered )
   {
     std::array<std::string, 2> qn{corr.at(0), corr.at(1)};
     string corrName=corr.at(0)+"."+corr.at(1);
@@ -311,6 +361,16 @@ void run8_proton_correlate(string inputFiles="qn.root", string outputFile="corr.
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y1x1", P2::yx(1, 1), wSumWu, wy, qn, qn);
   }
 
+  for ( auto &corr: u1_twist_Q1_twist )
+  {
+    std::array<std::string, 2> qn{corr.at(0), corr.at(1)};
+    string corrName=corr.at(0)+"."+corr.at(1);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1x1", P2::xx(1, 1), wSumWu, wy, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1y1", P2::yy(1, 1), wSumWu, wy, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1y1", P2::xy(1, 1), wSumWu, wy, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1x1", P2::yx(1, 1), wSumWu, wy, qn, qn);
+  }
+
   for ( auto &corr: u1_rescaled_Q1_twist )
   {
     std::array<std::string, 2> qn{corr.at(0), corr.at(1)};
@@ -321,7 +381,7 @@ void run8_proton_correlate(string inputFiles="qn.root", string outputFile="corr.
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y1x1", P2::yx(1, 1), wSumWu, wy, qn, qn);
   }
 
-  for (auto &corr: Q1_twist_Q1_twist)
+  for (auto &corr: Q1_twist_Q1_twist )
   {
     std::array<std::string, 2> qn{corr.at(0), corr.at(1)};
     string corrName=corr.at(0)+"."+corr.at(1);
@@ -347,6 +407,16 @@ void run8_proton_correlate(string inputFiles="qn.root", string outputFile="corr.
   }
 
   for ( auto &corr: u1_recentered_Q1_rescaled )
+  {
+    std::array<std::string, 2> qn{corr.at(0), corr.at(1)};
+    string corrName=corr.at(0)+"."+corr.at(1);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1x1", P2::xx(1, 1), wSumWu, wy, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1y1", P2::yy(1, 1), wSumWu, wy, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1y1", P2::xy(1, 1), wSumWu, wy, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1x1", P2::yx(1, 1), wSumWu, wy, qn, qn);
+  }
+
+  for ( auto &corr: u1_twist_Q1_rescaled )
   {
     std::array<std::string, 2> qn{corr.at(0), corr.at(1)};
     string corrName=corr.at(0)+"."+corr.at(1);
