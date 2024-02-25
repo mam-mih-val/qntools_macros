@@ -335,8 +335,8 @@ void run8_proton_correct_vertical( std::string list,
     42, 43, 
   };
   std::vector<int> f2_modules = {
-    03, 04, 05,
-    06, 07, 08,
+     3,  4,  5,
+     6,  7,  8,
     11, 12, 13,
     16,     17,
     20, 21, 22,
