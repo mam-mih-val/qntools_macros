@@ -544,7 +544,7 @@ void run8_proton_correct( std::string list,
     return pdg_code == 1;
     }, "proton cut" );
   proton.AddCut( "trFhcalX", [](double pos){
-    return pos < -40.0 || pos > 170;
+    return pos < -90.0 || pos > 220;
     }, "cut on x-pos in fhcal plane" );
   proton.AddCut( "trFhcalY", [](double pos){
     return pos < -50.0 || pos > 50;
