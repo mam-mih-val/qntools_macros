@@ -543,12 +543,21 @@ void run8_proton_correct( std::string list,
     auto pdg_code = static_cast<int>(pid);
     return pdg_code == 1;
     }, "proton cut" );
+<<<<<<< HEAD
   proton.AddCut( "trFhcalX", [](double pos){
     return pos < -40.0 || pos > 170;
     }, "cut on x-pos in fhcal plane" );
   proton.AddCut( "trFhcalY", [](double pos){
     return pos < -50.0 || pos > 50;
     }, "cut on y-pos in fhcal plane" );
+=======
+  // proton.AddCut( "trFhcalX", [](double pos){
+  //   return pos < 10.0 || pos > 120;
+  //   }, "cut on x-pos in fhcal plane" );
+  // proton.AddCut( "trFhcalY", [](double pos){
+  //   return pos < -50.0 || pos > 50;
+  //   }, "cut on y-pos in fhcal plane" );
+>>>>>>> 67ca667ce0c432dedecb7af628becf1ab12ef150
   proton.AddCut( "trStsNhits", [](double nhits){
     return nhits > 5.5;
     }, "cut on fake tracks" );
