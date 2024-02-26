@@ -544,10 +544,10 @@ void run8_proton_correct( std::string list,
     return pdg_code == 1;
     }, "proton cut" );
   proton.AddCut( "trFhcalX", [](double pos){
-    return pos < -90.0 || pos > 220;
+    return pos < -40.0 || pos > 170;
     }, "cut on x-pos in fhcal plane" );
   proton.AddCut( "trFhcalY", [](double pos){
-    return pos < -50.0 || pos > 50;
+    return pos < -60.0 || pos > 60;
     }, "cut on y-pos in fhcal plane" );
   proton.AddCut( "trStsNhits", [](double nhits){
     return nhits > 5.5;
