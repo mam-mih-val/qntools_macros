@@ -88,6 +88,14 @@ vector <vector<string>> u1_plain_Q1_rescaled=
   {"proton_PLAIN", "F1_RESCALED"},
   {"proton_PLAIN", "F2_RESCALED"},
   {"proton_PLAIN", "F3_RESCALED"},
+
+  {"proton_r_PLAIN", "F1_RESCALED"},
+  {"proton_r_PLAIN", "F2_RESCALED"},
+  {"proton_r_PLAIN", "F3_RESCALED"},
+
+  {"proton_l_PLAIN", "F1_RESCALED"},
+  {"proton_l_PLAIN", "F2_RESCALED"},
+  {"proton_l_PLAIN", "F3_RESCALED"},
 };
 
 vector <vector<string>> u1_recentered_Q1_rescaled=
