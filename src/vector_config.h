@@ -22,7 +22,7 @@ enum class NORMALIZATION{
 enum class CORRECTION{
   PLAIN,
   RECENTERING,
-  RESCALING
+  TWIST_RESCALING
 };
 
 struct vector_cut;
@@ -72,15 +72,19 @@ public:
     return type_;
   }
 
-  void SetHarmonicArray(const std::vector<int> &harmonic_array) {
+  VectorConfig& SetHarmonicArray(const std::vector<int> &harmonic_array) {
     harmonic_array_ = harmonic_array;
+    return *this;
   }
-  void SetCorrectionAxes(const std::vector<Qn::AxisD> &correction_axes) {
+  VectorConfig& SetCorrectionAxes(const std::vector<Qn::AxisD> &correction_axes) {
     correction_axes_ = correction_axes;
+    return *this;
   }
-  void SetCorrections(const std::vector<CORRECTION> &corrections) {
+  VectorConfig& SetCorrections(const std::vector<CORRECTION> &corrections) {
     corrections_ = corrections;
+    return *this;
   }
+  VectorConfig& SetRecenteringWidthEqualization( bool value ){ recentering_width_equalization_ = value; return *this; }
   void AddCut( const std::string& field, const std::function<bool(double)>& function, const std::string& description );
   void AddHisto1D( const Qn::AxisD& axis, const std::string& weight= "Ones" );
   void AddHisto2D( const std::vector<Qn::AxisD>& axis, const std::string& weight= "Ones" );
@@ -94,6 +98,7 @@ private:
   NORMALIZATION normalization_;
   std::vector<int> harmonic_array_{1};
   std::vector<CORRECTION> corrections_;
+  bool recentering_width_equalization_{false};
   std::vector<Qn::AxisD> correction_axes_{};
   std::vector<vector_cut> cuts_{};
   std::vector<histo1d> vec_histo1d_{};

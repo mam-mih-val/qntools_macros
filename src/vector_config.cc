@@ -4,6 +4,7 @@
 
 #include "vector_config.h"
 
+#include <type_traits>
 #include <utility>
 
 VectorConfig::VectorConfig(std::string name, std::string phi_field, std::string weight_field,
@@ -40,7 +41,7 @@ void VectorConfig::Decorate(const std::shared_ptr<Qn::CorrectionManager>& man) c
   auto rescaled=Qn::QVector::CorrectionStep::RESCALED;
 
   Qn::Recentering recentering;
-  recentering.SetApplyWidthEqualization(false);
+  recentering.SetApplyWidthEqualization(recentering_width_equalization_);
 
   Qn::TwistAndRescale twistRescale;
   twistRescale.SetApplyRescale(true);
@@ -67,7 +68,7 @@ void VectorConfig::Decorate(const std::shared_ptr<Qn::CorrectionManager>& man) c
       man->AddCorrectionOnQnVector( name_, recentering );
       correction_output.push_back( recentered );
     }
-    if( corr == CORRECTION::RESCALING ){
+    if( corr == CORRECTION::TWIST_RESCALING ){
       man->AddCorrectionOnQnVector( name_, twistRescale );
       correction_output.push_back( twist );
       correction_output.push_back( rescaled );
