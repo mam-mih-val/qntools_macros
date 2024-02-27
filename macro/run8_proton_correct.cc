@@ -553,58 +553,11 @@ void run8_proton_correct( std::string list,
   proton.AddCut( "trStsNhits", [](double nhits){
     return nhits > 5.5;
     }, "cut on fake tracks" );
-  // proton.AddCut( "trDcaR", [](double dca){
-  //   return dca < 2.0;
-  //   }, "DCA cut" );
+  proton.AddCut( "trDcaR", [](double dca){
+    return dca < 2.0;
+    }, "DCA cut" );
   proton.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
   correction_task.AddVector(proton);
-  
-  VectorConfig proton_l( "proton_l", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
-  proton_l.SetHarmonicArray( {1, 2} );
-  proton_l.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
-  proton_l.SetCorrectionAxes( proton_axes );
-  proton_l.AddCut( "trIsProton", [](double pid){
-    auto pdg_code = static_cast<int>(pid);
-    return pdg_code == 1;
-    }, "proton cut" );
-  proton_l.AddCut( "trFhcalX", [](double pos){
-    return pos < -40.0 || pos > 170;
-    }, "cut on x-pos in fhcal plane" );
-  proton_l.AddCut( "trFhcalY", [](double pos){
-    return pos < -60.0 || pos > 60;
-    }, "cut on y-pos in fhcal plane" );
-  proton_l.AddCut( "trStsNhits", [](double nhits){
-    return nhits > 5.5;
-    }, "cut on fake tracks" );
-  proton_l.AddCut( "trPx", [](double px){
-    return px < 0.;
-    }, "cut on left part of acceptance" );
-  proton_l.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
-  correction_task.AddVector(proton_l);
-
-  VectorConfig proton_r( "proton_r", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
-  proton_r.SetHarmonicArray( {1, 2} );
-  proton_r.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
-  proton_r.SetCorrectionAxes( proton_axes );
-  proton_r.AddCut( "trIsProton", [](double pid){
-    auto pdg_code = static_cast<int>(pid);
-    return pdg_code == 1;
-    }, "proton cut" );
-  proton_r.AddCut( "trFhcalX", [](double pos){
-    return pos < -40.0 || pos > 170;
-    }, "cut on x-pos in fhcal plane" );
-  proton_r.AddCut( "trFhcalY", [](double pos){
-    return pos < -60.0 || pos > 60;
-    }, "cut on y-pos in fhcal plane" );
-  proton_r.AddCut( "trStsNhits", [](double nhits){
-    return nhits > 5.5;
-    }, "cut on fake tracks" );
-  proton_r.AddCut( "trPx", [](double px){
-    return px > 0.;
-    }, "cut on left part of acceptance" );
-  proton_r.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
-  correction_task.AddVector(proton_r);
-
 
   correction_task.Run();
   auto n_events_filtered = *(dd.Count());
