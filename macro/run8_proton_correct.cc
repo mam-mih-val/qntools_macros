@@ -368,6 +368,7 @@ void run8_proton_correct( std::string list,
           .Define( "trFhcalX", function_fhcal_x, {"trParamLast"} )
           .Define( "trFhcalY", function_fhcal_y, {"trParamLast"} )
           .Define( "trChi2Ndf", " std::vector<float> vec_par; for( int i=0; i<trChi2.size(); ++i ){ vec_par.push_back( trChi2.at(i)/trNdf.at(i) ); } return vec_par; " )
+          .Define( "trPx", " std::vector<float> px; for( auto mom : trMom ){ px.push_back( mom.Px() ); } return px; " )
           .Define( "pz", " std::vector<float> pz; for( auto mom : trMom ){ pz.push_back( mom.Pz() ); } return pz; " )
           .Define( "pq", " std::vector<float> pq; for( int i=0; i<trMom.size(); i++ ){ pq.push_back( trMom.at(i).P() / trCharge.at(i) ); } return pq;" )
           .Define( "trM2Tof700", m2_function, { "trMom", "trBetaTof700" } )
@@ -454,7 +455,7 @@ void run8_proton_correct( std::string list,
   correction_task.SetEventVariables(std::regex("centrality"));
   correction_task.SetChannelVariables({std::regex("fhcalMod(X|Y|Phi|E|Id)")});
   correction_task.SetTrackVariables({
-                                            std::regex("tr(Pt|Eta|Phi|IsProton|IsProton400|IsProton700|Charge|ProtonY|DcaR|Chi2Ndf|Nhits|Weight|WeightTof400|WeightTof700|FhcalX|FhcalY|StsNhits|StsChi2)"),
+                                            std::regex("tr(Pt|Px|Eta|Phi|IsProton|IsProton400|IsProton700|Charge|ProtonY|DcaR|Chi2Ndf|Nhits|Weight|WeightTof400|WeightTof700|FhcalX|FhcalY|StsNhits|StsChi2)"),
                                     });
 
   correction_task.InitVariables();
@@ -557,102 +558,53 @@ void run8_proton_correct( std::string list,
   //   }, "DCA cut" );
   proton.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
   correction_task.AddVector(proton);
-
-  VectorConfig proton400( "proton400", "trPhi", "trWeightTof400", VECTOR_TYPE::TRACK, NORMALIZATION::M );
-  proton400.SetHarmonicArray( {1, 2} );
-  proton400.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
-  proton400.SetCorrectionAxes( proton_axes );
-  proton400.AddCut( "trIsProton400", [](double pid){
+  
+  VectorConfig proton_l( "proton_l", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  proton_l.SetHarmonicArray( {1, 2} );
+  proton_l.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
+  proton_l.SetCorrectionAxes( proton_axes );
+  proton_l.AddCut( "trIsProton", [](double pid){
     auto pdg_code = static_cast<int>(pid);
     return pdg_code == 1;
     }, "proton cut" );
-  proton400.AddCut( "trFhcalX", [](double pos){
-    return pos < 10.0 || pos > 120;
+  proton_l.AddCut( "trFhcalX", [](double pos){
+    return pos < -40.0 || pos > 170;
     }, "cut on x-pos in fhcal plane" );
-  proton400.AddCut( "trFhcalY", [](double pos){
-    return pos < -50.0 || pos > 50;
+  proton_l.AddCut( "trFhcalY", [](double pos){
+    return pos < -60.0 || pos > 60;
     }, "cut on y-pos in fhcal plane" );
-  proton400.AddCut( "trStsNhits", [](double nhits){
+  proton_l.AddCut( "trStsNhits", [](double nhits){
     return nhits > 5.5;
     }, "cut on fake tracks" );
-  // proton400.AddCut( "trDcaR", [](double dca){
-  //   return dca < 2.0;
-  //   }, "DCA cut" );
-  proton400.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
-  correction_task.AddVector(proton400);
+  proton_l.AddCut( "trPx", [](double px){
+    return px < 0.;
+    }, "cut on left part of acceptance" );
+  proton_l.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
+  correction_task.AddVector(proton_l);
 
-  VectorConfig proton700( "proton700", "trPhi", "trWeightTof700", VECTOR_TYPE::TRACK, NORMALIZATION::M );
-  proton700.SetHarmonicArray( {1, 2} );
-  proton700.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
-  proton700.SetCorrectionAxes( proton_axes );
-  proton700.AddCut( "trIsProton700", [](double pid){
+  VectorConfig proton_r( "proton_r", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  proton_r.SetHarmonicArray( {1, 2} );
+  proton_r.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
+  proton_r.SetCorrectionAxes( proton_axes );
+  proton_r.AddCut( "trIsProton", [](double pid){
     auto pdg_code = static_cast<int>(pid);
     return pdg_code == 1;
     }, "proton cut" );
-  proton700.AddCut( "trFhcalX", [](double pos){
-    return pos < 10.0 || pos > 120;
+  proton_r.AddCut( "trFhcalX", [](double pos){
+    return pos < -40.0 || pos > 170;
     }, "cut on x-pos in fhcal plane" );
-  proton700.AddCut( "trFhcalY", [](double pos){
-    return pos < -50.0 || pos > 50;
+  proton_r.AddCut( "trFhcalY", [](double pos){
+    return pos < -60.0 || pos > 60;
     }, "cut on y-pos in fhcal plane" );
-  proton700.AddCut( "trStsNhits", [](double nhits){
+  proton_r.AddCut( "trStsNhits", [](double nhits){
     return nhits > 5.5;
     }, "cut on fake tracks" );
-  // proton700.AddCut( "trDcaR", [](double dca){
-  //   return dca < 2.0;
-  //   }, "DCA cut" );
-  proton700.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
-  correction_task.AddVector(proton700);
+  proton_r.AddCut( "trPx", [](double px){
+    return px > 0.;
+    }, "cut on left part of acceptance" );
+  proton_r.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
+  correction_task.AddVector(proton_r);
 
-  // VectorConfig pi_pos( "pi_pos", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
-  // pi_pos.SetHarmonicArray( {1, 2} );
-  // pi_pos.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
-  // pi_pos.SetCorrectionAxes( pi_pos_axes );
-  // pi_pos.AddCut( "trIsPiPos", [](double pid){
-  //   auto pdg_code = static_cast<int>(pid);
-  //   return pdg_code == 1;
-  //   }, "pi_pos cut" );
-  // pi_pos.AddCut( "trFhcalX", [](double pos){
-  //   return pos < 10.0 || pos > 120;
-  //   }, "cut on x-pos in fhcal plane" );
-  // pi_pos.AddCut( "trFhcalY", [](double pos){
-  //   return pos < -50.0 || pos > 50;
-  //   }, "cut on y-pos in fhcal plane" );
-  // pi_pos.AddHisto2D({{"trPionY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsPiPos");
-  // correction_task.AddVector(pi_pos);
-
-  // VectorConfig pi_neg( "pi_neg", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
-  // pi_neg.SetHarmonicArray( {1, 2} );
-  // pi_neg.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
-  // pi_neg.SetCorrectionAxes( pi_pos_axes );
-  // Tneg.AddCut( "trCharge", [](double charge){
-  //   return charge < 0.0;
-  //   }, "pi neg cut" );
-  // pi_neg.AddCut( "trFhcalX", [](double pos){
-  //   return pos < 10.0 || pos > 120;
-  //   }, "cut on x-pos in fhcal plane" );
-  // pi_neg.AddCut( "trFhcalY", [](double pos){
-  //   return pos < -50.0 || pos > 50;
-  //   }, "cut on y-pos in fhcal plane" );
-  // pi_neg.AddHisto2D({{"trPionY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsPiPos");
-  // correction_task.AddVector(pi_neg);
-
-  // VectorConfig deuteron( "deuteron", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
-  // deuteron.SetHarmonicArray( {1, 2} );
-  // deuteron.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
-  // deuteron.SetCorrectionAxes( deuteron_axes );
-  // deuteron.AddCut( "trIsDeuteron", [](double pid){
-  //   auto pdg_code = static_cast<int>(pid);
-  //   return pdg_code == 1;
-  //   }, "deuteron cut" );
-  // deuteron.AddCut( "trFhcalX", [](double pos){
-  //   return pos < 10.0 || pos > 120;
-  //   }, "cut on x-pos in fhcal plane" );
-  // deuteron.AddCut( "trFhcalY", [](double pos){
-  //   return pos < -50.0 || pos > 50;
-  //   }, "cut on y-pos in fhcal plane" );
-  // deuteron.AddHisto2D({{"trDeuteronY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsDeuteron");
-  // correction_task.AddVector(deuteron);
 
   correction_task.Run();
   auto n_events_filtered = *(dd.Count());
