@@ -463,7 +463,7 @@ void run8_proton_correct( std::string list,
 
   VectorConfig f1( "F1", "fhcalModPhi", "fhcalModE", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
   f1.SetHarmonicArray( {1, 2} );
-  f1.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
+  f1.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
   f1.AddCut( "fhcalModId", [&f1_modules](double mod_id){
     auto id = static_cast<int>(mod_id);
     return std::find( f1_modules.begin(), f1_modules.end(), id) != f1_modules.end();
@@ -473,7 +473,7 @@ void run8_proton_correct( std::string list,
 
   VectorConfig f2( "F2", "fhcalModPhi", "fhcalModE", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
   f2.SetHarmonicArray( {1, 2} );
-  f2.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
+  f2.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
   f2.AddCut( "fhcalModId", [&f2_modules](double mod_id){
     auto id = static_cast<int>(mod_id);
     return std::find( f2_modules.begin(), f2_modules.end(), id) != f2_modules.end();
@@ -483,7 +483,7 @@ void run8_proton_correct( std::string list,
 
   VectorConfig f3( "F3", "fhcalModPhi", "fhcalModE", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
   f3.SetHarmonicArray( {1, 2} );
-  f3.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
+  f3.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
   f3.AddCut( "fhcalModId", [&f3_modules](double mod_id){
     auto id = static_cast<int>(mod_id);
     return std::find( f3_modules.begin(), f3_modules.end(), id) != f3_modules.end();
@@ -493,7 +493,7 @@ void run8_proton_correct( std::string list,
 
   VectorConfig Tneg( "Tneg", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   Tneg.SetHarmonicArray( {1, 2} );
-  Tneg.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
+  Tneg.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
   Tneg.AddCut( "trCharge", [](double charge){
     return charge < 0.0;
     }, "charge" );
@@ -513,7 +513,7 @@ void run8_proton_correct( std::string list,
 
   VectorConfig Tpos( "Tpos", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   Tpos.SetHarmonicArray( {1, 2} );
-  Tpos.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
+  Tpos.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
   Tpos.AddCut( "trCharge", [](double charge){
     return charge >= 0.0;
     }, "charge" );
@@ -538,7 +538,7 @@ void run8_proton_correct( std::string list,
   
   VectorConfig proton( "proton", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   proton.SetHarmonicArray( {1, 2} );
-  proton.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
+  proton.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
   proton.SetCorrectionAxes( proton_axes );
   proton.AddCut( "trIsProton", [](double pid){
     auto pdg_code = static_cast<int>(pid);
@@ -561,7 +561,7 @@ void run8_proton_correct( std::string list,
   
   VectorConfig proton_l( "proton_l", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   proton_l.SetHarmonicArray( {1, 2} );
-  proton_l.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
+  proton_l.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
   proton_l.SetCorrectionAxes( proton_axes );
   proton_l.AddCut( "trIsProton", [](double pid){
     auto pdg_code = static_cast<int>(pid);
@@ -584,7 +584,7 @@ void run8_proton_correct( std::string list,
 
   VectorConfig proton_r( "proton_r", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   proton_r.SetHarmonicArray( {1, 2} );
-  proton_r.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::RESCALING } );
+  proton_r.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
   proton_r.SetCorrectionAxes( proton_axes );
   proton_r.AddCut( "trIsProton", [](double pid){
     auto pdg_code = static_cast<int>(pid);
