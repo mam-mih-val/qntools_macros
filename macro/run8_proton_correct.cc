@@ -449,6 +449,9 @@ void run8_proton_correct( std::string list,
             return -74.0087 < sts_min && sts_max < 188.248; 
           }, {"stsNdigits", "track_multiplicity"} )
           .Filter("vtxChi2/vtxNdf > 0.1")
+          .Filter("fabs(vtxX)<1.0")
+          .Filter("fabs(vtxY)<1.0")
+          .Filter("fabs(vtxZ)<0.5")
   ; // at least one filter is mandatory!!!
 
   auto correction_task = CorrectionTask( dd, "correction_out.root", calib_in_file );
