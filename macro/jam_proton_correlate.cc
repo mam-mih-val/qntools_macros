@@ -3,7 +3,7 @@
 vector <vector<string>> u1_psi_rp=
 {
   {"tru_proton_PLAIN", "psi_rp_PLAIN"},
-  {"proton_PLAIN", "psi_rp_PLAIN"},
+  {"proton_RESCALED", "psi_rp_PLAIN"},
 };
 
 // ********************************
