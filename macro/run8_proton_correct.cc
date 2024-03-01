@@ -584,7 +584,7 @@ void run8_proton_correct( std::string list,
   proton99.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
   proton99.SetCorrectionAxes( proton_axes );
   proton99.AddCut( "trProtonProb", [](double prob){
-    return prob > 0.95;
+    return prob > 0.99;
   }, "proton cut" );
   proton99.AddCut( "trFhcalX", [](double pos){
     return pos < -40.0 || pos > 170;
@@ -609,7 +609,7 @@ void run8_proton_correct( std::string list,
   proton90.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
   proton90.SetCorrectionAxes( proton_axes );
   proton90.AddCut( "trProtonProb", [](double prob){
-    return prob > 0.95;
+    return prob > 0.90;
   }, "proton cut" );
   proton90.AddCut( "trFhcalX", [](double pos){
     return pos < -40.0 || pos > 170;
@@ -634,7 +634,7 @@ void run8_proton_correct( std::string list,
   proton85.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
   proton85.SetCorrectionAxes( proton_axes );
   proton85.AddCut( "trProtonProb", [](double prob){
-    return prob > 0.95;
+    return prob > 0.85;
   }, "proton cut" );
   proton85.AddCut( "trFhcalX", [](double pos){
     return pos < -40.0 || pos > 170;
@@ -659,7 +659,7 @@ void run8_proton_correct( std::string list,
   proton80.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
   proton80.SetCorrectionAxes( proton_axes );
   proton80.AddCut( "trProtonProb", [](double prob){
-    return prob > 0.95;
+    return prob > 0.80;
   }, "proton cut" );
   proton80.AddCut( "trFhcalX", [](double pos){
     return pos < -40.0 || pos > 170;
