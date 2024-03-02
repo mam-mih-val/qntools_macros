@@ -102,6 +102,18 @@ vector <vector<string>> u1_rescaled_Q1_rescaled=
   {"proton_RESCALED", "F1_RESCALED"},
   {"proton_RESCALED", "F2_RESCALED"},
   {"proton_RESCALED", "F3_RESCALED"},
+
+  {"proton_fhcal40_RESCALED", "F1_RESCALED"},
+  {"proton_fhcal40_RESCALED", "F2_RESCALED"},
+  {"proton_fhcal40_RESCALED", "F3_RESCALED"},
+
+  {"proton_fhcal20_RESCALED", "F1_RESCALED"},
+  {"proton_fhcal20_RESCALED", "F2_RESCALED"},
+  {"proton_fhcal20_RESCALED", "F3_RESCALED"},
+
+  {"proton_fhcal10_RESCALED", "F1_RESCALED"},
+  {"proton_fhcal10_RESCALED", "F2_RESCALED"},
+  {"proton_fhcal10_RESCALED", "F3_RESCALED"},
 };
 
 vector <vector<string>> Q1_rescaled_Q1_rescaled =

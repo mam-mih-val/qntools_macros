@@ -565,7 +565,7 @@ void run8_proton_correct( std::string list,
     return pos < -40.0 || pos > 170;
   }, "cut on x-pos in fhcal plane" );
   proton.AddCut( "trFhcalY", [](double pos){
-    return pos < -70.0 || pos > 70;
+    return pos < -60.0 || pos > 60;
   }, "cut on y-pos in fhcal plane" );
   proton.AddCut( "trStsNhits", [](double nhits){
     return nhits > 5.5;
@@ -578,6 +578,81 @@ void run8_proton_correct( std::string list,
   }, "cut on chi2 in sts" );
   proton.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
   correction_task.AddVector(proton);
+
+  VectorConfig proton_fhcal40( "proton_fhcal40", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  proton_fhcal40.SetHarmonicArray( {1, 2} );
+  proton_fhcal40.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
+  proton_fhcal40.SetCorrectionAxes( proton_axes );
+  proton_fhcal40.AddCut( "trProtonProb", [](double prob){
+    return prob > 0.95;
+  }, "proton cut" );
+  proton_fhcal40.AddCut( "trFhcalX", [](double pos){
+    return pos < -30.0 || pos > 160;
+  }, "cut on x-pos in fhcal plane" );
+  proton_fhcal40.AddCut( "trFhcalY", [](double pos){
+    return pos < -60.0 || pos > 60;
+  }, "cut on y-pos in fhcal plane" );
+  proton_fhcal40.AddCut( "trStsNhits", [](double nhits){
+    return nhits > 5.5;
+  }, "cut on fake tracks" );
+  proton_fhcal40.AddCut( "trDcaR", [](double dca){
+    return dca < 5.0;
+  }, "DCA cut" );
+  proton_fhcal40.AddCut( "trStsChi2", [](double chi2){
+    return chi2 < 5.0;
+  }, "cut on chi2 in sts" );
+  proton_fhcal40.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
+  correction_task.AddVector(proton_fhcal40);
+
+  VectorConfig proton_fhcal20( "proton_fhcal20", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  proton_fhcal20.SetHarmonicArray( {1, 2} );
+  proton_fhcal20.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
+  proton_fhcal20.SetCorrectionAxes( proton_axes );
+  proton_fhcal20.AddCut( "trProtonProb", [](double prob){
+    return prob > 0.95;
+  }, "proton cut" );
+  proton_fhcal20.AddCut( "trFhcalX", [](double pos){
+    return pos < -10.0 || pos > 140;
+  }, "cut on x-pos in fhcal plane" );
+  proton_fhcal20.AddCut( "trFhcalY", [](double pos){
+    return pos < -60.0 || pos > 60;
+  }, "cut on y-pos in fhcal plane" );
+  proton_fhcal20.AddCut( "trStsNhits", [](double nhits){
+    return nhits > 5.5;
+  }, "cut on fake tracks" );
+  proton_fhcal20.AddCut( "trDcaR", [](double dca){
+    return dca < 5.0;
+  }, "DCA cut" );
+  proton_fhcal20.AddCut( "trStsChi2", [](double chi2){
+    return chi2 < 5.0;
+  }, "cut on chi2 in sts" );
+  proton_fhcal20.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
+  correction_task.AddVector(proton_fhcal20);
+
+  VectorConfig proton_fhcal10( "proton_fhcal10", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  proton_fhcal10.SetHarmonicArray( {1, 2} );
+  proton_fhcal10.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
+  proton_fhcal10.SetCorrectionAxes( proton_axes );
+  proton_fhcal10.AddCut( "trProtonProb", [](double prob){
+    return prob > 0.95;
+  }, "proton cut" );
+  proton_fhcal10.AddCut( "trFhcalX", [](double pos){
+    return pos < 0.0 || pos > 130;
+  }, "cut on x-pos in fhcal plane" );
+  proton_fhcal10.AddCut( "trFhcalY", [](double pos){
+    return pos < -60.0 || pos > 60;
+  }, "cut on y-pos in fhcal plane" );
+  proton_fhcal10.AddCut( "trStsNhits", [](double nhits){
+    return nhits > 5.5;
+  }, "cut on fake tracks" );
+  proton_fhcal10.AddCut( "trDcaR", [](double dca){
+    return dca < 5.0;
+  }, "DCA cut" );
+  proton_fhcal10.AddCut( "trStsChi2", [](double chi2){
+    return chi2 < 5.0;
+  }, "cut on chi2 in sts" );
+  proton_fhcal10.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
+  correction_task.AddVector(proton_fhcal10);
 
   correction_task.Run();
   auto n_events_filtered = *(dd.Count());
