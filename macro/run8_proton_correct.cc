@@ -550,7 +550,7 @@ void run8_proton_correct( std::string list,
   correction_task.AddVector(Tpos);
 
   std::vector<Qn::AxisD> proton_axes{
-        { "trProtonY", 6, -0.2, 1.0 },
+        { "trProtonY", 12, -0.2, 1.0 },
         { "trPt", 10, 0.0, 2.0 },
   };
   
@@ -578,106 +578,6 @@ void run8_proton_correct( std::string list,
   }, "cut on chi2 in sts" );
   proton.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
   correction_task.AddVector(proton);
-
-  VectorConfig proton99( "proton99", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
-  proton99.SetHarmonicArray( {1, 2} );
-  proton99.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
-  proton99.SetCorrectionAxes( proton_axes );
-  proton99.AddCut( "trProtonProb", [](double prob){
-    return prob > 0.99;
-  }, "proton cut" );
-  proton99.AddCut( "trFhcalX", [](double pos){
-    return pos < -40.0 || pos > 170;
-  }, "cut on x-pos in fhcal plane" );
-  proton99.AddCut( "trFhcalY", [](double pos){
-    return pos < -70.0 || pos > 70;
-  }, "cut on y-pos in fhcal plane" );
-  proton99.AddCut( "trStsNhits", [](double nhits){
-    return nhits > 5.5;
-  }, "cut on fake tracks" );
-  proton99.AddCut( "trDcaR", [](double dca){
-    return dca < 5.0;
-  }, "DCA cut" );
-  proton99.AddCut( "trStsChi2", [](double chi2){
-    return chi2 < 5.0;
-  }, "cut on chi2 in sts" );
-  proton99.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
-  correction_task.AddVector(proton99);
-
-  VectorConfig proton90( "proton90", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
-  proton90.SetHarmonicArray( {1, 2} );
-  proton90.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
-  proton90.SetCorrectionAxes( proton_axes );
-  proton90.AddCut( "trProtonProb", [](double prob){
-    return prob > 0.90;
-  }, "proton cut" );
-  proton90.AddCut( "trFhcalX", [](double pos){
-    return pos < -40.0 || pos > 170;
-  }, "cut on x-pos in fhcal plane" );
-  proton90.AddCut( "trFhcalY", [](double pos){
-    return pos < -70.0 || pos > 70;
-  }, "cut on y-pos in fhcal plane" );
-  proton90.AddCut( "trStsNhits", [](double nhits){
-    return nhits > 5.5;
-  }, "cut on fake tracks" );
-  proton90.AddCut( "trDcaR", [](double dca){
-    return dca < 5.0;
-  }, "DCA cut" );
-  proton90.AddCut( "trStsChi2", [](double chi2){
-    return chi2 < 5.0;
-  }, "cut on chi2 in sts" );
-  proton90.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
-  correction_task.AddVector(proton90);
-
-  VectorConfig proton85( "proton85", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
-  proton85.SetHarmonicArray( {1, 2} );
-  proton85.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
-  proton85.SetCorrectionAxes( proton_axes );
-  proton85.AddCut( "trProtonProb", [](double prob){
-    return prob > 0.85;
-  }, "proton cut" );
-  proton85.AddCut( "trFhcalX", [](double pos){
-    return pos < -40.0 || pos > 170;
-  }, "cut on x-pos in fhcal plane" );
-  proton85.AddCut( "trFhcalY", [](double pos){
-    return pos < -70.0 || pos > 70;
-  }, "cut on y-pos in fhcal plane" );
-  proton85.AddCut( "trStsNhits", [](double nhits){
-    return nhits > 5.5;
-  }, "cut on fake tracks" );
-  proton85.AddCut( "trDcaR", [](double dca){
-    return dca < 5.0;
-  }, "DCA cut" );
-  proton85.AddCut( "trStsChi2", [](double chi2){
-    return chi2 < 5.0;
-  }, "cut on chi2 in sts" );
-  proton85.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
-  correction_task.AddVector(proton85);
-
-  VectorConfig proton80( "proton80", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
-  proton80.SetHarmonicArray( {1, 2} );
-  proton80.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
-  proton80.SetCorrectionAxes( proton_axes );
-  proton80.AddCut( "trProtonProb", [](double prob){
-    return prob > 0.80;
-  }, "proton cut" );
-  proton80.AddCut( "trFhcalX", [](double pos){
-    return pos < -40.0 || pos > 170;
-  }, "cut on x-pos in fhcal plane" );
-  proton80.AddCut( "trFhcalY", [](double pos){
-    return pos < -70.0 || pos > 70;
-  }, "cut on y-pos in fhcal plane" );
-  proton80.AddCut( "trStsNhits", [](double nhits){
-    return nhits > 5.5;
-  }, "cut on fake tracks" );
-  proton80.AddCut( "trDcaR", [](double dca){
-    return dca < 5.0;
-  }, "DCA cut" );
-  proton80.AddCut( "trStsChi2", [](double chi2){
-    return chi2 < 5.0;
-  }, "cut on chi2 in sts" );
-  proton80.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
-  correction_task.AddVector(proton80);
 
   correction_task.Run();
   auto n_events_filtered = *(dd.Count());
