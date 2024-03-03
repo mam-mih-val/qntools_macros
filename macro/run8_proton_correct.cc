@@ -579,7 +579,7 @@ void run8_proton_correct( std::string list,
   proton.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
   correction_task.AddVector(proton);
 
-  VectorConfig proton_fhcal40( "proton95", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  VectorConfig proton95( "proton95", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   proton95.SetHarmonicArray( {1, 2} );
   proton95.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
   proton95.SetCorrectionAxes( proton_axes );
