@@ -99,25 +99,21 @@ vector <vector<string>> u1_recentered_Q1_rescaled=
 
 vector <vector<string>> u1_rescaled_Q1_rescaled=
 {
-  {"proton_RESCALED", "F1_RESCALED"},
-  {"proton_RESCALED", "F2_RESCALED"},
-  {"proton_RESCALED", "F3_RESCALED"},
+  {"proton_nhits4_RESCALED", "F1_RESCALED"},
+  {"proton_nhits4_RESCALED", "F2_RESCALED"},
+  {"proton_nhits4_RESCALED", "F3_RESCALED"},
 
-  {"proton95_RESCALED", "F1_RESCALED"},
-  {"proton95_RESCALED", "F2_RESCALED"},
-  {"proton95_RESCALED", "F3_RESCALED"},
+  {"proton_nhits6_RESCALED", "F1_RESCALED"},
+  {"proton_nhits6_RESCALED", "F2_RESCALED"},
+  {"proton_nhits6_RESCALED", "F3_RESCALED"},
 
-  {"proton90_RESCALED", "F1_RESCALED"},
-  {"proton90_RESCALED", "F2_RESCALED"},
-  {"proton90_RESCALED", "F3_RESCALED"},
+  {"proton_nhits8_RESCALED", "F1_RESCALED"},
+  {"proton_nhits8_RESCALED", "F2_RESCALED"},
+  {"proton_nhits8_RESCALED", "F3_RESCALED"},
 
-  {"proton85_RESCALED", "F1_RESCALED"},
-  {"proton85_RESCALED", "F2_RESCALED"},
-  {"proton85_RESCALED", "F3_RESCALED"},
-
-  {"proton80_RESCALED", "F1_RESCALED"},
-  {"proton80_RESCALED", "F2_RESCALED"},
-  {"proton80_RESCALED", "F3_RESCALED"},
+  {"proton_nhits9_RESCALED", "F1_RESCALED"},
+  {"proton_nhits9_RESCALED", "F2_RESCALED"},
+  {"proton_nhits9_RESCALED", "F3_RESCALED"},
 };
 
 vector <vector<string>> Q1_rescaled_Q1_rescaled =
