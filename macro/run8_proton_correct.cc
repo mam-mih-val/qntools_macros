@@ -383,6 +383,7 @@ void run8_proton_correct( std::string list,
           .Define( "trFhcalY", function_fhcal_y, {"trParamLast"} )
           .Define( "trChi2Ndf", " std::vector<float> vec_par; for( int i=0; i<trChi2.size(); ++i ){ vec_par.push_back( trChi2.at(i)/trNdf.at(i) ); } return vec_par; " )
           .Define( "trPx", " std::vector<float> px; for( auto mom : trMom ){ px.push_back( mom.Px() ); } return px; " )
+          .Define( "trPy", " std::vector<float> py; for( auto mom : trMom ){ py.push_back( mom.Py() ); } return py; " )
           .Define( "pz", " std::vector<float> pz; for( auto mom : trMom ){ pz.push_back( mom.Pz() ); } return pz; " )
           .Define( "pq", " std::vector<float> pq; for( int i=0; i<trMom.size(); i++ ){ pq.push_back( trMom.at(i).P() / trCharge.at(i) ); } return pq;" )
           .Define( "trM2Tof700", m2_function, { "trMom", "trBetaTof700" } )
@@ -473,7 +474,7 @@ void run8_proton_correct( std::string list,
   correction_task.SetEventVariables(std::regex("centrality"));
   correction_task.SetChannelVariables({std::regex("fhcalMod(X|Y|Phi|E|Id)")});
   correction_task.SetTrackVariables({
-                                            std::regex("tr(Pt|Px|Eta|Phi|IsProton|IsProton400|IsProton700|ProtonProb|Charge|ProtonY|DcaR|Chi2Ndf|Nhits|Weight|WeightTof400|WeightTof700|FhcalX|FhcalY|StsNhits|StsChi2)"),
+                                            std::regex("tr(Pt|Px|Py|Eta|Phi|IsProton|IsProton400|IsProton700|ProtonProb|Charge|ProtonY|DcaR|Chi2Ndf|Nhits|Weight|WeightTof400|WeightTof700|FhcalX|FhcalY|StsNhits|StsChi2)"),
                                     });
 
   correction_task.InitVariables();
@@ -579,6 +580,62 @@ void run8_proton_correct( std::string list,
   }, "cut on chi2 in sts" );
   proton.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
   correction_task.AddVector(proton);
+
+  VectorConfig proton_up( "proton_up", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  proton_up.SetHarmonicArray( {1, 2} );
+  proton_up.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
+  proton_up.SetCorrectionAxes( proton_axes );
+  proton_up.AddCut( "trProtonProb", [](double prob){
+    return prob > 0.95;
+  }, "proton cut" );
+  proton_up.AddCut( "trPy", [](double py){
+    return py > 0;
+  }, "up hemisphere" );
+  proton_up.AddCut( "trProtonProb", [](double prob){
+    return prob > 0.95;
+  }, "proton cut" );
+  proton_up.AddCut( "trFhcalX", [](double pos){
+    return pos < -30.0 || pos > 160;
+  }, "cut on x-pos in fhcal plane" );
+  proton_up.AddCut( "trFhcalY", [](double pos){
+    return pos < -60.0 || pos > 60;
+  }, "cut on y-pos in fhcal plane" );
+  proton_up.AddCut( "trStsNhits", [](double nhits){
+    return nhits > 5.5;
+  }, "cut on fake tracks" );
+  proton_up.AddCut( "trDcaR", [](double dca){
+    return dca < 5.0;
+  }, "DCA cut" );
+  proton_up.AddCut( "trStsChi2", [](double chi2){
+    return chi2 < 5.0;
+  }, "cut on chi2 in sts" );
+  proton_up.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
+  correction_task.AddVector(proton_up);
+
+  VectorConfig proton_down( "proton_down", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  proton_down.SetHarmonicArray( {1, 2} );
+  proton_down.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
+  proton_down.SetCorrectionAxes( proton_axes );
+  proton.AddCut( "trProtonProb", [](double prob){
+    return prob > 0.95;
+  }, "proton cut" );
+  proton_down.AddCut( "trPy", [](double py){
+    return py < 0;
+  }, "down hemisphere" );
+  proton_down.AddCut( "trFhcalY", [](double pos){
+    return pos < -60.0 || pos > 60;
+  }, "cut on y-pos in fhcal plane" );
+  proton_down.AddCut( "trStsNhits", [](double nhits){
+    return nhits > 5.5;
+  }, "cut on fake tracks" );
+  proton_down.AddCut( "trDcaR", [](double dca){
+    return dca < 5.0;
+  }, "DCA cut" );
+  proton_down.AddCut( "trStsChi2", [](double chi2){
+    return chi2 < 5.0;
+  }, "cut on chi2 in sts" );
+  proton_down.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
+  correction_task.AddVector(proton_down);
 
   correction_task.Run();
   auto n_events_filtered = *(dd.Count());
