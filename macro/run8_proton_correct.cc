@@ -584,6 +584,7 @@ void run8_proton_correct( std::string list,
   VectorConfig proton_0_90( "proton_0_90", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   proton_0_90.SetHarmonicArray( {1, 2} );
   proton_0_90.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
+  proton_0_90.SetRecenteringWidthEqualization( true );
   proton_0_90.SetCorrectionAxes( proton_axes );
   proton_0_90.AddCut( "trPhi", [](double phi){
     return phi < 0 || phi > M_PI/2;
@@ -617,7 +618,7 @@ void run8_proton_correct( std::string list,
   proton_90_180.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
   proton_90_180.SetCorrectionAxes( proton_axes );
   proton_90_180.AddCut( "trPhi", [](double phi){
-    return phi < M_PI / 2 || phi > M_PI;
+    return phi < M_PI / 2;
   }, "up hemisphere" );
   proton_90_180.AddCut( "trProtonProb", [](double prob){
     return prob > 0.95;
