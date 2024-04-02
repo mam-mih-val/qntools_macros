@@ -581,7 +581,7 @@ void run8_proton_correct( std::string list,
   proton.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
   correction_task.AddVector(proton);
 
-  VectorConfig proton_0_90( "proton_0_90", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  VectorConfig proton_0_90( "proton_0_90", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   proton_0_90.SetHarmonicArray( {1, 2} );
   proton_0_90.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
   proton_0_90.SetApplyTwist( false );
@@ -613,7 +613,7 @@ void run8_proton_correct( std::string list,
   proton_0_90.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
   correction_task.AddVector(proton_0_90);
 
-  VectorConfig proton_90_180( "proton_90_180", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  VectorConfig proton_90_180( "proton_90_180", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   proton_90_180.SetHarmonicArray( {1, 2} );
   proton_90_180.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
   proton_90_180.SetCorrectionAxes( proton_axes );
@@ -644,7 +644,7 @@ void run8_proton_correct( std::string list,
   proton_90_180.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
   correction_task.AddVector(proton_90_180);
 
-  VectorConfig proton_180_270( "proton_180_270", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  VectorConfig proton_180_270( "proton_180_270", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   proton_180_270.SetHarmonicArray( {1, 2} );
   proton_180_270.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
   proton_180_270.SetCorrectionAxes( proton_axes );
@@ -675,9 +675,10 @@ void run8_proton_correct( std::string list,
   proton_180_270.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
   correction_task.AddVector(proton_180_270);
 
-  VectorConfig proton_270_0( "proton_270_0", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  VectorConfig proton_270_0( "proton_270_0", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   proton_270_0.SetHarmonicArray( {1, 2} );
   proton_270_0.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
+  proton_270_0.SetApplyTwist( false );
   proton_270_0.SetCorrectionAxes( proton_axes );
   proton_270_0.AddCut( "trPhi", [](double phi){
     return  phi < -1 * M_PI / 2 || phi > 0 ;
