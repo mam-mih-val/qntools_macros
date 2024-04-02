@@ -44,8 +44,8 @@ void VectorConfig::Decorate(const std::shared_ptr<Qn::CorrectionManager>& man) c
   recentering.SetApplyWidthEqualization(recentering_width_equalization_);
 
   Qn::TwistAndRescale twistRescale;
-  twistRescale.SetApplyRescale(true);
-  twistRescale.SetApplyTwist(true);
+  twistRescale.SetApplyRescale(apply_rescaling_);
+  twistRescale.SetApplyTwist(apply_twist_);
   twistRescale.SetTwistAndRescaleMethod(Qn::TwistAndRescale::Method::DOUBLE_HARMONIC);
 
   std::bitset<Qn::QVector::kmaxharmonics> harmonics_bitset{};
