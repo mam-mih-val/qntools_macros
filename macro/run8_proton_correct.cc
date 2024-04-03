@@ -673,7 +673,7 @@ void run8_proton_correct( std::string list,
   proton_0_90.SetHarmonicArray( {1, 2} );
   proton_0_90.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
   proton_0_90.SetTwistRescalingMethod( TWIST_RESCALING_METHOD::CORRELATION );
-  proton_0_90.SetTwistRescalingReference( {"Tneg", "F1"} );
+  proton_0_90.SetTwistRescalingReference( {"Tneg", "Tpos"} );
   proton_0_90.SetCorrectionAxes( proton_axes );
   proton_0_90.AddCut( "trPhi", [](double phi){
     return phi < 0 || phi > M_PI/2;
