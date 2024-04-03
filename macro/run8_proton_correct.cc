@@ -672,7 +672,8 @@ void run8_proton_correct( std::string list,
   VectorConfig proton_0_90( "proton_0_90", "trPhi", "trWeight_0_90", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   proton_0_90.SetHarmonicArray( {1, 2} );
   proton_0_90.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
-  proton_0_90.SetApplyTwist( false );
+  proton_0_90.SetTwistRescalingMethod( TWIST_RESCALING_METHOD::CORRELATION );
+  proton_0_90.SetTwistRescalingReference( {"F1", "F3"} );
   proton_0_90.SetCorrectionAxes( proton_axes );
   proton_0_90.AddCut( "trPhi", [](double phi){
     return phi < 0 || phi > M_PI/2;
@@ -704,7 +705,6 @@ void run8_proton_correct( std::string list,
   VectorConfig proton_90_180( "proton_90_180", "trPhi", "trWeight_90_180", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   proton_90_180.SetHarmonicArray( {1, 2} );
   proton_90_180.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
-  proton_90_180.SetApplyTwist( false );
   proton_90_180.SetCorrectionAxes( proton_axes );
   proton_90_180.AddCut( "trPhi", [](double phi){
     return phi < M_PI / 2;
@@ -736,7 +736,6 @@ void run8_proton_correct( std::string list,
   VectorConfig proton_180_270( "proton_180_270", "trPhi", "trWeight_180_270", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   proton_180_270.SetHarmonicArray( {1, 2} );
   proton_180_270.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
-  proton_180_270.SetApplyTwist( false );
   proton_180_270.SetCorrectionAxes( proton_axes );
   proton_180_270.AddCut( "trPhi", [](double phi){
     return  phi > -1 * M_PI / 2 ;
@@ -768,7 +767,6 @@ void run8_proton_correct( std::string list,
   VectorConfig proton_270_0( "proton_270_0", "trPhi", "trWeight_270_0", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   proton_270_0.SetHarmonicArray( {1, 2} );
   proton_270_0.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
-  proton_270_0.SetApplyTwist( false );
   proton_270_0.SetCorrectionAxes( proton_axes );
   proton_270_0.AddCut( "trPhi", [](double phi){
     return  phi < -1 * M_PI / 2 || phi > 0 ;
