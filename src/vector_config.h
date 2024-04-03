@@ -91,7 +91,7 @@ public:
     return *this;
   }
   VectorConfig& SetTwistRescalingMethod(TWIST_RESCALING_METHOD method){ twis_rescaling_method_ = method; return *this; }
-  VectorConfig& SetTwistRescalingReference(std::array<std::string, 2> reference){ twist_rescaling_reference_ = std::move(reference); return *this; }
+  VectorConfig& SetTwistRescalingReference(std::array<std::string, 2> reference){ twist_rescaling_reference_ = reference; return *this; }
   VectorConfig& SetRecenteringWidthEqualization( bool value ){ recentering_width_equalization_ = value; return *this; }
   VectorConfig& SetApplyTwist( bool value ){ apply_twist_ = value; return *this; }
   VectorConfig& SetRescaling( bool value ){ apply_rescaling_ = value; return *this; }
