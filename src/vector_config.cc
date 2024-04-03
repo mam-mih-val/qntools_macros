@@ -49,7 +49,7 @@ void VectorConfig::Decorate(const std::shared_ptr<Qn::CorrectionManager>& man) c
   if( twis_rescaling_method_ == TWIST_RESCALING_METHOD::DOUBLE_HARMONIC )
     twistRescale.SetTwistAndRescaleMethod(Qn::TwistAndRescale::Method::DOUBLE_HARMONIC);
   else{
-    twistRescale.SetTwistAndRescaleMethod(Qn::TwistAndRescale::Method:CORRELATIONS );
+    twistRescale.SetTwistAndRescaleMethod(Qn::TwistAndRescale::Method::CORRELATIONS );
     twistRescale.SetReferenceConfigurationsForTwistAndRescale( twist_rescaling_reference_.at(0), twist_rescaling_reference_.at(1) )
   }
 
