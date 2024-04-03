@@ -517,7 +517,7 @@ void run8_proton_correct( std::string list,
                   }
                   return vec_weight;
           }, {"trProtonY", "trPt"} )
-          Define( "trWeight_270_0", [efficiency_270_0](std::vector<float> vec_y, ROOT::VecOps::RVec<float> vec_pT){
+          .Define( "trWeight_270_0", [efficiency_270_0](std::vector<float> vec_y, ROOT::VecOps::RVec<float> vec_pT){
                   if( !efficiency_270_0 ){
                       return std::vector<float>(vec_y.size(), 1);
                     }
