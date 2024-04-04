@@ -140,50 +140,50 @@ vector <vector<string>> u3Q1Q1Q1_rescaled=
 namespace P4{
 
   inline auto xxxx(unsigned int h_a, unsigned int h_b, unsigned int h_c, unsigned int h_d) {
-    return [h_a, h_b, h_c, h_d](const Qn::QVector &a, const Qn::QVector &b const Qn::QVector &c, const Qn::QVector &d) {
+    return [h_a, h_b, h_c, h_d](const Qn::QVector &a, const Qn::QVector &b, const Qn::QVector &c, const Qn::QVector &d) {
       return a.x(h_a) * b.x(h_b) * c.x(h_c) * d.x(h_d);
     };
   }
 
   inline auto xxyy(unsigned int h_a, unsigned int h_b, unsigned int h_c, unsigned int h_d) {
-    return [h_a, h_b, h_c, h_d](const Qn::QVector &a, const Qn::QVector &b const Qn::QVector &c, const Qn::QVector &d) {
+    return [h_a, h_b, h_c, h_d](const Qn::QVector &a, const Qn::QVector &b, const Qn::QVector &c, const Qn::QVector &d) {
       return a.x(h_a) * b.x(h_b) * c.y(h_c) * d.y(h_d);
     };
   }
 
   inline auto xyxy(unsigned int h_a, unsigned int h_b, unsigned int h_c, unsigned int h_d) {
-    return [h_a, h_b, h_c, h_d](const Qn::QVector &a, const Qn::QVector &b const Qn::QVector &c, const Qn::QVector &d) {
+    return [h_a, h_b, h_c, h_d](const Qn::QVector &a, const Qn::QVector &b, const Qn::QVector &c, const Qn::QVector &d) {
       return a.x(h_a) * b.y(h_b) * c.x(h_c) * d.y(h_d);
     };
   }
 
 
   inline auto xyyx(unsigned int h_a, unsigned int h_b, unsigned int h_c, unsigned int h_d) {
-    return [h_a, h_b, h_c, h_d](const Qn::QVector &a, const Qn::QVector &b const Qn::QVector &c, const Qn::QVector &d) {
+    return [h_a, h_b, h_c, h_d](const Qn::QVector &a, const Qn::QVector &b, const Qn::QVector &c, const Qn::QVector &d) {
       return a.x(h_a) * b.y(h_b) * c.y(h_c) * d.x(h_d);
     };
   }
 
   inline auto yxxy(unsigned int h_a, unsigned int h_b, unsigned int h_c, unsigned int h_d) {
-    return [h_a, h_b, h_c, h_d](const Qn::QVector &a, const Qn::QVector &b const Qn::QVector &c, const Qn::QVector &d) {
+    return [h_a, h_b, h_c, h_d](const Qn::QVector &a, const Qn::QVector &b, const Qn::QVector &c, const Qn::QVector &d) {
       return a.y(h_a) * b.x(h_b) * c.x(h_c) * d.y(h_d);
     };
   }
 
   inline auto yxyx(unsigned int h_a, unsigned int h_b, unsigned int h_c, unsigned int h_d) {
-    return [h_a, h_b, h_c, h_d](const Qn::QVector &a, const Qn::QVector &b const Qn::QVector &c, const Qn::QVector &d) {
+    return [h_a, h_b, h_c, h_d](const Qn::QVector &a, const Qn::QVector &b, const Qn::QVector &c, const Qn::QVector &d) {
       return a.y(h_a) * b.x(h_b) * c.y(h_c) * d.x(h_d);
     };
   }
 
   inline auto yyxx(unsigned int h_a, unsigned int h_b, unsigned int h_c, unsigned int h_d) {
-    return [h_a, h_b, h_c, h_d](const Qn::QVector &a, const Qn::QVector &b const Qn::QVector &c, const Qn::QVector &d) {
+    return [h_a, h_b, h_c, h_d](const Qn::QVector &a, const Qn::QVector &b, const Qn::QVector &c, const Qn::QVector &d) {
       return a.y(h_a) * b.y(h_b) * c.x(h_c) * d.x(h_d);
     };
   }
 
   inline auto yyyy(unsigned int h_a, unsigned int h_b, unsigned int h_c, unsigned int h_d) {
-    return [h_a, h_b, h_c, h_d](const Qn::QVector &a, const Qn::QVector &b const Qn::QVector &c, const Qn::QVector &d) {
+    return [h_a, h_b, h_c, h_d](const Qn::QVector &a, const Qn::QVector &b, const Qn::QVector &c, const Qn::QVector &d) {
       return a.y(h_a) * b.y(h_b) * c.y(h_c) * d.y(h_d);
     };
   }
