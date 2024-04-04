@@ -204,7 +204,7 @@ void run8_proton_correlate(string inputFiles="qn.root", string outputFile="corr.
   auto wUnity = [](const Qn::QVector &a, const Qn::QVector &b) { return 1; };
   auto wSumWu = [](const Qn::QVector &a, const Qn::QVector &b) { return a.sumweights(); };
   auto wSumWu3part = [](const Qn::QVector &a, const Qn::QVector &b, const Qn::QVector &c) { return a.sumweights(); };
-  auto wSumWu4part = [](const Qn::QVector &a, const Qn::QVector &b, const Qn::QVector &c, , const Qn::QVector &d) { return a.sumweights(); };
+  auto wSumWu4part = [](const Qn::QVector &a, const Qn::QVector &b, const Qn::QVector &c, const Qn::QVector &d) { return a.sumweights(); };
 
   auto corrBuilder =
     Qn::Correlation::CorrelationBuilder{&d_samples, nSamples, axes_correlation};
