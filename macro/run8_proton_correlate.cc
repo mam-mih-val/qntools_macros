@@ -138,6 +138,11 @@ vector <vector<string>> u3Q1Q1Q1_rescaled=
   {"proton_RESCALED", "F1_RESCALED", "F3_RESCALED", "Tneg_RESCALED"},
   {"proton_RESCALED", "F1_RESCALED", "F2_RESCALED", "Tneg_RESCALED"},
   {"proton_RESCALED", "F2_RESCALED", "F3_RESCALED", "Tneg_RESCALED"},
+
+  {"proton_RESCALED", "F1_RESCALED", "F1_RESCALED", "F1_RESCALED"},
+  {"proton_RESCALED", "F2_RESCALED", "F2_RESCALED", "F2_RESCALED"},
+  {"proton_RESCALED", "F3_RESCALED", "F3_RESCALED", "F3_RESCALED"},
+
 };
 
 namespace P4{
