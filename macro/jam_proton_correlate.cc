@@ -145,6 +145,62 @@ vector <vector<string>> u2Q1Q1_rescaled=
   {"proton_RESCALED", "F1_RESCALED", "F3_RESCALED"},
 };
 
+vector <vector<string>> u3Q1Q1Q1_rescaled=
+{
+  {"proton_RESCALED", "F1_RESCALED", "F2_RESCALED", "F3_RESCALED"},
+};
+
+namespace P4{
+
+  inline auto xxxx(unsigned int h_a, unsigned int h_b, unsigned int h_c, unsigned int h_d) {
+    return [h_a, h_b, h_c, h_d](const Qn::QVector &a, const Qn::QVector &b, const Qn::QVector &c, const Qn::QVector &d) {
+      return a.x(h_a) * b.x(h_b) * c.x(h_c) * d.x(h_d);
+    };
+  }
+
+  inline auto xxyy(unsigned int h_a, unsigned int h_b, unsigned int h_c, unsigned int h_d) {
+    return [h_a, h_b, h_c, h_d](const Qn::QVector &a, const Qn::QVector &b, const Qn::QVector &c, const Qn::QVector &d) {
+      return a.x(h_a) * b.x(h_b) * c.y(h_c) * d.y(h_d);
+    };
+  }
+
+  inline auto xyxy(unsigned int h_a, unsigned int h_b, unsigned int h_c, unsigned int h_d) {
+    return [h_a, h_b, h_c, h_d](const Qn::QVector &a, const Qn::QVector &b, const Qn::QVector &c, const Qn::QVector &d) {
+      return a.x(h_a) * b.y(h_b) * c.x(h_c) * d.y(h_d);
+    };
+  }
+
+
+  inline auto xyyx(unsigned int h_a, unsigned int h_b, unsigned int h_c, unsigned int h_d) {
+    return [h_a, h_b, h_c, h_d](const Qn::QVector &a, const Qn::QVector &b, const Qn::QVector &c, const Qn::QVector &d) {
+      return a.x(h_a) * b.y(h_b) * c.y(h_c) * d.x(h_d);
+    };
+  }
+
+  inline auto yxxy(unsigned int h_a, unsigned int h_b, unsigned int h_c, unsigned int h_d) {
+    return [h_a, h_b, h_c, h_d](const Qn::QVector &a, const Qn::QVector &b, const Qn::QVector &c, const Qn::QVector &d) {
+      return a.y(h_a) * b.x(h_b) * c.x(h_c) * d.y(h_d);
+    };
+  }
+
+  inline auto yxyx(unsigned int h_a, unsigned int h_b, unsigned int h_c, unsigned int h_d) {
+    return [h_a, h_b, h_c, h_d](const Qn::QVector &a, const Qn::QVector &b, const Qn::QVector &c, const Qn::QVector &d) {
+      return a.y(h_a) * b.x(h_b) * c.y(h_c) * d.x(h_d);
+    };
+  }
+
+  inline auto yyxx(unsigned int h_a, unsigned int h_b, unsigned int h_c, unsigned int h_d) {
+    return [h_a, h_b, h_c, h_d](const Qn::QVector &a, const Qn::QVector &b, const Qn::QVector &c, const Qn::QVector &d) {
+      return a.y(h_a) * b.y(h_b) * c.x(h_c) * d.x(h_d);
+    };
+  }
+
+  inline auto yyyy(unsigned int h_a, unsigned int h_b, unsigned int h_c, unsigned int h_d) {
+    return [h_a, h_b, h_c, h_d](const Qn::QVector &a, const Qn::QVector &b, const Qn::QVector &c, const Qn::QVector &d) {
+      return a.y(h_a) * b.y(h_b) * c.y(h_c) * d.y(h_d);
+    };
+  }
+}
 
 void jam_proton_correlate(string inputFiles="qn.root", string outputFile="corr.root")
 {
@@ -178,6 +234,11 @@ void jam_proton_correlate(string inputFiles="qn.root", string outputFile="corr.r
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y2y2", P2::yy(2, 2), wSumWu, wy, qn, qn);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x2y2", P2::xy(2, 2), wSumWu, wy, qn, qn);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y2x2", P2::yx(2, 2), wSumWu, wy, qn, qn);
+
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x3x3", P2::xx(3, 3), wSumWu, wy, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y3y3", P2::yy(3, 3), wSumWu, wy, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x3y3", P2::xy(3, 3), wSumWu, wy, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y3x3", P2::yx(3, 3), wSumWu, wy, qn, qn);
   }
 
   for ( auto &corr: u1_rescaled_Q1_rescaled )
@@ -208,6 +269,21 @@ void jam_proton_correlate(string inputFiles="qn.root", string outputFile="corr.r
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x2y1y1", P3::xyy(2, 1, 1), wSumWu3part, wy, qn, qn);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y2x1y1", P3::yxy(2, 1, 1), wSumWu3part, wy, qn, qn);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y2y1x1", P3::yyx(2, 1, 1), wSumWu3part, wy, qn, qn);
+  }
+
+  for ( auto &corr: u3Q1Q1Q1_rescaled )
+  {
+    std::array<std::string, 4> qn{corr.at(0), corr.at(1), corr.at(2), corr.at(3)};
+    string corrName=corr.at(0)+"."+corr.at(1)+"."+corr.at(2)+"."+corr.at(3);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x3x1x1x1", P4::xxxx(1, 1, 1, 1), wSumWu4part, wy, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x3x1y1y1", P4::xxyy(1, 1, 1, 1), wSumWu4part, wy, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x3y1x1y1", P4::xyxy(1, 1, 1, 1), wSumWu4part, wy, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x3y1y1x1", P4::xyyx(1, 1, 1, 1), wSumWu4part, wy, qn, qn);
+
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y3x1x1y1", P4::yxxy(1, 1, 1, 1), wSumWu4part, wy, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y3x1y1x1", P4::yxyx(1, 1, 1, 1), wSumWu4part, wy, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y3y1x1x1", P4::yyxx(1, 1, 1, 1), wSumWu4part, wy, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y3y1y1y1", P4::yyyy(1, 1, 1, 1), wSumWu4part, wy, qn, qn);
   }
 
   // ---------------- //

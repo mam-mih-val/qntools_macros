@@ -320,7 +320,7 @@ void jam_proton_correct(  std::string list,
   };
 
   VectorConfig proton( "proton", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
-  proton.SetHarmonicArray( {1, 2} );
+  proton.SetHarmonicArray( {1, 2, 3} );
   proton.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
   proton.SetCorrectionAxes( proton_axes );
   proton.AddCut( "trIsProtonTof", [](double pid){
@@ -348,7 +348,7 @@ void jam_proton_correct(  std::string list,
   };
 
   VectorConfig tru_proton( "tru_proton", "simPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
-  tru_proton.SetHarmonicArray( {1, 2} );
+  tru_proton.SetHarmonicArray( {1, 2, 3} );
   tru_proton.SetCorrections( {CORRECTION::PLAIN } );
   tru_proton.SetCorrectionAxes( tru_proton_axes );
   tru_proton.AddCut( "simIsProton", [](double pid){
