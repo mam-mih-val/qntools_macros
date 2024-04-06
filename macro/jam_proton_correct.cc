@@ -329,7 +329,7 @@ void jam_proton_correct(  std::string list,
   correction_task.AddVector(Tpos);
 
   VectorConfig psi_rp( "psi_rp", "psiRP", "Ones", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
-  psi_rp.SetHarmonicArray( {1, 2} );
+  psi_rp.SetHarmonicArray( {1, 2, 3} );
   psi_rp.SetCorrections( {CORRECTION::PLAIN } );
   // psi_rp.AddHisto1D({"psiRp", 100, -3.5, 3.5}, "psiRP");
   correction_task.AddVector(psi_rp);
