@@ -221,7 +221,10 @@ void jam_proton_correlate(string inputFiles="qn.root", string outputFile="corr.r
   namespace P3 = Qn::Correlation::MixedHarmonics;
   auto wn = Qn::Correlation::UseWeights::No;
   auto wy = Qn::Correlation::UseWeights::Yes;
+  
   auto wUnity = [](const Qn::QVector &a, const Qn::QVector &b) { return 1; };
+  auto wSumWu3part = [](const Qn::QVector &a, const Qn::QVector &b) { return 1; };
+
   auto wSumWu = [](const Qn::QVector &a, const Qn::QVector &b) { return a.sumweights(); };
   auto wSumWu3part = [](const Qn::QVector &a, const Qn::QVector &b, const Qn::QVector &c) { return a.sumweights(); };
   auto wSumWu4part = [](const Qn::QVector &a, const Qn::QVector &b, const Qn::QVector &c, const Qn::QVector &d) { return a.sumweights(); };
@@ -297,12 +300,19 @@ void jam_proton_correlate(string inputFiles="qn.root", string outputFile="corr.r
   for ( auto &corr: u3Q1Q1Q1_rescaled )
   {
     std::array<std::string, 4> qn{corr.at(0), corr.at(1), corr.at(2), corr.at(3)};
+    std::array<std::string, 3> q3{ corr.at(1), corr.at(2), corr.at(3) };
+    
     string corrName=corr.at(0)+"."+corr.at(1)+"."+corr.at(2)+"."+corr.at(3);
+    string corr3Name=corr.at(1)+"."+corr.at(2)+"."+corr.at(3);
+
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x3x1x1x1", P4::xxxx(3, 1, 1, 1), wSumWu4part, wy, qn, qn);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y3y1y1y1", P4::yyyy(3, 1, 1, 1), wSumWu4part, wy, qn, qn);
 
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x1x1x1x1", P4::xxxx(1, 1, 1, 1), wSumWu4part, wy, qn, qn);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y1y1y1y1", P4::yyyy(1, 1, 1, 1), wSumWu4part, wy, qn, qn);
+    
+    corrBuilder.AddCorrelationWithInternalReader(corr3Name+".x1x1x1", P3::xxx(1, 1, 1), wUnity3part, wn, q3, q3);
+    corrBuilder.AddCorrelationWithInternalReader(corr3Name+".y1y1y1", P3::yyy(1, 1, 1), wUnity3part, wn, q3, q3);
   }
 
   // ---------------- //
