@@ -224,7 +224,7 @@ void jam_proton_correlate(string inputFiles="qn.root", string outputFile="corr.r
   auto wy = Qn::Correlation::UseWeights::Yes;
   
   auto wUnity = [](const Qn::QVector &a, const Qn::QVector &b) { return 1; };
-  auto wUnity3part = [](const Qn::QVector &a, const Qn::QVector &b) { return 1; };
+  auto wUnity3part = [](const Qn::QVector &a, const Qn::QVector &b, const Qn::QVector &c) { return 1; };
 
   auto wSumWu = [](const Qn::QVector &a, const Qn::QVector &b) { return a.sumweights(); };
   auto wSumWu3part = [](const Qn::QVector &a, const Qn::QVector &b, const Qn::QVector &c) { return a.sumweights(); };
