@@ -291,11 +291,6 @@ void jam_proton_correlate(string inputFiles="qn.root", string outputFile="corr.r
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x2y1y1", P3::xyy(2, 1, 1), wSumWu3part, wy, qn, qn);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y2x1y1", P3::yxy(2, 1, 1), wSumWu3part, wy, qn, qn);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y2y1x1", P3::yyx(2, 1, 1), wSumWu3part, wy, qn, qn);
-
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".x3x1x1", P3::xxx(3, 1, 1), wSumWu3part, wy, qn, qn);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".x3y1y1", P3::xyy(3, 1, 1), wSumWu3part, wy, qn, qn);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".y3x1y1", P3::yxy(3, 1, 1), wSumWu3part, wy, qn, qn);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".y3y1x1", P3::yyx(3, 1, 1), wSumWu3part, wy, qn, qn);
   }
 
   for ( auto &corr: u3Q1Q1Q1_rescaled )
@@ -311,9 +306,6 @@ void jam_proton_correlate(string inputFiles="qn.root", string outputFile="corr.r
 
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x1x1x1x1", P4::xxxx(1, 1, 1, 1), wSumWu4part, wy, qn, qn);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y1y1y1y1", P4::yyyy(1, 1, 1, 1), wSumWu4part, wy, qn, qn);
-    
-    corrBuilder.AddCorrelationWithInternalReader(corr3Name+".x1x1x1", P3::xxx(1, 1, 1), wUnity3part, wn, q3, q3);
-    corrBuilder.AddCorrelationWithInternalReader(corr3Name+".y1y1y1", P3::yyy(1, 1, 1), wUnity3part, wn, q3, q3);
   }
 
   // ---------------- //
