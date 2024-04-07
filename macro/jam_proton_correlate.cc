@@ -224,7 +224,7 @@ void jam_proton_correlate(string inputFiles="qn.root", string outputFile="corr.r
   auto wy = Qn::Correlation::UseWeights::Yes;
   
   auto wUnity = [](const Qn::QVector &a, const Qn::QVector &b) { return 1; };
-  auto wSumWu3part = [](const Qn::QVector &a, const Qn::QVector &b) { return 1; };
+  auto wUnity3part = [](const Qn::QVector &a, const Qn::QVector &b) { return 1; };
 
   auto wSumWu = [](const Qn::QVector &a, const Qn::QVector &b) { return a.sumweights(); };
   auto wSumWu3part = [](const Qn::QVector &a, const Qn::QVector &b, const Qn::QVector &c) { return a.sumweights(); };
@@ -261,7 +261,7 @@ void jam_proton_correlate(string inputFiles="qn.root", string outputFile="corr.r
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y1y1", P2::yy(1, 1), wSumWu, wy, qn, qn);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x1y1", P2::xy(1, 1), wSumWu, wy, qn, qn);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y1x1", P2::yx(1, 1), wSumWu, wy, qn, qn);
-    
+
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x3x1", P2::xx(3, 1), wSumWu, wy, qn, qn);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y3y1", P2::yy(3, 1), wSumWu, wy, qn, qn);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x3y1", P2::xy(3, 1), wSumWu, wy, qn, qn);
