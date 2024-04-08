@@ -91,6 +91,9 @@ vector <vector<string>> Q1_recentered_Q1_recentered =
   {"F1_RECENTERED", "psi_rp_PLAIN"},
   {"F2_RECENTERED", "psi_rp_PLAIN"},
   {"F3_RECENTERED", "psi_rp_PLAIN"},
+
+  {"Sp_PLAIN", "psi_rp_PLAIN"},
+  {"Sn_PLAIN", "psi_rp_PLAIN"},
 };
 
 
@@ -156,6 +159,9 @@ vector <vector<string>> u3Q1Q1Q1_rescaled=
   {"proton_RESCALED", "F1_RESCALED", "F1_RESCALED", "F1_RESCALED"},
   {"proton_RESCALED", "F2_RESCALED", "F2_RESCALED", "F2_RESCALED"},
   {"proton_RESCALED", "F3_RESCALED", "F3_RESCALED", "F3_RESCALED"},
+
+  {"tru_proton_PLAIN", "Sp_PLAIN", "Sp_PLAIN", "Sp_PLAIN"},
+  {"tru_proton_PLAIN", "Sn_PLAIN", "Sn_PLAIN", "Sn_PLAIN"},
 };
 
 namespace P13 {
