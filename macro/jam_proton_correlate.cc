@@ -158,6 +158,23 @@ vector <vector<string>> u3Q1Q1Q1_rescaled=
   {"proton_RESCALED", "F3_RESCALED", "F3_RESCALED", "F3_RESCALED"},
 };
 
+namespace P13 {
+  inline auto x3x3() {
+    return [](const Qn::QVector &a, const Qn::QVector &b) {
+      auto ax31 = 4*a.x(1)*a.x(1)*a.x(1) - 3*a.x(1);
+      auto bx31 = 4*b.x(1)*b.x(1)*b.x(1) - 3*b.x(1);
+      return ax31*bx31;
+    };
+  }
+  inline auto y3y3() {
+    return [](const Qn::QVector &a, const Qn::QVector &b) {
+      auto ay31 = 3*a.y(1) - 4*a.y(1)*a.y(1)*a.y(1);
+      auto by31 = 3*b.y(1) - 4*b.y(1)*b.y(1)*b.y(1);
+      return ay31*by31;
+    };
+  }
+}
+
 namespace P4{
 
   inline auto xxxx(unsigned int h_a, unsigned int h_b, unsigned int h_c, unsigned int h_d) {
@@ -276,6 +293,9 @@ void jam_proton_correlate(string inputFiles="qn.root", string outputFile="corr.r
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y1y1", P2::yy(1, 1), wUnity, wn, qn, qn);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x1y1", P2::xy(1, 1), wUnity, wn, qn, qn);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y1x1", P2::yx(1, 1), wUnity, wn, qn, qn);
+
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x3x3", P13::x3x3(), wUnity, wn, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y3y3", P13::y3y3(), wUnity, wn, qn, qn);
   }
 
   for ( auto &corr: u2Q1Q1_rescaled )
