@@ -91,9 +91,6 @@ vector <vector<string>> Q1_recentered_Q1_recentered =
   {"F1_RECENTERED", "psi_rp_PLAIN"},
   {"F2_RECENTERED", "psi_rp_PLAIN"},
   {"F3_RECENTERED", "psi_rp_PLAIN"},
-
-  {"Sp_PLAIN", "psi_rp_PLAIN"},
-  {"Sn_PLAIN", "psi_rp_PLAIN"},
 };
 
 
@@ -139,6 +136,9 @@ vector <vector<string>> Q1_rescaled_Q1_rescaled =
   {"F1_RESCALED", "psi_rp_PLAIN"},
   {"F2_RESCALED", "psi_rp_PLAIN"},
   {"F3_RESCALED", "psi_rp_PLAIN"},
+  
+  {"Sp_PLAIN", "psi_rp_PLAIN"},
+  {"Sn_PLAIN", "psi_rp_PLAIN"},
 };
 
 vector <vector<string>> u2Q1Q1_rescaled=
