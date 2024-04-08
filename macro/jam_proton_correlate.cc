@@ -161,16 +161,12 @@ vector <vector<string>> u3Q1Q1Q1_rescaled=
 namespace P13 {
   inline auto x3x3() {
     return [](const Qn::QVector &a, const Qn::QVector &b) {
-      auto ax31 = 4*a.x(1)*a.x(1)*a.x(1) - 3*a.x(1);
-      auto bx31 = 4*b.x(1)*b.x(1)*b.x(1) - 3*b.x(1);
-      return ax31*bx31;
+      return pow( a.x(1)*b.x(1), 3 );
     };
   }
   inline auto y3y3() {
     return [](const Qn::QVector &a, const Qn::QVector &b) {
-      auto ay31 = 3*a.y(1) - 4*a.y(1)*a.y(1)*a.y(1);
-      auto by31 = 3*b.y(1) - 4*b.y(1)*b.y(1)*b.y(1);
-      return ay31*by31;
+      return pow( a.y(1)*b.y(1), 3 );
     };
   }
 }
