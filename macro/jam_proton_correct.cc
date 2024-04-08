@@ -420,7 +420,7 @@ void jam_proton_correct(  std::string list,
     return 1.0 < y && y < 1.2;
     }, "rapidity cut" );
   Sn.AddHisto2D({{"simProtonY", 100, -0.5, 1.5}, {"simPt", 100, 0.0, 2.0}}, "simIsProton");
-  correction_task.AddVector(Sp);
+  correction_task.AddVector(Sn);
 
   correction_task.Run();
   auto n_events_filtered = *(dd.Count());
