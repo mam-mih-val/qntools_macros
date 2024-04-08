@@ -160,6 +160,10 @@ vector <vector<string>> u3Q1Q1Q1_rescaled=
   {"proton_RESCALED", "F2_RESCALED", "F2_RESCALED", "F2_RESCALED"},
   {"proton_RESCALED", "F3_RESCALED", "F3_RESCALED", "F3_RESCALED"},
 
+  {"tru_proton_PLAIN", "F1_RESCALED", "F1_RESCALED", "F1_RESCALED"},
+  {"tru_proton_PLAIN", "F2_RESCALED", "F2_RESCALED", "F2_RESCALED"},
+  {"tru_proton_PLAIN", "F3_RESCALED", "F3_RESCALED", "F3_RESCALED"},
+
   {"tru_proton_PLAIN", "Sp_PLAIN", "Sp_PLAIN", "Sp_PLAIN"},
   {"tru_proton_PLAIN", "Sn_PLAIN", "Sn_PLAIN", "Sn_PLAIN"},
 };
