@@ -393,34 +393,40 @@ void jam_proton_correct(  std::string list,
     auto pdg_code = static_cast<int>(pid);
     return pdg_code == 1;
     }, "proton cut" );
+  tru_proton.AddCut( "simEta", [](double eta){
+    return eta < 2.7;
+    }, "rapidity cut" );
   tru_proton.AddHisto2D({{"simProtonY", 100, -0.5, 1.5}, {"simPt", 100, 0.0, 2.0}}, "simIsProton");
   correction_task.AddVector(tru_proton);
 
-  VectorConfig Sp( "Sp", "simPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
-  Sp.SetHarmonicArray( {1, 2, 3} );
-  Sp.SetCorrections( {CORRECTION::PLAIN } );
-  Sp.AddCut( "simIsProton", [](double pid){
-    auto pdg_code = static_cast<int>(pid);
-    return pdg_code == 1;
-    }, "proton cut" );
-  Sp.AddCut( "simEta", [](double eta){
-    return 3.5 < eta && eta < 5.4;
+  VectorConfig S1( "S1", "simPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  S1.SetHarmonicArray( {1, 2, 3} );
+  S1.SetCorrections( {CORRECTION::PLAIN } );
+  S1.AddCut( "simEta", [](double eta){
+    return 3.8 < eta && eta < 5.4;
     }, "rapidity cut" );
-  Sp.AddHisto2D({{"simProtonY", 100, -0.5, 1.5}, {"simPt", 100, 0.0, 2.0}}, "simIsProton");
+  S1.AddHisto2D({{"simProtonY", 100, -0.5, 1.5}, {"simPt", 100, 0.0, 2.0}}, "simIsProton");
   correction_task.AddVector(Sp);
 
-  VectorConfig Sn( "Sn", "simPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
-  Sn.SetHarmonicArray( {1, 2, 3} );
-  Sn.SetCorrections( {CORRECTION::PLAIN } );
-  Sn.AddCut( "simIsNeutron", [](double pid){
-    auto pdg_code = static_cast<int>(pid);
-    return pdg_code == 1;
-    }, "proton cut" );
-  Sn.AddCut( "simEta", [](double eta){
-    return 3.5 < eta && eta < 5.4;
+  VectorConfig S2( "S2", "simPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  S2.SetHarmonicArray( {1, 2, 3} );
+  S2.SetCorrections( {CORRECTION::PLAIN } );
+  S2.AddCut( "simEta", [](double eta){
+    return 3.3 < eta && eta < 3.8;
     }, "rapidity cut" );
-  Sn.AddHisto2D({{"simProtonY", 100, -0.5, 1.5}, {"simPt", 100, 0.0, 2.0}}, "simIsProton");
-  correction_task.AddVector(Sn);
+  S2.AddHisto2D({{"simProtonY", 100, -0.5, 1.5}, {"simPt", 100, 0.0, 2.0}}, "simIsProton");
+  correction_task.AddVector(Sp);
+
+  VectorConfig S3( "S3", "simPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  S3.SetHarmonicArray( {1, 2, 3} );
+  S3.SetCorrections( {CORRECTION::PLAIN } );
+  S3.AddCut( "simEta", [](double eta){
+    return 2.7 < eta && eta < 3.3;
+    }, "rapidity cut" );
+  S3.AddHisto2D({{"simProtonY", 100, -0.5, 1.5}, {"simPt", 100, 0.0, 2.0}}, "simIsProton");
+  correction_task.AddVector(Sp);
+
+
 
   correction_task.Run();
   auto n_events_filtered = *(dd.Count());

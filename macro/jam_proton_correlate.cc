@@ -12,8 +12,9 @@ vector <vector<string>> u1_rescaled_Q1_rescaled=
   {"proton_RESCALED", "F2_RESCALED"},
   {"proton_RESCALED", "F3_RESCALED"},
 
-  {"tru_proton_PLAIN", "Sp_PLAIN"},
-  {"tru_proton_PLAIN", "Sn_PLAIN"},
+  {"tru_proton_PLAIN", "S1_PLAIN"},
+  {"tru_proton_PLAIN", "S2_PLAIN"},
+  {"tru_proton_PLAIN", "S3_PLAIN"},
 };
 
 vector <vector<string>> Q1_rescaled_Q1_rescaled =
@@ -34,8 +35,9 @@ vector <vector<string>> Q1_rescaled_Q1_rescaled =
   {"F2_RESCALED", "psi_rp_PLAIN"},
   {"F3_RESCALED", "psi_rp_PLAIN"},
   
-  {"Sp_PLAIN", "psi_rp_PLAIN"},
-  {"Sn_PLAIN", "psi_rp_PLAIN"},
+  {"S1_PLAIN", "psi_rp_PLAIN"},
+  {"S2_PLAIN", "psi_rp_PLAIN"},
+  {"S3_PLAIN", "psi_rp_PLAIN"},
 };
 
 vector <vector<string>> u2Q1Q1_rescaled=
@@ -45,9 +47,13 @@ vector <vector<string>> u2Q1Q1_rescaled=
   {"proton_RESCALED", "F3_RESCALED", "F3_RESCALED"},
   {"proton_RESCALED", "F1_RESCALED", "F3_RESCALED"},
 
-  {"tru_proton_PLAIN", "Sp_PLAIN", "Sp_PLAIN"},
-  {"tru_proton_PLAIN", "Sn_PLAIN", "Sn_PLAIN"},
-  {"tru_proton_PLAIN", "Sp_PLAIN", "Sn_PLAIN"},
+  {"tru_proton_PLAIN", "S1_PLAIN", "S1_PLAIN"},
+  {"tru_proton_PLAIN", "S2_PLAIN", "S2_PLAIN"},
+  {"tru_proton_PLAIN", "S3_PLAIN", "S3_PLAIN"},
+  
+  {"tru_proton_PLAIN", "S1_PLAIN", "S2_PLAIN"},
+  {"tru_proton_PLAIN", "S1_PLAIN", "S3_PLAIN"},
+  {"tru_proton_PLAIN", "S2_PLAIN", "S3_PLAIN"},
 };
 
 vector <vector<string>> u3Q1Q1Q1_rescaled=
@@ -65,8 +71,11 @@ vector <vector<string>> u3Q1Q1Q1_rescaled=
   {"tru_proton_PLAIN", "F1_RESCALED", "F1_RESCALED", "F1_RESCALED"},
   {"tru_proton_PLAIN", "F2_RESCALED", "F2_RESCALED", "F2_RESCALED"},
 
-  {"tru_proton_PLAIN", "Sp_PLAIN", "Sp_PLAIN", "Sp_PLAIN"},
-  {"tru_proton_PLAIN", "Sn_PLAIN", "Sn_PLAIN", "Sn_PLAIN"},
+  {"tru_proton_PLAIN", "S1_PLAIN", "S1_PLAIN", "S1_PLAIN"},
+  {"tru_proton_PLAIN", "S2_PLAIN", "S2_PLAIN", "S2_PLAIN"},
+  {"tru_proton_PLAIN", "S3_PLAIN", "S3_PLAIN", "S3_PLAIN"},
+  
+  {"tru_proton_PLAIN", "S1_PLAIN", "S2_PLAIN", "S3_PLAIN"},
 };
 
 namespace P13 {
