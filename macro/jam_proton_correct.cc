@@ -406,7 +406,7 @@ void jam_proton_correct(  std::string list,
     return 3.8 < eta && eta < 5.4;
     }, "rapidity cut" );
   S1.AddHisto2D({{"simProtonY", 100, -0.5, 1.5}, {"simPt", 100, 0.0, 2.0}}, "simIsProton");
-  correction_task.AddVector(Sp);
+  correction_task.AddVector(S1);
 
   VectorConfig S2( "S2", "simPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   S2.SetHarmonicArray( {1, 2, 3} );
@@ -415,7 +415,7 @@ void jam_proton_correct(  std::string list,
     return 3.3 < eta && eta < 3.8;
     }, "rapidity cut" );
   S2.AddHisto2D({{"simProtonY", 100, -0.5, 1.5}, {"simPt", 100, 0.0, 2.0}}, "simIsProton");
-  correction_task.AddVector(Sp);
+  correction_task.AddVector(S2);
 
   VectorConfig S3( "S3", "simPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   S3.SetHarmonicArray( {1, 2, 3} );
@@ -424,7 +424,7 @@ void jam_proton_correct(  std::string list,
     return 2.7 < eta && eta < 3.3;
     }, "rapidity cut" );
   S3.AddHisto2D({{"simProtonY", 100, -0.5, 1.5}, {"simPt", 100, 0.0, 2.0}}, "simIsProton");
-  correction_task.AddVector(Sp);
+  correction_task.AddVector(S3);
 
 
 
