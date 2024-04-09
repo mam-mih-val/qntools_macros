@@ -218,6 +218,7 @@ void jam_proton_correct(  std::string list,
   auto dd=d
           .Define("track_multiplicity", "return trMom.size();")
           .Define("centrality", centrality_function, {"trMom"} )
+          .Define( "simEkin", " std::vector<float> Ekin; for( auto mom : simMom ){ Ekin.push_back( sqrt(mom.P()*mom.P() + mom.M()*mom.M()) - mom.M() ); } return Ekin; " )
           .Define( "simPz", " std::vector<float> pz; for( auto mom : simMom ){ pz.push_back( mom.Pz() ); } return pz; " )
           .Define( "simPt", " std::vector<float> pT; for( auto mom : simMom ){ pT.push_back( mom.Pt() ); } return pT; " )
           .Define( "simPhi", " std::vector<float> phi; for( auto mom : simMom ){ phi.push_back( mom.Phi() ); } return phi; " )
@@ -269,7 +270,7 @@ void jam_proton_correct(  std::string list,
   correction_task.SetEventVariables(std::regex("centrality|psiRP"));
   correction_task.SetChannelVariables({std::regex("fhcalMod(X|Y|Phi|E|Id)")});
   correction_task.SetTrackVariables({
-                                      std::regex("sim(Pt|Eta|Phi|IsProton|IsNeutron|ProtonY)"),
+                                      std::regex("sim(Pt|Eta|Phi|IsProton|IsNeutron|ProtonY|Ekin)"),
                                     });
 
   correction_task.InitVariables();
@@ -300,7 +301,7 @@ void jam_proton_correct(  std::string list,
   tru_proton.AddHisto2D({{"simProtonY", 100, -0.5, 1.5}, {"simPt", 100, 0.0, 2.0}}, "simIsProton");
   correction_task.AddVector(tru_proton);
 
-  VectorConfig S1( "S1", "simPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  VectorConfig S1( "S1", "simPhi", "Ekin", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   S1.SetHarmonicArray( {1, 2, 3} );
   S1.SetCorrections( {CORRECTION::PLAIN } );
   S1.AddCut( "simEta", [](double eta){
@@ -309,7 +310,7 @@ void jam_proton_correct(  std::string list,
   S1.AddHisto2D({{"simProtonY", 100, -0.5, 1.5}, {"simPt", 100, 0.0, 2.0}}, "simIsProton");
   correction_task.AddVector(S1);
 
-  VectorConfig S2( "S2", "simPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  VectorConfig S2( "S2", "simPhi", "Ekin", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   S2.SetHarmonicArray( {1, 2, 3} );
   S2.SetCorrections( {CORRECTION::PLAIN } );
   S2.AddCut( "simEta", [](double eta){
@@ -318,7 +319,7 @@ void jam_proton_correct(  std::string list,
   S2.AddHisto2D({{"simProtonY", 100, -0.5, 1.5}, {"simPt", 100, 0.0, 2.0}}, "simIsProton");
   correction_task.AddVector(S2);
 
-  VectorConfig S3( "S3", "simPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  VectorConfig S3( "S3", "simPhi", "Ekin", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   S3.SetHarmonicArray( {1, 2, 3} );
   S3.SetCorrections( {CORRECTION::PLAIN } );
   S3.AddCut( "simEta", [](double eta){
