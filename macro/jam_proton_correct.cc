@@ -404,7 +404,7 @@ void jam_proton_correct(  std::string list,
     return pdg_code == 1;
     }, "proton cut" );
   Sp.AddCut( "simEta", [](double eta){
-    return 2.7 < eta && eta < 5.4;
+    return 3.5 < eta && eta < 5.4;
     }, "rapidity cut" );
   Sp.AddHisto2D({{"simProtonY", 100, -0.5, 1.5}, {"simPt", 100, 0.0, 2.0}}, "simIsProton");
   correction_task.AddVector(Sp);
@@ -417,7 +417,7 @@ void jam_proton_correct(  std::string list,
     return pdg_code == 1;
     }, "proton cut" );
   Sn.AddCut( "simEta", [](double eta){
-    return 2.7 < eta && eta < 5.4;
+    return 3.5 < eta && eta < 5.4;
     }, "rapidity cut" );
   Sn.AddHisto2D({{"simProtonY", 100, -0.5, 1.5}, {"simPt", 100, 0.0, 2.0}}, "simIsProton");
   correction_task.AddVector(Sn);
