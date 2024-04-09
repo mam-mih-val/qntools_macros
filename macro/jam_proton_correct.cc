@@ -218,7 +218,7 @@ void jam_proton_correct(  std::string list,
   auto dd=d
           .Define("track_multiplicity", "return trMom.size();")
           .Define("centrality", centrality_function, {"trMom"} )
-          .Define( "simEkin", " std::vector<float> Ekin; for( auto mom : simMom ){ Ekin.push_back( sqrt(mom.P()*mom.P() + mom.M()*mom.M()) - mom.M() ); } return Ekin; " )
+          .Define( "simEkin", " std::vector<float> Ekin; for( auto mom : simMom ){ Ekin.push_back( sqrt(mom.P()*mom.P() + mom.M()*mom.M() ) - mom.M() ); } return Ekin; " )
           .Define( "simPz", " std::vector<float> pz; for( auto mom : simMom ){ pz.push_back( mom.Pz() ); } return pz; " )
           .Define( "simPt", " std::vector<float> pT; for( auto mom : simMom ){ pT.push_back( mom.Pt() ); } return pT; " )
           .Define( "simPhi", " std::vector<float> phi; for( auto mom : simMom ){ phi.push_back( mom.Phi() ); } return phi; " )
@@ -307,6 +307,10 @@ void jam_proton_correct(  std::string list,
   S1.AddCut( "simEta", [](double eta){
     return 3.8 < eta && eta < 5.4;
     }, "rapidity cut" );
+  S1.AddCut( "simIsNeutron", [](double pid){
+    auto pdg_code = static_cast<int>(pid);
+    return pdg_code == 1;
+    }, "proton cut" );
   S1.AddHisto2D({{"simProtonY", 100, -0.5, 1.5}, {"simPt", 100, 0.0, 2.0}}, "simIsProton");
   correction_task.AddVector(S1);
 
@@ -316,6 +320,10 @@ void jam_proton_correct(  std::string list,
   S2.AddCut( "simEta", [](double eta){
     return 3.3 < eta && eta < 3.8;
     }, "rapidity cut" );
+  S2.AddCut( "simIsNeutron", [](double pid){
+    auto pdg_code = static_cast<int>(pid);
+    return pdg_code == 1;
+    }, "proton cut" );
   S2.AddHisto2D({{"simProtonY", 100, -0.5, 1.5}, {"simPt", 100, 0.0, 2.0}}, "simIsProton");
   correction_task.AddVector(S2);
 
@@ -325,6 +333,10 @@ void jam_proton_correct(  std::string list,
   S3.AddCut( "simEta", [](double eta){
     return 2.7 < eta && eta < 3.3;
     }, "rapidity cut" );
+  S3.AddCut( "simIsNeutron", [](double pid){
+    auto pdg_code = static_cast<int>(pid);
+    return pdg_code == 1;
+    }, "proton cut" );
   S3.AddHisto2D({{"simProtonY", 100, -0.5, 1.5}, {"simPt", 100, 0.0, 2.0}}, "simIsProton");
   correction_task.AddVector(S3);
 
