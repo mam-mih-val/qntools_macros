@@ -3,15 +3,10 @@
 vector <vector<string>> u1_psi_rp=
 {
   {"tru_proton_PLAIN", "psi_rp_PLAIN"},
-  {"proton_RESCALED", "psi_rp_PLAIN"},
 };
 
 vector <vector<string>> u1_rescaled_Q1_rescaled=
 {
-  {"proton_RESCALED", "F1_RESCALED"},
-  {"proton_RESCALED", "F2_RESCALED"},
-  {"proton_RESCALED", "F3_RESCALED"},
-
   {"tru_proton_PLAIN", "S1_PLAIN"},
   {"tru_proton_PLAIN", "S2_PLAIN"},
   {"tru_proton_PLAIN", "S3_PLAIN"},
@@ -19,22 +14,6 @@ vector <vector<string>> u1_rescaled_Q1_rescaled=
 
 vector <vector<string>> Q1_rescaled_Q1_rescaled =
 {
-  {"F1_RESCALED", "F2_RESCALED"},
-  {"F1_RESCALED", "F3_RESCALED"},
-  {"F2_RESCALED", "F3_RESCALED"},
-
-  {"Tneg_RESCALED", "F1_RESCALED"},
-  {"Tneg_RESCALED", "F2_RESCALED"},
-  {"Tneg_RESCALED", "F3_RESCALED"},
-
-  {"Tpos_RESCALED", "F1_RESCALED"},
-  {"Tpos_RESCALED", "F2_RESCALED"},
-  {"Tpos_RESCALED", "F3_RESCALED"},
-
-  {"F1_RESCALED", "psi_rp_PLAIN"},
-  {"F2_RESCALED", "psi_rp_PLAIN"},
-  {"F3_RESCALED", "psi_rp_PLAIN"},
-  
   {"S1_PLAIN", "psi_rp_PLAIN"},
   {"S2_PLAIN", "psi_rp_PLAIN"},
   {"S3_PLAIN", "psi_rp_PLAIN"},
@@ -42,11 +21,6 @@ vector <vector<string>> Q1_rescaled_Q1_rescaled =
 
 vector <vector<string>> u2Q1Q1_rescaled=
 {
-  {"proton_RESCALED", "F1_RESCALED", "F1_RESCALED"},
-  {"proton_RESCALED", "F2_RESCALED", "F2_RESCALED"},
-  {"proton_RESCALED", "F3_RESCALED", "F3_RESCALED"},
-  {"proton_RESCALED", "F1_RESCALED", "F3_RESCALED"},
-
   {"tru_proton_PLAIN", "S1_PLAIN", "S1_PLAIN"},
   {"tru_proton_PLAIN", "S2_PLAIN", "S2_PLAIN"},
   {"tru_proton_PLAIN", "S3_PLAIN", "S3_PLAIN"},
@@ -58,19 +32,6 @@ vector <vector<string>> u2Q1Q1_rescaled=
 
 vector <vector<string>> u3Q1Q1Q1_rescaled=
 {
-  {"proton_RESCALED", "F1_RESCALED", "F2_RESCALED", "F3_RESCALED"},
-  
-  {"proton_RESCALED", "F1_RESCALED", "F3_RESCALED", "Tneg_RESCALED"},
-  {"proton_RESCALED", "F1_RESCALED", "F2_RESCALED", "Tneg_RESCALED"},
-  {"proton_RESCALED", "F2_RESCALED", "F3_RESCALED", "Tneg_RESCALED"},
-
-  {"proton_RESCALED", "F1_RESCALED", "F1_RESCALED", "F1_RESCALED"},
-  {"proton_RESCALED", "F2_RESCALED", "F2_RESCALED", "F2_RESCALED"},
-  {"proton_RESCALED", "F3_RESCALED", "F3_RESCALED", "F3_RESCALED"},
-  
-  {"tru_proton_PLAIN", "F1_RESCALED", "F1_RESCALED", "F1_RESCALED"},
-  {"tru_proton_PLAIN", "F2_RESCALED", "F2_RESCALED", "F2_RESCALED"},
-
   {"tru_proton_PLAIN", "S1_PLAIN", "S1_PLAIN", "S1_PLAIN"},
   {"tru_proton_PLAIN", "S2_PLAIN", "S2_PLAIN", "S2_PLAIN"},
   {"tru_proton_PLAIN", "S3_PLAIN", "S3_PLAIN", "S3_PLAIN"},
