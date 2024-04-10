@@ -25,7 +25,7 @@ void jam_proton_correct(  std::string list,
 
   std::random_device dev{}; 
   std::mt19937 engine(dev()); 
-  std::uniform_real_distribution distribution<float>{M_PI*-1, M_PI};
+  std::uniform_real_distribution<float> distribution{M_PI*-1, M_PI};
   auto psi_rp_function = [ &distribution, &engine ] ( float psi_rp ){
     return distribution(engine);
   };
@@ -70,7 +70,6 @@ void jam_proton_correct(  std::string list,
       auto pz = vec_pz.at(i);
       auto theta = atan2(pT, pz);
       auto eta = - log( tan( theta /2 ) );
-      auto ycm = log( E + pz ) - log( E - pz ) - Y_CM;
       vec_eta.push_back( ycm );
     }
     return vec_eta;
