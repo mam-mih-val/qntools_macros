@@ -42,7 +42,7 @@ void jam_proton_correct(  std::string list,
   };
   auto pT_function = []( ROOT::VecOps::RVec<float> vec_px, ROOT::VecOps::RVec<float> vec_py ){
     ROOT::VecOps::RVec<float> vec_pT{};
-    vec_phi.reserve( vec_px.size() );
+    vec_pT.reserve( vec_px.size() );
     for( size_t i=0; i<vec_px.size(); ++i ){
       auto px = vec_px.at(i);
       auto py = vec_py.at(i);
