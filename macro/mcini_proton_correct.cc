@@ -15,8 +15,6 @@ struct PidFunctions{
 
 
 void jam_proton_correct(  std::string list, 
-                          std::string str_pid_file, 
-                          std::string str_effieciency_file,
                           std::string calib_in_file="qa.root"){
   
   const float PROTON_M = 0.938; // GeV/c2
@@ -27,10 +25,10 @@ void jam_proton_correct(  std::string list,
 
   std::random_device dev{}; 
   std::mt19937 engine(dev()); 
-  std::uniform_real_distribution distribution<float>(-M_PI, M_PI);
+  std::uniform_real_distribution distribution<float>{M_PI*-1, M_PI};
   auto psi_rp_function = [ &distribution, &engine ] ( float psi_rp ){
     return distribution(engine);
-  }
+  };
   auto phi_function = []( float psi_rp, ROOT::VecOps::RVec<float> vec_px, ROOT::VecOps::RVec<float> vec_py ){
     ROOT::VecOps::RVec<float> vec_phi{};
     vec_phi.reserve( vec_px.size() );
@@ -41,7 +39,7 @@ void jam_proton_correct(  std::string list,
       vec_phi.push_back( phi+psi_rp );
     }
     return vec_phi;
-  }
+  };
   auto pT_function = []( ROOT::VecOps::RVec<float> vec_px, ROOT::VecOps::RVec<float> vec_py ){
     ROOT::VecOps::RVec<float> vec_pT{};
     vec_phi.reserve( vec_px.size() );
@@ -52,7 +50,7 @@ void jam_proton_correct(  std::string list,
       vec_pT.push_back( pT );
     }
     return vec_pT;
-  }
+  };
   auto ycm_function = [Y_CM]( ROOT::VecOps::RVec<float> vec_e, ROOT::VecOps::RVec<float> vec_z ){
     ROOT::VecOps::RVec<float> vec_ycm{};
     vec_ycm.reserve( vec_pz.size() );
@@ -63,7 +61,7 @@ void jam_proton_correct(  std::string list,
       vec_ycm.push_back( ycm );
     }
     return vec_ycm;
-  }
+  };
   auto eta_function = [Y_CM]( ROOT::VecOps::RVec<float> vec_pT, ROOT::VecOps::RVec<float> vec_z ){
     ROOT::VecOps::RVec<float> vec_eta{};
     vec_eta.reserve( vec_pz.size() );
@@ -76,7 +74,7 @@ void jam_proton_correct(  std::string list,
       vec_eta.push_back( ycm );
     }
     return vec_eta;
-  }
+  };
   auto ekin_function = [Y_CM]( ROOT::VecOps::RVec<float> vec_e, ROOT::VecOps::RVec<int> vec_px, ROOT::VecOps::RVec<int> vec_py, ROOT::VecOps::RVec<int> vec_pz ){
     ROOT::VecOps::RVec<float> vec_ekin{};
     vec_ekin.reserve( vec_e.size() );
@@ -90,7 +88,7 @@ void jam_proton_correct(  std::string list,
       vec_ekin.push_back( Ekin );
     }
     return vec_ekin;
-  }
+  };
   
   TStopwatch timer;
   timer.Start();
