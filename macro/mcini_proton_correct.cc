@@ -14,7 +14,7 @@ struct PidFunctions{
 };
 
 
-void jam_proton_correct(  std::string list, 
+void mcini_proton_correct(  std::string list, 
                           std::string calib_in_file="qa.root"){
   
   const float PROTON_M = 0.938; // GeV/c2

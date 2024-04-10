@@ -104,7 +104,7 @@ namespace P4{
   }
 }
 
-void jam_proton_correlate(string inputFiles="qn.root", string outputFile="corr.root")
+void mcini_proton_correlate(string inputFiles="qn.root", string outputFile="corr.root")
 {
   int nSamples = 100;
   Qn::AxisD centAxis({"centrality", 4, 0, 40});
