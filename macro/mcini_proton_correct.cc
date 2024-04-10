@@ -100,7 +100,7 @@ void mcini_proton_correct(  std::string list,
   auto dd=d
           .Alias( "b", "fB" )
           .Define( "psi_rp", psi_rp_function, {"fPhi"} )
-          .Define( "phi", phi_function, { "psi_rp", "fPartiles" } )
+          .Define( "phi", phi_function, { "psi_rp", "fParticles" } )
           .Define( "pT", pT_function, { "fPartiles.fPx", "fPartiles.fPy" } )
           .Define( "y", ycm_function, { "fPartiles.fE", "fPartiles.fPz" } )
           .Define( "Ekin", ekin_function, { "fPartiles.fE", "fPartiles.fPx", "fPartiles.fPy", "fPartiles.fPz" } )
