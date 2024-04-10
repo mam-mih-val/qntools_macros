@@ -70,7 +70,7 @@ void jam_proton_correct(  std::string list,
       auto pz = vec_pz.at(i);
       auto theta = atan2(pT, pz);
       auto eta = - log( tan( theta /2 ) );
-      vec_eta.push_back( ycm );
+      vec_eta.push_back( eta );
     }
     return vec_eta;
   };
