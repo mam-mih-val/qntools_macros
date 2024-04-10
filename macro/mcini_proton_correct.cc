@@ -51,7 +51,7 @@ void jam_proton_correct(  std::string list,
     }
     return vec_pT;
   };
-  auto ycm_function = [Y_CM]( ROOT::VecOps::RVec<float> vec_e, ROOT::VecOps::RVec<float> vec_z ){
+  auto ycm_function = [Y_CM]( ROOT::VecOps::RVec<float> vec_e, ROOT::VecOps::RVec<float> vec_pz ){
     ROOT::VecOps::RVec<float> vec_ycm{};
     vec_ycm.reserve( vec_pz.size() );
     for( size_t i=0; i<vec_pz.size(); ++i ){
@@ -62,7 +62,7 @@ void jam_proton_correct(  std::string list,
     }
     return vec_ycm;
   };
-  auto eta_function = [Y_CM]( ROOT::VecOps::RVec<float> vec_pT, ROOT::VecOps::RVec<float> vec_z ){
+  auto eta_function = [Y_CM]( ROOT::VecOps::RVec<float> vec_pT, ROOT::VecOps::RVec<float> vec_pz ){
     ROOT::VecOps::RVec<float> vec_eta{};
     vec_eta.reserve( vec_pz.size() );
     for( size_t i=0; i<vec_pz.size(); ++i ){
