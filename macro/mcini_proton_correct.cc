@@ -31,8 +31,8 @@ void mcini_proton_correct(  std::string list,
   };
   auto phi_function = []( float psi_rp, ROOT::VecOps::RVec<float> vec_px, ROOT::VecOps::RVec<float> vec_py ){
     ROOT::VecOps::RVec<float> vec_phi{};
-    vec_phi.reserve( particles.size() );
-    for( size_t i=0; i<particles.size(); ++i ){
+    vec_phi.reserve( vec_px.size() );
+    for( size_t i=0; i<vec_px.size(); ++i ){
       auto px = vec_px.at(i);
       auto py = vec_py.at(i);
       auto phi = atan2( py, px );
