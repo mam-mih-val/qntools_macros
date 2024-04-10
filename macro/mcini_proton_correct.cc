@@ -102,11 +102,11 @@ void mcini_proton_correct(  std::string list,
   auto dd=d
           .Alias( "b", "fB" )
           .Define( "psi_rp", psi_rp_function, {"fPhi"} )
-          .Define( "phi", phi_function, { "psi_rp", "fParticles" } )
-          .Define( "pT", pT_function, { "fParticles" } )
-          .Define( "y", ycm_function, { "fParticles" } )
-          .Define( "Ekin", ekin_function, { "fParticles" } )
-          .Alias( "pdg", "fParticles.fPdg"  )
+          .Define( "phi", phi_function, { "psi_rp", "event.fParticles.fPx" } )
+          .Define( "pT", pT_function, { "event.fParticles" } )
+          .Define( "y", ycm_function, { "event.fParticles" } )
+          .Define( "Ekin", ekin_function, { "event.fParticles" } )
+          .Alias( "pdg", "event.fParticles.fPdg"  )
           .Filter( "b > 0." )
   ; // at least one filter is mandatory!!!
 
