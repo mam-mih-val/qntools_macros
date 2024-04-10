@@ -40,50 +40,50 @@ void mcini_proton_correct(  std::string list,
     }
     return vec_phi;
   };
-  auto pT_function = []( ROOT::VecOps::RVec<UParticle> particles ){
+  auto pT_function = []( ROOT::VecOps::RVec<float> vec_px, ROOT::VecOps::RVec<float> vec_py ){
     ROOT::VecOps::RVec<float> vec_pT{};
-    vec_pT.reserve( particles.size() );
-    for( size_t i=0; i<particles.size(); ++i ){
-      auto px = particles.at(i).Px();
-      auto py = particles.at(i).Py();
+    vec_pT.reserve( vec_py.size() );
+    for( size_t i=0; i<vec_py.size(); ++i ){
+      auto px = vec_px.at(i);
+      auto py = vec_py.at(i);
       auto pT = sqrt(px*px + py*py);
       vec_pT.push_back( pT );
     }
     return vec_pT;
   };
-  auto ycm_function = [Y_CM]( ROOT::VecOps::RVec<UParticle> particles ){
+  auto ycm_function = [Y_CM]( ROOT::VecOps::RVec<float> vec_e, ROOT::VecOps::RVec<float> vec_pz ){
     ROOT::VecOps::RVec<float> vec_ycm{};
-    vec_ycm.reserve( particles.size() );
-    for( size_t i=0; i<particles.size(); ++i ){
-      auto pz = particles.at(i).Pz();
-      auto E = particles.at(i).E();
+    vec_ycm.reserve( vec_e.size() );
+    for( size_t i=0; i<vec_e.size(); ++i ){
+      auto pz = vec_pz.at(i);
+      auto E = vec_e.at(i);
       auto ycm = log( E + pz ) - log( E - pz ) - Y_CM;
       vec_ycm.push_back( ycm );
     }
     return vec_ycm;
   };
-  auto eta_function = [Y_CM]( ROOT::VecOps::RVec<UParticle> particles ){
+  auto eta_function = [Y_CM]( ROOT::VecOps::RVec<float> vec_px, ROOT::VecOps::RVec<float> vec_py, ROOT::VecOps::RVec<float> vec_pz ){
     ROOT::VecOps::RVec<float> vec_eta{};
-    vec_eta.reserve( particles.size() );
-    for( size_t i=0; i<particles.size(); ++i ){
-      auto px = particles.at(i).Px();
-      auto py = particles.at(i).Py();
+    vec_eta.reserve( vec_px.size() );
+    for( size_t i=0; i<vec_px.size(); ++i ){
+      auto px = vec_px.at(i);
+      auto py = vec_py.at(i);
       auto pT = sqrt(px*px + py*py);
-      auto pz = particles.at(i).Pz();
+      auto pz = vec_pz.at(i);
       auto theta = atan2(pT, pz);
       auto eta = - log( tan( theta /2 ) );
       vec_eta.push_back( eta );
     }
     return vec_eta;
   };
-  auto ekin_function = [Y_CM]( ROOT::VecOps::RVec<UParticle> particles ){
+  auto ekin_function = [Y_CM]( ROOT::VecOps::RVec<float> vec_px, ROOT::VecOps::RVec<float> vec_py, ROOT::VecOps::RVec<float> vec_pz, ROOT::VecOps::RVec<float> vec_e ){
     ROOT::VecOps::RVec<float> vec_ekin{};
-    vec_ekin.reserve( particles.size() );
-    for( size_t i=0; i<particles.size(); ++i ){
-      auto E = particles.at(i).E();
-      auto px = particles.at(i).Px();
-      auto py = particles.at(i).Py();
-      auto pz = particles.at(i).Pz();
+    vec_ekin.reserve( vec_px.size() );
+    for( size_t i=0; i<vec_px.size(); ++i ){
+      auto E = vec_e.at(i);
+      auto px = vec_px.at(i);
+      auto py = vec_py.at(i);
+      auto pz = vec_pz.at(i);
       auto M = sqrt( E*E - px*px - py*py - pz*pz );
       auto Ekin = E - M;
       vec_ekin.push_back( Ekin );
@@ -103,9 +103,10 @@ void mcini_proton_correct(  std::string list,
           .Alias( "b", "fB" )
           .Define( "psi_rp", psi_rp_function, {"fPhi"} )
           .Define( "phi", phi_function, { "psi_rp", "event.fParticles.fPx", "event.fParticles.fPy" } )
-          // .Define( "pT", pT_function, { "event.fParticles" } )
-          // .Define( "y", ycm_function, { "event.fParticles" } )
-          // .Define( "Ekin", ekin_function, { "event.fParticles" } )
+          .Define( "pT", pT_function, { "event.fParticles.fPx", "event.fParticles.fPy" } )
+          .Define( "y", ycm_function, { "event.fParticles.fE", "event.fParticles.fPz" } )
+          .Define( "eta", eta_function, { "event.fParticles.fPx", "event.fParticles.fPy", "event.fParticles.fPz" } )
+          .Define( "Ekin", ekin_function, {  "event.fParticles.fPx", "event.fParticles.fPy", "event.fParticles.fPz", "event.fParticles.fE" } )
           // .Alias( "pdg", "event.fParticles.fPdg"  )
           .Filter( "b > 0." )
   ; // at least one filter is mandatory!!!
