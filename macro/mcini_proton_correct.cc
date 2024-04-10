@@ -29,12 +29,12 @@ void mcini_proton_correct(  std::string list,
   auto psi_rp_function = [ &distribution, &engine ] ( float psi_rp ){
     return distribution(engine);
   };
-  auto phi_function = []( float psi_rp, ROOT::VecOps::RVec<Particle> particle ){
+  auto phi_function = []( float psi_rp, ROOT::VecOps::RVec<UParticle> particles ){
     ROOT::VecOps::RVec<float> vec_phi{};
-    vec_phi.reserve( vec_px.size() );
-    for( size_t i=0; i<vec_px.size(); ++i ){
-      auto px = particle.at(i).GetPx();
-      auto py = particle.at(i).GetPy();
+    vec_phi.reserve( particles.size() );
+    for( size_t i=0; i<particles.size(); ++i ){
+      auto px = particles.at(i).Px();
+      auto py = particles.at(i).Py();
       auto phi = atan2( py, px );
       vec_phi.push_back( phi+psi_rp );
     }
