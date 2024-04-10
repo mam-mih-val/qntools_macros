@@ -29,12 +29,12 @@ void mcini_proton_correct(  std::string list,
   auto psi_rp_function = [ &distribution, &engine ] ( float psi_rp ){
     return distribution(engine);
   };
-  auto phi_function = []( float psi_rp, ROOT::VecOps::RVec<UParticle> particles ){
+  auto phi_function = []( float psi_rp, ROOT::VecOps::RVec<float> vec_px, ROOT::VecOps::RVec<float> vec_py ){
     ROOT::VecOps::RVec<float> vec_phi{};
     vec_phi.reserve( particles.size() );
     for( size_t i=0; i<particles.size(); ++i ){
-      auto px = particles.at(i).Px();
-      auto py = particles.at(i).Py();
+      auto px = vec_px.at(i);
+      auto py = vec_py.at(i);
       auto phi = atan2( py, px );
       vec_phi.push_back( phi+psi_rp );
     }
@@ -102,11 +102,11 @@ void mcini_proton_correct(  std::string list,
   auto dd=d
           .Alias( "b", "fB" )
           .Define( "psi_rp", psi_rp_function, {"fPhi"} )
-          .Define( "phi", phi_function, { "psi_rp", "event.fParticles.fPx" } )
-          .Define( "pT", pT_function, { "event.fParticles" } )
-          .Define( "y", ycm_function, { "event.fParticles" } )
-          .Define( "Ekin", ekin_function, { "event.fParticles" } )
-          .Alias( "pdg", "event.fParticles.fPdg"  )
+          .Define( "phi", phi_function, { "psi_rp", "event.fParticles.fPx", "event.fParticles.fPy" } )
+          // .Define( "pT", pT_function, { "event.fParticles" } )
+          // .Define( "y", ycm_function, { "event.fParticles" } )
+          // .Define( "Ekin", ekin_function, { "event.fParticles" } )
+          // .Alias( "pdg", "event.fParticles.fPdg"  )
           .Filter( "b > 0." )
   ; // at least one filter is mandatory!!!
 
