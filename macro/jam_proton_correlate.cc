@@ -2,41 +2,41 @@
 
 vector <vector<string>> u1_psi_rp=
 {
-  {"tru_proton_PLAIN", "psi_rp_PLAIN"},
+  {"tru_proton_RECENTERED", "psi_rp_PLAIN"},
 };
 
 vector <vector<string>> u1_rescaled_Q1_rescaled=
 {
-  {"tru_proton_PLAIN", "S1_PLAIN"},
-  {"tru_proton_PLAIN", "S2_PLAIN"},
-  {"tru_proton_PLAIN", "S3_PLAIN"},
+  {"tru_proton_RECENTERED", "S1_RECENTERED"},
+  {"tru_proton_RECENTERED", "S2_RECENTERED"},
+  {"tru_proton_RECENTERED", "S3_RECENTERED"},
 };
 
 vector <vector<string>> Q1_rescaled_Q1_rescaled =
 {
-  {"S1_PLAIN", "psi_rp_PLAIN"},
-  {"S2_PLAIN", "psi_rp_PLAIN"},
-  {"S3_PLAIN", "psi_rp_PLAIN"},
+  {"S1_RECENTERED", "psi_rp_PLAIN"},
+  {"S2_RECENTERED", "psi_rp_PLAIN"},
+  {"S3_RECENTERED", "psi_rp_PLAIN"},
 };
 
 vector <vector<string>> u2Q1Q1_rescaled=
 {
-  {"tru_proton_PLAIN", "S1_PLAIN", "S1_PLAIN"},
-  {"tru_proton_PLAIN", "S2_PLAIN", "S2_PLAIN"},
-  {"tru_proton_PLAIN", "S3_PLAIN", "S3_PLAIN"},
+  {"tru_proton_RECENTERED", "S1_RECENTERED", "S1_RECENTERED"},
+  {"tru_proton_RECENTERED", "S2_RECENTERED", "S2_RECENTERED"},
+  {"tru_proton_RECENTERED", "S3_RECENTERED", "S3_RECENTERED"},
   
-  {"tru_proton_PLAIN", "S1_PLAIN", "S2_PLAIN"},
-  {"tru_proton_PLAIN", "S1_PLAIN", "S3_PLAIN"},
-  {"tru_proton_PLAIN", "S2_PLAIN", "S3_PLAIN"},
+  {"tru_proton_RECENTERED", "S1_RECENTERED", "S2_RECENTERED"},
+  {"tru_proton_RECENTERED", "S1_RECENTERED", "S3_RECENTERED"},
+  {"tru_proton_RECENTERED", "S2_RECENTERED", "S3_RECENTERED"},
 };
 
 vector <vector<string>> u3Q1Q1Q1_rescaled=
 {
-  {"tru_proton_PLAIN", "S1_PLAIN", "S1_PLAIN", "S1_PLAIN"},
-  {"tru_proton_PLAIN", "S2_PLAIN", "S2_PLAIN", "S2_PLAIN"},
-  {"tru_proton_PLAIN", "S3_PLAIN", "S3_PLAIN", "S3_PLAIN"},
+  {"tru_proton_RECENTERED", "S1_RECENTERED", "S1_RECENTERED", "S1_RECENTERED"},
+  {"tru_proton_RECENTERED", "S2_RECENTERED", "S2_RECENTERED", "S2_RECENTERED"},
+  {"tru_proton_RECENTERED", "S3_RECENTERED", "S3_RECENTERED", "S3_RECENTERED"},
   
-  {"tru_proton_PLAIN", "S1_PLAIN", "S2_PLAIN", "S3_PLAIN"},
+  {"tru_proton_RECENTERED", "S1_RECENTERED", "S2_RECENTERED", "S3_RECENTERED"},
 };
 
 namespace P13 {
