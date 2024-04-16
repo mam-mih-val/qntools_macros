@@ -289,7 +289,7 @@ void jam_proton_correct(  std::string list,
 
   VectorConfig tru_proton( "tru_proton", "simPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   tru_proton.SetHarmonicArray( {1, 2, 3} );
-  tru_proton.SetCorrections( {CORRECTION::PLAIN } );
+  tru_proton.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING,  } );
   tru_proton.SetCorrectionAxes( tru_proton_axes );
   tru_proton.AddCut( "simIsProton", [](double pid){
     auto pdg_code = static_cast<int>(pid);
@@ -303,7 +303,7 @@ void jam_proton_correct(  std::string list,
 
   VectorConfig S1( "S1", "simPhi", "simEkin", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   S1.SetHarmonicArray( {1, 2, 3} );
-  S1.SetCorrections( {CORRECTION::PLAIN } );
+  S1.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, } );
   S1.AddCut( "simEta", [](double eta){
     return 3.8 < eta && eta < 5.4;
     }, "rapidity cut" );
@@ -316,7 +316,7 @@ void jam_proton_correct(  std::string list,
 
   VectorConfig S2( "S2", "simPhi", "simEkin", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   S2.SetHarmonicArray( {1, 2, 3} );
-  S2.SetCorrections( {CORRECTION::PLAIN } );
+  S2.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, } );
   S2.AddCut( "simEta", [](double eta){
     return 3.3 < eta && eta < 3.8;
     }, "rapidity cut" );
@@ -329,7 +329,7 @@ void jam_proton_correct(  std::string list,
 
   VectorConfig S3( "S3", "simPhi", "simEkin", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   S3.SetHarmonicArray( {1, 2, 3} );
-  S3.SetCorrections( {CORRECTION::PLAIN } );
+  S3.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, } );
   S3.AddCut( "simEta", [](double eta){
     return 2.7 < eta && eta < 3.3;
     }, "rapidity cut" );
