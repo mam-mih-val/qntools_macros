@@ -3,40 +3,33 @@
 vector <vector<string>> u1_psi_rp=
 {
   {"tru_proton_RECENTERED", "psi_rp_PLAIN"},
+  {"proton_RESCALED", "psi_rp_PLAIN"},
 };
 
 vector <vector<string>> u1_rescaled_Q1_rescaled=
 {
-  {"tru_proton_RECENTERED", "S1_RECENTERED"},
-  {"tru_proton_RECENTERED", "S2_RECENTERED"},
-  {"tru_proton_RECENTERED", "S3_RECENTERED"},
+  {"proton_RESCALED", "F1_RESCALED"},
+  {"proton_RESCALED", "F2_RESCALED"},
+  {"proton_RESCALED", "F3_RESCALED"},
 };
 
 vector <vector<string>> Q1_rescaled_Q1_rescaled =
 {
-  {"S1_RECENTERED", "psi_rp_PLAIN"},
-  {"S2_RECENTERED", "psi_rp_PLAIN"},
-  {"S3_RECENTERED", "psi_rp_PLAIN"},
+  {"F1_RESCALED", "psi_rp_PLAIN"},
+  {"F2_RESCALED", "psi_rp_PLAIN"},
+  {"F3_RESCALED", "psi_rp_PLAIN"},
 };
 
 vector <vector<string>> u2Q1Q1_rescaled=
 {
-  {"tru_proton_RECENTERED", "S1_RECENTERED", "S1_RECENTERED"},
-  {"tru_proton_RECENTERED", "S2_RECENTERED", "S2_RECENTERED"},
-  {"tru_proton_RECENTERED", "S3_RECENTERED", "S3_RECENTERED"},
-  
-  {"tru_proton_RECENTERED", "S1_RECENTERED", "S2_RECENTERED"},
-  {"tru_proton_RECENTERED", "S1_RECENTERED", "S3_RECENTERED"},
-  {"tru_proton_RECENTERED", "S2_RECENTERED", "S3_RECENTERED"},
+  {"proton_RESCALED", "F1_RESCALED", "F2_RESCALED"},
+  {"proton_RESCALED", "F1_RESCALED", "F3_RESCALED"},
+  {"proton_RESCALED", "F2_RESCALED", "F3_RESCALED"},
 };
 
 vector <vector<string>> u3Q1Q1Q1_rescaled=
 {
-  {"tru_proton_RECENTERED", "S1_RECENTERED", "S1_RECENTERED", "S1_RECENTERED"},
-  {"tru_proton_RECENTERED", "S2_RECENTERED", "S2_RECENTERED", "S2_RECENTERED"},
-  {"tru_proton_RECENTERED", "S3_RECENTERED", "S3_RECENTERED", "S3_RECENTERED"},
-  
-  {"tru_proton_RECENTERED", "S1_RECENTERED", "S2_RECENTERED", "S3_RECENTERED"},
+  {"proton_RESCALED", "F1_RESCALED", "F2_RESCALED", "F3_RESCALED"},
 };
 
 namespace P13 {
