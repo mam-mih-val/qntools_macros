@@ -1,107 +1,26 @@
 #include "QnDataFrame.hpp"
 
-// ********************************
-// ----------- Q1_plain ----------- 
-// ********************************
-vector <vector<string>> u1_plain_Q1_plain=
-{
-  {"proton_PLAIN", "F1_PLAIN"},
-  {"proton_PLAIN", "F2_PLAIN"},
-  {"proton_PLAIN", "F3_PLAIN"},
-};
-
-vector <vector<string>> u1_recentered_Q1_plain=
-{
-  {"proton_RECENTERED", "F1_PLAIN"},
-  {"proton_RECENTERED", "F2_PLAIN"},
-  {"proton_RECENTERED", "F3_PLAIN"},
-};
-
-vector <vector<string>> u1_rescaled_Q1_plain=
-{
-  {"proton_RESCALED", "F1_PLAIN"},
-  {"proton_RESCALED", "F2_PLAIN"},
-  {"proton_RESCALED", "F3_PLAIN"},
-};
-
-vector <vector<string>> Q1_plain_Q1_plain =
-{
-  {"F1_PLAIN", "F2_PLAIN"},
-  {"F1_PLAIN", "F3_PLAIN"},
-  {"F2_PLAIN", "F3_PLAIN"},
-
-  {"Tneg_PLAIN", "F1_PLAIN"},
-  {"Tneg_PLAIN", "F2_PLAIN"},
-  {"Tneg_PLAIN", "F3_PLAIN"},
-
-  {"Tpos_PLAIN", "F1_PLAIN"},
-  {"Tpos_PLAIN", "F2_PLAIN"},
-  {"Tpos_PLAIN", "F3_PLAIN"},
-};
-
-// *************************************
-// ----------- Q1_recentered ----------- 
-// *************************************
-
-vector <vector<string>> u1_plain_Q1_recentered=
-{
-  {"proton_PLAIN", "F1_RECENTERED"},
-  {"proton_PLAIN", "F2_RECENTERED"},
-  {"proton_PLAIN", "F3_RECENTERED"},
-};
-
-vector <vector<string>> u1_recentered_Q1_recentered=
-{
-  {"proton_RECENTERED", "F1_RECENTERED"},
-  {"proton_RECENTERED", "F2_RECENTERED"},
-  {"proton_RECENTERED", "F3_RECENTERED"},
-};
-
-vector <vector<string>> u1_rescaled_Q1_recentered=
-{
-  {"proton_RESCALED", "F1_RECENTERED"},
-  {"proton_RESCALED", "F2_RECENTERED"},
-  {"proton_RESCALED", "F3_RECENTERED"},
-};
-
-vector <vector<string>> Q1_recentered_Q1_recentered =
-{
-  {"F1_RECENTERED", "F2_RECENTERED"},
-  {"F1_RECENTERED", "F3_RECENTERED"},
-  {"F2_RECENTERED", "F3_RECENTERED"},
-
-  {"Tneg_RECENTERED", "F1_RECENTERED"},
-  {"Tneg_RECENTERED", "F2_RECENTERED"},
-  {"Tneg_RECENTERED", "F3_RECENTERED"},
-
-  {"Tpos_RECENTERED", "F1_RECENTERED"},
-  {"Tpos_RECENTERED", "F2_RECENTERED"},
-  {"Tpos_RECENTERED", "F3_RECENTERED"},
-};
-
-// *************************************
-// ----------- Q1_rescaled ----------- 
-// *************************************
-
-vector <vector<string>> u1_plain_Q1_rescaled=
-{
-  {"proton_PLAIN", "F1_RESCALED"},
-  {"proton_PLAIN", "F2_RESCALED"},
-  {"proton_PLAIN", "F3_RESCALED"},
-};
-
-vector <vector<string>> u1_recentered_Q1_rescaled=
-{
-  {"proton_RECENTERED", "F1_RESCALED"},
-  {"proton_RECENTERED", "F2_RESCALED"},
-  {"proton_RECENTERED", "F3_RESCALED"},
-};
-
 vector <vector<string>> u1_rescaled_Q1_rescaled=
 {
   {"proton_RESCALED", "F1_RESCALED"},
   {"proton_RESCALED", "F2_RESCALED"},
   {"proton_RESCALED", "F3_RESCALED"},
+
+  {"proton_0_90_RESCALED", "F1_RESCALED"},
+  {"proton_0_90_RESCALED", "F2_RESCALED"},
+  {"proton_0_90_RESCALED", "F3_RESCALED"},
+
+  {"proton_90_180_RESCALED", "F1_RESCALED"},
+  {"proton_90_180_RESCALED", "F2_RESCALED"},
+  {"proton_90_180_RESCALED", "F3_RESCALED"},
+
+  {"proton_180_270_RESCALED", "F1_RESCALED"},
+  {"proton_180_270_RESCALED", "F2_RESCALED"},
+  {"proton_180_270_RESCALED", "F3_RESCALED"},
+
+  {"proton_270_0_RESCALED", "F1_RESCALED"},
+  {"proton_270_0_RESCALED", "F2_RESCALED"},
+  {"proton_270_0_RESCALED", "F3_RESCALED"},
 };
 
 vector <vector<string>> Q1_rescaled_Q1_rescaled =
@@ -118,8 +37,6 @@ vector <vector<string>> Q1_rescaled_Q1_rescaled =
   {"Tpos_RESCALED", "F2_RESCALED"},
   {"Tpos_RESCALED", "F3_RESCALED"},
 };
-
-
 
 vector <vector<string>> u2Q1Q1_rescaled=
 {
@@ -265,8 +182,6 @@ void run8_proton_correlate(string inputFiles="qn.root", string outputFile="corr.
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x1x1x1x1", P4::xxxx(1, 1, 1, 1), wSumWu4part, wy, qn, qn);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y1y1y1y1", P4::yyyy(1, 1, 1, 1), wSumWu4part, wy, qn, qn);
   }
-
-
 
   // ---------------- //
   // saving to output //
