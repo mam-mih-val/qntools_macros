@@ -13,7 +13,7 @@ struct PidFunctions{
 };
 
 
-void run8_proton_correct( std::string list, 
+void run8_proton_correct_quaters( std::string list, 
                           std::string str_pid_file, 
                           std::string str_effieciency_file,
                           std::string calib_in_file="qa.root" ){
