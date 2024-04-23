@@ -585,7 +585,7 @@ void run8_proton_correct( std::string list,
   proton_400.SetHarmonicArray( {1, 2, 3} );
   proton_400.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
   proton_400.SetCorrectionAxes( proton_axes );
-  proton_400.AddCut( "trIsProtonProb400", [](double prob){
+  proton_400.AddCut( "trProtonProb400", [](double prob){
     return prob > 0.95;
   }, "proton_400 cut" );
   proton_400.AddCut( "trFhcalX", [](double pos){
@@ -610,7 +610,7 @@ void run8_proton_correct( std::string list,
   proton_700.SetHarmonicArray( {1, 2, 3} );
   proton_700.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
   proton_700.SetCorrectionAxes( proton_axes );
-  proton_700.AddCut( "trIsProtonProb700", [](double prob){
+  proton_700.AddCut( "trProtonProb700", [](double prob){
     return prob > 0.95;
   }, "proton_700 cut" );
   proton_700.AddCut( "trFhcalX", [](double pos){
