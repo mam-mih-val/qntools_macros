@@ -162,26 +162,26 @@ void run8_proton_correlate(string inputFiles="qn.root", string outputFile="corr.
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y1x1", P2::yx(1, 1), wUnity, wn, qn, qn);
   }
 
-  for ( auto &corr: u2Q1Q1_rescaled )
-  {
-    std::array<std::string, 3> qn{corr.at(0), corr.at(1), corr.at(2)};
-    string corrName=corr.at(0)+"."+corr.at(1)+"."+corr.at(2);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".x2x1x1", P3::xxx(2, 1), wSumWu3part, wy, qn, qn);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".x2y1y1", P3::xyy(2, 1), wSumWu3part, wy, qn, qn);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".y2x1y1", P3::yxy(2, 1), wSumWu3part, wy, qn, qn);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".y2y1x1", P3::yyx(2, 1), wSumWu3part, wy, qn, qn);
-  }
+  // for ( auto &corr: u2Q1Q1_rescaled )
+  // {
+  //   std::array<std::string, 3> qn{corr.at(0), corr.at(1), corr.at(2)};
+  //   string corrName=corr.at(0)+"."+corr.at(1)+"."+corr.at(2);
+  //   corrBuilder.AddCorrelationWithInternalReader(corrName+".x2x1x1", P3::xxx(2, 1), wSumWu3part, wy, qn, qn);
+  //   corrBuilder.AddCorrelationWithInternalReader(corrName+".x2y1y1", P3::xyy(2, 1), wSumWu3part, wy, qn, qn);
+  //   corrBuilder.AddCorrelationWithInternalReader(corrName+".y2x1y1", P3::yxy(2, 1), wSumWu3part, wy, qn, qn);
+  //   corrBuilder.AddCorrelationWithInternalReader(corrName+".y2y1x1", P3::yyx(2, 1), wSumWu3part, wy, qn, qn);
+  // }
 
-  for ( auto &corr: u3Q1Q1Q1_rescaled )
-  {
-    std::array<std::string, 4> qn{corr.at(0), corr.at(1), corr.at(2), corr.at(3)};
-    string corrName=corr.at(0)+"."+corr.at(1)+"."+corr.at(2)+"."+corr.at(3);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".x3x1x1x1", P4::xxxx(3, 1, 1, 1), wSumWu4part, wy, qn, qn);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".y3y1y1y1", P4::yyyy(3, 1, 1, 1), wSumWu4part, wy, qn, qn);
+  // for ( auto &corr: u3Q1Q1Q1_rescaled )
+  // {
+  //   std::array<std::string, 4> qn{corr.at(0), corr.at(1), corr.at(2), corr.at(3)};
+  //   string corrName=corr.at(0)+"."+corr.at(1)+"."+corr.at(2)+"."+corr.at(3);
+  //   corrBuilder.AddCorrelationWithInternalReader(corrName+".x3x1x1x1", P4::xxxx(3, 1, 1, 1), wSumWu4part, wy, qn, qn);
+  //   corrBuilder.AddCorrelationWithInternalReader(corrName+".y3y1y1y1", P4::yyyy(3, 1, 1, 1), wSumWu4part, wy, qn, qn);
 
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1x1x1x1", P4::xxxx(1, 1, 1, 1), wSumWu4part, wy, qn, qn);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1y1y1y1", P4::yyyy(1, 1, 1, 1), wSumWu4part, wy, qn, qn);
-  }
+  //   corrBuilder.AddCorrelationWithInternalReader(corrName+".x1x1x1x1", P4::xxxx(1, 1, 1, 1), wSumWu4part, wy, qn, qn);
+  //   corrBuilder.AddCorrelationWithInternalReader(corrName+".y1y1y1y1", P4::yyyy(1, 1, 1, 1), wSumWu4part, wy, qn, qn);
+  // }
 
   // ---------------- //
   // saving to output //
