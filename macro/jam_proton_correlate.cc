@@ -8,28 +8,28 @@ vector <vector<string>> u1_psi_rp=
 
 vector <vector<string>> u1_rescaled_Q1_rescaled=
 {
-  {"proton_RESCALED", "F1_RESCALED"},
-  {"proton_RESCALED", "F2_RESCALED"},
-  {"proton_RESCALED", "F3_RESCALED"},
+  {"proton_RESCALED", "S1_RESCALED"},
+  {"proton_RESCALED", "S2_RESCALED"},
+  {"proton_RESCALED", "S3_RESCALED"},
 };
 
 vector <vector<string>> Q1_rescaled_Q1_rescaled =
 {
-  {"F1_RESCALED", "psi_rp_PLAIN"},
-  {"F2_RESCALED", "psi_rp_PLAIN"},
-  {"F3_RESCALED", "psi_rp_PLAIN"},
+  {"S1_RESCALED", "psi_rp_PLAIN"},
+  {"S2_RESCALED", "psi_rp_PLAIN"},
+  {"S3_RESCALED", "psi_rp_PLAIN"},
 };
 
 vector <vector<string>> u2Q1Q1_rescaled=
 {
-  {"proton_RESCALED", "F1_RESCALED", "F2_RESCALED"},
-  {"proton_RESCALED", "F1_RESCALED", "F3_RESCALED"},
-  {"proton_RESCALED", "F2_RESCALED", "F3_RESCALED"},
+  {"proton_RESCALED", "S1_RESCALED", "S2_RESCALED"},
+  {"proton_RESCALED", "S1_RESCALED", "S3_RESCALED"},
+  {"proton_RESCALED", "S2_RESCALED", "S3_RESCALED"},
 };
 
 vector <vector<string>> u3Q1Q1Q1_rescaled=
 {
-  {"proton_RESCALED", "F1_RESCALED", "F2_RESCALED", "F3_RESCALED"},
+  {"proton_RESCALED", "S1_RESCALED", "S2_RESCALED", "S3_RESCALED"},
 };
 
 namespace P13 {
