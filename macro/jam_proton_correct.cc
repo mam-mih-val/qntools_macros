@@ -299,8 +299,8 @@ void jam_proton_correct(  std::string list,
   correction_task.SetEventVariables(std::regex("centrality|psiRP"));
   correction_task.SetChannelVariables({
     // std::regex("fhcalMod(X|Y|Phi|E|Id)"),
-    std::regex("scwallMod(X|Y|Phi|Q|Id)"),
-    });
+    std::regex("scwallMod(Phi|Q|Id)"),
+  });
   correction_task.SetTrackVariables({
                                       std::regex("tr(Pt|Px|Py|Eta|Phi|IsProton|IsProtonTof|Charge|ProtonY|DcaR|Chi2Ndf|Nhits|Weight|FhcalX|FhcalY|StsNhits|StsChi2)"),
                                       std::regex("sim(Pt|Eta|Phi|IsProton|IsNeutron|ProtonY|Ekin)"),
