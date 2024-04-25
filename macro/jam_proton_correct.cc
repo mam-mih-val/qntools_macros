@@ -298,7 +298,7 @@ void jam_proton_correct(  std::string list,
   auto correction_task = CorrectionTask( dd, "correction_out.root", calib_in_file );
   correction_task.SetEventVariables(std::regex("centrality|psiRP"));
   correction_task.SetChannelVariables({
-    std::regex("fhcalMod(X|Y|Phi|E|Id)"),
+    // std::regex("fhcalMod(X|Y|Phi|E|Id)"),
     std::regex("scwallMod(X|Y|Phi|Q|Id)"),
     });
   correction_task.SetTrackVariables({
@@ -315,35 +315,35 @@ void jam_proton_correct(  std::string list,
   // psi_rp.AddHisto1D({"psiRp", 100, -3.5, 3.5}, "psiRP");
   correction_task.AddVector(psi_rp);
 
-  VectorConfig f1( "F1", "fhcalModPhi", "fhcalModE", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
-  f1.SetHarmonicArray( {1, 2} );
-  f1.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
-  f1.AddCut( "fhcalModId", [&f1_modules](double mod_id){
-    auto id = static_cast<int>(mod_id);
-    return std::find( f1_modules.begin(), f1_modules.end(), id) != f1_modules.end();
-    }, "F1 Cut" );
-  f1.AddHisto2D({{"fhcalModX", 100, -100, 100}, {"fhcalModY", 100, -100, 100}});
-  correction_task.AddVector(f1);
+  // VectorConfig f1( "F1", "fhcalModPhi", "fhcalModE", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
+  // f1.SetHarmonicArray( {1, 2} );
+  // f1.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
+  // f1.AddCut( "fhcalModId", [&f1_modules](double mod_id){
+  //   auto id = static_cast<int>(mod_id);
+  //   return std::find( f1_modules.begin(), f1_modules.end(), id) != f1_modules.end();
+  //   }, "F1 Cut" );
+  // f1.AddHisto2D({{"fhcalModX", 100, -100, 100}, {"fhcalModY", 100, -100, 100}});
+  // correction_task.AddVector(f1);
 
-  VectorConfig f2( "F2", "fhcalModPhi", "fhcalModE", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
-  f2.SetHarmonicArray( {1, 2} );
-  f2.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
-  f2.AddCut( "fhcalModId", [&f2_modules](double mod_id){
-    auto id = static_cast<int>(mod_id);
-    return std::find( f2_modules.begin(), f2_modules.end(), id) != f2_modules.end();
-    }, "F2 Cut" );
-  f2.AddHisto2D({{"fhcalModX", 100, -100, 100}, {"fhcalModY", 100, -100, 100}});
-  correction_task.AddVector(f2);
+  // VectorConfig f2( "F2", "fhcalModPhi", "fhcalModE", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
+  // f2.SetHarmonicArray( {1, 2} );
+  // f2.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
+  // f2.AddCut( "fhcalModId", [&f2_modules](double mod_id){
+  //   auto id = static_cast<int>(mod_id);
+  //   return std::find( f2_modules.begin(), f2_modules.end(), id) != f2_modules.end();
+  //   }, "F2 Cut" );
+  // f2.AddHisto2D({{"fhcalModX", 100, -100, 100}, {"fhcalModY", 100, -100, 100}});
+  // correction_task.AddVector(f2);
 
-  VectorConfig f3( "F3", "fhcalModPhi", "fhcalModE", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
-  f3.SetHarmonicArray( {1, 2} );
-  f3.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
-  f3.AddCut( "fhcalModId", [&f3_modules](double mod_id){
-    auto id = static_cast<int>(mod_id);
-    return std::find( f3_modules.begin(), f3_modules.end(), id) != f3_modules.end();
-    }, "F3 Cut" );
-  f3.AddHisto2D({{"fhcalModX", 100, -100, 100}, {"fhcalModY", 100, -100, 100}});
-  correction_task.AddVector(f3);
+  // VectorConfig f3( "F3", "fhcalModPhi", "fhcalModE", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
+  // f3.SetHarmonicArray( {1, 2} );
+  // f3.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
+  // f3.AddCut( "fhcalModId", [&f3_modules](double mod_id){
+  //   auto id = static_cast<int>(mod_id);
+  //   return std::find( f3_modules.begin(), f3_modules.end(), id) != f3_modules.end();
+  //   }, "F3 Cut" );
+  // f3.AddHisto2D({{"fhcalModX", 100, -100, 100}, {"fhcalModY", 100, -100, 100}});
+  // correction_task.AddVector(f3);
   
   VectorConfig s1( "S1", "scwallModPhi", "scwallModQ", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
   s1.SetHarmonicArray( {1, 2} );
@@ -352,7 +352,6 @@ void jam_proton_correct(  std::string list,
     auto id = static_cast<int>(mod_id);
     return std::find( s1_modules.begin(), s1_modules.end(), id) != s1_modules.end();
     }, "s1 Cut" );
-  s1.AddHisto2D({{"fhcalModX", 100, -100, 100}, {"fhcalModY", 100, -100, 100}});
   correction_task.AddVector(s1);
 
   VectorConfig s2( "S2", "scwallModPhi", "scwallModQ", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
@@ -362,7 +361,6 @@ void jam_proton_correct(  std::string list,
     auto id = static_cast<int>(mod_id);
     return std::find( s2_modules.begin(), s2_modules.end(), id) != s2_modules.end();
     }, "s2 Cut" );
-  s2.AddHisto2D({{"fhcalModX", 100, -100, 100}, {"fhcalModY", 100, -100, 100}});
   correction_task.AddVector(s2);
 
   VectorConfig s3( "S3", "scwallModPhi", "scwallModQ", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
@@ -372,7 +370,6 @@ void jam_proton_correct(  std::string list,
     auto id = static_cast<int>(mod_id);
     return std::find( s3_modules.begin(), s3_modules.end(), id) != s3_modules.end();
     }, "s3 Cut" );
-  s3.AddHisto2D({{"fhcalModX", 100, -100, 100}, {"fhcalModY", 100, -100, 100}});
   correction_task.AddVector(s3);
 
    std::vector<Qn::AxisD> tru_proton_axes{
