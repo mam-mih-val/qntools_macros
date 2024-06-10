@@ -5,14 +5,6 @@
 #include <cmath>
 #include <vector>
 
-struct PidFunctions{
-	TF1* mean_400;
-	TF1* sigma_400;
-	TF1* mean_700;
-	TF1* sigma_700;
-};
-
-
 void run8_proton_correct( std::string list, 
                           std::string str_pid_file, 
                           std::string str_effieciency_file,
@@ -35,152 +27,23 @@ void run8_proton_correct( std::string list,
 
   auto pid_file = std::make_unique<TFile>(str_pid_file.c_str(), "READ");
 
-	TF1* f1_ptr{nullptr};
-	pid_file->GetObject( "pionPos_400_amplitude", f1_ptr );
-	amplitude400[211] = f1_ptr;
-	pid_file->GetObject( "proton_400_amplitude", f1_ptr );
-	amplitude400[2212] = f1_ptr;
-	pid_file->GetObject( "deuteron_400_amplitude", f1_ptr );
-	amplitude400[1000010020] = f1_ptr;
-	pid_file->GetObject( "helion_400_amplitude", f1_ptr );
-	amplitude400[1000020030] = f1_ptr;
-	pid_file->GetObject( "triton_400_amplitude", f1_ptr );
-	amplitude400[1000010030] = f1_ptr;
+	auto f1_2212_m_400 = new TF1("2212_mean_400", "pol1");
+  f1_2212_m_400->SetParameter(0, 0.94612766);
+  f1_2212_m_400->SetParameter(1, -0.026582296);
 
-	pid_file->GetObject( "pionPos_400_mean", f1_ptr );
-	mean400[211] = f1_ptr;
-	pid_file->GetObject( "proton_400_mean", f1_ptr );
-	mean400[2212] = f1_ptr;
-	pid_file->GetObject( "deuteron_400_mean", f1_ptr );
-	mean400[1000010020] = f1_ptr;
-	pid_file->GetObject( "helion_400_mean", f1_ptr );
-	mean400[1000020030] = f1_ptr;
-	pid_file->GetObject( "triton_400_mean", f1_ptr );
-	mean400[1000010030] = f1_ptr;
+  auto f1_2212_s_400 = new TF1("2212_mean_400", "pol2");
+  f1_2212_s_400->SetParameter(0, 0.087635220);
+  f1_2212_s_400->SetParameter(1, -0.028676680);
+  f1_2212_s_400->SetParameter(2, 0.013336097);
 
-	pid_file->GetObject( "pionPos_400_sigma", f1_ptr );
-	sigma400[211] = f1_ptr;
-	pid_file->GetObject( "proton_400_sigma", f1_ptr );
-	sigma400[2212] = f1_ptr;
-	pid_file->GetObject( "deuteron_400_sigma", f1_ptr );
-	sigma400[1000010020] = f1_ptr;
-	pid_file->GetObject( "helion_400_sigma", f1_ptr );
-	sigma400[1000020030] = f1_ptr;
-	pid_file->GetObject( "triton_400_sigma", f1_ptr );
-	sigma400[1000010030] = f1_ptr;
+  auto f1_2212_m_700 = new TF1("2212_mean_700", "pol1");
+  f1_2212_m_700->SetParameter(0, 0.91900468);
+  f1_2212_m_700->SetParameter(1, 0.00070073927);
 
-	pid_file->GetObject( "pionPos_700_amplitude", f1_ptr );
-	amplitude700[211] = f1_ptr;
-	pid_file->GetObject( "proton_700_amplitude", f1_ptr );
-	amplitude700[2212] = f1_ptr;
-	pid_file->GetObject( "deuteron_700_amplitude", f1_ptr );
-	amplitude700[1000010020] = f1_ptr;
-	pid_file->GetObject( "helion_700_amplitude", f1_ptr );
-	amplitude700[1000020030] = f1_ptr;
-	pid_file->GetObject( "triton_700_amplitude", f1_ptr );
-	amplitude700[1000010030] = f1_ptr;
-
-	pid_file->GetObject( "pionPos_700_mean", f1_ptr );
-	mean700[211] = f1_ptr;
-	pid_file->GetObject( "proton_700_mean", f1_ptr );
-	mean700[2212] = f1_ptr;
-	pid_file->GetObject( "deuteron_700_mean", f1_ptr );
-	mean700[1000010020] = f1_ptr;
-	pid_file->GetObject( "helion_700_mean", f1_ptr );
-	mean700[1000020030] = f1_ptr;
-	pid_file->GetObject( "triton_700_mean", f1_ptr );
-	mean700[1000010030] = f1_ptr;
-
-	pid_file->GetObject( "pionPos_700_sigma", f1_ptr );
-	sigma700[211] = f1_ptr;
-	pid_file->GetObject( "proton_700_sigma", f1_ptr );
-	sigma700[2212] = f1_ptr;
-	pid_file->GetObject( "deuteron_700_sigma", f1_ptr );
-	sigma700[1000010020] = f1_ptr;
-	pid_file->GetObject( "helion_700_sigma", f1_ptr );
-	sigma700[1000020030] = f1_ptr;
-	pid_file->GetObject( "triton_700_sigma", f1_ptr );
-	sigma700[1000010030] = f1_ptr;
-
-  auto gauss_function = []( double amp, double mean, double sigma, double val ){
-    	return amp * exp( -1 * ( val - mean )*( val - mean ) / ( 2*sigma*sigma ) );
-    };
-
-  auto proton_prob400 = [
-    &amplitude400, &mean400, &sigma400, &vec_pdg, &gauss_function
-  ]( float pq, float m2 ){
-  auto proton_amp = amplitude400.at( 2212 )->Eval( pq );		
-  auto proton_mean = mean400.at( 2212 )->Eval( pq );		
-  auto proton_sigma = sigma400.at( 2212 )->Eval( pq );
-  auto proton_val = gauss_function( proton_amp, proton_mean, proton_sigma, m2 );
-  auto sum_val = double{};
-    for( auto pdg : vec_pdg ){
-      auto amp = amplitude400.at( pdg )->Eval( pq );		
-    auto mean = mean400.at( pdg )->Eval( pq );		
-    auto sigma = sigma400.at( pdg )->Eval( pq );
-      auto val = gauss_function( amp, mean, sigma, m2 );
-      sum_val += val;
-    }
-    return sum_val > std::numeric_limits<float>::min() ? proton_val / sum_val : 0.0;
-  };
-  auto proton_prob700 = [
-    &amplitude700, &mean700, &sigma700, &vec_pdg, &gauss_function
-  ]( float pq, float m2 ){
-  auto proton_amp = amplitude700.at( 2212 )->Eval( pq );		
-  auto proton_mean = mean700.at( 2212 )->Eval( pq );		
-  auto proton_sigma = sigma700.at( 2212 )->Eval( pq );
-  auto proton_val = gauss_function( proton_amp, proton_mean, proton_sigma, m2 );
-  auto sum_val = double{};
-    for( auto pdg : vec_pdg ){
-      auto amp = amplitude700.at( pdg )->Eval( pq );		
-    auto mean = mean700.at( pdg )->Eval( pq );		
-    auto sigma = sigma700.at( pdg )->Eval( pq );
-      auto val = gauss_function( amp, mean, sigma, m2 );
-      sum_val += val;
-    }
-    return sum_val > std::numeric_limits<float>::min() ? proton_val / sum_val : 0.0;
-  };
-
-  auto func_vector_prob400 = 
-  [proton_prob400]
-  (std::vector<float> vec_m2, std::vector<float> vec_pq){
-  std::vector<float> vec_prob{};
-  vec_prob.reserve( vec_m2.size() );
-    for( size_t i=0; i<vec_m2.size(); ++i ){
-      auto m2 = vec_m2.at(i);
-      auto pq = fabs(vec_pq.at(i));
-      auto prob = proton_prob400( pq, m2 );
-      vec_prob.push_back(prob);
-    }
-    return vec_prob;
-  };
-  auto func_vector_prob700 = 
-  [proton_prob700]
-  (std::vector<float> vec_m2, std::vector<float> vec_pq){
-  std::vector<float> vec_prob{};
-  vec_prob.reserve( vec_m2.size() );
-    for( size_t i=0; i<vec_m2.size(); ++i ){
-      auto m2 = vec_m2.at(i);
-      auto pq = fabs(vec_pq.at(i));
-      auto prob = proton_prob700( pq, m2 );
-      vec_prob.push_back(prob);
-    }
-    return vec_prob;
-  };
-
-  auto func_vector_prob = 
-  []
-  (std::vector<float> vec_prob400, std::vector<float> vec_prob700){
-  std::vector<float> vec_prob{};
-  vec_prob.reserve( vec_prob400.size() );
-    for( size_t i=0; i<vec_prob400.size(); ++i ){
-      auto prob400 = vec_prob400.at(i);
-      auto prob700 = vec_prob700.at(i);
-      auto max_prob = std::max( prob400, prob700 );
-      vec_prob.push_back(max_prob);
-    }
-    return vec_prob;
-  };
+  auto f1_2212_s_700 = new TF1("2212_mean_700", "pol2");
+  f1_2212_s_700->SetParameter(0, 0.017564553);
+  f1_2212_s_700->SetParameter(1, 0.022982477);
+  f1_2212_s_700->SetParameter(2, 0.011826542);
 
   auto m2_function = 
   []
@@ -199,42 +62,38 @@ void run8_proton_correct( std::string list,
       }
       return vec_m2;
     };
-  auto is_proton400_function = 
-  []( 
-    std::vector<float> vec_prob,
-    std::vector<float> vec_pq
-  ){
-    std::vector<int> vec_is(vec_prob.size(), 0);
-    for( size_t i=0; i<vec_prob.size(); ++i ){
-      auto prob = vec_prob.at(i);
-      auto pq = vec_pq.at(i);
-      if( pq < 0 )
-        continue;
-      if( pq > 3.0 )
-        continue;
-      if( prob < 0.99 )
-        continue;
-      vec_is.at(i) = 1;
-    }
+   
+   const auto is_proton400_function = [f1_2212_m_400, f1_2212_s_400]( std::vector<float> vec_pq, std::vector<float> vec_m2 ){
+    auto vec_is = std::vector<int>( vec_pq.size(), 0 );
+      for( size_t i=0; i < vec_pq.size(); ++i ){
+        auto m2 = vec_m2.at(i);
+        auto pq = vec_pq.at(i);
+        auto mean = f1_2212_m_400->Eval(pq);
+        auto sigma = f1_2212_s_400->Eval(pq);
+        if( pq < 0 )
+          continue;
+        if( fabs( m2 - mean ) > 3 * sigma  )
+          continue;
+        vec_is.at(i) = 1;
+      }
     return vec_is;
   };
-	auto is_proton700_function = 
-  []( 
-    std::vector<float> vec_prob,
-    std::vector<float> vec_pq
-  ){
-    std::vector<int> vec_is(vec_prob.size(), 0);
-    for( size_t i=0; i<vec_prob.size(); ++i ){
-      auto prob = vec_prob.at(i);
-      auto pq = vec_pq.at(i);
-      if( pq < 0 )
-        continue;
-      if( prob < 0.99 )
-        continue;
-      vec_is.at(i) = 1;
-    }
+
+  const auto is_proton700_function = [f1_2212_m_700, f1_2212_s_700]( std::vector<float> vec_pq, std::vector<float> vec_m2 ){
+    auto vec_is = std::vector<int>( vec_pq.size(), 0 );
+      for( size_t i=0; i < vec_pq.size(); ++i ){
+        auto m2 = vec_m2.at(i);
+        auto pq = vec_pq.at(i);
+        auto mean = f1_2212_m_700->Eval(pq);
+        auto sigma = f1_2212_s_700->Eval(pq);
+        if( pq < 0 )
+          continue;
+        if( fabs( m2 - mean ) > 3 * sigma  )
+          continue;
+        vec_is.at(i) = 1;
+      }
     return vec_is;
-  }; 
+  };
 	auto is_particle_function = 
   []
   ( std::vector<int> is_400, 
@@ -389,11 +248,8 @@ void run8_proton_correct( std::string list,
           .Define( "pq", " std::vector<float> pq; for( int i=0; i<trMom.size(); i++ ){ pq.push_back( trMom.at(i).P() / trCharge.at(i) ); } return pq;" )
           .Define( "trM2Tof700", m2_function, { "trMom", "trBetaTof700" } )
           .Define( "trM2Tof400", m2_function, { "trMom", "trBetaTof400" } )
-          .Define( "trProtonProb400", func_vector_prob400, { "trM2Tof400", "pq" } )
-		      .Define( "trProtonProb700", func_vector_prob700, { "trM2Tof700", "pq" } )
-		      .Define( "trProtonProb", func_vector_prob, { "trProtonProb400", "trProtonProb700" } )
-          .Define( "trIsProton400", is_proton400_function, { "trProtonProb400", "pq" } )
-          .Define( "trIsProton700", is_proton700_function, { "trProtonProb700", "pq" } )
+          .Define( "trIsProton400", is_proton400_function, { "trM2Tof700", "pq" } )
+          .Define( "trIsProton700", is_proton700_function, { "trM2Tof400", "pq" } )
           .Define( "trIsProton", is_particle_function, {"trIsProton400", "trIsProton700"} )
           .Define( "trProtonY", proton_ycm_function, {"pz", "pq"} )
           .Define( "trWeight", [efficiency_histo](std::vector<float> vec_y, ROOT::VecOps::RVec<float> vec_pT){
