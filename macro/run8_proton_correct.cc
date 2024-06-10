@@ -331,7 +331,7 @@ void run8_proton_correct( std::string list,
   correction_task.SetEventVariables(std::regex("centrality"));
   correction_task.SetChannelVariables({std::regex("fhcalMod(X|Y|Phi|E|Id)")});
   correction_task.SetTrackVariables({
-                                            std::regex("tr(Pt|Px|Py|Eta|Phi|IsProton|IsProton400|IsProton700|ProtonProb|ProtonProb400|ProtonProb700|Charge|ProtonY|DcaR|Chi2Ndf|Nhits|Weight|WeightTof400|WeightTof700|FhcalX|FhcalY|StsNhits|StsChi2)"),
+                                            std::regex("tr(Pt|Px|Py|Eta|Phi|IsProton|IsProton400|IsProton700|Charge|ProtonY|DcaR|Chi2Ndf|Nhits|Weight|WeightTof400|WeightTof700|FhcalX|FhcalY|StsNhits|StsChi2)"),
                                     });
 
   correction_task.InitVariables();
@@ -416,7 +416,7 @@ void run8_proton_correct( std::string list,
   proton.SetHarmonicArray( {1, 2, 3} );
   proton.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
   proton.SetCorrectionAxes( proton_axes );
-  proton.AddCut( "trProtonProb", [](double prob){
+  proton.AddCut( "trIsProton", [](double prob){
     return prob > 0.95;
   }, "proton cut" );
   proton.AddCut( "trFhcalX", [](double pos){
@@ -441,7 +441,7 @@ void run8_proton_correct( std::string list,
   proton_400.SetHarmonicArray( {1, 2, 3} );
   proton_400.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
   proton_400.SetCorrectionAxes( proton_axes );
-  proton_400.AddCut( "trProtonProb400", [](double prob){
+  proton_400.AddCut( "trIsProton400", [](double prob){
     return prob > 0.95;
   }, "proton_400 cut" );
   proton_400.AddCut( "trFhcalX", [](double pos){
@@ -466,7 +466,7 @@ void run8_proton_correct( std::string list,
   proton_700.SetHarmonicArray( {1, 2, 3} );
   proton_700.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
   proton_700.SetCorrectionAxes( proton_axes );
-  proton_700.AddCut( "trProtonProb700", [](double prob){
+  proton_700.AddCut( "trIsProton700", [](double prob){
     return prob > 0.95;
   }, "proton_700 cut" );
   proton_700.AddCut( "trFhcalX", [](double pos){
