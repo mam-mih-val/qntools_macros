@@ -248,8 +248,8 @@ void run8_proton_correct( std::string list,
           .Define( "pq", " std::vector<float> pq; for( int i=0; i<trMom.size(); i++ ){ pq.push_back( trMom.at(i).P() / trCharge.at(i) ); } return pq;" )
           .Define( "trM2Tof700", m2_function, { "trMom", "trBetaTof700" } )
           .Define( "trM2Tof400", m2_function, { "trMom", "trBetaTof400" } )
-          .Define( "trIsProton400", is_proton400_function, { "trM2Tof700", "pq" } )
-          .Define( "trIsProton700", is_proton700_function, { "trM2Tof400", "pq" } )
+          .Define( "trIsProton400", is_proton400_function, { "pq", "trM2Tof400" } )
+          .Define( "trIsProton700", is_proton700_function, { "pq", "trM2Tof700"  } )
           .Define( "trIsProton", is_particle_function, {"trIsProton400", "trIsProton700"} )
           .Define( "trProtonY", proton_ycm_function, {"pz", "pq"} )
           .Define( "trWeight", [efficiency_histo](std::vector<float> vec_y, ROOT::VecOps::RVec<float> vec_pT){
