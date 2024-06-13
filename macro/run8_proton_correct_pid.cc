@@ -388,7 +388,7 @@ void run8_proton_correct_pid( std::string list,
   proton_1sigma.AddCut( "trStsChi2", [](double chi2){
     return chi2 < 5.0;
   }, "cut on chi2 in sts" );
-  proton_1sigma.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
+  proton_1sigma.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}});
   correction_task.AddVector(proton_1sigma);
 
   VectorConfig proton_2sigma( "proton_2sigma", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
@@ -413,7 +413,7 @@ void run8_proton_correct_pid( std::string list,
   proton_2sigma.AddCut( "trStsChi2", [](double chi2){
     return chi2 < 5.0;
   }, "cut on chi2 in sts" );
-  proton_2sigma.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
+  proton_2sigma.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}});
   correction_task.AddVector(proton_2sigma);
 
   VectorConfig proton_3sigma( "proton_3sigma", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
@@ -438,7 +438,7 @@ void run8_proton_correct_pid( std::string list,
   proton_3sigma.AddCut( "trStsChi2", [](double chi2){
     return chi2 < 5.0;
   }, "cut on chi2 in sts" );
-  proton_3sigma.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
+  proton_3sigma.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}});
   correction_task.AddVector(proton_3sigma);
 
   std::cout << "Initialized" << std::endl;
