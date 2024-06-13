@@ -74,8 +74,8 @@ void run8_proton_correct_pid( std::string list,
    
 	const auto n_sigma_particle_function = 
   []
-  ( std::vector<int> n_sigma_400, 
-    std::vector<int> n_sigma_700 ){
+  ( std::vector<float> n_sigma_400, 
+    std::vector<float> n_sigma_700 ){
       std::vector<int> vec_n_simga{};
       vec_n_simga.reserve( n_sigma_400.size() );
       for( int i=0; i<n_sigma_400.size(); ++i ){ 
