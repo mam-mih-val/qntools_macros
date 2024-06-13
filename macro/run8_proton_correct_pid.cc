@@ -55,6 +55,7 @@ void run8_proton_correct_pid( std::string list,
     return 
     [ f1_mean, f1_sigma ]
     ( std::vector<float> vec_pq, std::vector<float> vec_m2 ){
+        std::cout << "N-sigma is started to execute" << std::endl;
         auto vec_n_sigma = std::vector<float>{};
         vec_n_sigma.reserve( vec_pq.size() );
         for( size_t i=0; i < vec_pq.size(); ++i ){
@@ -66,6 +67,7 @@ void run8_proton_correct_pid( std::string list,
           vec_n_sigma.push_back( pq > 0 ? n_sigma : 999. );
         }
       return vec_n_sigma;
+      std::cout << "N-sigma is calculated ok" << std::endl;
     };
   };
    
@@ -438,7 +440,7 @@ void run8_proton_correct_pid( std::string list,
   correction_task.AddVector(proton_3sigma);
 
   std::cout << "Initialized" << std::endl;
-  
+
   correction_task.Run();
   auto n_events_filtered = *(dd.Count());
   std::cout << "Number of filtered events: " << n_events_filtered << std::endl;
