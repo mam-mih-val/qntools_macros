@@ -437,6 +437,8 @@ void run8_proton_correct_pid( std::string list,
   proton_3sigma.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}}, "trIsProton");
   correction_task.AddVector(proton_3sigma);
 
+  std::cout << "Initialized" << std::endl;
+  
   correction_task.Run();
   auto n_events_filtered = *(dd.Count());
   std::cout << "Number of filtered events: " << n_events_filtered << std::endl;
