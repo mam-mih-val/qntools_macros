@@ -6,7 +6,6 @@
 #include <vector>
 
 void run8_proton_correct_pid( std::string list, 
-                          std::string str_pid_file, 
                           std::string str_effieciency_file,
                           std::string calib_in_file="qa.root" ){
   
@@ -15,17 +14,6 @@ void run8_proton_correct_pid( std::string list,
   const float DEUTERON_M = 1.875;  
   const float Y_CM = 1.15141;
   const float FHCAL_Z = 980; // cm
-
-  std::vector<size_t> vec_pdg{ 2212, 211, 1000010020, 1000010030, 1000020030 };
-    std::map<size_t, TF1*> amplitude400{};
-    std::map<size_t, TF1*> mean400{};
-    std::map<size_t, TF1*> sigma400{};
-
-    std::map<size_t, TF1*> amplitude700{};
-    std::map<size_t, TF1*> mean700{};
-    std::map<size_t, TF1*> sigma700{};
-
-  auto pid_file = std::make_unique<TFile>(str_pid_file.c_str(), "READ");
 
 	auto f1_2212_m_400 = new TF1("2212_mean_400", "pol1");
   f1_2212_m_400->SetParameter(0, 0.94612766);
@@ -100,8 +88,8 @@ void run8_proton_correct_pid( std::string list,
       for( int i=0; i<vec_pz.size(); ++i ){
         auto pz = vec_pz.at(i);
         auto p = vec_pq.at(i);
-        auto E = sqrt( p*p + PROTON_M*PROTON_M );
-        auto y = 0.5 * log( ( E + pz ) / ( E - pz ) ) - Y_CM;
+        auto E = sqrt( p*p + particle_m*particle_m );
+        auto y = 0.5 * log( ( E + pz ) / ( E - pz ) ) - y_cm;
         vec_y.push_back( y );
       }
       return vec_y;
