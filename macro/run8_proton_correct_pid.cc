@@ -60,8 +60,8 @@ void run8_proton_correct_pid( std::string list,
         for( size_t i=0; i < vec_pq.size(); ++i ){
           auto m2 = vec_m2.at(i);
           auto pq = vec_pq.at(i);
-          auto mean = f1_2212_m_400->Eval(pq);
-          auto sigma = f1_2212_s_400->Eval(pq);
+          auto mean = f1_mean->Eval(pq);
+          auto sigma = f1_sigma->Eval(pq);
           auto n_sigma = fabs( m2 - mean ) / sigma;
           vec_n_sigma.push_back( pq > 0 ? n_sigma : 999. );
         }
@@ -176,7 +176,7 @@ void run8_proton_correct_pid( std::string list,
       }
       return vec_weight;
     };
-  }
+  };
 
   std::unique_ptr<TFile> effieciency_file{TFile::Open( str_effieciency_file.c_str(), "READ" )};
   TH2D* efficiency_histo{nullptr};
