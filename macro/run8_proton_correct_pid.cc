@@ -252,7 +252,7 @@ void run8_proton_correct_pid( std::string list,
           .Define( "trM2Tof400", m2_function, { "trMom", "trBetaTof400" } )
           .Define( "trNsigmaProton400", n_sigma_generator(f1_2212_m_400, f1_2212_s_400), { "pq", "trM2Tof400" } )
           .Define( "trNsigmaProton700", n_sigma_generator(f1_2212_m_700, f1_2212_s_700), { "pq", "trM2Tof700"  } )
-          .Define( "trNsigmaProton", n_sigma_particle_function, {"NsigmaProton400", "NsigmaProton700"} )
+          .Define( "trNsigmaProton", n_sigma_particle_function, {"trNsigmaProton400", "trNsigmaProton700"} )
           .Define( "trProtonY", rapidity_generator(PROTON_M, Y_CM), {"pz", "pq"} )
           .Define( "trWeight", weight_generator(efficiency_histo), {"trProtonY", "trPt"} )
           .Define( "trWeightTof400", weight_generator(efficiency_tof400), {"trProtonY", "trPt"} )
