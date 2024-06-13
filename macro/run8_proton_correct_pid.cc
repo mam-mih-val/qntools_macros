@@ -52,7 +52,6 @@ void run8_proton_correct_pid( std::string list,
       }
       return vec_m2;
     };
-  std::cout << "Filling the rdf" << std::endl;
   const auto n_sigma_generator = []( auto f1_mean, auto f1_sigma ){
     return 
     [ f1_mean, f1_sigma ]
@@ -70,7 +69,6 @@ void run8_proton_correct_pid( std::string list,
       return vec_n_sigma;
     };
   };
-  std::cout << "Filling the rdf" << std::endl;
    
 	const auto n_sigma_particle_function = 
   []
@@ -229,7 +227,7 @@ void run8_proton_correct_pid( std::string list,
   auto* chain = new TChain( treename.c_str() );
   chain->AddFileInfoList( collection.GetList() );
   ROOT::RDataFrame d( *chain );
-
+  std::cout << "Preparing the RDF" << std::endl;
   auto dd=d
           .Define("track_multiplicity", "return trMom.size();")
           .Define( "stsNdigits","return stsDigits.size()" )
