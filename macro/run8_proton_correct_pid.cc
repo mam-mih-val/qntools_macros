@@ -369,7 +369,7 @@ void run8_proton_correct_pid( std::string list,
   proton_1sigma.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
   proton_1sigma.SetCorrectionAxes( proton_axes );
   proton_1sigma.AddCut( "trNsigmaProton", [](double n_sigma){
-    return n_sigma < 2;
+    return n_sigma < 1;
   }, "proton_1sigma cut" );
   proton_1sigma.AddCut( "trFhcalX", [](double pos){
     return pos < -30.0 || pos > 160;
