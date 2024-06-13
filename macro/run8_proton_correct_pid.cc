@@ -55,7 +55,6 @@ void run8_proton_correct_pid( std::string list,
     return 
     [ f1_mean, f1_sigma ]
     ( std::vector<float> vec_pq, std::vector<float> vec_m2 ){
-        std::cout << "N-sigma is started to execute" << std::endl;
         auto vec_n_sigma = std::vector<float>{};
         vec_n_sigma.reserve( vec_pq.size() );
         for( size_t i=0; i < vec_pq.size(); ++i ){
@@ -67,7 +66,6 @@ void run8_proton_correct_pid( std::string list,
           vec_n_sigma.push_back( pq > 0 ? n_sigma : 999. );
         }
       return vec_n_sigma;
-      std::cout << "N-sigma is calculated ok" << std::endl;
     };
   };
    
@@ -248,13 +246,13 @@ void run8_proton_correct_pid( std::string list,
           .Define( "pq", " std::vector<float> pq; for( int i=0; i<trMom.size(); i++ ){ pq.push_back( trMom.at(i).P() / trCharge.at(i) ); } return pq;" )
           .Define( "trM2Tof700", m2_function, { "trMom", "trBetaTof700" } )
           .Define( "trM2Tof400", m2_function, { "trMom", "trBetaTof400" } )
-          .Define( "trNsigmaProton400", n_sigma_generator(f1_2212_m_400, f1_2212_s_400), { "pq", "trM2Tof400" } )
-          .Define( "trNsigmaProton700", n_sigma_generator(f1_2212_m_700, f1_2212_s_700), { "pq", "trM2Tof700"  } )
+          // .Define( "trNsigmaProton400", n_sigma_generator(f1_2212_m_400, f1_2212_s_400), { "pq", "trM2Tof400" } )
+          // .Define( "trNsigmaProton700", n_sigma_generator(f1_2212_m_700, f1_2212_s_700), { "pq", "trM2Tof700"  } )
           .Define( "trNsigmaProton", n_sigma_particle_function, {"NsigmaProton400", "NsigmaProton700"} )
-          .Define( "trProtonY", rapidity_generator(PROTON_M, Y_CM), {"pz", "pq"} )
-          .Define( "trWeight", weight_generator(efficiency_histo), {"trProtonY", "trPt"} )
-          .Define( "trWeightTof400", weight_generator(efficiency_tof400), {"trProtonY", "trPt"} )
-          .Define( "trWeightTof700", weight_generator(efficiency_tof700), {"trProtonY", "trPt"} )
+          // .Define( "trProtonY", rapidity_generator(PROTON_M, Y_CM), {"pz", "pq"} )
+          // .Define( "trWeight", weight_generator(efficiency_histo), {"trProtonY", "trPt"} )
+          // .Define( "trWeightTof400", weight_generator(efficiency_tof400), {"trProtonY", "trPt"} )
+          // .Define( "trWeightTof700", weight_generator(efficiency_tof700), {"trProtonY", "trPt"} )
           .Alias("trStsNhits", "stsTrackNhits")
           .Alias("trStsChi2", "stsTrackChi2Ndf")
           .Define("trEta","ROOT::VecOps::RVec<float> eta; for(auto& mom : trMom) eta.push_back(mom.eta()); return eta;")
