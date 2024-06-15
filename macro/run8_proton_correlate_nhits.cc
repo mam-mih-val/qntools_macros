@@ -110,7 +110,7 @@ namespace P4{
   }
 
 }
-void run8_proton_correlate_pid(string inputFiles="qn.root", string outputFile="corr.root")
+void run8_proton_correlate_nhits(string inputFiles="qn.root", string outputFile="corr.root")
 {
   int nSamples = 100;
   Qn::AxisD centAxis({"centrality", 4, 0, 40});
