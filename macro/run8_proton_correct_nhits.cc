@@ -389,55 +389,55 @@ void run8_proton_correct_nhits( std::string list,
   proton_nhits_5.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}});
   correction_task.AddVector(proton_nhits_5);
 
-  VectorConfig proton_nhits_8( "proton_nhits_8", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
-  proton_nhits_8.SetHarmonicArray( {1, 2, 3} );
-  proton_nhits_8.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
-  proton_nhits_8.SetCorrectionAxes( proton_axes );
-  proton_nhits_8.AddCut( "trNsigmaProton", [](double n_sigma){
+  VectorConfig proton_nhits_6( "proton_nhits_6", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  proton_nhits_6.SetHarmonicArray( {1, 2, 3} );
+  proton_nhits_6.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
+  proton_nhits_6.SetCorrectionAxes( proton_axes );
+  proton_nhits_6.AddCut( "trNsigmaProton", [](double n_sigma){
     return n_sigma < 3;
-  }, "proton_nhits_8 cut" );
-  proton_nhits_8.AddCut( "trFhcalX", [](double pos){
+  }, "proton_nhits_6 cut" );
+  proton_nhits_6.AddCut( "trFhcalX", [](double pos){
     return pos < -30.0 || pos > 160;
   }, "cut on x-pos in fhcal plane" );
-  proton_nhits_8.AddCut( "trFhcalY", [](double pos){
+  proton_nhits_6.AddCut( "trFhcalY", [](double pos){
     return pos < -60.0 || pos > 60;
   }, "cut on y-pos in fhcal plane" );
-  proton_nhits_8.AddCut( "trStsNhits", [](double nhits){
-    return nhits > 8.5;
+  proton_nhits_6.AddCut( "trStsNhits", [](double nhits){
+    return nhits > 6.5;
   }, "cut on fake tracks" );
-  proton_nhits_8.AddCut( "trDcaR", [](double dca){
+  proton_nhits_6.AddCut( "trDcaR", [](double dca){
     return dca < 5.0;
   }, "DCA cut" );
-  proton_nhits_8.AddCut( "trStsChi2", [](double chi2){
+  proton_nhits_6.AddCut( "trStsChi2", [](double chi2){
     return chi2 < 5.0;
   }, "cut on chi2 in sts" );
-  proton_nhits_8.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}});
-  correction_task.AddVector(proton_nhits_8);
+  proton_nhits_6.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}});
+  correction_task.AddVector(proton_nhits_6);
 
-  VectorConfig proton_nhits_10( "proton_nhits_10", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
-  proton_nhits_10.SetHarmonicArray( {1, 2, 3} );
-  proton_nhits_10.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
-  proton_nhits_10.SetCorrectionAxes( proton_axes );
-  proton_nhits_10.AddCut( "trNsigmaProton", [](double n_sigma){
+  VectorConfig proton_nhits_7( "proton_nhits_7", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  proton_nhits_7.SetHarmonicArray( {1, 2, 3} );
+  proton_nhits_7.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
+  proton_nhits_7.SetCorrectionAxes( proton_axes );
+  proton_nhits_7.AddCut( "trNsigmaProton", [](double n_sigma){
     return n_sigma < 3;
-  }, "proton_nhits_10 cut" );
-  proton_nhits_10.AddCut( "trFhcalX", [](double pos){
+  }, "proton_nhits_7 cut" );
+  proton_nhits_7.AddCut( "trFhcalX", [](double pos){
     return pos < -30.0 || pos > 160;
   }, "cut on x-pos in fhcal plane" );
-  proton_nhits_10.AddCut( "trFhcalY", [](double pos){
+  proton_nhits_7.AddCut( "trFhcalY", [](double pos){
     return pos < -60.0 || pos > 60;
   }, "cut on y-pos in fhcal plane" );
-  proton_nhits_10.AddCut( "trStsNhits", [](double nhits){
-    return nhits > 10.5;
+  proton_nhits_7.AddCut( "trStsNhits", [](double nhits){
+    return nhits > 7.5;
   }, "cut on fake tracks" );
-  proton_nhits_10.AddCut( "trDcaR", [](double dca){
+  proton_nhits_7.AddCut( "trDcaR", [](double dca){
     return dca < 5.0;
   }, "DCA cut" );
-  proton_nhits_10.AddCut( "trStsChi2", [](double chi2){
+  proton_nhits_7.AddCut( "trStsChi2", [](double chi2){
     return chi2 < 5.0;
   }, "cut on chi2 in sts" );
-  proton_nhits_10.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}});
-  correction_task.AddVector(proton_nhits_10);
+  proton_nhits_7.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}});
+  correction_task.AddVector(proton_nhits_7);
 
 
   std::cout << "Initialized" << std::endl;
