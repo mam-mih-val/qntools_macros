@@ -10,9 +10,9 @@ vector <vector<string>> u1_rescaled_Q1_rescaled=
   {"proton_nhits_6_RESCALED", "F2_RESCALED"},
   {"proton_nhits_6_RESCALED", "F3_RESCALED"},
   
-  {"proton_nhits_7_RESCALED", "F1_RESCALED"},
-  {"proton_nhits_7_RESCALED", "F2_RESCALED"},
-  {"proton_nhits_7_RESCALED", "F3_RESCALED"},
+  {"proton_nhits_4_RESCALED", "F1_RESCALED"},
+  {"proton_nhits_4_RESCALED", "F2_RESCALED"},
+  {"proton_nhits_4_RESCALED", "F3_RESCALED"},
 };
 
 vector <vector<string>> Q1_rescaled_Q1_rescaled =
