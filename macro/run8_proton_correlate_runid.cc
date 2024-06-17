@@ -106,8 +106,8 @@ void run8_proton_correlate_runid(string inputFiles="qn.root", string outputFile=
 {
   int nSamples = 100;
   Qn::AxisD centAxis({"centrality", 4, 0, 40});
-  Qn::AxisD vtxXAxis({"runId", 4, 7000, 8200});
-  auto axes_correlation = Qn::MakeAxes(centAxis, vtxXAxis, vtxYAxis);
+  Qn::AxisD runidAxis({"runId", 4, 7000, 8200});
+  auto axes_correlation = Qn::MakeAxes(centAxis, runidAxis);
   ROOT::RDataFrame d( "tree", inputFiles.c_str() );
   auto d_samples = Qn::Correlation::Resample(d, nSamples);
 
