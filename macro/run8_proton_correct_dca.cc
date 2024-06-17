@@ -5,7 +5,7 @@
 #include <cmath>
 #include <vector>
 
-void run8_proton_correct_chi2( std::string list, 
+void run8_proton_correct_dca( std::string list, 
                           std::string str_effieciency_file,
                           std::string calib_in_file="qa.root" ){
 
