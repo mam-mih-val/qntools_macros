@@ -369,7 +369,7 @@ void run8_proton_correct_clean( std::string list,
         { "trPt", 10, 0.0, 2.0 },
   };
   
-  VectorConfig proton( "proton", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  VectorConfig proton( "proton", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   proton.SetHarmonicArray( {1, 2, 3} );
   proton.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
   proton.SetCorrectionAxes( proton_axes );
