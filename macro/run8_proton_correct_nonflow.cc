@@ -133,33 +133,34 @@ void run8_proton_correct_nonflow( std::string list,
   std::uniform_real_distribution<double> phi_distribution_{ -M_PI, M_PI };
   const auto function_random_shuffle_phi = 
   [&random_engine, &phi_distribution_]( ROOT::VecOps::RVec<ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiE4D<double> >> vec_mom ) mutable {
-    ROOT::VecOps::RVec<ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiE4D<double> >> vec_shuffled(vec_mom.size());
+    ROOT::VecOps::RVec< std::vector<double, 2> > vec_shuffled(vec_mom.size());
     auto old_res_x = double{};
     auto old_res_y = double{};
     auto shuffled_rex_x = double{};
     auto shuffled_rex_y = double{};
+
     std::for_each( vec_shuffled.begin(), vec_shuffled.end(), [ &, i=0 ]( auto& new_mom ) mutable {
-      new_mom = vec_mom.at(i);
+      new_mom = std::vector<double, 2>{vec_mom.at(i).Px(), vec_mom.at(i).Py()};
       auto dphi = phi_distribution_(random_engine);
-      auto px = new_mom.Px();
-      auto py = new_mom.Py();
+      auto px = new_mom[0];
+      auto py = new_mom[1];
       old_res_x+=px;
       old_res_y+=px;
       auto new_px = px*cos(dphi) - py*sin(dphi);
       auto new_py = px*sin(dphi) + py*cos(dphi);
       shuffled_rex_x+=new_px;
       shuffled_rex_y+=new_py;
-      new_mom.SetPx( new_px );
-      new_mom.SetPy( new_py );
+      new_mom[0] = new_px;
+      new_mom[1] = new_py;
       ++i;
     } );
     auto mov_x = (shuffled_rex_x - old_res_x) / vec_shuffled.size();
     auto mov_y = (shuffled_rex_y - old_res_y) / vec_shuffled.size();
     std::vector<double> vec_shuffled_phi{};
     std::for_each( vec_shuffled.begin(), vec_shuffled.end(), [ & ]( auto& new_mom ) mutable {
-      new_mom.SetPx( new_mom.Px() - mov_x );
-      new_mom.SetPy( new_mom.Py() - mov_y );
-      vec_shuffled_phi.push_back( new_mom.Phi() );
+      new_mom[0] = new_mom[0] - mov_x;
+      new_mom[1] = new_mom[1] - mov_y;
+      vec_shuffled_phi.push_back( atan2( new_mom[1], new_mom[1] ) );
     });
     return vec_shuffled_phi;
   };
