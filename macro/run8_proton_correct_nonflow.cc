@@ -429,7 +429,7 @@ void run8_proton_correct_nonflow( std::string list,
   proton.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}});
   correction_task.AddVector(proton);
 
-  VectorConfig nonflow_proton( "nonflow_proton", "trShuflledPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  VectorConfig nonflow_proton( "nonflow_proton", "trShuffledPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   nonflow_proton.SetHarmonicArray( {1, 2, 3} );
   nonflow_proton.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
   nonflow_proton.SetCorrectionAxes( proton_axes );
