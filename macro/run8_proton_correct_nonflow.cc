@@ -133,14 +133,14 @@ void run8_proton_correct_nonflow( std::string list,
   std::uniform_real_distribution<double> phi_distribution_{ -M_PI, M_PI };
   const auto function_random_shuffle_phi = 
   [&random_engine, &phi_distribution_]( ROOT::VecOps::RVec<ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiE4D<double> >> vec_mom ) mutable {
-    ROOT::VecOps::RVec< std::vector<double, 2> > vec_shuffled(vec_mom.size());
+    ROOT::VecOps::RVec< std::array<double, 2> > vec_shuffled(vec_mom.size());
     auto old_res_x = double{};
     auto old_res_y = double{};
     auto shuffled_rex_x = double{};
     auto shuffled_rex_y = double{};
 
     std::for_each( vec_shuffled.begin(), vec_shuffled.end(), [ &, i=0 ]( auto& new_mom ) mutable {
-      new_mom = std::vector<double, 2>{vec_mom.at(i).Px(), vec_mom.at(i).Py()};
+      new_mom = std::array<double, 2>{vec_mom.at(i).Px(), vec_mom.at(i).Py()};
       auto dphi = phi_distribution_(random_engine);
       auto px = new_mom[0];
       auto py = new_mom[1];
