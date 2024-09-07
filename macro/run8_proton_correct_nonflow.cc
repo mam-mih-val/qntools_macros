@@ -7,7 +7,7 @@
 #include <random>
 #include <vector>
 
-void run8_proton_correct_clean( std::string list, 
+void run8_proton_correct_nonflow( std::string list, 
                           std::string str_effieciency_file,
                           std::string calib_in_file="qa.root" ){
 
@@ -153,8 +153,8 @@ void run8_proton_correct_clean( std::string list,
       new_mom.SetPy( new_py );
       ++i;
     } );
-    auto mov_x = (shuffled_rex_x - old_res_x) / N;
-    auto mov_y = (shuffled_rex_y - old_res_y) / N;
+    auto mov_x = (shuffled_rex_x - old_res_x) / vec_shuffled.size();
+    auto mov_y = (shuffled_rex_y - old_res_y) / vec_shuffled.size();
     std::vector<double> vec_shuffled_phi{};
     std::for_each( vec_shuffled.begin(), vec_shuffled.end(), [ & ]( auto& new_mom ) mutable {
       new_mom.SetPx( new_mom.Px() - mov_x );

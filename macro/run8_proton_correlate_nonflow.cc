@@ -106,7 +106,7 @@ namespace P4{
   }
 
 }
-void run8_proton_correlate_clean(string inputFiles="qn.root", string outputFile="corr.root")
+void run8_proton_correlate_nonflow(string inputFiles="qn.root", string outputFile="corr.root")
 {
   int nSamples = 100;
   Qn::AxisD centAxis({"centrality", 8, 0, 40});
