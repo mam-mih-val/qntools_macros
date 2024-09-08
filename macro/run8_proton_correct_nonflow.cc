@@ -160,7 +160,7 @@ void run8_proton_correct_nonflow( std::string list,
     std::for_each( vec_shuffled.begin(), vec_shuffled.end(), [ & ]( auto& new_mom ) mutable {
       new_mom[0] = new_mom[0] - mov_x;
       new_mom[1] = new_mom[1] - mov_y;
-      vec_shuffled_phi.push_back( atan2( new_mom[1], new_mom[1] ) );
+      vec_shuffled_phi.push_back( atan2( new_mom[1], new_mom[0] ) );
     });
     return vec_shuffled_phi;
   };
