@@ -48,11 +48,11 @@ void run8_proton_correct_clean( std::string list,
   auto vtx_correction_generator = 
   []( TGraphErrors* g1_calib ){
     return [g1_calib](double _vtx, UInt_t _runId){return _vtx - g1_calib->Eval( static_cast<double>(_runId) ); };
-  }
+  };
   auto ref_mult_generator =
   []( TGraphErrors* g1_calib ){
     return [g1_calib](unsigned long _mult, UInt_t _runId){ return (_mult * g1_calib->Eval( static_cast<double>(_runId) )); };
-  }
+  };
   auto m2_function = 
   []
   ( ROOT::VecOps::RVec<ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiE4D<double> >> vec_mom, 
@@ -147,10 +147,10 @@ void run8_proton_correct_clean( std::string list,
 
   const auto centrality_function = 
   []
-  (size_t multiplicity){
+  (double multiplicity){
       float centrality;
       std::vector<float> centrality_percentage{ 0, 10, 20, 30, 40, 50, 60, 70, 100 };
-      std::vector<int> multiplicity_edges{ 236, 137, 99, 71, 49, 33, 22, 12 };
+      std::vector<int> multiplicity_edges{ 236, 137, 99, 71, 49, 33, 22, 12, 0 };
       if( multiplicity > multiplicity_edges[0] )
         return -1.0f;
       int idx = 0;
@@ -254,7 +254,7 @@ void run8_proton_correct_clean( std::string list,
           .Define("track_multiplicity", "return trMom.size();")
           .Define( "ref_multiplicity", ref_mult_generator( g1_FitRunIdFactor_1 ), {"track_multiplicity","runId"} )
           .Define("stsNdigits","return stsDigits.size()" )
-          .Define("centrality", centrality_function, {"trMom"} )
+          .Define("centrality", centrality_function, {"ref_multiplicity"} )
           .Define("fhcalModPhi","ROOT::VecOps::RVec<float> phi; for(auto& pos:fhcalModPos) phi.push_back(pos.phi()); return phi;")
           .Define("fhcalModX","ROOT::VecOps::RVec<float> x; for(auto& pos:fhcalModPos) x.push_back(pos.x()); return x;")
           .Define("fhcalModY","ROOT::VecOps::RVec<float> y; for(auto& pos:fhcalModPos) y.push_back(pos.y()); return y;")
