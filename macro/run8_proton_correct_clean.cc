@@ -7,6 +7,7 @@
 
 void run8_proton_correct_clean( std::string list, 
                           std::string str_effieciency_file,
+                          std::string centrality_calib_file,
                           std::string calib_in_file="qa.root" ){
 
   std::cout << "starting execution" << std::endl;
@@ -35,6 +36,23 @@ void run8_proton_correct_clean( std::string list,
   f1_2212_s_700->SetParameter(1, 0.022982477);
   f1_2212_s_700->SetParameter(2, 0.011826542);
 
+  auto file_fit = TFile::Open( centrality_calib_file.c_str(), "READ" );
+	file_fit->cd();
+	auto g1_FitVtxX = file_fit->Get<TGraphErrors>("grNew_def_h2_RunId_vtx_x");
+	auto g1_FitVtxY = file_fit->Get<TGraphErrors>("grNew_def_h2_RunId_vtx_y");
+	auto g1_FitVtxZ = file_fit->Get<TGraphErrors>("grNew_def_h2_RunId_vtx_z");
+
+	auto g1_FitRunIdFactor_1 = file_fit->Get<TGraphErrors>("RunId_corr_factor_h2_RunId_nTracks_8120_8170");
+	auto g1_FitRunIdFactor_2 = file_fit->Get<TGraphErrors>("RunId_corr_factor_h2_RunId_nTracks_7400_7450");
+
+  auto vtx_correction_generator = 
+  []( TGraphErrors* g1_calib ){
+    return [g1_calib](double _vtx, UInt_t _runId){return _vtx - g1_calib->Eval( static_cast<double>(_runId) ); };
+  }
+  auto ref_mult_generator =
+  []( TGraphErrors* g1_calib ){
+    return [g1_calib](unsigned long _mult, UInt_t _runId){ return (_mult * g1_calib->Eval( static_cast<double>(_runId) )); };
+  }
   auto m2_function = 
   []
   ( ROOT::VecOps::RVec<ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiE4D<double> >> vec_mom, 
@@ -129,11 +147,10 @@ void run8_proton_correct_clean( std::string list,
 
   const auto centrality_function = 
   []
-  (ROOT::VecOps::RVec<ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiE4D<double> >> vec_mom){
+  (size_t multiplicity){
       float centrality;
-      std::vector<float> centrality_percentage{ 0, 5, 10, 15, 20, 25, 30, 35, 40, 50, 60, 70, 80, 90, 100 };
-      std::vector<int> multiplicity_edges{ 248, 150, 122, 100, 82, 67, 54, 43, 34, 21, 13, 8, 4, 3, 1 };
-      auto multiplicity = vec_mom.size();
+      std::vector<float> centrality_percentage{ 0, 10, 20, 30, 40, 50, 60, 70, 100 };
+      std::vector<int> multiplicity_edges{ 236, 137, 99, 71, 49, 33, 22, 12 };
       if( multiplicity > multiplicity_edges[0] )
         return -1.0f;
       int idx = 0;
@@ -145,7 +162,7 @@ void run8_proton_correct_clean( std::string list,
       }
       centrality = (centrality_percentage[idx-1] + centrality_percentage[idx])/2.0f;
       return centrality;
-    };
+  };
   
   const auto dca_function = [](std::vector<float> vec_x, std::vector<float> vec_y){
     std::vector<float> vec_r{};
@@ -230,8 +247,13 @@ void run8_proton_correct_clean( std::string list,
   ROOT::RDataFrame d( *chain );
   std::cout << "Preparing the RDF" << std::endl;
   auto dd=d
+          .Define( "vtxXcorr", vtx_correction_generator(g1_FitVtxX), {"vtxX","runId"})
+          .Define( "vtxYcorr", vtx_correction_generator(g1_FitVtxY), {"vtxY","runId"})
+          .Define( "vtxZcorr", vtx_correction_generator(g1_FitVtxY), {"vtxZ","runId"})
+          .Define( "vtxRcorr", "return sqrt(vtxXcorr*vtxXcorr + vtxYcorr*vtxYcorr);" )
           .Define("track_multiplicity", "return trMom.size();")
-          .Define( "stsNdigits","return stsDigits.size()" )
+          .Define( "ref_multiplicity", ref_mult_generator( g1_FitRunIdFactor_1 ), {"track_multiplicity","runId"} )
+          .Define("stsNdigits","return stsDigits.size()" )
           .Define("centrality", centrality_function, {"trMom"} )
           .Define("fhcalModPhi","ROOT::VecOps::RVec<float> phi; for(auto& pos:fhcalModPos) phi.push_back(pos.phi()); return phi;")
           .Define("fhcalModX","ROOT::VecOps::RVec<float> x; for(auto& pos:fhcalModPos) x.push_back(pos.x()); return x;")
@@ -260,10 +282,6 @@ void run8_proton_correct_clean( std::string list,
           .Alias("trStsChi2", "stsTrackChi2Ndf")
           .Define("trEta","ROOT::VecOps::RVec<float> eta; for(auto& mom : trMom) eta.push_back(mom.eta()); return eta;")
           .Define("trPhi","ROOT::VecOps::RVec<float> phi;for(auto& mom : trMom) phi.push_back(mom.phi()); return phi;")
-          // .Filter([]( ROOT::VecOps::RVec<float> bc1_int, ROOT::VecOps::RVec<float> fd_int ){
-          //   float trigger = fd_int[0]-bc1_int[0]*0.602;
-          //   return -25900 < trigger && trigger < -6030;
-          // }, {"bc1sIntegral", "fdIntegral"} )
           .Filter([&physical_runs, &bad_runs]( UInt_t run_id ){ 
             if( std::find( physical_runs.begin(), physical_runs.end(), run_id) == physical_runs.end() )
               return false;
@@ -278,10 +296,10 @@ void run8_proton_correct_clean( std::string list,
             double sts_max = sts_digits-n_tracks*(19.4203-0.0518774*n_tracks+4.56033e-05*n_tracks*n_tracks);
             return -74.0087 < sts_min && sts_max < 188.248; 
           }, {"stsNdigits", "track_multiplicity"} )
-          .Filter("vtxChi2/vtxNdf > 0.1")
-          .Filter("fabs(vtxX)<1.0")
-          .Filter("fabs(vtxY)<1.0")
-          .Filter("fabs(vtxZ)<0.5")
+
+          .Filter("vtxNtracks > 2")
+          .Filter("fabs(vtxRcorr)<1")
+          .Filter("fabs(vtxZcorr)<0.1")
   ; // at least one filter is mandatory!!!
 
   auto correction_task = CorrectionTask( dd, "correction_out.root", calib_in_file );
