@@ -310,7 +310,7 @@ void run8_proton_correct_clean( std::string list,
                                     });
 
   correction_task.InitVariables();
-  correction_task.AddEventAxis( {"centrality", 8, 0, 40} );
+  correction_task.AddEventAxis( {"centrality", 4, 0, 40} );
 
   VectorConfig f1( "F1", "fhcalModPhi", "fhcalModE", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
   f1.SetHarmonicArray( {1, 2} );
