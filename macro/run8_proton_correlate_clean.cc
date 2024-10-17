@@ -139,10 +139,10 @@ void run8_proton_correlate_clean(string inputFiles="qn.root", string outputFile=
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y2x1y1", P3::yxy(2, 1, 1), wSumWu3part, wy, qn, qn);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y2y1x1", P3::yyx(2, 1, 1), wSumWu3part, wy, qn, qn);
 
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".y2x1x1", P3::xxx(2, 1, 1), wSumWu3part, wy, qn, qn);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".y2y1y1", P3::xyy(2, 1, 1), wSumWu3part, wy, qn, qn);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".x2x1y1", P3::yxy(2, 1, 1), wSumWu3part, wy, qn, qn);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".x2y1x1", P3::yyx(2, 1, 1), wSumWu3part, wy, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y2x1x1", P3::yxx(2, 1, 1), wSumWu3part, wy, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y2y1y1", P3::yyy(2, 1, 1), wSumWu3part, wy, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x2x1y1", P3::xxy(2, 1, 1), wSumWu3part, wy, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x2y1x1", P3::xyx(2, 1, 1), wSumWu3part, wy, qn, qn);
   }
 
   for ( auto &corr: u3Q1Q1Q1_rescaled )
