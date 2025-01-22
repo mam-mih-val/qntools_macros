@@ -22,7 +22,7 @@ void run8_proton_correct_clean( std::string list,
   f1_2212_m_400->SetParameter(0, 0.94612766);
   f1_2212_m_400->SetParameter(1, -0.026582296);
 
-  auto f1_2212_s_400 = new TF1("2212_mean_400", "pol2");
+  auto f1_2212_s_400 = new TF1("2212_sigma_400", "pol2");
   f1_2212_s_400->SetParameter(0, 0.087635220);
   f1_2212_s_400->SetParameter(1, -0.028676680);
   f1_2212_s_400->SetParameter(2, 0.013336097);
@@ -31,7 +31,7 @@ void run8_proton_correct_clean( std::string list,
   f1_2212_m_700->SetParameter(0, 0.91900468);
   f1_2212_m_700->SetParameter(1, 0.00070073927);
 
-  auto f1_2212_s_700 = new TF1("2212_mean_700", "pol2");
+  auto f1_2212_s_700 = new TF1("2212_sigma_700", "pol2");
   f1_2212_s_700->SetParameter(0, 0.017564553);
   f1_2212_s_700->SetParameter(1, 0.022982477);
   f1_2212_s_700->SetParameter(2, 0.011826542);
@@ -269,8 +269,8 @@ void run8_proton_correct_clean( std::string list,
           .Define( "trPy", " std::vector<float> py; for( auto mom : trMom ){ py.push_back( mom.Py() ); } return py; " )
           .Define( "pz", " std::vector<float> pz; for( auto mom : trMom ){ pz.push_back( mom.Pz() ); } return pz; " )
           .Define( "pq", " std::vector<float> pq; for( int i=0; i<trMom.size(); i++ ){ pq.push_back( trMom.at(i).P() / trCharge.at(i) ); } return pq;" )
-          .Define( "trM2Tof700", m2_function, { "trMom", "trBetaTof700" } )
-          .Define( "trM2Tof400", m2_function, { "trMom", "trBetaTof400" } )
+          // .Define( "trM2Tof700", m2_function, { "trMom", "trBetaTof700" } )
+          // .Define( "trM2Tof400", m2_function, { "trMom", "trBetaTof400" } )
           .Define( "trNsigmaProton400", n_sigma_generator(f1_2212_m_400, f1_2212_s_400), { "pq", "trM2Tof400" } )
           .Define( "trNsigmaProton700", n_sigma_generator(f1_2212_m_700, f1_2212_s_700), { "pq", "trM2Tof700"  } )
           .Define( "trNsigmaProton", n_sigma_particle_function, {"trNsigmaProton400", "trNsigmaProton700"} )
@@ -296,7 +296,6 @@ void run8_proton_correct_clean( std::string list,
             double sts_max = sts_digits-n_tracks*(19.4203-0.0518774*n_tracks+4.56033e-05*n_tracks*n_tracks);
             return -74.0087 < sts_min && sts_max < 188.248; 
           }, {"stsNdigits", "track_multiplicity"} )
-
           .Filter("vtxNtracks > 2")
           .Filter("fabs(vtxRcorr)<1")
           .Filter("fabs(vtxZcorr)<0.1")
@@ -387,30 +386,30 @@ void run8_proton_correct_clean( std::string list,
         { "trPt", 10, 0.0, 2.0 },
   };
   
-  VectorConfig proton( "proton", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
-  proton.SetHarmonicArray( {1, 2, 3} );
-  proton.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
-  proton.SetCorrectionAxes( proton_axes );
-  proton.AddCut( "trNsigmaProton", [](double n_sigma){
-    return n_sigma < 3;
-  }, "proton cut" );
-  proton.AddCut( "trFhcalX", [](double pos){
-    return pos < -30.0 || pos > 160;
-  }, "cut on x-pos in fhcal plane" );
-  proton.AddCut( "trFhcalY", [](double pos){
-    return pos < -60.0 || pos > 60;
-  }, "cut on y-pos in fhcal plane" );
-  proton.AddCut( "trStsNhits", [](double nhits){
-    return nhits > 5.5;
-  }, "cut on fake tracks" );
-  proton.AddCut( "trDcaR", [](double dca){
-    return dca < 5.0;
-  }, "DCA cut" );
-  proton.AddCut( "trStsChi2", [](double chi2){
-    return chi2 < 5.0;
-  }, "cut on chi2 in sts" );
-  proton.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}});
-  correction_task.AddVector(proton);
+  // VectorConfig proton( "proton", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  // proton.SetHarmonicArray( {1, 2, 3} );
+  // proton.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
+  // proton.SetCorrectionAxes( proton_axes );
+  // proton.AddCut( "trNsigmaProton", [](double n_sigma){
+  //   return n_sigma < 3;
+  // }, "proton cut" );
+  // proton.AddCut( "trFhcalX", [](double pos){
+  //   return pos < -30.0 || pos > 160;
+  // }, "cut on x-pos in fhcal plane" );
+  // proton.AddCut( "trFhcalY", [](double pos){
+  //   return pos < -60.0 || pos > 60;
+  // }, "cut on y-pos in fhcal plane" );
+  // proton.AddCut( "trStsNhits", [](double nhits){
+  //   return nhits > 5.5;
+  // }, "cut on fake tracks" );
+  // proton.AddCut( "trDcaR", [](double dca){
+  //   return dca < 5.0;
+  // }, "DCA cut" );
+  // proton.AddCut( "trStsChi2", [](double chi2){
+  //   return chi2 < 5.0;
+  // }, "cut on chi2 in sts" );
+  // proton.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}});
+  // correction_task.AddVector(proton);
 
   std::cout << "Initialized" << std::endl;
 
