@@ -73,7 +73,7 @@ void run8_proton_correct_clean( std::string list,
   const auto n_sigma_generator = []( auto f1_mean, auto f1_sigma ){
     return 
     [ f1_mean, f1_sigma ]
-    ( std::vector<float> vec_pq, std::vector<float> vec_m2 ){
+    ( std::vector<float> vec_pq, ROOT::VecOps::RVec<float> vec_m2 ){
         auto vec_n_sigma = std::vector<float>{};
         vec_n_sigma.reserve( vec_pq.size() );
         for( size_t i=0; i < vec_pq.size(); ++i ){
