@@ -123,7 +123,7 @@ void run8_proton_correlate_clean(string inputFiles="qn.root", string outputFile=
   for (auto &corr: Q1_rescaled_Q1_rescaled)
   {
     std::array<std::string, 2> qn{corr.at(0), corr.at(1)};
-    string corrName=corr.at(0)+"."+corr.at(1);2
+    string corrName=corr.at(0)+"."+corr.at(1);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x1x1", P2::xx(1, 1), wUnity, wn, qn, qn);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y1y1", P2::yy(1, 1), wUnity, wn, qn, qn);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x1y1", P2::xy(1, 1), wUnity, wn, qn, qn);
