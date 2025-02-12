@@ -373,7 +373,7 @@ void run8_deuteron_correct_m2( std::string list,
     }, "cut on y-pos in fhcal plane" );
   correction_task.AddVector(Tpos);
 
-  std::vector<Qn::AxisD> proton_axes{
+  std::vector<Qn::AxisD> deuteron_axes{
         { "trDeuteronY", 6, 0.4, 1.0 },
         { "trM2Tof700", 25, 2.0, 7.0 },
   };
