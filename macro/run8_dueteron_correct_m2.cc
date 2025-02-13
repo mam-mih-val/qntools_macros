@@ -5,7 +5,7 @@
 #include <cmath>
 #include <vector>
 
-void run8_deuteron_correct_m2( std::string list, 
+void run8_dueteron_correct_m2( std::string list, 
                           std::string str_effieciency_file,
                           std::string centrality_calib_file,
                           std::string calib_in_file="qa.root" ){
