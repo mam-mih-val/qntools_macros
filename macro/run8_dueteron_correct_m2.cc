@@ -297,7 +297,7 @@ void run8_dueteron_correct_m2( std::string list,
   correction_task.SetEventVariables(std::regex("centrality"));
   correction_task.SetChannelVariables({std::regex("fhcalMod(X|Y|Phi|E|Id)")});
   correction_task.SetTrackVariables({
-                                            std::regex("tr(Pt|Px|Py|Eta|Phi|Charge|DeuteronY|DcaR|FhcalX|FhcalY|StsNhits|StsChi2)"),
+                                            std::regex("tr(Pt|Px|Py|Eta|Phi|Charge|DeuteronY|DcaR|FhcalX|FhcalY|StsNhits|StsChi2|M2Tof700|M2Tof400)"),
                                     });
 
   correction_task.InitVariables();
