@@ -375,7 +375,7 @@ void run8_dueteron_correct_m2( std::string list,
 
   std::vector<Qn::AxisD> deuteron_axes{
         { "trDeuteronY", 6, 0.4, 1.0 },
-        { "trM2Tof700", 25, 2.0, 7.0 },
+        { "trM2Tof700", 30, 0.0, 6.0 },
   };
   
   VectorConfig deuteron( "deuteron", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
@@ -383,7 +383,7 @@ void run8_dueteron_correct_m2( std::string list,
   deuteron.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
   deuteron.SetCorrectionAxes( deuteron_axes );
   deuteron.AddCut( "trPt", [](double pT){
-    return 0.8 < pT && pT < 1.6;
+    return 0.8 < pT && pT < 1.0;
   }, "cut on x-pos in fhcal plane" );
   deuteron.AddCut( "trFhcalX", [](double pos){
     return pos < -30.0 || pos > 160;
