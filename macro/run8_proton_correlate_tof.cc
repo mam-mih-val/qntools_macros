@@ -115,7 +115,12 @@ void run8_proton_correlate_tof(string inputFiles="qn.root", string outputFile="c
   int nSamples = 100;
   Qn::AxisD centAxis({"centrality", 4, 0, 40});
   auto axes_correlation = Qn::MakeAxes(centAxis);
-  ROOT::RDataFrame d( "tree", inputFiles.c_str() );
+  std::string treename = "tree";
+  auto* chain = new TChain( treename.c_str() );
+  chain->AddFile( inputFiles.c_str() );
+  if( chain->GetEntries() <= 0 )
+    return;
+  ROOT::RDataFrame d( *chain );
   auto d_samples = Qn::Correlation::Resample(d, nSamples);
 
   namespace P2 = Qn::Correlation::TwoParticle;
