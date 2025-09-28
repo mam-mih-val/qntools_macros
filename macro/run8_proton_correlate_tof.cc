@@ -178,7 +178,7 @@ void run8_proton_correlate_tof(string inputFiles="qn.root", string outputFile="c
   // ---------------- //
   // saving to output //
   // ---------------- //
-  auto corrFile = TFile::Open(outputFile.c_str(), "RECREATE");
+  auto corrFile = std::unique_ptr<TFile, std::function<void(TFile*)> >{ TFile::Open(outputFile.c_str(), "RECREATE"), []( TFile* f ){ f->Close(); } };
   corrFile->cd();
   auto results = corrBuilder.GetResults();
   for (auto &res : results) {
