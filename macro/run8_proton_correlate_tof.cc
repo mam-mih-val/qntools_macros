@@ -184,5 +184,5 @@ void run8_proton_correlate_tof(string inputFiles="qn.root", string outputFile="c
   for (auto &res : results) {
     res->Write();
   }
-  corrFile->Close();
+  // corrFile->Close();
 }
