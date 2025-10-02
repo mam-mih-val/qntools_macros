@@ -15,7 +15,8 @@ void run8_proton_correct_tof( std::string list,
   const float PROTON_M = 0.938; // GeV/c2
   const float PI_POS_M = 0.134;
   const float DEUTERON_M = 1.875;  
-  const float Y_CM = 1.15141;
+  // const float Y_CM = 1.15141;
+  const float Y_CM = 1.05666;
   const float FHCAL_Z = 980; // cm
 
 	auto f1_2212_m_400 = new TF1("2212_mean_400", "pol1");
