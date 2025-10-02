@@ -43,7 +43,7 @@ vector <vector<string>> u2Q1Q1_rescaled=
   {"proton_700_RESCALED", "F1_RESCALED", "F1_RESCALED"},
   {"proton_700_RESCALED", "F2_RESCALED", "F2_RESCALED"},
   {"proton_700_RESCALED", "F3_RESCALED", "F3_RESCALED"},
-}
+};
 
 vector <vector<string>> u3Q1Q1Q1_rescaled=
 {
