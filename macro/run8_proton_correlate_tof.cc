@@ -30,35 +30,35 @@ vector <vector<string>> Q1_rescaled_Q1_rescaled =
   // {"Tpos_RESCALED", "F3_RESCALED"},
 };
 
-// vector <vector<string>> u2Q1Q1_rescaled=
-// {
-//   {"proton_RESCALED", "F1_RESCALED", "F1_RESCALED"},
-//   {"proton_RESCALED", "F2_RESCALED", "F2_RESCALED"},
-//   {"proton_RESCALED", "F3_RESCALED", "F3_RESCALED"},
-
-//   {"proton_400_RESCALED", "F1_RESCALED", "F1_RESCALED"},
-//   {"proton_400_RESCALED", "F2_RESCALED", "F2_RESCALED"},
-//   {"proton_400_RESCALED", "F3_RESCALED", "F3_RESCALED"},
-
-//   {"proton_700_RESCALED", "F1_RESCALED", "F1_RESCALED"},
-//   {"proton_700_RESCALED", "F2_RESCALED", "F2_RESCALED"},
-//   {"proton_700_RESCALED", "F3_RESCALED", "F3_RESCALED"},
-// };
-
 vector <vector<string>> u2Q1Q1_rescaled=
 {
-  {"proton_RESCALED", "F1_RESCALED", "F2_RESCALED"},
-  {"proton_RESCALED", "F2_RESCALED", "F3_RESCALED"},
-  {"proton_RESCALED", "F1_RESCALED", "F3_RESCALED"},
+  {"proton_RESCALED", "F1_RESCALED", "F1_RESCALED"},
+  {"proton_RESCALED", "F2_RESCALED", "F2_RESCALED"},
+  {"proton_RESCALED", "F3_RESCALED", "F3_RESCALED"},
 
-  {"proton_400_RESCALED", "F1_RESCALED", "F2_RESCALED"},
-  {"proton_400_RESCALED", "F2_RESCALED", "F3_RESCALED"},
-  {"proton_400_RESCALED", "F1_RESCALED", "F3_RESCALED"},
+  {"proton_400_RESCALED", "F1_RESCALED", "F1_RESCALED"},
+  {"proton_400_RESCALED", "F2_RESCALED", "F2_RESCALED"},
+  {"proton_400_RESCALED", "F3_RESCALED", "F3_RESCALED"},
 
-  {"proton_700_RESCALED", "F1_RESCALED", "F2_RESCALED"},
-  {"proton_700_RESCALED", "F2_RESCALED", "F3_RESCALED"},
-  {"proton_700_RESCALED", "F1_RESCALED", "F3_RESCALED"},
+  {"proton_700_RESCALED", "F1_RESCALED", "F1_RESCALED"},
+  {"proton_700_RESCALED", "F2_RESCALED", "F2_RESCALED"},
+  {"proton_700_RESCALED", "F3_RESCALED", "F3_RESCALED"},
 };
+
+// vector <vector<string>> u2Q1Q1_rescaled=
+// {
+//   {"proton_RESCALED", "F1_RESCALED", "F2_RESCALED"},
+//   {"proton_RESCALED", "F2_RESCALED", "F3_RESCALED"},
+//   {"proton_RESCALED", "F1_RESCALED", "F3_RESCALED"},
+
+//   {"proton_400_RESCALED", "F1_RESCALED", "F2_RESCALED"},
+//   {"proton_400_RESCALED", "F2_RESCALED", "F3_RESCALED"},
+//   {"proton_400_RESCALED", "F1_RESCALED", "F3_RESCALED"},
+
+//   {"proton_700_RESCALED", "F1_RESCALED", "F2_RESCALED"},
+//   {"proton_700_RESCALED", "F2_RESCALED", "F3_RESCALED"},
+//   {"proton_700_RESCALED", "F1_RESCALED", "F3_RESCALED"},
+// };
 
 
 vector <vector<string>> u3Q1Q1Q1_rescaled=
@@ -179,10 +179,16 @@ void run8_proton_correlate_tof(string inputFiles="qn.root", string outputFile="c
   {
     std::array<std::string, 3> qn{corr.at(0), corr.at(1), corr.at(2)};
     string corrName=corr.at(0)+"."+corr.at(1)+"."+corr.at(2);
+    // diagonal/non-zero
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x2x1x1", P3::xxx(2, 1, 1), wSumWu3part, wy, qn, qn);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x2y1y1", P3::xyy(2, 1, 1), wSumWu3part, wy, qn, qn);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y2x1y1", P3::yxy(2, 1, 1), wSumWu3part, wy, qn, qn);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y2y1x1", P3::yyx(2, 1, 1), wSumWu3part, wy, qn, qn);
+    // non-diagonal/zero 
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y2x1x1", P3::yxx(2, 1, 1), wSumWu3part, wy, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y2y1y1", P3::yyy(2, 1, 1), wSumWu3part, wy, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x2x1y1", P3::xxy(2, 1, 1), wSumWu3part, wy, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x2y1x1", P3::xyx(2, 1, 1), wSumWu3part, wy, qn, qn);
   }
 
   // for ( auto &corr: u3Q1Q1Q1_rescaled )
