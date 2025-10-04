@@ -21,13 +21,13 @@ vector <vector<string>> Q1_rescaled_Q1_rescaled =
   {"F1_RESCALED", "F3_RESCALED"},
   {"F2_RESCALED", "F3_RESCALED"},
 
-  // {"Tneg_RESCALED", "F1_RESCALED"},
-  // {"Tneg_RESCALED", "F2_RESCALED"},
-  // {"Tneg_RESCALED", "F3_RESCALED"},
+  {"Tneg_RESCALED", "F1_RESCALED"},
+  {"Tneg_RESCALED", "F2_RESCALED"},
+  {"Tneg_RESCALED", "F3_RESCALED"},
 
-  // {"Tpos_RESCALED", "F1_RESCALED"},
-  // {"Tpos_RESCALED", "F2_RESCALED"},
-  // {"Tpos_RESCALED", "F3_RESCALED"},
+  {"Tpos_RESCALED", "F1_RESCALED"},
+  {"Tpos_RESCALED", "F2_RESCALED"},
+  {"Tpos_RESCALED", "F3_RESCALED"},
 };
 
 vector <vector<string>> u2Q1Q1_rescaled=
