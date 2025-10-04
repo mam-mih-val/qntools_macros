@@ -234,7 +234,7 @@ void run8_proton_correct_tof( std::string list,
       auto y_c = sum_y / static_cast<float>( pos_x.size() );
 
       auto vec_phi = ROOT::VecOps::RVec<float>{};
-      vec_phi.reserve( pos_x.size );
+      vec_phi.reserve( pos_x.size() );
       for( auto i = size_t{0}; i<pos_x.size(); ++i ){
         auto x = pos_x.at(i) - x_c;
         auto y = pos_y.at(i) - y_c;
