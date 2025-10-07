@@ -28,6 +28,8 @@ vector <vector<string>> Q1_rescaled_Q1_rescaled =
   {"Tpos_RESCALED", "F1_RESCALED"},
   {"Tpos_RESCALED", "F2_RESCALED"},
   {"Tpos_RESCALED", "F3_RESCALED"},
+
+  { "Tpos_RESCALED", "Tneg_RESCALED" }
 };
 
 vector <vector<string>> Q1_rescaled_Q1_plain =
