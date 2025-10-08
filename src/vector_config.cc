@@ -45,7 +45,7 @@ void VectorConfig::Decorate(const std::shared_ptr<Qn::CorrectionManager>& man) c
   recentering.SetApplyWidthEqualization(recentering_width_equalization_);
 
   Qn::Alignment alignment;
-  alignment.SetReferenceConfigurationForAlignment( alignment_reference_ );
+  alignment.SetReferenceConfigurationForAlignment( alignment_reference_.c_str() );
   alignment.SetHarmonicNumberForAlignment( 1 );
   
   Qn::TwistAndRescale twistRescale;
