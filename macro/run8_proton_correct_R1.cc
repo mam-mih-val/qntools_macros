@@ -413,7 +413,7 @@ void run8_proton_correct_R1( std::string list,
 
   VectorConfig f3( "F3", "fhcalModF3Phi", "fhcalModE", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
   f3.SetHarmonicArray( {1} );
-  f3.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTIONS::ALIGNMENT, CORRECTION::TWIST_RESCALING } );
+  f3.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::ALIGNMENT, CORRECTION::TWIST_RESCALING } );
   f3.SetAlignmentReference("Tneg");f3.AddCut( "fhcalModId", [&f3_modules](double mod_id){
     auto id = static_cast<int>(mod_id);
     return std::find( f3_modules.begin(), f3_modules.end(), id) != f3_modules.end();
