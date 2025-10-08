@@ -391,7 +391,7 @@ void run8_proton_correct_R1( std::string list,
 
   VectorConfig f1( "F1", "fhcalModF1Phi", "fhcalModE", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
   f1.SetHarmonicArray( {1} );
-  f1.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTIONS::ALIGNMENT, CORRECTION::TWIST_RESCALING } );
+  f1.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::ALIGNMENT, CORRECTION::TWIST_RESCALING } );
   f1.SetAlignmentReference("Tneg");
   f1.AddCut( "fhcalModId", [&f1_modules](double mod_id){
     auto id = static_cast<int>(mod_id);
@@ -402,7 +402,7 @@ void run8_proton_correct_R1( std::string list,
 
   VectorConfig f2( "F2", "fhcalModF2Phi", "fhcalModE", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
   f2.SetHarmonicArray( {1} );
-  f2.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTIONS::ALIGNMENT, CORRECTION::TWIST_RESCALING } );
+  f2.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::ALIGNMENT, CORRECTION::TWIST_RESCALING } );
   f2.SetAlignmentReference("Tneg");
   f2.AddCut( "fhcalModId", [&f2_modules](double mod_id){
     auto id = static_cast<int>(mod_id);
