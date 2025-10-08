@@ -391,9 +391,8 @@ void run8_proton_correct_R1( std::string list,
 
   VectorConfig f1( "F1", "fhcalModF1Phi", "fhcalModE", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
   f1.SetHarmonicArray( {1} );
-  f1.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
-  f1.SetTwistRescalingMethod( TWIST_RESCALING_METHOD::CORRELATION );
-  f1.SetTwistRescalingReference( {"Tpos", "Tneg"} );
+  f1.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTIONS::ALIGNMENT, CORRECTION::TWIST_RESCALING } );
+  f1.SetAlignmentReference("Tneg");
   f1.AddCut( "fhcalModId", [&f1_modules](double mod_id){
     auto id = static_cast<int>(mod_id);
     return std::find( f1_modules.begin(), f1_modules.end(), id) != f1_modules.end();
@@ -403,9 +402,8 @@ void run8_proton_correct_R1( std::string list,
 
   VectorConfig f2( "F2", "fhcalModF2Phi", "fhcalModE", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
   f2.SetHarmonicArray( {1} );
-  f2.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
-  f2.SetTwistRescalingMethod( TWIST_RESCALING_METHOD::CORRELATION );
-  f2.SetTwistRescalingReference( {"Tpos", "Tneg"} );
+  f2.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTIONS::ALIGNMENT, CORRECTION::TWIST_RESCALING } );
+  f2.SetAlignmentReference("Tneg");
   f2.AddCut( "fhcalModId", [&f2_modules](double mod_id){
     auto id = static_cast<int>(mod_id);
     return std::find( f2_modules.begin(), f2_modules.end(), id) != f2_modules.end();
@@ -415,10 +413,8 @@ void run8_proton_correct_R1( std::string list,
 
   VectorConfig f3( "F3", "fhcalModF3Phi", "fhcalModE", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
   f3.SetHarmonicArray( {1} );
-  f3.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
-  f3.SetTwistRescalingMethod( TWIST_RESCALING_METHOD::CORRELATION );
-  f3.SetTwistRescalingReference( {"Tpos", "Tneg"} );
-  f3.AddCut( "fhcalModId", [&f3_modules](double mod_id){
+  f3.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTIONS::ALIGNMENT, CORRECTION::TWIST_RESCALING } );
+  f3.SetAlignmentReference("Tneg");f3.AddCut( "fhcalModId", [&f3_modules](double mod_id){
     auto id = static_cast<int>(mod_id);
     return std::find( f3_modules.begin(), f3_modules.end(), id) != f3_modules.end();
     }, "F3 Cut" );
