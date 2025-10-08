@@ -37,19 +37,24 @@ void VectorConfig::Decorate(const std::shared_ptr<Qn::CorrectionManager>& man) c
 
   auto plain=Qn::QVector::CorrectionStep::PLAIN;
   auto recentered=Qn::QVector::CorrectionStep::RECENTERED;
+  auto aligned=Qn::QVector::CorrectionStep::ALIGNED;
   auto twist=Qn::QVector::CorrectionStep::TWIST;
   auto rescaled=Qn::QVector::CorrectionStep::RESCALED;
 
   Qn::Recentering recentering;
   recentering.SetApplyWidthEqualization(recentering_width_equalization_);
 
+  Qn::Alignment alignment;
+  alignment.SetReferenceConfigurationForAlignment( alignment_reference_ );
+  alignment.SetHarmonicNumberForAlignment( 1 );
+  
   Qn::TwistAndRescale twistRescale;
   twistRescale.SetApplyRescale(apply_rescaling_);
   twistRescale.SetApplyTwist(apply_twist_);
   if( twis_rescaling_method_ == TWIST_RESCALING_METHOD::DOUBLE_HARMONIC )
     twistRescale.SetTwistAndRescaleMethod(Qn::TwistAndRescale::Method::DOUBLE_HARMONIC);
   else{
-    twistRescale.SetTwistAndRescaleMethod(Qn::TwistAndRescale::Method::CORRELATIONS );
+    twistRescale.SetTwistAndRescaleMethod( Qn::TwistAndRescale::Method::CORRELATIONS );
     twistRescale.SetReferenceConfigurationsForTwistAndRescale( twist_rescaling_reference_.at(0).data(), twist_rescaling_reference_.at(1).data() );
   }
 
@@ -72,6 +77,10 @@ void VectorConfig::Decorate(const std::shared_ptr<Qn::CorrectionManager>& man) c
     if( corr == CORRECTION::RECENTERING ){
       man->AddCorrectionOnQnVector( name_, recentering );
       correction_output.push_back( recentered );
+    }
+    if( corr == CORRECTION::ALIGNMENT ){
+      man->AddCorrectionOnQnVector( name_, alignment );
+      correction_output.push_back( aligned );
     }
     if( corr == CORRECTION::TWIST_RESCALING ){
       man->AddCorrectionOnQnVector( name_, twistRescale );

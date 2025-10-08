@@ -22,6 +22,7 @@ enum class NORMALIZATION{
 enum class CORRECTION{
   PLAIN,
   RECENTERING,
+  ALIGNMENT,
   TWIST_RESCALING
 };
 
@@ -90,6 +91,10 @@ public:
     corrections_ = corrections;
     return *this;
   }
+  VectorConfig& SetAlignmentReference(const std::string &ref) {
+    alignment_reference_ = ref;
+    return *this;
+  }
   VectorConfig& SetTwistRescalingMethod(TWIST_RESCALING_METHOD method){ twis_rescaling_method_ = method; return *this; }
   VectorConfig& SetTwistRescalingReference(std::array<std::string, 2> reference){ twist_rescaling_reference_ = reference; return *this; }
   VectorConfig& SetRecenteringWidthEqualization( bool value ){ recentering_width_equalization_ = value; return *this; }
@@ -108,6 +113,7 @@ private:
   NORMALIZATION normalization_;
   TWIST_RESCALING_METHOD twis_rescaling_method_{TWIST_RESCALING_METHOD::DOUBLE_HARMONIC};
   std::array<std::string, 2> twist_rescaling_reference_{};
+  std::string alignment_reference_{};
   std::vector<int> harmonic_array_{1};
   std::vector<CORRECTION> corrections_;
   bool recentering_width_equalization_{false};
