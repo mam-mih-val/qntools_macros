@@ -326,11 +326,11 @@ void run8_proton_correct_tof( std::string list,
           }, {"runId"} )
           // .Filter("runId < 8312")
           .Filter( []( ROOT::VecOps::RVec<unsigned int> map ){ return map[0] & (1<<7); }, {"triggerMapAR"} )
-          // .Filter([]( unsigned long sts_digits, unsigned long n_tracks ){ 
-          //   double sts_min = sts_digits-n_tracks*(4.81632+0.0332792*n_tracks-9.62078e-05*n_tracks*n_tracks);
-          //   double sts_max = sts_digits-n_tracks*(19.4203-0.0518774*n_tracks+4.56033e-05*n_tracks*n_tracks);
-          //   return -74.0087 < sts_min && sts_max < 188.248; 
-          // }, {"stsNdigits", "track_multiplicity"} )
+          .Filter([]( unsigned long sts_digits, unsigned long n_tracks ){ 
+            double sts_min = sts_digits-n_tracks*(4.81632+0.0332792*n_tracks-9.62078e-05*n_tracks*n_tracks);
+            double sts_max = sts_digits-n_tracks*(19.4203-0.0518774*n_tracks+4.56033e-05*n_tracks*n_tracks);
+            return -74.0087 < sts_min && sts_max < 188.248; 
+          }, {"stsNdigits", "track_multiplicity"} )
           .Filter("vtxNtracks > 2")
           .Filter("fabs(vtxR)<1")
           .Filter("fabs(vtxZ)<1.0")
