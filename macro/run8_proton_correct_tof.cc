@@ -417,7 +417,7 @@ void run8_proton_correct_tof( std::string list,
   correction_task.AddVector(Tpos);
 
   std::vector<Qn::AxisD> proton_axes{
-        { "trProtonY", 16, -0.2, 1.4 },
+        { "trProtonY", 6, -0.2, 1.0 },
         { "trPt", 10, 0.0, 2.0 },
   };
   
