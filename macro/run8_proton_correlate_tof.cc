@@ -6,6 +6,14 @@ vector <vector<string>> u1_rescaled_Q1_rescaled=
   {"proton_RESCALED", "F2_RESCALED"},
   {"proton_RESCALED", "F3_RESCALED"},
 
+  {"proton_RECENTERED", "F1_RESCALED"},
+  {"proton_RECENTERED", "F2_RESCALED"},
+  {"proton_RECENTERED", "F3_RESCALED"},
+
+  {"proton_PLAIN", "F1_RESCALED"},
+  {"proton_PLAIN", "F2_RESCALED"},
+  {"proton_PLAIN", "F3_RESCALED"},
+
   // {"proton_400_RESCALED", "F1_RESCALED"},
   // {"proton_400_RESCALED", "F2_RESCALED"},
   // {"proton_400_RESCALED", "F3_RESCALED"},
@@ -21,13 +29,13 @@ vector <vector<string>> Q1_rescaled_Q1_rescaled =
   {"F1_RESCALED", "F3_RESCALED"},
   {"F2_RESCALED", "F3_RESCALED"},
 
-  {"Tneg_RESCALED", "F1_RESCALED"},
-  {"Tneg_RESCALED", "F2_RESCALED"},
-  {"Tneg_RESCALED", "F3_RESCALED"},
+  // {"Tneg_RESCALED", "F1_RESCALED"},
+  // {"Tneg_RESCALED", "F2_RESCALED"},
+  // {"Tneg_RESCALED", "F3_RESCALED"},
 
-  {"Tpos_RESCALED", "F1_RESCALED"},
-  {"Tpos_RESCALED", "F2_RESCALED"},
-  {"Tpos_RESCALED", "F3_RESCALED"},
+  // {"Tpos_RESCALED", "F1_RESCALED"},
+  // {"Tpos_RESCALED", "F2_RESCALED"},
+  // {"Tpos_RESCALED", "F3_RESCALED"},
 };
 
 // vector <vector<string>> u2Q1Q1_rescaled=
