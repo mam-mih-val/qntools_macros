@@ -376,45 +376,45 @@ void run8_proton_correct_tof( std::string list,
   f3.AddHisto2D({{"fhcalModX", 100, -100, 100}, {"fhcalModY", 100, -100, 100}});
   correction_task.AddVector(f3);
 
-  VectorConfig Tneg( "Tneg", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
-  Tneg.SetHarmonicArray( {1, 2} );
-  Tneg.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
-  Tneg.AddCut( "trCharge", [](double charge){
-    return charge < 0.0;
-    }, "charge" );
-  Tneg.AddCut( "trEta", [](double eta){
-    return 1.5 < eta && eta < 4.0;
-    }, "eta cut" );
-  Tneg.AddCut( "trPt", [](double pT){
-    return pT > 0.2;
-    }, "pT cut" );
-  Tneg.AddCut( "trFhcalX", [](double pos){
-    return pos < -40.0 || pos > 170;
-    }, "cut on x-pos in fhcal plane" );
-  Tneg.AddCut( "trFhcalY", [](double pos){
-    return pos < -100.0 || pos > 100;
-    }, "cut on y-pos in fhcal plane" );
-  correction_task.AddVector(Tneg);
+  // VectorConfig Tneg( "Tneg", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  // Tneg.SetHarmonicArray( {1, 2} );
+  // Tneg.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
+  // Tneg.AddCut( "trCharge", [](double charge){
+  //   return charge < 0.0;
+  //   }, "charge" );
+  // Tneg.AddCut( "trEta", [](double eta){
+  //   return 1.5 < eta && eta < 4.0;
+  //   }, "eta cut" );
+  // Tneg.AddCut( "trPt", [](double pT){
+  //   return pT > 0.2;
+  //   }, "pT cut" );
+  // Tneg.AddCut( "trFhcalX", [](double pos){
+  //   return pos < -40.0 || pos > 170;
+  //   }, "cut on x-pos in fhcal plane" );
+  // Tneg.AddCut( "trFhcalY", [](double pos){
+  //   return pos < -100.0 || pos > 100;
+  //   }, "cut on y-pos in fhcal plane" );
+  // correction_task.AddVector(Tneg);
 
-  VectorConfig Tpos( "Tpos", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
-  Tpos.SetHarmonicArray( {1, 2} );
-  Tpos.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
-  Tpos.AddCut( "trCharge", [](double charge){
-    return charge >= 0.0;
-    }, "charge" );
-  Tpos.AddCut( "trEta", [](double eta){
-    return 2.0 < eta && eta < 3.0;
-  }, "eta cut" );
-  Tpos.AddCut( "trPt", [](double pT){
-    return pT > 0.2;
-  }, "pT cut" );
-  Tpos.AddCut( "trFhcalX", [](double pos){
-    return pos < -40.0 || pos > 170;
-    }, "cut on x-pos in fhcal plane" );
-  Tpos.AddCut( "trFhcalY", [](double pos){
-    return pos < -100.0 || pos > 100;
-    }, "cut on y-pos in fhcal plane" );
-  correction_task.AddVector(Tpos);
+  // VectorConfig Tpos( "Tpos", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  // Tpos.SetHarmonicArray( {1, 2} );
+  // Tpos.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
+  // Tpos.AddCut( "trCharge", [](double charge){
+  //   return charge >= 0.0;
+  //   }, "charge" );
+  // Tpos.AddCut( "trEta", [](double eta){
+  //   return 2.0 < eta && eta < 3.0;
+  // }, "eta cut" );
+  // Tpos.AddCut( "trPt", [](double pT){
+  //   return pT > 0.2;
+  // }, "pT cut" );
+  // Tpos.AddCut( "trFhcalX", [](double pos){
+  //   return pos < -40.0 || pos > 170;
+  //   }, "cut on x-pos in fhcal plane" );
+  // Tpos.AddCut( "trFhcalY", [](double pos){
+  //   return pos < -100.0 || pos > 100;
+  //   }, "cut on y-pos in fhcal plane" );
+  // correction_task.AddVector(Tpos);
 
   std::vector<Qn::AxisD> proton_axes{
         { "trProtonY", 6, -0.2, 1.0 },
