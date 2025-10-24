@@ -118,6 +118,18 @@ vector <vector<string>> u3Q1Q1Q1_rescaled=
 
 namespace P4{
 
+  inline auto x2yy( unsigned int h_a, unsigned int h_b, unsigned int h_c ) {
+    return [ h_a, h_b, h_c ](const Qn::QVector &a, const Qn::QVector &b, const Qn::QVector &c ) {
+      return ( a.x(h_a)*a.x(h_a) - a.y(h_a)*a.y(h_a) ) * b.y(h_b) * c.y(h_c) ;
+    };
+  }
+
+  inline auto y2yy( unsigned int h_a, unsigned int h_b, unsigned int h_c ) {
+    return [ h_a, h_b, h_c ](const Qn::QVector &a, const Qn::QVector &b, const Qn::QVector &c ) {
+      return 2 * a.x(h_a) * a.y(h_a) * b.y(h_b) * c.y(h_c) ;
+    };
+  }
+  
   inline auto xxxx(unsigned int h_a, unsigned int h_b, unsigned int h_c, unsigned int h_d) {
     return [h_a, h_b, h_c, h_d](const Qn::QVector &a, const Qn::QVector &b, const Qn::QVector &c, const Qn::QVector &d) {
       return a.x(h_a) * b.x(h_b) * c.x(h_c) * d.x(h_d);
@@ -231,6 +243,9 @@ void run8_proton_correlate_tof(string inputFiles="qn.root", string outputFile="c
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y2y1y1", P3::yyy(2, 1, 1), wSumWu3part, wy, qn, qn);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x2x1y1", P3::xxy(2, 1, 1), wSumWu3part, wy, qn, qn);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x2y1x1", P3::xyx(2, 1, 1), wSumWu3part, wy, qn, qn);
+    // double harmonic
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x12x1x1", P4::x2yy(1, 1, 1), wSumWu3part, wy, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x12x1x1", P4::y2yy(1, 1, 1), wSumWu3part, wy, qn, qn);
   }
 
   for ( auto &corr: u3Q1Q1Q1_rescaled )
