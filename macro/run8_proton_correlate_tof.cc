@@ -244,8 +244,8 @@ void run8_proton_correlate_tof(string inputFiles="qn.root", string outputFile="c
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x2x1y1", P3::xxy(2, 1, 1), wSumWu3part, wy, qn, qn);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x2y1x1", P3::xyx(2, 1, 1), wSumWu3part, wy, qn, qn);
     // double harmonic
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".x12x1x1", P4::x2yy(1, 1, 1), wSumWu3part, wy, qn, qn);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".x12x1x1", P4::y2yy(1, 1, 1), wSumWu3part, wy, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x12y1y1", P4::x2yy(1, 1, 1), wSumWu3part, wy, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y12y1y1", P4::y2yy(1, 1, 1), wSumWu3part, wy, qn, qn);
   }
 
   for ( auto &corr: u3Q1Q1Q1_rescaled )
