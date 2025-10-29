@@ -2,118 +2,118 @@
 
 vector <vector<string>> u1_rescaled_Q1_rescaled=
 {
-  {"proton_RESCALED", "F1_RECENTERED"},
-  {"proton_RESCALED", "F2_RECENTERED"},
-  {"proton_RESCALED", "F3_RECENTERED"},
+  {"proton_RESCALED", "F1_RESCALED"},
+  {"proton_RESCALED", "F2_RESCALED"},
+  {"proton_RESCALED", "F3_RESCALED"},
 
-  {"proton_RECENTERED", "F1_RECENTERED"},
-  {"proton_RECENTERED", "F2_RECENTERED"},
-  {"proton_RECENTERED", "F3_RECENTERED"},
+  {"proton_RECENTERED", "F1_RESCALED"},
+  {"proton_RECENTERED", "F2_RESCALED"},
+  {"proton_RECENTERED", "F3_RESCALED"},
 
-  {"proton_PLAIN", "F1_RECENTERED"},
-  {"proton_PLAIN", "F2_RECENTERED"},
-  {"proton_PLAIN", "F3_RECENTERED"},
+  {"proton_PLAIN", "F1_RESCALED"},
+  {"proton_PLAIN", "F2_RESCALED"},
+  {"proton_PLAIN", "F3_RESCALED"},
 
-  // {"proton_400_RESCALED", "F1_RECENTERED"},
-  // {"proton_400_RESCALED", "F2_RECENTERED"},
-  // {"proton_400_RESCALED", "F3_RECENTERED"},
+  // {"proton_400_RESCALED", "F1_RESCALED"},
+  // {"proton_400_RESCALED", "F2_RESCALED"},
+  // {"proton_400_RESCALED", "F3_RESCALED"},
   
-  // {"proton_700_RESCALED", "F1_RECENTERED"},
-  // {"proton_700_RESCALED", "F2_RECENTERED"},
-  // {"proton_700_RESCALED", "F3_RECENTERED"},
+  // {"proton_700_RESCALED", "F1_RESCALED"},
+  // {"proton_700_RESCALED", "F2_RESCALED"},
+  // {"proton_700_RESCALED", "F3_RESCALED"},
 };
 
 vector <vector<string>> Q1_rescaled_Q1_rescaled =
 {
-  {"F1_RECENTERED", "F2_RECENTERED"},
-  {"F1_RECENTERED", "F3_RECENTERED"},
-  {"F2_RECENTERED", "F3_RECENTERED"},
+  {"F1_RESCALED", "F2_RESCALED"},
+  {"F1_RESCALED", "F3_RESCALED"},
+  {"F2_RESCALED", "F3_RESCALED"},
 
-  // {"Tneg_RESCALED", "F1_RECENTERED"},
-  // {"Tneg_RESCALED", "F2_RECENTERED"},
-  // {"Tneg_RESCALED", "F3_RECENTERED"},
+  // {"Tneg_RESCALED", "F1_RESCALED"},
+  // {"Tneg_RESCALED", "F2_RESCALED"},
+  // {"Tneg_RESCALED", "F3_RESCALED"},
 
-  // {"Tpos_RESCALED", "F1_RECENTERED"},
-  // {"Tpos_RESCALED", "F2_RECENTERED"},
-  // {"Tpos_RESCALED", "F3_RECENTERED"},
+  // {"Tpos_RESCALED", "F1_RESCALED"},
+  // {"Tpos_RESCALED", "F2_RESCALED"},
+  // {"Tpos_RESCALED", "F3_RESCALED"},
 };
 
 // vector <vector<string>> u2Q1Q1_rescaled=
 // {
-//   {"proton_RESCALED", "F1_RECENTERED", "F1_RECENTERED"},
-//   {"proton_RESCALED", "F2_RECENTERED", "F2_RECENTERED"},
-//   {"proton_RESCALED", "F3_RECENTERED", "F3_RECENTERED"},
+//   {"proton_RESCALED", "F1_RESCALED", "F1_RESCALED"},
+//   {"proton_RESCALED", "F2_RESCALED", "F2_RESCALED"},
+//   {"proton_RESCALED", "F3_RESCALED", "F3_RESCALED"},
 
-//   {"proton_400_RESCALED", "F1_RECENTERED", "F1_RECENTERED"},
-//   {"proton_400_RESCALED", "F2_RECENTERED", "F2_RECENTERED"},
-//   {"proton_400_RESCALED", "F3_RECENTERED", "F3_RECENTERED"},
+//   {"proton_400_RESCALED", "F1_RESCALED", "F1_RESCALED"},
+//   {"proton_400_RESCALED", "F2_RESCALED", "F2_RESCALED"},
+//   {"proton_400_RESCALED", "F3_RESCALED", "F3_RESCALED"},
 
-//   {"proton_700_RESCALED", "F1_RECENTERED", "F1_RECENTERED"},
-//   {"proton_700_RESCALED", "F2_RECENTERED", "F2_RECENTERED"},
-//   {"proton_700_RESCALED", "F3_RECENTERED", "F3_RECENTERED"},
+//   {"proton_700_RESCALED", "F1_RESCALED", "F1_RESCALED"},
+//   {"proton_700_RESCALED", "F2_RESCALED", "F2_RESCALED"},
+//   {"proton_700_RESCALED", "F3_RESCALED", "F3_RESCALED"},
 // };
 
 vector <vector<string>> u2Q1Q1_rescaled=
 {
-  {"proton_RESCALED", "F1_RECENTERED", "F2_RECENTERED"},
-  {"proton_RESCALED", "F2_RECENTERED", "F3_RECENTERED"},
-  {"proton_RESCALED", "F1_RECENTERED", "F3_RECENTERED"},
+  {"proton_RESCALED", "F1_RESCALED", "F2_RESCALED"},
+  {"proton_RESCALED", "F2_RESCALED", "F3_RESCALED"},
+  {"proton_RESCALED", "F1_RESCALED", "F3_RESCALED"},
 
-  {"proton_RECENTERED", "F1_RECENTERED", "F2_RECENTERED"},
-  {"proton_RECENTERED", "F2_RECENTERED", "F3_RECENTERED"},
-  {"proton_RECENTERED", "F1_RECENTERED", "F3_RECENTERED"},
+  {"proton_RECENTERED", "F1_RESCALED", "F2_RESCALED"},
+  {"proton_RECENTERED", "F2_RESCALED", "F3_RESCALED"},
+  {"proton_RECENTERED", "F1_RESCALED", "F3_RESCALED"},
 
-  {"proton_PLAIN", "F1_RECENTERED", "F2_RECENTERED"},
-  {"proton_PLAIN", "F2_RECENTERED", "F3_RECENTERED"},
-  {"proton_PLAIN", "F1_RECENTERED", "F3_RECENTERED"},
+  {"proton_PLAIN", "F1_RESCALED", "F2_RESCALED"},
+  {"proton_PLAIN", "F2_RESCALED", "F3_RESCALED"},
+  {"proton_PLAIN", "F1_RESCALED", "F3_RESCALED"},
 
-  {"proton_RESCALED", "F1_RECENTERED", "F1_RECENTERED"},
-  {"proton_RESCALED", "F2_RECENTERED", "F2_RECENTERED"},
-  {"proton_RESCALED", "F3_RECENTERED", "F3_RECENTERED"},
+  {"proton_RESCALED", "F1_RESCALED", "F1_RESCALED"},
+  {"proton_RESCALED", "F2_RESCALED", "F2_RESCALED"},
+  {"proton_RESCALED", "F3_RESCALED", "F3_RESCALED"},
 
-  {"proton_RECENTERED", "F1_RECENTERED", "F1_RECENTERED"},
-  {"proton_RECENTERED", "F2_RECENTERED", "F2_RECENTERED"},
-  {"proton_RECENTERED", "F3_RECENTERED", "F3_RECENTERED"},
+  {"proton_RECENTERED", "F1_RESCALED", "F1_RESCALED"},
+  {"proton_RECENTERED", "F2_RESCALED", "F2_RESCALED"},
+  {"proton_RECENTERED", "F3_RESCALED", "F3_RESCALED"},
 
-  {"proton_PLAIN", "F1_RECENTERED", "F1_RECENTERED"},
-  {"proton_PLAIN", "F2_RECENTERED", "F2_RECENTERED"},
-  {"proton_PLAIN", "F3_RECENTERED", "F3_RECENTERED"},
+  {"proton_PLAIN", "F1_RESCALED", "F1_RESCALED"},
+  {"proton_PLAIN", "F2_RESCALED", "F2_RESCALED"},
+  {"proton_PLAIN", "F3_RESCALED", "F3_RESCALED"},
 
-  // {"proton_400_RESCALED", "F1_RECENTERED", "F2_RECENTERED"},
-  // {"proton_400_RESCALED", "F2_RECENTERED", "F3_RECENTERED"},
-  // {"proton_400_RESCALED", "F1_RECENTERED", "F3_RECENTERED"},
+  // {"proton_400_RESCALED", "F1_RESCALED", "F2_RESCALED"},
+  // {"proton_400_RESCALED", "F2_RESCALED", "F3_RESCALED"},
+  // {"proton_400_RESCALED", "F1_RESCALED", "F3_RESCALED"},
 
-  // {"proton_700_RESCALED", "F1_RECENTERED", "F2_RECENTERED"},
-  // {"proton_700_RESCALED", "F2_RECENTERED", "F3_RECENTERED"},
-  // {"proton_700_RESCALED", "F1_RECENTERED", "F3_RECENTERED"},
+  // {"proton_700_RESCALED", "F1_RESCALED", "F2_RESCALED"},
+  // {"proton_700_RESCALED", "F2_RESCALED", "F3_RESCALED"},
+  // {"proton_700_RESCALED", "F1_RESCALED", "F3_RESCALED"},
 };
 
 
 vector <vector<string>> u3Q1Q1Q1_rescaled=
 {
-  {"proton_RESCALED", "F1_RECENTERED", "F2_RECENTERED", "F3_RECENTERED"},
-  {"proton_RECENTERED", "F1_RECENTERED", "F2_RECENTERED", "F3_RECENTERED"},
-  {"proton_PLAIN", "F1_RECENTERED", "F2_RECENTERED", "F3_RECENTERED"},
+  {"proton_RESCALED", "F1_RESCALED", "F2_RESCALED", "F3_RESCALED"},
+  {"proton_RECENTERED", "F1_RESCALED", "F2_RESCALED", "F3_RESCALED"},
+  {"proton_PLAIN", "F1_RESCALED", "F2_RESCALED", "F3_RESCALED"},
 
-  {"proton_RESCALED", "F1_RECENTERED", "F1_RECENTERED", "F1_RECENTERED"},
-  {"proton_RECENTERED", "F1_RECENTERED", "F1_RECENTERED", "F1_RECENTERED"},
-  {"proton_PLAIN", "F1_RECENTERED", "F1_RECENTERED", "F1_RECENTERED"},
+  {"proton_RESCALED", "F1_RESCALED", "F1_RESCALED", "F1_RESCALED"},
+  {"proton_RECENTERED", "F1_RESCALED", "F1_RESCALED", "F1_RESCALED"},
+  {"proton_PLAIN", "F1_RESCALED", "F1_RESCALED", "F1_RESCALED"},
 
-  {"proton_RESCALED", "F2_RECENTERED", "F2_RECENTERED", "F2_RECENTERED"},
-  {"proton_RECENTERED", "F2_RECENTERED", "F2_RECENTERED", "F2_RECENTERED"},
-  {"proton_PLAIN", "F2_RECENTERED", "F2_RECENTERED", "F2_RECENTERED"},
+  {"proton_RESCALED", "F2_RESCALED", "F2_RESCALED", "F2_RESCALED"},
+  {"proton_RECENTERED", "F2_RESCALED", "F2_RESCALED", "F2_RESCALED"},
+  {"proton_PLAIN", "F2_RESCALED", "F2_RESCALED", "F2_RESCALED"},
 
-  {"proton_RESCALED", "F3_RECENTERED", "F3_RECENTERED", "F3_RECENTERED"},
-  {"proton_RECENTERED", "F3_RECENTERED", "F3_RECENTERED", "F3_RECENTERED"},
-  {"proton_PLAIN", "F3_RECENTERED", "F3_RECENTERED", "F3_RECENTERED"},
+  {"proton_RESCALED", "F3_RESCALED", "F3_RESCALED", "F3_RESCALED"},
+  {"proton_RECENTERED", "F3_RESCALED", "F3_RESCALED", "F3_RESCALED"},
+  {"proton_PLAIN", "F3_RESCALED", "F3_RESCALED", "F3_RESCALED"},
 
-  // {"proton_RESCALED", "F1_RECENTERED", "F3_RECENTERED", "Tneg_RESCALED"},
-  // {"proton_RESCALED", "F1_RECENTERED", "F2_RECENTERED", "Tneg_RESCALED"},
-  // {"proton_RESCALED", "F2_RECENTERED", "F3_RECENTERED", "Tneg_RESCALED"},
+  // {"proton_RESCALED", "F1_RESCALED", "F3_RESCALED", "Tneg_RESCALED"},
+  // {"proton_RESCALED", "F1_RESCALED", "F2_RESCALED", "Tneg_RESCALED"},
+  // {"proton_RESCALED", "F2_RESCALED", "F3_RESCALED", "Tneg_RESCALED"},
 
-  // {"proton_RESCALED", "F1_RECENTERED", "F1_RECENTERED", "F1_RECENTERED"},
-  // {"proton_RESCALED", "F2_RECENTERED", "F2_RECENTERED", "F2_RECENTERED"},
-  // {"proton_RESCALED", "F3_RECENTERED", "F3_RECENTERED", "F3_RECENTERED"},
+  // {"proton_RESCALED", "F1_RESCALED", "F1_RESCALED", "F1_RESCALED"},
+  // {"proton_RESCALED", "F2_RESCALED", "F2_RESCALED", "F2_RESCALED"},
+  // {"proton_RESCALED", "F3_RESCALED", "F3_RESCALED", "F3_RESCALED"},
 };
 
 namespace P4{
@@ -258,7 +258,7 @@ void run8_proton_correlate_tof(string inputFiles="qn.root", string outputFile="c
     //double harmonic
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x1y1y1y1", P4::x1y1y1y1(1, 1, 1), wSumWu3part, wy, qn, qn);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x1x1y1y1", P4::x1x1y1y1(1, 1, 1), wSumWu3part, wy, qn, qn);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1y1y1y1", P4::x1x1y1y1(1, 1, 1), wSumWu3part, wy, qn, qn);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1y1y1y1", P4::y1y1y1y1(1, 1, 1), wSumWu3part, wy, qn, qn);
   }
 
   // for ( auto &corr: u3Q1Q1Q1_rescaled )
