@@ -126,13 +126,27 @@ namespace P4{
 
   inline auto x1x1y1y1( unsigned int h_a, unsigned int h_b, unsigned int h_c ) {
     return [ h_a, h_b, h_c ](const Qn::QVector &a, const Qn::QVector &b, const Qn::QVector &c ) {
-      return a.x(h_a)*a.x(h_a) * b.y(h_b) * c.y(h_c) ;
+      return ( 2.0 * a.x(h_a)*a.x(h_a) - 1.0 ) * b.y(h_b) * c.y(h_c) ;
     };
   }
 
   inline auto y1y1y1y1( unsigned int h_a, unsigned int h_b, unsigned int h_c ) {
     return [ h_a, h_b, h_c ](const Qn::QVector &a, const Qn::QVector &b, const Qn::QVector &c ) {
-      return a.y(h_a)*a.y(h_a) * b.y(h_b) * c.y(h_c) ;
+      return ( 1.0 - 2.0 * a.y(h_a)*a.y(h_a) ) * b.y(h_b) * c.y(h_c) ;
+    };
+  }
+
+  inline auto x_cos( unsigned int h_a, unsigned int h_b ) {
+    return [ h_a, h_b ](const Qn::QVector &a, const Qn::QVector &b ) {
+      auto cos_b = b.x(h_b) / b.mag();
+      return a.x(h_a) * ( 2.0 * cos_b*cos_b - 1.0 ) ;
+    };
+  }
+
+  inline auto y_sin( unsigned int h_a, unsigned int h_b ) {
+    return [ h_a, h_b ](const Qn::QVector &a, const Qn::QVector &b ) {
+      auto sin_b = b.y(h_b) / b.mag();
+      return a.y(h_a) * ( 1.0 - 2.0 * sin_b*sin_b ) ;
     };
   }
   
