@@ -422,7 +422,7 @@ void run8_proton_correct_tof( std::string list,
   };
   
   VectorConfig proton( "proton", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
-  proton.SetHarmonicArray( {1, 2, 3} );
+  proton.SetHarmonicArray( {1, 2} );
   proton.SetCorrections( {CORRECTION::PLAIN, CORRECTION::RECENTERING, CORRECTION::TWIST_RESCALING } );
   proton.SetCorrectionAxes( proton_axes );
   proton.AddCut( "trNsigmaProton", [](double n_sigma){
