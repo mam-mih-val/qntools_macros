@@ -3,116 +3,116 @@
 vector <vector<string>> u1_rescaled=
 {
   { "proton_PLAIN" },
-  { "proton_RECENTERED" },
-  { "proton_RESCALED" },
+  // { "proton_RECENTERED" },
+  // { "proton_RESCALED" },
 };
 
 vector <vector<string>> Q1_rescaled=
 {
-  { "F1_PLAIN" },
+  // { "F1_PLAIN" },
   { "F1_RECENTERED" },
-  { "F1_RESCALED" },
+  // { "F1_RESCALED" },
 
-  { "F2_PLAIN" },
+  // { "F2_PLAIN" },
   { "F2_RECENTERED" },
-  { "F2_RESCALED" },
+  // { "F2_RESCALED" },
   
-  { "F3_PLAIN" },
+  // { "F3_PLAIN" },
   { "F3_RECENTERED" },
-  { "F3_RESCALED" },
+  // { "F3_RESCALED" },
 };
 
 vector <vector<string>> u1_rescaled_Q1_rescaled=
 {
-  {"proton_PLAIN", "F1_PLAIN"},
-  {"proton_PLAIN", "F2_PLAIN"},
-  {"proton_PLAIN", "F3_PLAIN"},
+  // {"proton_PLAIN", "F1_PLAIN"},
+  // {"proton_PLAIN", "F2_PLAIN"},
+  // {"proton_PLAIN", "F3_PLAIN"},
 
-  {"proton_RECENTERED", "F1_PLAIN"},
-  {"proton_RECENTERED", "F2_PLAIN"},
-  {"proton_RECENTERED", "F3_PLAIN"},
+  // {"proton_RECENTERED", "F1_PLAIN"},
+  // {"proton_RECENTERED", "F2_PLAIN"},
+  // {"proton_RECENTERED", "F3_PLAIN"},
 
-  {"proton_RESCALED", "F1_PLAIN"},
-  {"proton_RESCALED", "F2_PLAIN"},
-  {"proton_RESCALED", "F3_PLAIN"},
+  // {"proton_RESCALED", "F1_PLAIN"},
+  // {"proton_RESCALED", "F2_PLAIN"},
+  // {"proton_RESCALED", "F3_PLAIN"},
 
   {"proton_PLAIN", "F1_RECENTERED"},
   {"proton_PLAIN", "F2_RECENTERED"},
   {"proton_PLAIN", "F3_RECENTERED"},
 
-  {"proton_RECENTERED", "F1_RECENTERED"},
-  {"proton_RECENTERED", "F2_RECENTERED"},
-  {"proton_RECENTERED", "F3_RECENTERED"},
+  // {"proton_RECENTERED", "F1_RECENTERED"},
+  // {"proton_RECENTERED", "F2_RECENTERED"},
+  // {"proton_RECENTERED", "F3_RECENTERED"},
 
-  {"proton_RESCALED", "F1_RECENTERED"},
-  {"proton_RESCALED", "F2_RECENTERED"},
-  {"proton_RESCALED", "F3_RECENTERED"},
+  // {"proton_RESCALED", "F1_RECENTERED"},
+  // {"proton_RESCALED", "F2_RECENTERED"},
+  // {"proton_RESCALED", "F3_RECENTERED"},
 
-  {"proton_PLAIN", "F1_RESCALED"},
-  {"proton_PLAIN", "F2_RESCALED"},
-  {"proton_PLAIN", "F3_RESCALED"},
+  // {"proton_PLAIN", "F1_RESCALED"},
+  // {"proton_PLAIN", "F2_RESCALED"},
+  // {"proton_PLAIN", "F3_RESCALED"},
 
-  {"proton_RECENTERED", "F1_RESCALED"},
-  {"proton_RECENTERED", "F2_RESCALED"},
-  {"proton_RECENTERED", "F3_RESCALED"},
+  // {"proton_RECENTERED", "F1_RESCALED"},
+  // {"proton_RECENTERED", "F2_RESCALED"},
+  // {"proton_RECENTERED", "F3_RESCALED"},
 
-  {"proton_RESCALED", "F1_RESCALED"},
-  {"proton_RESCALED", "F2_RESCALED"},
-  {"proton_RESCALED", "F3_RESCALED"},
+  // {"proton_RESCALED", "F1_RESCALED"},
+  // {"proton_RESCALED", "F2_RESCALED"},
+  // {"proton_RESCALED", "F3_RESCALED"},
 };
 
 vector <vector<string>> Q1_rescaled_Q1_rescaled =
 {
-  {"F1_PLAIN", "F2_PLAIN"},
-  {"F1_PLAIN", "F3_PLAIN"},
-  {"F2_PLAIN", "F3_PLAIN"},
+  // {"F1_PLAIN", "F2_PLAIN"},
+  // {"F1_PLAIN", "F3_PLAIN"},
+  // {"F2_PLAIN", "F3_PLAIN"},
 
   {"F1_RECENTERED", "F2_RECENTERED"},
   {"F1_RECENTERED", "F3_RECENTERED"},
   {"F2_RECENTERED", "F3_RECENTERED"},
 
-  {"F1_RESCALED", "F2_RESCALED"},
-  {"F1_RESCALED", "F3_RESCALED"},
-  {"F2_RESCALED", "F3_RESCALED"},
+  // {"F1_RESCALED", "F2_RESCALED"},
+  // {"F1_RESCALED", "F3_RESCALED"},
+  // {"F2_RESCALED", "F3_RESCALED"},
 };
 
 vector <vector<string>> u2Q1Q1_rescaled=
 {
-  {"proton_RESCALED", "F1_PLAIN", "F2_PLAIN"},
-  {"proton_RESCALED", "F2_PLAIN", "F3_PLAIN"},
-  {"proton_RESCALED", "F1_PLAIN", "F3_PLAIN"},
+  // {"proton_RESCALED", "F1_PLAIN", "F2_PLAIN"},
+  // {"proton_RESCALED", "F2_PLAIN", "F3_PLAIN"},
+  // {"proton_RESCALED", "F1_PLAIN", "F3_PLAIN"},
 
-  {"proton_RECENTERED", "F1_PLAIN", "F2_PLAIN"},
-  {"proton_RECENTERED", "F2_PLAIN", "F3_PLAIN"},
-  {"proton_RECENTERED", "F1_PLAIN", "F3_PLAIN"},
+  // {"proton_RECENTERED", "F1_PLAIN", "F2_PLAIN"},
+  // {"proton_RECENTERED", "F2_PLAIN", "F3_PLAIN"},
+  // {"proton_RECENTERED", "F1_PLAIN", "F3_PLAIN"},
 
-  {"proton_PLAIN", "F1_PLAIN", "F2_PLAIN"},
-  {"proton_PLAIN", "F2_PLAIN", "F3_PLAIN"},
-  {"proton_PLAIN", "F1_PLAIN", "F3_PLAIN"},
+  // {"proton_PLAIN", "F1_PLAIN", "F2_PLAIN"},
+  // {"proton_PLAIN", "F2_PLAIN", "F3_PLAIN"},
+  // {"proton_PLAIN", "F1_PLAIN", "F3_PLAIN"},
 
-  {"proton_RESCALED", "F1_RECENTERED", "F2_RECENTERED"},
-  {"proton_RESCALED", "F2_RECENTERED", "F3_RECENTERED"},
-  {"proton_RESCALED", "F1_RECENTERED", "F3_RECENTERED"},
+  // {"proton_RESCALED", "F1_RECENTERED", "F2_RECENTERED"},
+  // {"proton_RESCALED", "F2_RECENTERED", "F3_RECENTERED"},
+  // {"proton_RESCALED", "F1_RECENTERED", "F3_RECENTERED"},
 
-  {"proton_RECENTERED", "F1_RECENTERED", "F2_RECENTERED"},
-  {"proton_RECENTERED", "F2_RECENTERED", "F3_RECENTERED"},
-  {"proton_RECENTERED", "F1_RECENTERED", "F3_RECENTERED"},
+  // {"proton_RECENTERED", "F1_RECENTERED", "F2_RECENTERED"},
+  // {"proton_RECENTERED", "F2_RECENTERED", "F3_RECENTERED"},
+  // {"proton_RECENTERED", "F1_RECENTERED", "F3_RECENTERED"},
 
   {"proton_PLAIN", "F1_RECENTERED", "F2_RECENTERED"},
   {"proton_PLAIN", "F2_RECENTERED", "F3_RECENTERED"},
   {"proton_PLAIN", "F1_RECENTERED", "F3_RECENTERED"},
 
-  {"proton_RESCALED", "F1_RESCALED", "F2_RESCALED"},
-  {"proton_RESCALED", "F2_RESCALED", "F3_RESCALED"},
-  {"proton_RESCALED", "F1_RESCALED", "F3_RESCALED"},
+  // {"proton_RESCALED", "F1_RESCALED", "F2_RESCALED"},
+  // {"proton_RESCALED", "F2_RESCALED", "F3_RESCALED"},
+  // {"proton_RESCALED", "F1_RESCALED", "F3_RESCALED"},
 
-  {"proton_RECENTERED", "F1_RESCALED", "F2_RESCALED"},
-  {"proton_RECENTERED", "F2_RESCALED", "F3_RESCALED"},
-  {"proton_RECENTERED", "F1_RESCALED", "F3_RESCALED"},
+  // {"proton_RECENTERED", "F1_RESCALED", "F2_RESCALED"},
+  // {"proton_RECENTERED", "F2_RESCALED", "F3_RESCALED"},
+  // {"proton_RECENTERED", "F1_RESCALED", "F3_RESCALED"},
 
-  {"proton_PLAIN", "F1_RESCALED", "F2_RESCALED"},
-  {"proton_PLAIN", "F2_RESCALED", "F3_RESCALED"},
-  {"proton_PLAIN", "F1_RESCALED", "F3_RESCALED"},
+  // {"proton_PLAIN", "F1_RESCALED", "F2_RESCALED"},
+  // {"proton_PLAIN", "F2_RESCALED", "F3_RESCALED"},
+  // {"proton_PLAIN", "F1_RESCALED", "F3_RESCALED"},
 };
 
 
