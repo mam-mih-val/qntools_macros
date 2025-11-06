@@ -294,8 +294,6 @@ void run8_proton_correlate_tof(string inputFiles="qn.root", string outputFile="c
 
   for ( auto &corr: Q1Q1Q1_rescaled )
   {
-    std::array<std::string, 2> qn{corr.at(0), corr.at(1)};
-    string corrName=corr.at(0)+"."+corr.at(1);
     std::array<std::string, 3> qn{corr.at(0), corr.at(1), corr.at(2)};
     string corrName=corr.at(0)+"."+corr.at(1)+"."+corr.at(2);
     // diagonal/non-zero
