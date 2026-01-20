@@ -7,31 +7,31 @@ std::string f2_vector{ "F2_PLAIN" };
 std::string f3_vector{ "F3_PLAIN" };
 
 std::vector < std::array<std::string, 1> > arr_u1 {
-  u1_vector
+  std::array<std::string, 1>{u1_vector}
 };
 
 std::vector < std::array<string, 1> > arr_Q1 {
-  f1_vector,
-  f2_vector,  
-  f3_vector,
+  std::array<std::string, 1>{f1_vector},
+  std::array<std::string, 1>{f2_vector},  
+  std::array<std::string, 1>{f3_vector},
 };
 
 std::vector < std::array<string, 2> > arr_u1Q1 {
-  {u1_vector, f1_vector},
-  {u1_vector, f2_vector},
-  {u1_vector, f3_vector},
+  std::array<std::string, 2>{u1_vector, f1_vector},
+  std::array<std::string, 2>{u1_vector, f2_vector},
+  std::array<std::string, 2>{u1_vector, f3_vector},
 };
 
 std::vector < std::array<string, 2> > arr_Q1Q1 {
-  {f1_vector, f2_vector},
-  {f1_vector, f3_vector},
-  {f2_vector, f3_vector},
+  std::array<std::string, 2>{f1_vector, f2_vector},
+  std::array<std::string, 2>{f1_vector, f3_vector},
+  std::array<std::string, 2>{f2_vector, f3_vector},
 };
 
 std::vector < std::array<string, 3> > arr_u2Q1Q1 {
-  {u1_vector, f1_vector, f2_vector},
-  {u1_vector, f1_vector, f3_vector},
-  {u1_vector, f2_vector, f3_vector},
+  std::array<std::string, 3>{u1_vector, f1_vector, f2_vector},
+  std::array<std::string, 3>{u1_vector, f1_vector, f3_vector},
+  std::array<std::string, 3>{u1_vector, f2_vector, f3_vector},
 };
 
 namespace P1 {
