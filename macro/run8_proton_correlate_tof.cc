@@ -1,6 +1,6 @@
 #include "QnDataFrame.hpp"
 
-std::string u1_vector{ "proton_plain" };
+std::string u1_vector{ "proton_PLAIN" };
 
 std::string f1_vector{ "F1_PLAIN" };
 std::string f2_vector{ "F2_PLAIN" };
