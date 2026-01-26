@@ -2,9 +2,9 @@
 
 std::string u1_vector{ "proton_PLAIN" };
 
-std::string f1_vector{ "F1_PLAIN" };
-std::string f2_vector{ "F2_PLAIN" };
-std::string f3_vector{ "F3_PLAIN" };
+std::string f1_vector{ "F1_RECENTERED" };
+std::string f2_vector{ "F2_RECENTERED" };
+std::string f3_vector{ "F3_RECENTERED" };
 
 std::vector < std::array<std::string, 1> > arr_u1 {
   std::array<std::string, 1>{u1_vector}
