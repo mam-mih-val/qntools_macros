@@ -149,8 +149,8 @@ void run8_proton_correct_clean( std::string list,
   []
   (double multiplicity){
       float centrality;
-      std::vector<float> centrality_percentage{ 0, 10, 20, 30, 40, 50, 60, 70, 100 };
-      std::vector<int> multiplicity_edges{ 236, 137, 99, 71, 49, 33, 22, 12, 0 };
+      std::vector<float> centrality_percentage{ 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 30, 40, 50, 60, 70, 100 };
+      std::vector<int> multiplicity_edges{ 236, 183, 167, 155, 145, 136, 127, 119, 111, 104, 97, 71, 49, 33, 22, 12, 0  };
       if( multiplicity > multiplicity_edges[0] )
         return -1.0f;
       int idx = 0;
@@ -310,7 +310,7 @@ void run8_proton_correct_clean( std::string list,
                                     });
 
   correction_task.InitVariables();
-  correction_task.AddEventAxis( {"centrality", 4, 0, 40} );
+  correction_task.AddEventAxis( {"centrality", 10, 0, 20} );
 
   VectorConfig f1( "F1", "fhcalModPhi", "fhcalModE", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
   f1.SetHarmonicArray( {1, 2} );
