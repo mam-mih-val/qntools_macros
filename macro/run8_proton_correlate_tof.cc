@@ -39,7 +39,7 @@ std::vector < std::array<string, 4> > arr_u3Q1Q1Q1 {
 };
 
 std::vector < std::array<string, 3> > arr_Q1Q1Q1 {
-  std::array<std::string, 2>{f1_vector, f2_vector, f3_vector},
+  std::array<std::string, 3>{f1_vector, f2_vector, f3_vector},
 };
 
 namespace P4{
