@@ -34,8 +34,39 @@ std::vector < std::array<string, 3> > arr_u2Q1Q1 {
   std::array<std::string, 3>{u1_vector, f2_vector, f3_vector},
 };
 
+std::vector < std::array<string, 4> > arr_u3Q1Q1Q1 {
+  std::array<std::string, 4>{u1_vector, f1_vector, f2_vector, f3_vector},
+};
+
+std::vector < std::array<string, 3> > arr_Q1Q1Q1 {
+  std::array<std::string, 2>{f1_vector, f2_vector, f3_vector},
+};
+
+namespace P4{
+  inline auto yyyy( unsigned int h_a, unsigned int h_b, unsigned int h_c, unsigned int h_d ) {
+    return [ h_a, h_b, h_c, h_d ]( const Qn::QVector &a, const Qn::QVector &b, const Qn::QVector &c, const Qn::QVector &d ) {
+      return a.y(h_a) * b.y(h_b) * c.y(h_c) * d.y(h_d);
+    };
+  }
+}
+
 namespace P1 {
   inline auto x( unsigned int h_a ) {
+    return [ h_a ](const Qn::QVector &a ) {
+      return a.x(h_a);
+    };
+  }
+
+  inline auto y( unsigned int h_a ) {
+    return [ h_a ](const Qn::QVector &a ) {
+      return a.y(h_a);
+    };
+  }
+
+}
+
+namespace P4 {
+  inline auto xxxx( unsigned int h_a ) {
     return [ h_a ](const Qn::QVector &a ) {
       return a.x(h_a);
     };
@@ -90,6 +121,9 @@ void run8_proton_correlate_tof(string inputFiles="qn.root", string outputFile="c
 
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x2", P1::x(2), wSumWu1part, wy, corr, corr);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y2", P1::y(2), wSumWu1part, wy, corr, corr);
+
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x3", P1::x(3), wSumWu1part, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y3", P1::y(3), wSumWu1part, wy, corr, corr);
   }
 
   for ( auto &corr: arr_Q1 )
@@ -136,6 +170,29 @@ void run8_proton_correlate_tof(string inputFiles="qn.root", string outputFile="c
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y2y1y1", P3::yyy(2, 1, 1), wSumWu3part, wy, corr, corr);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x2x1y1", P3::xxy(2, 1, 1), wSumWu3part, wy, corr, corr);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x2y1x1", P3::xyx(2, 1, 1), wSumWu3part, wy, corr, corr);
+  }
+
+  for ( auto &corr: arr_Q1Q1Q1 )
+  {
+    string corrName=corr.at(0)+"."+corr.at(1)+"."+corr.at(2);
+    // diagonal/non-zero
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1x1x1", P3::xxx(1, 1, 1), wUnity3part, wn, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1y1y1", P3::xyy(1, 1, 1), wUnity3part, wn, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1x1y1", P3::yxy(1, 1, 1), wUnity3part, wn, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1y1x1", P3::yyx(1, 1, 1), wUnity3part, wn, corr, corr);
+    // non-diagonal/zero 
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1x1x1", P3::yxx(1, 1, 1), wUnity3part, wn, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1y1y1", P3::yyy(1, 1, 1), wUnity3part, wn, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1x1y1", P3::xxy(1, 1, 1), wUnity3part, wn, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1y1x1", P3::xyx(1, 1, 1), wUnity3part, wn, corr, corr);
+  }
+
+  for ( auto &corr: arr_u3Q1Q1Q1 )
+  {
+    string corrName=corr.at(0)+"."+corr.at(1)+"."+corr.at(2)+"."+corr.at(3);
+    // diagonal/non-zero
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1y1y1y1", P4::yyyy(1, 1, 1, 1), wSumWu4part, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y3y1y1y1", P4::yyyy(3, 1, 1, 1), wSumWu4part, wy, corr, corr);
   }
 
   // ---------------- //
