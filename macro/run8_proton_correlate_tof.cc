@@ -1,6 +1,6 @@
 #include "QnDataFrame.hpp"
 
-std::string u1_vector{ "proton_PLAIN" };
+std::string u1_vector{ "proton_RECENTERED" };
 
 std::string f1_vector{ "F1_RECENTERED" };
 std::string f2_vector{ "F2_RECENTERED" };
