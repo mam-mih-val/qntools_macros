@@ -2,9 +2,9 @@
 
 std::string u1_vector{ "proton_PLAIN" };
 
-std::string f1_vector{ "F1_prev_RECENTERED" };
-std::string f2_vector{ "F2_prev_RECENTERED" };
-std::string f3_vector{ "F3_prev_RECENTERED" };
+std::string f1_vector{ "F1_RECENTERED" };
+std::string f2_vector{ "F2_RECENTERED" };
+std::string f3_vector{ "F3_RECENTERED" };
 
 std::vector < std::array<std::string, 1> > arr_u1 {
   std::array<std::string, 1>{u1_vector}
@@ -82,15 +82,7 @@ void run8_proton_correlate_tof(string inputFiles="qn.root", string outputFile="c
   if( chain->GetEntries() <= 0 )
     return;
   ROOT::RDataFrame d( *chain );
-  auto f1_previous = Qn::DataContainerQVector{};
-  auto f2_previous = Qn::DataContainerQVector{};
-  auto f3_previous = Qn::DataContainerQVector{};
-  auto dd = d
-    .Define( "F1_prev_RECENTERED", [&f1_previous]( Qn::DataContainerQVector vec ){ auto prev = f1_previous; f1_previous = vec; return prev; }, {"F1_RECENTERED"} )
-    .Define( "F2_prev_RECENTERED", [&f2_previous]( Qn::DataContainerQVector vec ){ auto prev = f2_previous; f2_previous = vec; return prev; }, {"F2_RECENTERED"} )
-    .Define( "F3_prev_RECENTERED", [&f3_previous]( Qn::DataContainerQVector vec ){ auto prev = f3_previous; f3_previous = vec; return prev; }, {"F3_RECENTERED"} )
-  ;
-  auto d_samples = Qn::Correlation::Resample(dd, nSamples);
+  auto d_samples = Qn::Correlation::Resample(d, nSamples);
 
   namespace P2 = Qn::Correlation::TwoParticle;
   namespace P3 = Qn::Correlation::MixedHarmonics;
