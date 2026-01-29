@@ -2,12 +2,15 @@
 // Created by Misha on 3/7/2023.
 //
 
+#include <cassert>
 #include <cmath>
 #include <vector>
 
 void run8_proton_correct_clean( std::string list, 
                           std::string str_effieciency_file,
                           std::string centrality_calib_file,
+                          std::string str_pid_tof400_file,
+                          std::string str_pid_tof700_file,
                           std::string calib_in_file="qa.root" ){
 
   std::cout << "starting execution" << std::endl;
@@ -18,23 +21,23 @@ void run8_proton_correct_clean( std::string list,
   const float Y_CM = 1.15141;
   const float FHCAL_Z = 980; // cm
 
-	auto f1_2212_m_400 = new TF1("2212_mean_400", "pol1");
-  f1_2212_m_400->SetParameter(0, 0.9666099);
-  f1_2212_m_400->SetParameter(1, -0.04425819);
+  auto file_pid400 = std::unique_ptr< TFile, std::function< void(TFile*) > >{ TFile::Open( str_pid_tof400_file, "READ" ), [](auto f*){f->Close(); } };
+  auto file_pid700 = std::unique_ptr< TFile, std::function< void(TFile*) > >{ TFile::Open( str_pid_tof400_file, "READ" ), [](auto f*){f->Close(); } };
 
-  auto f1_2212_s_400 = new TF1("2212_sigma_400", "pol2");
-  f1_2212_s_400->SetParameter(0, 0.08997859);
-  f1_2212_s_400->SetParameter(1, -0.03365721);
-  f1_2212_s_400->SetParameter(2, 0.01650391);
+  assert(file_pid400);
+  assert(file_pid700);
 
-  auto f1_2212_m_700 = new TF1("2212_mean_700", "pol1");
-  f1_2212_m_700->SetParameter(0, 0.9562788);
-  f1_2212_m_700->SetParameter(1, -0.03858193);
+  TF1* f1_2212_m_400{nullptr};
+  file_pid400->GetObject( "fit_2212_x0", f1_2212_m_400 );
 
-  auto f1_2212_s_700 = new TF1("2212_sigma_700", "pol2");
-  f1_2212_s_700->SetParameter(0, 0.05129182);
-  f1_2212_s_700->SetParameter(1, -0.0120711);
-  f1_2212_s_700->SetParameter(2, 0.01661445);
+  TF1* f1_2212_m_700{nullptr};
+  file_pid700->GetObject( "fit_2212_x0", f1_2212_m_700 );
+
+  TF1* f1_2212_s_400{nullptr};
+  file_pid400->GetObject( "fit_2212_sigma", f1_2212_s_400 );
+
+  TF1* f1_2212_s_700{nullptr};
+  file_pid700->GetObject( "fit_2212_sigma", f1_2212_s_700 );
 
   auto file_fit = TFile::Open( centrality_calib_file.c_str(), "READ" );
 	file_fit->cd();
