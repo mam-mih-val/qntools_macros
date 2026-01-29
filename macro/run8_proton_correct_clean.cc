@@ -21,23 +21,27 @@ void run8_proton_correct_clean( std::string list,
   const float Y_CM = 1.15141;
   const float FHCAL_Z = 980; // cm
 
-  auto file_pid400 = std::unique_ptr< TFile, std::function< void(TFile*) > >{ TFile::Open( str_pid_tof400_file, "READ" ), [](auto f*){f->Close(); } };
-  auto file_pid700 = std::unique_ptr< TFile, std::function< void(TFile*) > >{ TFile::Open( str_pid_tof400_file, "READ" ), [](auto f*){f->Close(); } };
+  auto file_pid400 = std::unique_ptr< TFile, std::function< void(TFile*) > >{ TFile::Open( str_pid_tof400_file.c_str(), "READ" ), [](auto f*){f->Close(); } };
+  auto file_pid700 = std::unique_ptr< TFile, std::function< void(TFile*) > >{ TFile::Open( str_pid_tof700_file.c_str(), "READ" ), [](auto f*){f->Close(); } };
 
   assert(file_pid400);
   assert(file_pid700);
 
   TF1* f1_2212_m_400{nullptr};
   file_pid400->GetObject( "fit_2212_x0", f1_2212_m_400 );
+  assert(f1_2212_m_400);
 
   TF1* f1_2212_m_700{nullptr};
   file_pid700->GetObject( "fit_2212_x0", f1_2212_m_700 );
+  assert(f1_2212_m_700);
 
   TF1* f1_2212_s_400{nullptr};
   file_pid400->GetObject( "fit_2212_sigma", f1_2212_s_400 );
+  assert(f1_2212_s_400);
 
   TF1* f1_2212_s_700{nullptr};
   file_pid700->GetObject( "fit_2212_sigma", f1_2212_s_700 );
+  assert(f1_2212_s_700);
 
   auto file_fit = TFile::Open( centrality_calib_file.c_str(), "READ" );
 	file_fit->cd();
