@@ -203,6 +203,42 @@ void run8_proton_correct_clean( std::string list,
     };
   };
 
+  auto charge_function = []( std::vector<float> vec_pq, ROOT::VecOps::RVec<float> vec_dedx ){
+    auto bb_body = [](Double_t *x, Double_t *par) {
+    // x[0] = p/q (momentum over charge) in GeV/c
+      Double_t p = x[0];
+      Double_t m = par[0];
+      Double_t A = par[1];
+      Double_t delta = par[2];
+      Double_t norm = par[3];
+      Double_t me = 0.000511;
+
+      Double_t bg = p / m;
+      Double_t beta = bg / sqrt(1. + bg * bg);
+      Double_t gamma_fac = sqrt(1. + bg * bg);
+      Double_t ekin_max = 2*pow(m * gamma_fac + me, 2) * me / (m * m);
+      Double_t dEdx = A * (1. / (beta * beta)) * (-5.296 + log(bg) + log(ekin_max) - 2 * beta * beta - delta);
+
+      return norm * dEdx;
+    };
+    auto f1_bethebloch_d = new TF1("fBetheBloch_d", BetheBloch, 0.1, 10, 4);
+    f1_bethebloch_d->SetParameter(0, 2.26);
+    f1_bethebloch_d->SetParameter(1, -1.64);
+    f1_bethebloch_d->SetParameter(2, 35.73);
+    f1_bethebloch_d->SetParameter(3, 2.02);
+
+    auto vec_q = std::vector<float>( vec_pq.size(), -1.f );
+    for( auto i = size_t{0}; i<vec_pq.size(); ++i ){
+      auto pq = vec_pq.at(i);
+      auto dedx = vec_dedx.at(i);
+      if( pq < 0 ) 
+        continue; 
+      auto cut = f1_bethebloch_d->Eval( pq );
+      vec_q.push_back( dedx < cut ? 1.f ? 2.f );
+    }
+    return vec_q;
+  };
+
   std::unique_ptr<TFile> effieciency_file{TFile::Open( str_effieciency_file.c_str(), "READ" )};
   TH2D* efficiency_histo{nullptr};
   TH2D* efficiency_tof400{nullptr};
@@ -276,6 +312,7 @@ void run8_proton_correct_clean( std::string list,
           .Define( "trPy", " std::vector<float> py; for( auto mom : trMom ){ py.push_back( mom.Py() ); } return py; " )
           .Define( "pz", " std::vector<float> pz; for( auto mom : trMom ){ pz.push_back( mom.Pz() ); } return pz; " )
           .Define( "pq", " std::vector<float> pq; for( int i=0; i<trMom.size(); i++ ){ pq.push_back( trMom.at(i).P() / trCharge.at(i) ); } return pq;" )
+          .Define( "trQ", charge_function, {"pq", "trEnergyLoss"} )
           // .Define( "trM2Tof700", m2_function, { "trMom", "trBetaTof700" } )
           // .Define( "trM2Tof400", m2_function, { "trMom", "trBetaTof400" } )
           .Define( "trNsigmaProton400", n_sigma_generator(f1_2212_m_400, f1_2212_s_400), { "pq", "trM2Tof400" } )
@@ -313,7 +350,7 @@ void run8_proton_correct_clean( std::string list,
   correction_task.SetEventVariables(std::regex("centrality"));
   correction_task.SetChannelVariables({std::regex("fhcalMod(X|Y|Phi|E|Id)")});
   correction_task.SetTrackVariables({
-                                            std::regex("tr(Pt|Px|Py|Eta|Phi|NsigmaProton|NsigmaProton400|NsigmaProton700|Charge|ProtonY|DcaR|Chi2Ndf|Nhits|Weight|WeightTof400|WeightTof700|FhcalX|FhcalY|StsNhits|StsChi2)"),
+                                            std::regex("tr(Pt|Px|Py|Eta|Phi|NsigmaProton|NsigmaProton400|NsigmaProton700|Charge|ProtonY|DcaR|Chi2Ndf|Nhits|Weight|WeightTof400|WeightTof700|FhcalX|FhcalY|StsNhits|StsChi2|Q)"),
                                     });
 
   correction_task.InitVariables();
@@ -416,6 +453,9 @@ void run8_proton_correct_clean( std::string list,
   proton.AddCut( "trStsChi2", [](double chi2){
     return chi2 < 5.0;
   }, "cut on chi2 in sts" );
+  proton.AddCut( "trQ", [](double q){
+    return 0.5 < q && q < 1.5;
+  }, "cut on charge == 1" );
   proton.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}});
   correction_task.AddVector(proton);
 
