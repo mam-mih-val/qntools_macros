@@ -71,8 +71,6 @@ namespace P1 {
 
 }
 
-auto f1_previous = Qn::DataContainerQVector{};
-
 void run8_proton_correlate_tof(string inputFiles="qn.root", string outputFile="corr.root")
 {
   int nSamples = 100;
@@ -84,6 +82,7 @@ void run8_proton_correlate_tof(string inputFiles="qn.root", string outputFile="c
   if( chain->GetEntries() <= 0 )
     return;
   ROOT::RDataFrame d( *chain );
+  auto f1_previous = Qn::DataContainerQVector{};
   auto dd = d
   .Define( "F1_prev_RECENTERED", [&f1_previous]( Qn::DataContainerQVector vec ){ auto prev = f1_previous; f1_previous = vec; return prev; }, {"F1_RECENTERED"} );
   auto d_samples = Qn::Correlation::Resample(dd, nSamples);
