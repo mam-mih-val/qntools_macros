@@ -221,7 +221,7 @@ void run8_proton_correct_clean( std::string list,
 
       return norm * dEdx;
     };
-    auto f1_bethebloch_d = new TF1("fBetheBloch_d", BetheBloch, 0.1, 10, 4);
+    auto f1_bethebloch_d = new TF1("fBetheBloch_d", bb_body, 0.1, 10, 4);
     f1_bethebloch_d->SetParameter(0, 2.26);
     f1_bethebloch_d->SetParameter(1, -1.64);
     f1_bethebloch_d->SetParameter(2, 35.73);
