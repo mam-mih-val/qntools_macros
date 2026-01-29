@@ -71,6 +71,8 @@ namespace P1 {
 
 }
 
+auto f1_previous = DataContainerQVector{};
+
 void run8_proton_correlate_tof(string inputFiles="qn.root", string outputFile="corr.root")
 {
   int nSamples = 100;
@@ -82,7 +84,9 @@ void run8_proton_correlate_tof(string inputFiles="qn.root", string outputFile="c
   if( chain->GetEntries() <= 0 )
     return;
   ROOT::RDataFrame d( *chain );
-  auto d_samples = Qn::Correlation::Resample(d, nSamples);
+  auto dd = d
+  .Define( "F1_prev_RECENTERED", [&f1_previous]( DataContainerQVector vec ){ auto prev = f1_previous; f1_previous = vec; return prev; }, {"F1_RECENTERED"} );
+  auto d_samples = Qn::Correlation::Resample(dd, nSamples);
 
   namespace P2 = Qn::Correlation::TwoParticle;
   namespace P3 = Qn::Correlation::MixedHarmonics;
