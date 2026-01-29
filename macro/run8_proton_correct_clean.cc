@@ -21,8 +21,8 @@ void run8_proton_correct_clean( std::string list,
   const float Y_CM = 1.15141;
   const float FHCAL_Z = 980; // cm
 
-  auto file_pid400 = std::unique_ptr< TFile, std::function< void(TFile*) > >{ TFile::Open( str_pid_tof400_file.c_str(), "READ" ), [](auto f*){f->Close(); } };
-  auto file_pid700 = std::unique_ptr< TFile, std::function< void(TFile*) > >{ TFile::Open( str_pid_tof700_file.c_str(), "READ" ), [](auto f*){f->Close(); } };
+  auto file_pid400 = std::unique_ptr< TFile, std::function< void(TFile*) > >{ TFile::Open( str_pid_tof400_file.c_str(), "READ" ), [](auto f){f->Close(); } };
+  auto file_pid700 = std::unique_ptr< TFile, std::function< void(TFile*) > >{ TFile::Open( str_pid_tof700_file.c_str(), "READ" ), [](auto f){f->Close(); } };
 
   assert(file_pid400);
   assert(file_pid700);
