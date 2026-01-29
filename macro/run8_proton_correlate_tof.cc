@@ -86,9 +86,10 @@ void run8_proton_correlate_tof(string inputFiles="qn.root", string outputFile="c
   auto f2_previous = Qn::DataContainerQVector{};
   auto f3_previous = Qn::DataContainerQVector{};
   auto dd = d
-  .Define( "F1_prev_RECENTERED", [&f1_previous]( Qn::DataContainerQVector vec ){ auto prev = f1_previous; f1_previous = vec; return prev; }, {"F1_RECENTERED"} );
-  .Define( "F2_prev_RECENTERED", [&f2_previous]( Qn::DataContainerQVector vec ){ auto prev = f2_previous; f2_previous = vec; return prev; }, {"F2_RECENTERED"} );
-  .Define( "F3_prev_RECENTERED", [&f3_previous]( Qn::DataContainerQVector vec ){ auto prev = f3_previous; f3_previous = vec; return prev; }, {"F3_RECENTERED"} );
+    .Define( "F1_prev_RECENTERED", [&f1_previous]( Qn::DataContainerQVector vec ){ auto prev = f1_previous; f1_previous = vec; return prev; }, {"F1_RECENTERED"} )
+    .Define( "F2_prev_RECENTERED", [&f2_previous]( Qn::DataContainerQVector vec ){ auto prev = f2_previous; f2_previous = vec; return prev; }, {"F2_RECENTERED"} )
+    .Define( "F3_prev_RECENTERED", [&f3_previous]( Qn::DataContainerQVector vec ){ auto prev = f3_previous; f3_previous = vec; return prev; }, {"F3_RECENTERED"} )
+  ;
   auto d_samples = Qn::Correlation::Resample(dd, nSamples);
 
   namespace P2 = Qn::Correlation::TwoParticle;
