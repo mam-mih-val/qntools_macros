@@ -166,6 +166,16 @@ void run8_proton_correlate_tof(string inputFiles="qn.root", string outputFile="c
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y2y1y1", P3::yyy(2, 1, 1), wSumWu3part, wy, corr, corr);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x2x1y1", P3::xxy(2, 1, 1), wSumWu3part, wy, corr, corr);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x2y1x1", P3::xyx(2, 1, 1), wSumWu3part, wy, corr, corr);
+    // third harmonic
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x3x1x1", P3::xxx(3, 1, 1), wSumWu3part, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x3y1y1", P3::xyy(3, 1, 1), wSumWu3part, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y3x1y1", P3::yxy(3, 1, 1), wSumWu3part, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y3y1x1", P3::yyx(3, 1, 1), wSumWu3part, wy, corr, corr);
+    // non-diagonal/zero 
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y3x1x1", P3::yxx(3, 1, 1), wSumWu3part, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y3y1y1", P3::yyy(3, 1, 1), wSumWu3part, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x3x1y1", P3::xxy(3, 1, 1), wSumWu3part, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x3y1x1", P3::xyx(3, 1, 1), wSumWu3part, wy, corr, corr);
   }
 
   for ( auto &corr: arr_Q1Q1Q1 )

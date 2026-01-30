@@ -234,7 +234,7 @@ void run8_proton_correct_clean( std::string list,
       if( pq < 0 ) 
         continue; 
       auto cut = f1_bethebloch_d->Eval( pq );
-      vec_q.push_back( dedx < cut ? 1.f : 2.f );
+      vec_q.at(i) =  dedx < cut ? 1.f : 2.f;
     }
     return vec_q;
   };
