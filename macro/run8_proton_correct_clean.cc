@@ -427,8 +427,8 @@ void run8_proton_correct_clean( std::string list,
   };
   
   VectorConfig proton( "proton", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
-  proton.SetHarmonicArray( { 1, 2, 3 } );
-  proton.SetCorrections( { CORRECTION::PLAIN, CORRECTION::RECENTERING } );
+  proton.SetHarmonicArray( { 1, 2, 3, 4 } );
+  proton.SetCorrections( { CORRECTION::PLAIN } );
   proton.SetCorrectionAxes( proton_axes );
   proton.AddCut( "trNsigmaProton", [](double n_sigma){
     return n_sigma < 3;

@@ -115,6 +115,9 @@ void run8_proton_correlate_tof(string inputFiles="qn.root", string outputFile="c
 
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x3", P1::x(3), wSumWu1part, wy, corr, corr);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y3", P1::y(3), wSumWu1part, wy, corr, corr);
+
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x3", P1::x(4), wSumWu1part, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y3", P1::y(4), wSumWu1part, wy, corr, corr);
   }
 
   for ( auto &corr: arr_Q1 )
