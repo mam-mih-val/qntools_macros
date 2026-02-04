@@ -156,8 +156,10 @@ void run8_proton_correct_clean( std::string list,
   []
   (double multiplicity){
       float centrality;
-      std::vector<float> centrality_percentage{ 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 30, 40, 50, 60, 70, 100 };
-      std::vector<int> multiplicity_edges{ 236, 183, 167, 155, 145, 136, 127, 119, 111, 104, 97, 71, 49, 33, 22, 12, 0  };
+      // std::vector<float> centrality_percentage{ 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 30, 40, 50, 60, 70, 100 };
+      std::vector<float> centrality_percentage{ 0, 10, 20, 30, 40, 50, 60, 70, 100 };
+      // std::vector<int> multiplicity_edges{ 236, 183, 167, 155, 145, 136, 127, 119, 111, 104, 97, 71, 49, 33, 22, 12, 0  };
+      std::vector<int> multiplicity_edges{ 206, 98, 70, 49, 34, 22, 14, 8, 0  };
       if( multiplicity > multiplicity_edges[0] )
         return -1.0f;
       int idx = 0;
@@ -295,7 +297,7 @@ void run8_proton_correct_clean( std::string list,
           .Define( "vtxZcorr", vtx_correction_generator(g1_FitVtxY), {"vtxZ","runId"})
           .Define( "vtxRcorr", "return sqrt(vtxXcorr*vtxXcorr + vtxYcorr*vtxYcorr);" )
           .Define("track_multiplicity", "return trMom.size();")
-          .Define( "ref_multiplicity", ref_mult_generator( g1_FitRunIdFactor_1 ), {"track_multiplicity","runId"} )
+          .Define( "ref_multiplicity", ref_mult_generator( g1_FitRunIdFactor_2 ), {"track_multiplicity","runId"} )
           .Define("stsNdigits","return stsDigits.size()" )
           .Define("centrality", centrality_function, {"ref_multiplicity"} )
           .Define("fhcalModPhi","ROOT::VecOps::RVec<float> phi; for(auto& pos:fhcalModPos) phi.push_back(pos.phi()); return phi;")
@@ -349,7 +351,7 @@ void run8_proton_correct_clean( std::string list,
                                     });
 
   correction_task.InitVariables();
-  correction_task.AddEventAxis( {"centrality", 10, 0, 20} );
+  correction_task.AddEventAxis( {"centrality", 6, 0, 60} );
 
   VectorConfig f1( "F1", "fhcalModPhi", "fhcalModE", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
   f1.SetHarmonicArray( {1, 2} );

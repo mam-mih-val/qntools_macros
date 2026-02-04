@@ -74,7 +74,7 @@ namespace P1 {
 void run8_proton_correlate_tof(string inputFiles="qn.root", string outputFile="corr.root")
 {
   int nSamples = 100;
-  Qn::AxisD centAxis({"centrality", 10, 0, 20});
+  Qn::AxisD centAxis({"centrality", 6, 0, 60});
   auto axes_correlation = Qn::MakeAxes(centAxis);
   std::string treename = "tree";
   auto* chain = new TChain( treename.c_str() );
