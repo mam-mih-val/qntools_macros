@@ -6,6 +6,9 @@ std::string f1_vector{ "F1_PLAIN" };
 std::string f2_vector{ "F2_PLAIN" };
 std::string f3_vector{ "F3_PLAIN" };
 
+std::string tp_vector{ "Tpos_PLAIN" };
+std::string tn_vector{ "Tneg_PLAIN" };
+
 std::vector < std::array<std::string, 1> > arr_u1 {
   std::array<std::string, 1>{u1_vector}
 };
@@ -26,6 +29,14 @@ std::vector < std::array<string, 2> > arr_Q1Q1 {
   std::array<std::string, 2>{f1_vector, f2_vector},
   std::array<std::string, 2>{f1_vector, f3_vector},
   std::array<std::string, 2>{f2_vector, f3_vector},
+  
+  std::array<std::string, 2>{f1_vector, tp_vector},
+  std::array<std::string, 2>{f2_vector, tp_vector},
+  std::array<std::string, 2>{f3_vector, tp_vector},
+
+  std::array<std::string, 2>{f1_vector, tn_vector},
+  std::array<std::string, 2>{f2_vector, tn_vector},
+  std::array<std::string, 2>{f3_vector, tn_vector},
 };
 
 std::vector < std::array<string, 3> > arr_u2Q1Q1 {
