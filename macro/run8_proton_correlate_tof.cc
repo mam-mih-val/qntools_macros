@@ -2,9 +2,9 @@
 
 std::string u1_vector{ "proton_PLAIN" };
 
-std::string f1_vector{ "F1_RECENTERED" };
-std::string f2_vector{ "F2_RECENTERED" };
-std::string f3_vector{ "F3_RECENTERED" };
+std::string f1_vector{ "F1_PLAIN" };
+std::string f2_vector{ "F2_PLAIN" };
+std::string f3_vector{ "F3_PLAIN" };
 
 std::vector < std::array<std::string, 1> > arr_u1 {
   std::array<std::string, 1>{u1_vector}
@@ -126,6 +126,9 @@ void run8_proton_correlate_tof(string inputFiles="qn.root", string outputFile="c
 
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x1", P1::x(1), wUnity1part, wn, corr, corr);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y1", P1::y(1), wUnity1part, wn, corr, corr);
+
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x2", P1::x(2), wUnity1part, wn, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y2", P1::y(2), wUnity1part, wn, corr, corr);
   }
 
   for ( auto &corr: arr_u1Q1 )
