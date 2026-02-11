@@ -2,7 +2,8 @@
 // Created by Misha on 3/7/2023.
 //
 
-#cmakedefine QNTOOLS_LIB_PATH "@QNTOOLS_LIB_PATH@"
+#cmakedefine QNTOOLS_BASE_PATH "@QNTOOLS_BASE_PATH@"
+#cmakedefine QNTOOLS_CORR_PATH "@QNTOOLS_CORR_PATH@"
 #cmakedefine QNTOOLS_INCLUDE_PATH "@QNTOOLS_INCLUDE_PATH@"
 #cmakedefine THIS_SRC_PATH "@THIS_SRC_PATH@"
 
@@ -16,7 +17,8 @@ int main(int n_args, char** args){
     throw std::runtime_error( "No argumets provided" );
 
   gInterpreter->AddIncludePath(QNTOOLS_INCLUDE_PATH);
-  gSystem->Load(QNTOOLS_LIB_PATH);
+  gSystem->Load(QNTOOLS_BASE_PATH);
+  gSystem->Load(QNTOOLS_CORR_PATH);
   
   gInterpreter->AddIncludePath(THIS_SRC_PATH);
   
