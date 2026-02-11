@@ -61,7 +61,7 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
     return [corrM]( Double_t centrality, Qn::DataContainerQVector qvec ){
       auto new_qvec = qvec;
       auto corrM_c = corrM;
-      auto c_axis = corrM_c[0][0].GetAxis( "centrality" ).FindBin( centrality ); 
+      auto c_axis = corrM_c[0][0].GetAxis( "centrality" ); 
       auto c_bin = c_axis.FindBin( centrality );
       auto bin_lo = c_axis.GetLowerBinEdge( c_bin );
       auto bin_hi = c_axis.GetUpperBinEdge( c_bin );
