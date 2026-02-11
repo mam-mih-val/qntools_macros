@@ -94,7 +94,7 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
     .Define("Tpos_DECOMPOSED", correction_generator(corrM_tp), { tp_name, "centrality" } )
     .Define("Tneg_DECOMPOSED", correction_generator(corrM_tn), { tn_name, "centrality" } )
     
-    .Define("proton_DECOMPOSED", correction_generator(corrM_tp), { corrM_p, "centrality" } )
+    .Define("proton_DECOMPOSED", correction_generator(corrM_tp), { proton_name, "centrality" } )
   ;
 
   dd.Snapshot("tree", "decomposed_out.root", dd.GetColumnNames() );
