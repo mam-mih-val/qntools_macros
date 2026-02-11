@@ -50,12 +50,12 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
   auto calib_file = std::unique_ptr< TFile, std::function< void(TFile*) > >{ TFile::Open( in_calib_file.c_str(), "READ" ), [](auto f){f ->Close(); } };
   assert(calib_file);
 
-  auto corrM_f1 = CorrectionMatrix(f1_name, calib_file);
-  auto corrM_f2 = CorrectionMatrix(f2_name, calib_file);
-  auto corrM_f3 = CorrectionMatrix(f3_name, calib_file);
-  auto corrM_tp = CorrectionMatrix(tp_name, calib_file);
-  auto corrM_tn = CorrectionMatrix(tn_name, calib_file);
-  auto corrM_p = CorrectionMatrix(proton_name, calib_file);
+  auto corrM_f1 = CorrectionMatrix(f1_name, calib_file.get());
+  auto corrM_f2 = CorrectionMatrix(f2_name, calib_file.get());
+  auto corrM_f3 = CorrectionMatrix(f3_name, calib_file.get());
+  auto corrM_tp = CorrectionMatrix(tp_name, calib_file.get());
+  auto corrM_tn = CorrectionMatrix(tn_name, calib_file.get());
+  auto corrM_p = CorrectionMatrix(proton_name, calib_file.get());
 
   const auto correction_generator = []( const Matrix< Qn::DataContainerStatCalculate, 4 >& corrM ){
     return [corrM&]( Double_t centrality, Qn::DataContainerQVector qvec ){
