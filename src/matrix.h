@@ -61,7 +61,7 @@ template<typename U, size_t M>
 auto Det( const Matrix<U, M>& A ) -> U{
   auto result =  A.matrix_[0][0] * Det( Reduce(A, 0, 0) );
   for( auto i=size_t{1}; i<M; ++i ){
-    result += A.matrix_[i][0] * Det(Reduce( A, i, 0)) * pow( -1, i );
+    result = result + A.matrix_[i][0] * Det(Reduce( A, i, 0)) * pow( -1, i );
   }
   return result;
 }

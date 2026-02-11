@@ -73,11 +73,11 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
       }
 
       for( auto i=size_t{0}; i<qvec.size(); ++i ){
-        auto x1_new = qvec.At(i).x(1) * corrM_c[0][0].At(i) + qvec.At(i).y(1) * corrM_c[1][0].At(i) + qvec.At(i).x(2) * corrM_c[2][0].At(i) + qvec.At(i).y(2) * corrM_c[3][0].At(i);
-        auto y1_new = qvec.At(i).x(1) * corrM_c[0][1].At(i) + qvec.At(i).y(1) * corrM_c[1][1].At(i) + qvec.At(i).x(2) * corrM_c[2][1].At(i) + qvec.At(i).y(2) * corrM_c[3][1].At(i);
-        auto x2_new = qvec.At(i).x(1) * corrM_c[0][2].At(i) + qvec.At(i).y(1) * corrM_c[1][2].At(i) + qvec.At(i).x(2) * corrM_c[2][2].At(i) + qvec.At(i).y(2) * corrM_c[3][2].At(i);
-        auto y2_new = qvec.At(i).x(1) * corrM_c[0][3].At(i) + qvec.At(i).y(1) * corrM_c[1][3].At(i) + qvec.At(i).x(2) * corrM_c[2][3].At(i) + qvec.At(i).y(2) * corrM_c[3][3].At(i);
-        new_qvec.At(i).SetQ( 1, x1_new, y1_new );
+        auto x1_new = qvec.At(i).x(1) * corrM_c[0][0].At(i).Mean() + qvec.At(i).y(1) * corrM_c[1][0].At(i).Mean() + qvec.At(i).x(2) * corrM_c[2][0].At(i).Mean() + qvec.At(i).y(2) * corrM_c[3][0].At(i).Mean();
+        auto y1_new = qvec.At(i).x(1) * corrM_c[0][1].At(i).Mean() + qvec.At(i).y(1) * corrM_c[1][1].At(i).Mean() + qvec.At(i).x(2) * corrM_c[2][1].At(i).Mean() + qvec.At(i).y(2) * corrM_c[3][1].At(i).Mean();
+        auto x2_new = qvec.At(i).x(1) * corrM_c[0][2].At(i).Mean() + qvec.At(i).y(1) * corrM_c[1][2].At(i).Mean() + qvec.At(i).x(2) * corrM_c[2][2].At(i).Mean() + qvec.At(i).y(2) * corrM_c[3][2].At(i).Mean();
+        auto y2_new = qvec.At(i).x(1) * corrM_c[0][3].At(i).Mean() + qvec.At(i).y(1) * corrM_c[1][3].At(i).Mean() + qvec.At(i).x(2) * corrM_c[2][3].At(i).Mean() + qvec.At(i).y(2) * corrM_c[3][3].At(i).Mean();
+        new_qvec.At(i).SetQ( 1, x1_new.Mean(), y1_new );
         new_qvec.At(i).SetQ( 2, x2_new, y2_new );
       }
 
