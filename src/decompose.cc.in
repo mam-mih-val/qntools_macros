@@ -16,7 +16,7 @@ int main(int n_args, char** args){
     throw std::runtime_error( "No argumets provided" );
 
   gInterpreter->AddIncludePath(QNTOOLS_INCLUDE_PATH);
-  gInterpreter->Load(QNTOOLS_LIB_PATH);
+  gSystem->Load(QNTOOLS_LIB_PATH);
   
   gInterpreter->AddIncludePath(THIS_SRC_PATH);
   
