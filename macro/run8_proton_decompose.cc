@@ -19,12 +19,12 @@ Matrix< Qn::DataContainerStatCalculate, 4 > CorrectionMatrix( std::string str_ve
     auto corr_name = str_vec_name+".x"+std::to_string(i+1)+"centrality"s;
     calib_file->GetObject( corr_name.c_str(), tmp );
     assert(tmp);
-    vec_c.emplace( *tmp );
+    vec_c.emplace_back( *tmp );
 
     corr_name = str_vec_name+".y"+std::to_string(i+1)+"centrality"s;
     calib_file->GetObject( corr_name.c_str(), tmp );
     assert(tmp);
-    vec_s.emplace( *tmp );
+    vec_s.emplace_back( *tmp );
   }
 
   auto M = Matrix< Qn::DataContainerStatCalculate, 4 >{};
@@ -40,14 +40,14 @@ Matrix< Qn::DataContainerStatCalculate, 4 > CorrectionMatrix( std::string str_ve
 
 void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
 
-  const auto f1_name = "F1_PLAIN"s;
-  const auto f2_name = "F2_PLAIN"s;
-  const auto f3_name = "F3_PLAIN"s;
-  const auto tp_name = "Tpos_PLAIN"s;
-  const auto tn_name = "Tneg_PLAIN"s;
-  const auto proton_name = "proton_PLAIN"s;
+  const std::string f1_name {"F1_PLAIN"};
+  const std::string f2_name {"F2_PLAIN"};
+  const std::string f3_name {"F3_PLAIN"};
+  const std::string tp_name {"Tpos_PLAIN"};
+  const std::string tn_name {"Tneg_PLAIN"};
+  const std::string proton_name {"proton_PLAIN"};
 
-  auto calib_file = std::unique_ptr< TFile, std::function< void(TFile) > >{ TFile::Open( in_calib_file.c_str(), "READ" ), [](auto f){f ->Close(); } };
+  auto calib_file = std::unique_ptr< TFile, std::function< void(TFile*) > >{ TFile::Open( in_calib_file.c_str(), "READ" ), [](auto f){f ->Close(); } };
   assert(calib_file);
 
   auto corrM_f1 = CorrectionMatrix(f1_name, in_calib_file);
