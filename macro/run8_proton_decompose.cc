@@ -58,7 +58,7 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
   auto corrM_p = CorrectionMatrix(proton_name, calib_file.get());
 
   const auto correction_generator = []( const Matrix< Qn::DataContainerStatCalculate, 4 >& corrM ){
-    return [corrM]( Double_t centrality, Qn::DataContainerQVector qvec ){
+    return [corrM]( Qn::DataContainerQVector qvec, Double_t centrality ){
       auto new_qvec = qvec;
       auto corrM_c = corrM;
       auto c_axis = corrM_c[0][0].GetAxis( "centrality" ); 
