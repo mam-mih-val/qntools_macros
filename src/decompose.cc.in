@@ -16,11 +16,11 @@ int main(int n_args, char** args){
   if( n_args < 2 )
     throw std::runtime_error( "No argumets provided" );
 
-  gInterpreter->AddIncludePath(QNTOOLS_INCLUDE_PATH);
-  gInterpreter->Load(QNTOOLS_BASE_PATH);
-  gInterpreter->Load(QNTOOLS_CORR_PATH);
+  gSystem->AddIncludePath(QNTOOLS_INCLUDE_PATH);
+  gSystem->Load(QNTOOLS_BASE_PATH);
+  gSystem->Load(QNTOOLS_CORR_PATH);
   
-  gInterpreter->AddIncludePath(THIS_SRC_PATH);
+  gSystem->AddIncludePath(THIS_SRC_PATH);
   
   std::string macro{args[1]};
   std::string macro_full = macro+"(";
