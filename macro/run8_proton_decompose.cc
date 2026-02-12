@@ -120,7 +120,7 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
     .Define("proton_DECOMPOSED", correction_generator(corrM_p, rec_p), { proton_name, "centrality" } )
   ;
 
-  dd.Snapshot("tree", "decomposed_out.root", std::vector<std::string>{ "F1_PLAIN", "F1_DECOMPOSED" } );
+  dd.Snapshot("tree", "decomposed_out.root", std::vector<std::string>{ "F1_DECOMPOSED" } );
   std::cout << "here5" << std::endl;
 
 
