@@ -124,7 +124,7 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
   file_out->cd();
   auto tree = new TTree("tree", "tree");
   Qn::DataContainerQVector f1{}, f2{}, f3{};
-  tree->Branch( "F1_DECOMPOSED", f1, "Qn::DataContainerQvector" );
+  tree->Branch( "F1_DECOMPOSED", &f1, "Qn::DataContainerQvector" );
 
   dd.Foreach( [tree, &f1]( Qn::DataContainerQVector f1_ev ) mutable {
     f1 = f1_ev;
