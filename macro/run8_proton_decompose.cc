@@ -8,7 +8,7 @@
 #include <cstddef>
 #include <string>
 
-Matrix< Qn::DataContainerStatCalculate, 4 > CorrectionMatrix( std::string base_path, std::string str_vec_name, TFile* calib_file ){
+Matrix< Qn::DataContainerStatCalculate, 4 > CorrectionMatrix( std::string str_vec_name, TFile* calib_file ){
   Qn::DataContainerStatCollect* tmp{nullptr};
 
   auto vec_c = std::vector<Qn::DataContainerStatCalculate>{};
