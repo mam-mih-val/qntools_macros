@@ -48,5 +48,5 @@ set( QNTOOLS_CORR_PATH ${QnTools_INCLUDE_DIR}/../lib/libQnToolsCorrection )
 configure_file(src/decompose.cc.in ${CMAKE_SOURCE_DIR}/src/decompose.cc @ONLY)
 add_executable( decompose src/decompose.cc )
 set_target_properties( decompose PROPERTIES LINKER_LANGUAGE CXX)
-target_link_libraries( decompose PRIVATE ROOT::RIO ROOT::Geom ROOT::ROOTDataFrame QnTools::Base )
+target_link_libraries( decompose PRIVATE ROOT::RIO ROOT::Tree ROOT::Geom ROOT::ROOTDataFrame QnTools::Base )
 

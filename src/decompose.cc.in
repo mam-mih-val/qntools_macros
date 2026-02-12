@@ -17,8 +17,8 @@ int main(int n_args, char** args){
     throw std::runtime_error( "No argumets provided" );
 
   gInterpreter->AddIncludePath(QNTOOLS_INCLUDE_PATH);
-  gSystem->Load(QNTOOLS_BASE_PATH);
-  gSystem->Load(QNTOOLS_CORR_PATH);
+  gInterpreter->Load(QNTOOLS_BASE_PATH);
+  gInterpreter->Load(QNTOOLS_CORR_PATH);
   
   gInterpreter->AddIncludePath(THIS_SRC_PATH);
   
@@ -28,6 +28,6 @@ int main(int n_args, char** args){
     macro_full+="\""+ std::string{args[i]}+"\",";
   }
   macro_full.back()=')';
-  gROOT->Macro(macro_full.c_str());
+  gInterpreter->ExecuteMacro(macro_full.c_str());
   return 0;
 }
