@@ -120,8 +120,19 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
     .Define("proton_DECOMPOSED", correction_generator(corrM_p, rec_p), { proton_name, "centrality" } )
   ;
 
-  dd.Snapshot("tree", "decomposed_out.root", std::vector<std::string>{ "F1_DECOMPOSED" } );
-  std::cout << "here5" << std::endl;
+  auto file_out = std::unique_ptr< TFile, std::function< void(TFile*) > >{ TFile::Open( "decomposed_out.root", "RECREATE" ), [](auto f){f ->Close(); } };
+  file_out->cd();
+  auto tree = new TTree("tree", "tree");
+  Qn::DataContainerQVector f1{}, f2{}, f3{};
+  tree->Branch( "F1_DECOMPOSED", f1, "Qn::DataContainerQvector" );
 
+  dd.Foreach( [tree, &f1]( Qn::DataContainerQVector f1_ev ) mutable {
+    f1 = f1_ev;
+    tree->Fill();
+  }, 
+  std::vector<std::string>{ "F1_DECOMPOSED" } );
+  std::cout << "here5" << std::endl;
+  file_out->cd();
+  tree->Write();
 
 }
