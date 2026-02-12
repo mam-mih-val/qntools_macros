@@ -87,13 +87,24 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
           el = el.Rebin( new_c_axis );
       }
       for( auto i=size_t{0}; i<qvec.size(); ++i ){
-        auto x1_old = qvec.At(i).x(1) - rec_c[0].At(i).Mean();
-        auto y1_old = qvec.At(i).y(1) - rec_c[1].At(i).Mean();
-        auto x2_old = qvec.At(i).x(2) - rec_c[2].At(i).Mean();
-        auto y2_old = qvec.At(i).y(2) - rec_c[3].At(i).Mean();
+        auto c1 = rec_c[0].At(i).Mean();
+        auto s1 = rec_c[1].At(i).Mean();
+        auto c2 = rec_c[2].At(i).Mean();
+        auto s2 = rec_c[3].At(i).Mean();
 
-        auto x1_new = x1_old * corrM_c[0][0].At(i).Mean() + y1_old * corrM_c[1][0].At(i).Mean() + x2_old * corrM_c[2][0].At(i).Mean() + y2_old * corrM_c[3][0].At(i).Mean();
-        auto y1_new = x1_old * corrM_c[0][1].At(i).Mean() + y1_old * corrM_c[1][1].At(i).Mean() + x2_old * corrM_c[2][1].At(i).Mean() + y2_old * corrM_c[3][1].At(i).Mean();
+        auto x1_old = qvec.At(i).x(1) - c1;
+        auto y1_old = qvec.At(i).y(1) - s1;
+        auto x2_old = qvec.At(i).x(2) - c2;
+        auto y2_old = qvec.At(i).y(2) - s2;
+
+        auto detA = 1 - c2*c2 - s2*s2;
+        
+        auto x1_new = (x1_old * (c2-1) + y2_old * s2) / ( c2*c2 + s2*s2 - 1 ) ;
+        auto y1_new = (x1_old * s2 - y2_old * ( c2 + 1 ) ) / ( c2*c2 + s2*s2 - 1 ) ;
+
+
+        // auto x1_new = x1_old * corrM_c[0][0].At(i).Mean() + y1_old * corrM_c[1][0].At(i).Mean() + x2_old * corrM_c[2][0].At(i).Mean() + y2_old * corrM_c[3][0].At(i).Mean();
+        // auto y1_new = x1_old * corrM_c[0][1].At(i).Mean() + y1_old * corrM_c[1][1].At(i).Mean() + x2_old * corrM_c[2][1].At(i).Mean() + y2_old * corrM_c[3][1].At(i).Mean();
         auto x2_new = x1_old * corrM_c[0][2].At(i).Mean() + y1_old * corrM_c[1][2].At(i).Mean() + x2_old * corrM_c[2][2].At(i).Mean() + y2_old * corrM_c[3][2].At(i).Mean();
         auto y2_new = x1_old * corrM_c[0][3].At(i).Mean() + y1_old * corrM_c[1][3].At(i).Mean() + x2_old * corrM_c[2][3].At(i).Mean() + y2_old * corrM_c[3][3].At(i).Mean();
         
