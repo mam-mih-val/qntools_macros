@@ -8,7 +8,7 @@
 #include <cstddef>
 #include <string>
 
-Matrix< Qn::DataContainerStatCalculate, 4 > CorrectionMatrix( std::string str_vec_name, TFile* calib_file ){
+Matrix< Qn::DataContainerStatCalculate, 4 > CorrectionMatrix( std::string base_path, std::string str_vec_name, TFile* calib_file ){
   Qn::DataContainerStatCollect* tmp{nullptr};
 
   auto vec_c = std::vector<Qn::DataContainerStatCalculate>{};
@@ -97,6 +97,6 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
     .Define("proton_DECOMPOSED", correction_generator(corrM_tp), { proton_name, "centrality" } )
   ;
 
-  dd.Snapshot("tree", "decomposed_out.root", dd.GetColumnNames() );
+  dd.Snapshot("tree", "decomposed_out.root", std::vector<std::string>{ "F1_PLAIN", "F1_DECOMPOSED" } );
 
 }
