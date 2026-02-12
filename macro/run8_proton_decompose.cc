@@ -123,13 +123,13 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
   Qn::DataContainerQVector f1{}, f2{}, f3{}, tp{}, tn{}, p{};
   double cent{};
   tree->Branch( "centrality", &cent );
-  
-  tree->Branch( "F1_DECOMPOSED", &f1 );
-  tree->Branch( "F2_DECOMPOSED", &f2 );
-  tree->Branch( "F3_DECOMPOSED", &f3 );
-  tree->Branch( "Tpos_DECOMPOSED", &tp );
-  tree->Branch( "Tneg_DECOMPOSED", &tn );
-  tree->Branch( "proton_DECOMPOSED", &p );
+
+  tree->Branch( "F1_DECOMPOSED", "Qn::DataContainerQVector", &f1 );
+  tree->Branch( "F2_DECOMPOSED", "Qn::DataContainerQVector", &f2 );
+  tree->Branch( "F3_DECOMPOSED", "Qn::DataContainerQVector", &f3 );
+  tree->Branch( "Tpos_DECOMPOSED", "Qn::DataContainerQVector", &tp );
+  tree->Branch( "Tneg_DECOMPOSED", "Qn::DataContainerQVector", &tn );
+  tree->Branch( "proton_DECOMPOSED", "Qn::DataContainerQVector", &p );
 
   dd.Foreach( [tree, &cent, &f1, &f2, &f3, &tp, &tn, &p]( 
     double centrality,
