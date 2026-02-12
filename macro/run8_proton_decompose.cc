@@ -72,9 +72,8 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
       auto new_c_axis = Qn::AxisD{ "centrality", 1, bin_lo, bin_hi };
       std::cout << "here1" << std::endl;
       for( auto i = size_t{0}; i<4; ++i ){
-        
-        for( auto j = size_t{0}; j<4; ++i ){
-          std::cout << "here1" << " dimensions = " << corrM_c[i][j].GetAxes().size() << std::endl;
+        for( auto j = size_t{0}; j<4; ++j ){
+          std::cout << "here1" << "dimensions = " << corrM_c[i][j].GetAxes().size() << std::endl;
           if( corrM_c[i][j].GetAxes().size() > 1 )
             corrM_c[i][j] = corrM_c[i][j].Select( new_c_axis );
           else
