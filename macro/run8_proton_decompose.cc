@@ -106,14 +106,14 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
 
   auto d = ROOT::RDataFrame( "tree", in_file_name );
   auto dd = d
-    .Define("F1_DECOMPOSED", correction_generator(corrM_f1), { f1_name, "centrality" } )
-    .Define("F2_DECOMPOSED", correction_generator(corrM_f2), { f2_name, "centrality" } )
-    .Define("F3_DECOMPOSED", correction_generator(corrM_f3), { f3_name, "centrality" } )
+    .Define("F1_DECOMPOSED", correction_generator(corrM_f1, rec_f1), { f1_name, "centrality" } )
+    .Define("F2_DECOMPOSED", correction_generator(corrM_f2, rec_f2), { f2_name, "centrality" } )
+    .Define("F3_DECOMPOSED", correction_generator(corrM_f3, rec_f3), { f3_name, "centrality" } )
 
-    .Define("Tpos_DECOMPOSED", correction_generator(corrM_tp), { tp_name, "centrality" } )
-    .Define("Tneg_DECOMPOSED", correction_generator(corrM_tn), { tn_name, "centrality" } )
+    .Define("Tpos_DECOMPOSED", correction_generator(corrM_tp, rec_tp), { tp_name, "centrality" } )
+    .Define("Tneg_DECOMPOSED", correction_generator(corrM_tn, rec_tn), { tn_name, "centrality" } )
     
-    .Define("proton_DECOMPOSED", correction_generator(corrM_p), { proton_name, "centrality" } )
+    .Define("proton_DECOMPOSED", correction_generator(corrM_p, rec_p), { proton_name, "centrality" } )
   ;
 
   dd.Snapshot("tree", "decomposed_out.root", std::vector<std::string>{ "F1_PLAIN", "F1_DECOMPOSED" } );
