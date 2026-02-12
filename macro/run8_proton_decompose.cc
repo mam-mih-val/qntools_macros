@@ -70,6 +70,7 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
       auto bin_lo = c_axis.GetLowerBinEdge( c_bin );
       auto bin_hi = c_axis.GetUpperBinEdge( c_bin );
       auto new_c_axis = Qn::AxisD{ "centrality", 1, bin_lo, bin_hi };
+      std::cout << "here1" << std::endl;
       for( auto i = size_t{0}; i<4; ++i ){
         for( auto j = size_t{0}; j<4; ++i ){
           if( corrM_c[i][j].GetAxes().size() > 1 )
@@ -78,13 +79,14 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
             corrM_c[i][j] = corrM_c[i][j].Rebin( new_c_axis );
         }
       }
+      std::cout << "here2" << std::endl;
       for( auto& el : rec_c ) {
         if( el.GetAxes().size() > 1 )
             el = el.Select( new_c_axis );
           if( el.GetAxes().size() == 1 )
             el = el.Rebin( new_c_axis );
       }
-
+      std::cout << "here3" << std::endl;
       for( auto i=size_t{0}; i<qvec.size(); ++i ){
         auto x1_old = qvec.At(i).x(1) - rec_c[0].At(i).Mean();
         auto y1_old = qvec.At(i).y(1) - rec_c[1].At(i).Mean();
@@ -99,6 +101,7 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
         new_qvec.At(i).SetQ( 1, x1_new, y1_new );
         new_qvec.At(i).SetQ( 2, x2_new, y2_new );
       }
+      std::cout << "here4" << std::endl;
 
       return new_qvec;
     };
@@ -117,5 +120,7 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
   ;
 
   dd.Snapshot("tree", "decomposed_out.root", std::vector<std::string>{ "F1_PLAIN", "F1_DECOMPOSED" } );
+  std::cout << "here5" << std::endl;
+
 
 }
