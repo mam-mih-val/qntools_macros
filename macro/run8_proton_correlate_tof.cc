@@ -1,13 +1,13 @@
 #include "QnDataFrame.hpp"
 
-std::string u1_vector{ "proton_PLAIN" };
+std::string u1_vector{ "proton_DECOMPOSED" };
 
-std::string f1_vector{ "F1_PLAIN" };
-std::string f2_vector{ "F2_PLAIN" };
-std::string f3_vector{ "F3_PLAIN" };
+std::string f1_vector{ "F1_DECOMPOSED" };
+std::string f2_vector{ "F2_DECOMPOSED" };
+std::string f3_vector{ "F3_DECOMPOSED" };
 
-std::string tp_vector{ "Tpos_PLAIN" };
-std::string tn_vector{ "Tneg_PLAIN" };
+std::string tp_vector{ "Tpos_DECOMPOSED" };
+std::string tn_vector{ "Tneg_DECOMPOSED" };
 
 std::vector < std::array<std::string, 1> > arr_u1 {
   std::array<std::string, 1>{u1_vector}
