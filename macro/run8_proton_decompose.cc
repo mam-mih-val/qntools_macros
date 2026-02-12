@@ -62,6 +62,8 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
 
   const auto correction_generator = []( const Matrix< Qn::DataContainerStatCalculate, 4 >& corrM, const std::vector<Qn::DataContainerStatCalculate>& vec_rec ){
     return [corrM, vec_rec]( Qn::DataContainerQVector qvec, Double_t centrality ) -> Qn::DataContainerQVector {
+      if( centrality < 1 || centrality > 60 )
+        return qvec;
       auto new_qvec = qvec;
       auto corrM_c = corrM;
       auto rec_c = vec_rec;
