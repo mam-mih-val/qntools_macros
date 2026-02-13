@@ -99,8 +99,8 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
 
         auto detA = 1 - c2*c2 - s2*s2;
         
-        auto x1_new = (x1_old * (c2-1) + y2_old * s2) / ( c2*c2 + s2*s2 - 1 ) ;
-        auto y1_new = (x1_old * s2 - y2_old * ( c2 + 1 ) ) / ( c2*c2 + s2*s2 - 1 ) ;
+        auto x1_new = (x1_old * (c2-1) + y1_old * s2) / ( c2*c2 + s2*s2 - 1 ) ;
+        auto y1_new = (x1_old * s2 - y1_old * ( c2 + 1 ) ) / ( c2*c2 + s2*s2 - 1 ) ;
 
 
         // auto x1_new = x1_old * corrM_c[0][0].At(i).Mean() + y1_old * corrM_c[1][0].At(i).Mean() + x2_old * corrM_c[2][0].At(i).Mean() + y2_old * corrM_c[3][0].At(i).Mean();
