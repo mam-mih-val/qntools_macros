@@ -55,13 +55,12 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
       if( centrality < 1 || centrality > 60 )
         return qvec;
       auto new_qvec = qvec;
-      auto corrM_c = corrM;
-      auto rec_c = vec_rec;
       auto c_axis = vec_c[0].GetAxis( "centrality" ); 
       auto c_bin = c_axis.FindBin( centrality );
       auto bin_lo = c_axis.GetLowerBinEdge( c_bin );
       auto bin_hi = c_axis.GetUpperBinEdge( c_bin );
-      
+      auto new_c_axis = Qn::AxisD{ "centrality", 1, bin_lo, bin_hi };
+
       for( auto& el : vec_c ) {
         if( el.GetAxes().size() > 1 )
           el = el.Select( new_c_axis );
