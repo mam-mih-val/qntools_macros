@@ -51,7 +51,7 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
   auto [vec_c_p, vec_s_p] = ReadCnSn(proton_name, calib_file.get());
 
   const auto correction_generator = []( const std::vector<Qn::DataContainerStatCalculate>& vec_c, const std::vector<Qn::DataContainerStatCalculate>& vec_s ){
-    return [vec_c, vec_s]( Qn::DataContainerQVector qvec, Double_t centrality ) -> Qn::DataContainerQVector {
+    return [&vec_c, &vec_s]( Qn::DataContainerQVector qvec, Double_t centrality ) -> Qn::DataContainerQVector {
       if( centrality < 1 || centrality > 60 )
         return qvec;
       auto new_qvec = qvec;
@@ -61,13 +61,16 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
       auto bin_hi = c_axis.GetUpperBinEdge( c_bin );
       auto new_c_axis = Qn::AxisD{ "centrality", 1, bin_lo, bin_hi };
 
-      for( auto& el : vec_c ) {
+      auto vec_c_c = vec_c;
+      auto vec_s_c = vec_s;
+
+      for( auto& el : vec_c_c ) {
         if( el.GetAxes().size() > 1 )
           el = el.Select( new_c_axis );
         else
           el = el.Rebin( new_c_axis );
       }
-      for( auto& el : vec_s ) {
+      for( auto& el : vec_s_c ) {
         if( el.GetAxes().size() > 1 )
           el = el.Select( new_c_axis );
         else
@@ -75,15 +78,15 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
       }
 
       for( auto i=size_t{0}; i<qvec.size(); ++i ){
-        auto c1 = vec_c[0].At(i).Mean();
-        auto c2 = vec_c[1].At(i).Mean();
-        auto c3 = vec_c[2].At(i).Mean();
-        auto c4 = vec_c[3].At(i).Mean();
+        auto c1 = vec_c_c[0].At(i).Mean();
+        auto c2 = vec_c_c[1].At(i).Mean();
+        auto c3 = vec_c_c[2].At(i).Mean();
+        auto c4 = vec_c_c[3].At(i).Mean();
 
-        auto s1 = vec_s[0].At(i).Mean();
-        auto s2 = vec_s[1].At(i).Mean();
-        auto s3 = vec_s[2].At(i).Mean();
-        auto s4 = vec_s[3].At(i).Mean();
+        auto s1 = vec_s_c[0].At(i).Mean();
+        auto s2 = vec_s_c[1].At(i).Mean();
+        auto s3 = vec_s_c[2].At(i).Mean();
+        auto s4 = vec_s_c[3].At(i).Mean();
 
         auto x1_old = qvec.At(i).x(1) - c1;
         auto y1_old = qvec.At(i).y(1) - s1;
