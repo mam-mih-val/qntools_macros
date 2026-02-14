@@ -86,7 +86,6 @@ template<typename U, size_t M>
 auto Inverse( const Matrix<U, M>& A ) -> Matrix<U, M>{
   static_assert(M > 1);
   auto result = Matrix<U, M>{};
-  auto AT = Transpose(A);
   auto detA = Det(A) ;
   for( auto i=size_t{0}; i<M; ++i ){
     for( auto j = size_t{0}; j<M; ++j ){
@@ -94,7 +93,7 @@ auto Inverse( const Matrix<U, M>& A ) -> Matrix<U, M>{
       result.matrix_[i][j] = Mij / detA;
     }
   }
-  return result;
+  return Transpose(result);
 }
 
 
