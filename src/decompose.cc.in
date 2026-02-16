@@ -5,6 +5,7 @@
 #cmakedefine QNTOOLS_BASE_PATH "@QNTOOLS_BASE_PATH@"
 #cmakedefine QNTOOLS_CORR_PATH "@QNTOOLS_CORR_PATH@"
 #cmakedefine QNTOOLS_INCLUDE_PATH "@QNTOOLS_INCLUDE_PATH@"
+#cmakedefine Eigen_INCLUDE_PATH "@Eigen_INCLUDE_PATH@"
 #cmakedefine THIS_SRC_PATH "@THIS_SRC_PATH@"
 
 #include <TROOT.h>
@@ -16,11 +17,12 @@ int main(int n_args, char** args){
   if( n_args < 2 )
     throw std::runtime_error( "No argumets provided" );
 
-  gSystem->AddIncludePath(QNTOOLS_INCLUDE_PATH);
-  gSystem->Load(QNTOOLS_BASE_PATH);
-  gSystem->Load(QNTOOLS_CORR_PATH);
+  gInterpreter->AddIncludePath(QNTOOLS_INCLUDE_PATH);
+  gInterpreter->AddIncludePath(Eigen_INCLUDE_PATH);
+  gInterpreter->Load(QNTOOLS_BASE_PATH);
+  gInterpreter->Load(QNTOOLS_CORR_PATH);
   
-  gSystem->AddIncludePath(THIS_SRC_PATH);
+  gInterpreter->AddIncludePath(THIS_SRC_PATH);
   
   std::string macro{args[1]};
   std::string macro_full = macro+"(";
