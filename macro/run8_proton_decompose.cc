@@ -112,7 +112,7 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
         auto y2_new = static_cast<double>(Xnew(3));
         
         new_qvec.At(i).SetQ( 1, x1_new, y1_new );
-        new_qvec.At(i).SetQ( 2, x2_old, y2_old );
+        new_qvec.At(i).SetQ( 2, x2_new, y2_new );
       }
 
       return new_qvec;
