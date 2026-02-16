@@ -3,6 +3,7 @@
 #include "StatCollect.hpp"
 #include "StatCalculate.hpp"
 #include "QVector.hpp"
+#include <Eigen/Dense>
 #include <array>
 #include <cassert>
 #include <cstddef>
@@ -93,23 +94,22 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
         auto x2_old = qvec.At(i).x(2) - c2;
         auto y2_old = qvec.At(i).y(2) - s2;
 
-        auto M = Matrix<double, 2>{};
-        M[0] = std::array<double, 2>{ 1+c2,     s2 };
-        M[1] = std::array<double, 2>{ s2,     1-c2 };
-        // M[0] = std::array<double, 4>{ 1+c2,     s2,   c1+c3,  s1+s3 };
-        // M[1] = std::array<double, 4>{ s2,     1-c2,   s3-s1,  c1-c3 };
-        // M[2] = std::array<double, 4>{ c1+c3, s3-s1,   1+c4,      s4 };
-        // M[3] = std::array<double, 4>{ s1+s3, c1-c3,     s4,    1-c4 };
+        auto M = Eigen::Matrix4d{
+          { 1+c2,     s2,   c1+c3,  s1+s3 },
+          { s2,     1-c2,   s3-s1,  c1-c3 },
+          { c1+c3, s3-s1,   1+c4,      s4 },
+          { s1+s3, c1-c3,     s4,    1-c4 }
+        };
+        auto solver = Eigen::SelfAdjointEigenSolver<Eigen::Matrix4d>{ M };
 
-        auto Minv = Inverse(M);
-        
-        auto x1_new = Minv[0][0]*x1_old + Minv[1][0]*y1_old;
-        auto y1_new = Minv[0][1]*x1_old + Minv[1][1]*y1_old;
+        auto Minv = solver.operatorInverseSqrt();
+        auto Xold =  Eigen::Vector4d{ x1_old, y1_old, x2_old, y2_old };
+        auto Xnew = Minv * Xold;
 
-        // auto x1_new = Minv[0][0]*x1_old + Minv[1][0]*y1_old + Minv[2][0]*x2_old + Minv[3][0]*y2_old;
-        // auto y1_new = Minv[0][1]*x1_old + Minv[1][1]*y1_old + Minv[2][1]*x2_old + Minv[3][1]*y2_old;
-        // auto x2_new = Minv[0][2]*x1_old + Minv[1][2]*y1_old + Minv[2][2]*x2_old + Minv[3][2]*y2_old;
-        // auto y2_new = Minv[0][3]*x1_old + Minv[1][3]*y1_old + Minv[2][3]*x2_old + Minv[3][3]*y2_old;
+        auto x1_new = static_cast<double>(Xnew(0));
+        auto y1_new = static_cast<double>(Xnew(1));
+        auto x2_new = static_cast<double>(Xnew(2));
+        auto y2_new = static_cast<double>(Xnew(3));
         
         new_qvec.At(i).SetQ( 1, x1_new, y1_new );
         new_qvec.At(i).SetQ( 2, x2_old, y2_old );
