@@ -34,6 +34,30 @@ namespace P1 {
     };
   }
 
+  inline auto xx( unsigned int h_a, unsigned int h_b ) {
+    return [ h_a, h_b ](const Qn::QVector &a ) {
+      return a.x(h_a) * a.x(h_b);
+    };
+  }
+
+  inline auto yy( unsigned int h_a, unsigned int h_b ) {
+    return [ h_a, h_b ](const Qn::QVector &a ) {
+      return a.y(h_a) * a.y(h_b);
+    };
+  }
+
+  inline auto xy( unsigned int h_a, unsigned int h_b ) {
+    return [ h_a, h_b ](const Qn::QVector &a ) {
+      return a.x(h_a) * a.y(h_b);
+    };
+  }
+
+  inline auto yx( unsigned int h_a, unsigned int h_b ) {
+    return [ h_a, h_b ](const Qn::QVector &a ) {
+      return a.y(h_a) * a.x(h_b);
+    };
+  }
+
 }
 
 void calculate_cn_sn(string inputFiles="qn.root", string outputFile="CnSn.root")
@@ -52,7 +76,9 @@ void calculate_cn_sn(string inputFiles="qn.root", string outputFile="CnSn.root")
   auto wn = Qn::Correlation::UseWeights::No;
   auto wy = Qn::Correlation::UseWeights::Yes;
   auto wUnity1part = [](const Qn::QVector &a) { return 1; };
+  auto wUnity2part = [](const Qn::QVector &a, const Qn::QVector &b) { return 1; };
   auto wSumWu1part = [](const Qn::QVector &a) { return a.sumweights(); };
+  auto wSumWu2part = [](const Qn::QVector &a, const Qn::QVector &b) { return a.sumweights(); };
 
   auto corrBuilder =
     Qn::Correlation::CorrelationBuilder{&d_samples, nSamples, axes_correlation};
@@ -76,6 +102,21 @@ void calculate_cn_sn(string inputFiles="qn.root", string outputFile="CnSn.root")
 
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x4", P1::x(4), wSumWu1part, wy, corr, corr);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y4", P1::y(4), wSumWu1part, wy, corr, corr);
+
+    // covariation matrix building
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1x1", P1::xx(1, 1), wSumWu1part, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1y1", P1::xy(1, 1), wSumWu1part, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1x2", P1::xx(1, 2), wSumWu1part, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1y2", P1::xy(1, 2), wSumWu1part, wy, corr, corr);
+
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1y1", P1::yy(1, 1), wSumWu1part, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1x2", P1::yx(1, 2), wSumWu1part, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1y2", P1::yy(1, 2), wSumWu1part, wy, corr, corr);
+
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x2x2", P1::xx(2, 2), wSumWu1part, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x2y2", P1::xy(2, 2), wSumWu1part, wy, corr, corr);
+    
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y2y2", P1::yy(2, 2), wSumWu1part, wy, corr, corr);
   }
 
   for ( auto &corr: arr_Q1 )
@@ -93,6 +134,21 @@ void calculate_cn_sn(string inputFiles="qn.root", string outputFile="CnSn.root")
 
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x4", P1::x(4), wUnity1part, wn, corr, corr);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y4", P1::y(4), wUnity1part, wn, corr, corr);
+
+    // covariation matrix building
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1x1", P1::xx(1, 1), wUnity1part, wn, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1y1", P1::xy(1, 1), wUnity1part, wn, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1x2", P1::xx(1, 2), wUnity1part, wn, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1y2", P1::xy(1, 2), wUnity1part, wn, corr, corr);
+
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1y1", P1::yy(1, 1), wUnity1part, wn, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1x2", P1::yx(1, 2), wUnity1part, wn, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1y2", P1::yy(1, 2), wUnity1part, wn, corr, corr);
+
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x2x2", P1::xx(2, 2), wUnity1part, wn, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x2y2", P1::xy(2, 2), wUnity1part, wn, corr, corr);
+    
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y2y2", P1::yy(2, 2), wUnity1part, wn, corr, corr);
   }
 
   // ---------------- //
