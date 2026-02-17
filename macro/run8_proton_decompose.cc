@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-std::tuple< std::vector<Qn::DataContainerStatCalculate>, std::vector<Qn::DataContainerStatCalculate> > ReadCnSn( std::string str_vec_name, TFile* calib_file ){
+std::tuple< std::vector<Qn::DataContainerStatCalculate>, std::vector<Qn::DataContainerStatCalculate>, std::vector<Qn::DataContainerStatCalculate> > ReadCnSn( std::string str_vec_name, TFile* calib_file ){
   Qn::DataContainerStatCollect* tmp{nullptr};
 
   auto vec_c = std::vector<Qn::DataContainerStatCalculate>{};
@@ -22,14 +22,23 @@ std::tuple< std::vector<Qn::DataContainerStatCalculate>, std::vector<Qn::DataCon
     calib_file->GetObject( corr_name.c_str(), tmp );
     assert(tmp);
     vec_c.emplace_back( *tmp );
-
     corr_name = str_vec_name+".y"+std::to_string(i+1)+"centrality"s;
     calib_file->GetObject( corr_name.c_str(), tmp );
     assert(tmp);
     vec_s.emplace_back( *tmp );
   }
 
-  return {vec_c, vec_s};
+  auto vec_cov = std::vector<Qn::DataContainerStatCalculate>{};
+  auto components = std::vector<std::string>{ "x1", "y1", "x2", "y2" };
+  for( auto i=size_t{0}; i<components.size(); ++i ){
+    for( auto j=size_t{i}; j<components.size(); ++j ){
+      auto corr_name = str_vec_name + "." + components.at(i) + components.at(j) + "centrality"s;
+      calib_file->GetObject( corr_name.c_str(), tmp );
+      assert(tmp);
+      vec_cov.emplace_back( *tmp );
+    }
+  }
+  return {vec_c, vec_s, vec_cov};
 }
 
 void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
@@ -44,15 +53,15 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
   auto calib_file = std::unique_ptr< TFile, std::function< void(TFile*) > >{ TFile::Open( in_calib_file.c_str(), "READ" ), [](auto f){f ->Close(); } };
   assert(calib_file);
 
-  auto [vec_c_f1, vec_s_f1] = ReadCnSn(f1_name, calib_file.get());
-  auto [vec_c_f2, vec_s_f2] = ReadCnSn(f2_name, calib_file.get());
-  auto [vec_c_f3, vec_s_f3] = ReadCnSn(f3_name, calib_file.get());
-  auto [vec_c_tp, vec_s_tp] = ReadCnSn(tp_name, calib_file.get());
-  auto [vec_c_tn, vec_s_tn] = ReadCnSn(tn_name, calib_file.get());
-  auto [vec_c_p, vec_s_p] = ReadCnSn(proton_name, calib_file.get());
+  auto [vec_c_f1, vec_s_f1, vec_cov_f1] = ReadCnSn(f1_name, calib_file.get());
+  auto [vec_c_f2, vec_s_f2, vec_cov_f2] = ReadCnSn(f2_name, calib_file.get());
+  auto [vec_c_f3, vec_s_f3, vec_cov_f3] = ReadCnSn(f3_name, calib_file.get());
+  auto [vec_c_tp, vec_s_tp, vec_cov_tp] = ReadCnSn(tp_name, calib_file.get());
+  auto [vec_c_tn, vec_s_tn, vec_cov_tn] = ReadCnSn(tn_name, calib_file.get());
+  auto [vec_c_p, vec_s_p, vec_cov_p] = ReadCnSn(proton_name, calib_file.get());
 
-  const auto correction_generator = []( const std::vector<Qn::DataContainerStatCalculate>& vec_c, const std::vector<Qn::DataContainerStatCalculate>& vec_s ){
-    return [&vec_c, &vec_s]( Qn::DataContainerQVector qvec, Double_t centrality ) -> Qn::DataContainerQVector {
+  const auto correction_generator = []( const std::vector<Qn::DataContainerStatCalculate>& vec_c, const std::vector<Qn::DataContainerStatCalculate>& vec_s, const std::vector<Qn::DataContainerStatCalculate>& vec_cov ){
+    return [&vec_c, &vec_s, &vec_cov]( Qn::DataContainerQVector qvec, Double_t centrality ) -> Qn::DataContainerQVector {
       if( centrality < 1 || centrality > 60 )
         return qvec;
       auto new_qvec = qvec;
@@ -64,6 +73,7 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
 
       auto vec_c_c = vec_c;
       auto vec_s_c = vec_s;
+      auto vec_cov_c = vec_cov;
 
       for( auto& el : vec_c_c ) {
         if( el.GetAxes().size() > 1 )
@@ -72,6 +82,12 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
           el = el.Rebin( new_c_axis );
       }
       for( auto& el : vec_s_c ) {
+        if( el.GetAxes().size() > 1 )
+          el = el.Select( new_c_axis );
+        else
+          el = el.Rebin( new_c_axis );
+      }
+      for( auto& el : vec_cov_c ) {
         if( el.GetAxes().size() > 1 )
           el = el.Select( new_c_axis );
         else
@@ -94,11 +110,25 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
         auto x2_old = qvec.At(i).x(2) - c2;
         auto y2_old = qvec.At(i).y(2) - s2;
 
+        auto M11 = vec_cov_c[0].At(i).Mean() - c1*c1;
+        auto M12 = vec_cov_c[1].At(i).Mean() - c1*s1;
+        auto M13 = vec_cov_c[2].At(i).Mean() - c1*c2;
+        auto M14 = vec_cov_c[3].At(i).Mean() - c1*s2;
+        
+        auto M22 = vec_cov_c[4].At(i).Mean() - s1*s1;
+        auto M23 = vec_cov_c[5].At(i).Mean() - s1*c2;
+        auto M24 = vec_cov_c[6].At(i).Mean() - s1*s2;
+
+        auto M33 = vec_cov_c[7].At(i).Mean() - c2*c2;
+        auto M34 = vec_cov_c[8].At(i).Mean() - c2*s2;
+        
+        auto M44 = vec_cov_c[9].At(i).Mean() - s2*s2;
+
         auto M = Eigen::Matrix4d{
-          { 1+c2,     s2,   c1+c3,  s1+s3 },
-          { s2,     1-c2,   s3-s1,  c1-c3 },
-          { c1+c3, s3-s1,   1+c4,      s4 },
-          { s1+s3, c1-c3,     s4,    1-c4 }
+          { M11, M12, M13, M14 },
+          { M12, M22, M23, M24 },
+          { M13, M23, M33, M34 },
+          { M14, M24, M34, M44 },
         };
         auto solver = Eigen::SelfAdjointEigenSolver<Eigen::Matrix4d>{ M };
 
@@ -121,14 +151,14 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
 
   auto d = ROOT::RDataFrame( "tree", in_file_name );
   auto dd = d
-    .Define("F1_DECOMPOSED", correction_generator(vec_c_f1, vec_s_f1), { f1_name, "centrality" } )
-    .Define("F2_DECOMPOSED", correction_generator(vec_c_f2, vec_s_f2), { f2_name, "centrality" } )
-    .Define("F3_DECOMPOSED", correction_generator(vec_c_f3, vec_s_f3), { f3_name, "centrality" } )
+    .Define("F1_DECOMPOSED", correction_generator(vec_c_f1, vec_s_f1, vec_cov_f1), { f1_name, "centrality" } )
+    .Define("F2_DECOMPOSED", correction_generator(vec_c_f2, vec_s_f2, vec_cov_f2), { f2_name, "centrality" } )
+    .Define("F3_DECOMPOSED", correction_generator(vec_c_f3, vec_s_f3, vec_cov_f3), { f3_name, "centrality" } )
 
-    .Define("Tpos_DECOMPOSED", correction_generator(vec_c_tp, vec_s_tp), { tp_name, "centrality" } )
-    .Define("Tneg_DECOMPOSED", correction_generator(vec_c_tn, vec_s_tn), { tn_name, "centrality" } )
+    .Define("Tpos_DECOMPOSED", correction_generator(vec_c_tp, vec_s_tp, vec_cov_tp), { tp_name, "centrality" } )
+    .Define("Tneg_DECOMPOSED", correction_generator(vec_c_tn, vec_s_tn, vec_cov_tn), { tn_name, "centrality" } )
     
-    .Define("proton_DECOMPOSED", correction_generator(vec_c_p, vec_s_p), { proton_name, "centrality" } )
+    .Define("proton_DECOMPOSED", correction_generator(vec_c_p, vec_s_p, vec_cov_p), { proton_name, "centrality" } )
   ;
 
   auto file_out = std::unique_ptr< TFile, std::function< void(TFile*) > >{ TFile::Open( "decomposed_out.root", "RECREATE" ), [](auto f){f ->Close(); } };
