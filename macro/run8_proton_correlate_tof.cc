@@ -80,6 +80,30 @@ namespace P1 {
     };
   }
 
+  inline auto xx( unsigned int h_a, unsigned int h_b ) {
+    return [ h_a, h_b ](const Qn::QVector &a ) {
+      return a.x(h_a) * a.x(h_b);
+    };
+  }
+
+  inline auto yy( unsigned int h_a, unsigned int h_b ) {
+    return [ h_a, h_b ](const Qn::QVector &a ) {
+      return a.y(h_a) * a.y(h_b);
+    };
+  }
+
+  inline auto xy( unsigned int h_a, unsigned int h_b ) {
+    return [ h_a, h_b ](const Qn::QVector &a ) {
+      return a.x(h_a) * a.y(h_b);
+    };
+  }
+
+  inline auto yx( unsigned int h_a, unsigned int h_b ) {
+    return [ h_a, h_b ](const Qn::QVector &a ) {
+      return a.y(h_a) * a.x(h_b);
+    };
+  }
+
 }
 
 void run8_proton_correlate_tof(string inputFiles="qn.root", string outputFile="corr.root")
@@ -129,6 +153,21 @@ void run8_proton_correlate_tof(string inputFiles="qn.root", string outputFile="c
 
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x4", P1::x(4), wSumWu1part, wy, corr, corr);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y4", P1::y(4), wSumWu1part, wy, corr, corr);
+
+    // covariation matrix building
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1x1", P1::xx(1, 1), wSumWu1part, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1y1", P1::xy(1, 1), wSumWu1part, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1x2", P1::xx(1, 2), wSumWu1part, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1y2", P1::xy(1, 2), wSumWu1part, wy, corr, corr);
+
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1y1", P1::yy(1, 1), wSumWu1part, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1x2", P1::yx(1, 2), wSumWu1part, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1y2", P1::yy(1, 2), wSumWu1part, wy, corr, corr);
+
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x2x2", P1::xx(2, 2), wSumWu1part, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x2y2", P1::xy(2, 2), wSumWu1part, wy, corr, corr);
+    
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y2y2", P1::yy(2, 2), wSumWu1part, wy, corr, corr);
   }
 
   for ( auto &corr: arr_Q1 )
@@ -140,6 +179,21 @@ void run8_proton_correlate_tof(string inputFiles="qn.root", string outputFile="c
 
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x2", P1::x(2), wUnity1part, wn, corr, corr);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y2", P1::y(2), wUnity1part, wn, corr, corr);
+
+    // covariation matrix building
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1x1", P1::xx(1, 1), wUnity1part, wn, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1y1", P1::xy(1, 1), wUnity1part, wn, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1x2", P1::xx(1, 2), wUnity1part, wn, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1y2", P1::xy(1, 2), wUnity1part, wn, corr, corr);
+
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1y1", P1::yy(1, 1), wUnity1part, wn, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1x2", P1::yx(1, 2), wUnity1part, wn, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1y2", P1::yy(1, 2), wUnity1part, wn, corr, corr);
+
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x2x2", P1::xx(2, 2), wUnity1part, wn, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x2y2", P1::xy(2, 2), wUnity1part, wn, corr, corr);
+    
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y2y2", P1::yy(2, 2), wUnity1part, wn, corr, corr);
   }
 
   for ( auto &corr: arr_u1Q1 )
