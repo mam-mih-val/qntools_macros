@@ -1,13 +1,13 @@
 #include "QnDataFrame.hpp"
 
-std::string u1_vector{ "proton_PLAIN" };
+std::string u1_vector{ "proton_DECOMPOSED" };
 
-std::string f1_vector{ "F1_PLAIN" };
-std::string f2_vector{ "F2_PLAIN" };
-std::string f3_vector{ "F3_PLAIN" };
+std::string f1_vector{ "F1_DECOMPOSED" };
+std::string f2_vector{ "F2_DECOMPOSED" };
+std::string f3_vector{ "F3_DECOMPOSED" };
 
-std::string tp_vector{ "Tpos_PLAIN" };
-std::string tn_vector{ "Tneg_PLAIN" };
+std::string tp_vector{ "Tpos_DECOMPOSED" };
+std::string tn_vector{ "Tneg_DECOMPOSED" };
 
 std::vector < std::array<std::string, 1> > arr_u1 {
   std::array<std::string, 1>{u1_vector}
@@ -173,6 +173,11 @@ void run8_proton_correlate_tof(string inputFiles="qn.root", string outputFile="c
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y1y1", P2::yy(1, 1), wUnity, wn, corr, corr);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x1y1", P2::xy(1, 1), wUnity, wn, corr, corr);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y1x1", P2::yx(1, 1), wUnity, wn, corr, corr);
+
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x2x1", P2::xx(2, 1), wUnity, wn, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y2y1", P2::yy(2, 1), wUnity, wn, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x2y1", P2::xy(2, 1), wUnity, wn, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y2x1", P2::yx(2, 1), wUnity, wn, corr, corr);
 
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x2x2", P2::xx(2, 2), wUnity, wn, corr, corr);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y2y2", P2::yy(2, 2), wUnity, wn, corr, corr);
