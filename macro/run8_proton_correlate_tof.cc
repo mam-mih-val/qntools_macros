@@ -110,6 +110,7 @@ void run8_proton_correlate_tof(string inputFiles="qn.root", string outputFile="c
 {
   int nSamples = 100;
   Qn::AxisD centAxis({"centrality", 6, 0, 60});
+  Qn::AxisD runIdAxis({ "runId", 17, 6600, 8300 });
   auto axes_correlation = Qn::MakeAxes(centAxis);
   std::string treename = "tree";
   auto* chain = new TChain( treename.c_str() );
