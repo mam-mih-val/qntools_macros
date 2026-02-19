@@ -9,6 +9,47 @@
 #include <string>
 #include <vector>
 
+Qn::DataContainer<Eigen::Matrix4d, Qn::AxisD> MakeCorrectionMatrix(const std::vector<Qn::DataContainerStatCalculate>& vec_c, const std::vector<Qn::DataContainerStatCalculate>& vec_s, const std::vector<Qn::DataContainerStatCalculate>& vec_cov ){
+  auto axes = vec_c[0].GetAxes();
+  Qn::DataContainer<Eigen::Matrix4d, Qn::AxisD> corr_matrix{axes};
+  for( auto i = size_t{0}; i<vec_c[0].size(); ++i ){
+    auto c1 = vec_c[0].At(i).Mean();
+    auto c2 = vec_c[1].At(i).Mean();
+    auto c3 = vec_c[2].At(i).Mean();
+    auto c4 = vec_c[3].At(i).Mean();
+
+    auto s1 = vec_s[0].At(i).Mean();
+    auto s2 = vec_s[1].At(i).Mean();
+    auto s3 = vec_s[2].At(i).Mean();
+    auto s4 = vec_s[3].At(i).Mean();
+
+    auto M11 = vec_cov[0].At(i).Mean() - c1*c1;
+    auto M12 = vec_cov[1].At(i).Mean() - c1*s1;
+    auto M13 = vec_cov[2].At(i).Mean() - c1*c2;
+    auto M14 = vec_cov[3].At(i).Mean() - c1*s2;
+    
+    auto M22 = vec_cov[4].At(i).Mean() - s1*s1;
+    auto M23 = vec_cov[5].At(i).Mean() - s1*c2;
+    auto M24 = vec_cov[6].At(i).Mean() - s1*s2;
+
+    auto M33 = vec_cov[7].At(i).Mean() - c2*c2;
+    auto M34 = vec_cov[8].At(i).Mean() - c2*s2;
+    
+    auto M44 = vec_cov[9].At(i).Mean() - s2*s2;
+
+    auto M = Eigen::Matrix4d{
+      { M11, M12, M13, M14 },
+      { M12, M22, M23, M24 },
+      { M13, M23, M33, M34 },
+      { M14, M24, M34, M44 },
+    };
+
+    auto solver = Eigen::SelfAdjointEigenSolver<Eigen::Matrix4d>{ M };
+    auto Minv = solver.operatorInverseSqrt() * pow(2.0, 0.5);
+    corr_matrix.At(i) = Minv;
+  }
+  return corr_matrix;
+}
 
 
 std::tuple< std::vector<Qn::DataContainerStatCalculate>, std::vector<Qn::DataContainerStatCalculate>, std::vector<Qn::DataContainerStatCalculate> > ReadCnSn( std::string str_vec_name, TFile* calib_file ){
@@ -61,79 +102,68 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
   auto [vec_c_tn, vec_s_tn, vec_cov_tn] = ReadCnSn(tn_name, calib_file.get());
   auto [vec_c_p, vec_s_p, vec_cov_p] = ReadCnSn(proton_name, calib_file.get());
 
-  const auto correction_generator = []( const std::vector<Qn::DataContainerStatCalculate>& vec_c, const std::vector<Qn::DataContainerStatCalculate>& vec_s, const std::vector<Qn::DataContainerStatCalculate>& vec_cov ){
-    return [&vec_c, &vec_s, &vec_cov]( Qn::DataContainerQVector qvec, Double_t centrality ) -> Qn::DataContainerQVector {
+  auto f1_corr = MakeCorrectionMatrix(vec_c_f1, vec_s_f1, vec_cov_f1);
+  auto f2_corr = MakeCorrectionMatrix(vec_c_f2, vec_s_f2, vec_cov_f2);
+  auto f3_corr = MakeCorrectionMatrix(vec_c_f3, vec_s_f3, vec_cov_f3);
+  
+  auto tp_corr = MakeCorrectionMatrix(vec_c_tp, vec_s_tp, vec_cov_tp);
+  auto tn_corr = MakeCorrectionMatrix(vec_c_tn, vec_s_tn, vec_cov_tn);
+  
+  auto p_corr = MakeCorrectionMatrix(vec_c_p, vec_s_p, vec_cov_p);
+
+  const auto correction_generator = []( const std::vector<Qn::DataContainerStatCalculate>& vec_c, const std::vector<Qn::DataContainerStatCalculate>& vec_s, const Qn::DataContainer<Eigen::Matrix4d, Qn::AxisD>& vec_cov ){
+    return [&vec_c, &vec_s, &vec_cov]( Qn::DataContainerQVector qvec, Double_t centrality, Double_t run_id ) -> Qn::DataContainerQVector {
       if( centrality < 1 || centrality > 60 )
         return qvec;
       auto new_qvec = qvec;
       auto c_axis = vec_c[0].GetAxis( "centrality" ); 
+      auto runid_axis = vec_c[0].GetAxis( "runId" ); 
       auto c_bin = c_axis.FindBin( centrality );
-      auto bin_lo = c_axis.GetLowerBinEdge( c_bin );
-      auto bin_hi = c_axis.GetUpperBinEdge( c_bin );
-      auto new_c_axis = Qn::AxisD{ "centrality", 1, bin_lo, bin_hi };
+      auto r_bin = c_axis.FindBin( runid_axis );
+      auto c_bin_lo = c_axis.GetLowerBinEdge( c_bin );
+      auto c_bin_hi = c_axis.GetUpperBinEdge( c_bin );
+      auto new_c_axis = Qn::AxisD{ "centrality", 1, c_bin_lo, c_bin_hi };
+      auto new_r_axis = Qn::AxisD{ "runId", 1, r_bin_lo, r_bin_hi };
 
       auto vec_c_c = vec_c;
       auto vec_s_c = vec_s;
-      auto vec_cov_c = vec_cov;
 
       for( auto& el : vec_c_c ) {
-        if( el.GetAxes().size() > 1 )
+        el.Select( new_r_axis );
+        if( el.GetAxes().size() > 1 ){
           el = el.Select( new_c_axis );
-        else
+        } else {
           el = el.Rebin( new_c_axis );
+        }
       }
       for( auto& el : vec_s_c ) {
-        if( el.GetAxes().size() > 1 )
+        el.Select( new_r_axis );
+        if( el.GetAxes().size() > 1 ){
           el = el.Select( new_c_axis );
-        else
+        } else {
           el = el.Rebin( new_c_axis );
+        }
       }
-      for( auto& el : vec_cov_c ) {
-        if( el.GetAxes().size() > 1 )
-          el = el.Select( new_c_axis );
-        else
-          el = el.Rebin( new_c_axis );
-      }
+      
+      auto vec_cov_c = vec_cov.Select( new_r_axis );
+      if( vec_cov_c.GetAxes().size() > 1 ){
+          vec_cov_c = vec_cov_c.Select( new_c_axis );
+        } else {
+          vec_cov_c = vec_cov_c.Rebin( new_c_axis );
+        }
 
       for( auto i=size_t{0}; i<qvec.size(); ++i ){
         auto c1 = vec_c_c[0].At(i).Mean();
         auto c2 = vec_c_c[1].At(i).Mean();
-        auto c3 = vec_c_c[2].At(i).Mean();
-        auto c4 = vec_c_c[3].At(i).Mean();
-
         auto s1 = vec_s_c[0].At(i).Mean();
         auto s2 = vec_s_c[1].At(i).Mean();
-        auto s3 = vec_s_c[2].At(i).Mean();
-        auto s4 = vec_s_c[3].At(i).Mean();
 
         auto x1_old = qvec.At(i).x(1) - c1;
-        auto y1_old = qvec.At(i).y(1) - s1;
         auto x2_old = qvec.At(i).x(2) - c2;
+        auto y1_old = qvec.At(i).y(1) - s1;
         auto y2_old = qvec.At(i).y(2) - s2;
-
-        auto M11 = vec_cov_c[0].At(i).Mean() - c1*c1;
-        auto M12 = vec_cov_c[1].At(i).Mean() - c1*s1;
-        auto M13 = vec_cov_c[2].At(i).Mean() - c1*c2;
-        auto M14 = vec_cov_c[3].At(i).Mean() - c1*s2;
-        
-        auto M22 = vec_cov_c[4].At(i).Mean() - s1*s1;
-        auto M23 = vec_cov_c[5].At(i).Mean() - s1*c2;
-        auto M24 = vec_cov_c[6].At(i).Mean() - s1*s2;
-
-        auto M33 = vec_cov_c[7].At(i).Mean() - c2*c2;
-        auto M34 = vec_cov_c[8].At(i).Mean() - c2*s2;
-        
-        auto M44 = vec_cov_c[9].At(i).Mean() - s2*s2;
-
-        auto M = Eigen::Matrix4d{
-          { M11, M12, M13, M14 },
-          { M12, M22, M23, M24 },
-          { M13, M23, M33, M34 },
-          { M14, M24, M34, M44 },
-        };
-        auto solver = Eigen::SelfAdjointEigenSolver<Eigen::Matrix4d>{ M };
-
-        auto Minv = solver.operatorInverseSqrt();
+    
+        auto Minv = vec_cov_c.At(i);
         auto Xold =  Eigen::Vector4d{ x1_old, y1_old, x2_old, y2_old };
         auto Xnew = Minv * Xold;
 
