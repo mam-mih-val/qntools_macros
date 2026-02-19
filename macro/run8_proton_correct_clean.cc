@@ -344,7 +344,7 @@ void run8_proton_correct_clean( std::string list,
   ; // at least one filter is mandatory!!!
 
   auto correction_task = CorrectionTask( dd, "correction_out.root", calib_in_file );
-  correction_task.SetEventVariables(std::regex("centrality"));
+  correction_task.SetEventVariables(std::regex("centrality|runId"));
   correction_task.SetChannelVariables({std::regex("fhcalMod(X|Y|Phi|E|Id)")});
   correction_task.SetTrackVariables({
                                             std::regex("tr(Pt|Px|Py|Eta|Phi|NsigmaProton|NsigmaProton400|NsigmaProton700|Charge|ProtonY|DcaR|Chi2Ndf|Nhits|Weight|WeightTof400|WeightTof700|FhcalX|FhcalY|StsNhits|StsChi2|Q)"),
@@ -352,6 +352,7 @@ void run8_proton_correct_clean( std::string list,
 
   correction_task.InitVariables();
   correction_task.AddEventAxis( {"centrality", 6, 0, 60} );
+  correction_task.AddEventAxis( { "runId", 17, 6600, 8300 } );
 
   VectorConfig f1( "F1", "fhcalModPhi", "fhcalModE", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
   f1.SetHarmonicArray( {1, 2, 3, 4} );
