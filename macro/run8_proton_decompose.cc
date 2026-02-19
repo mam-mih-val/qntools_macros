@@ -60,11 +60,11 @@ std::tuple< std::vector<Qn::DataContainerStatCalculate>, std::vector<Qn::DataCon
   vec_c.reserve(4);
   vec_s.reserve(4);
   for( auto i=size_t{0}; i<4; ++i ){
-    auto corr_name = str_vec_name+".x"+std::to_string(i+1)+"centrality"s;
+    auto corr_name = str_vec_name+".x"+std::to_string(i+1)+"centralityrunId"s;
     calib_file->GetObject( corr_name.c_str(), tmp );
     assert(tmp);
     vec_c.emplace_back( *tmp );
-    corr_name = str_vec_name+".y"+std::to_string(i+1)+"centrality"s;
+    corr_name = str_vec_name+".y"+std::to_string(i+1)+"centralityrunId"s;
     calib_file->GetObject( corr_name.c_str(), tmp );
     assert(tmp);
     vec_s.emplace_back( *tmp );
@@ -74,7 +74,7 @@ std::tuple< std::vector<Qn::DataContainerStatCalculate>, std::vector<Qn::DataCon
   auto components = std::vector<std::string>{ "x1", "y1", "x2", "y2" };
   for( auto i=size_t{0}; i<components.size(); ++i ){
     for( auto j=size_t{i}; j<components.size(); ++j ){
-      auto corr_name = str_vec_name + "." + components.at(i) + components.at(j) + "centrality"s;
+      auto corr_name = str_vec_name + "." + components.at(i) + components.at(j) + "centralityrunId"s;
       calib_file->GetObject( corr_name.c_str(), tmp );
       assert(tmp);
       vec_cov.emplace_back( *tmp );
