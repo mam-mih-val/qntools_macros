@@ -182,14 +182,14 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
 
   auto d = ROOT::RDataFrame( "tree", in_file_name );
   auto dd = d
-    .Define("F1_DECOMPOSED", correction_generator(vec_c_f1, vec_s_f1, vec_cov_f1), { f1_name, "centrality" } )
-    .Define("F2_DECOMPOSED", correction_generator(vec_c_f2, vec_s_f2, vec_cov_f2), { f2_name, "centrality" } )
-    .Define("F3_DECOMPOSED", correction_generator(vec_c_f3, vec_s_f3, vec_cov_f3), { f3_name, "centrality" } )
+    .Define("F1_DECOMPOSED", correction_generator(vec_c_f1, vec_s_f1, f1_corr), { f1_name, "centrality", "runId" } )
+    .Define("F2_DECOMPOSED", correction_generator(vec_c_f2, vec_s_f2, f2_corr), { f2_name, "centrality", "runId" } )
+    .Define("F3_DECOMPOSED", correction_generator(vec_c_f3, vec_s_f3, f3_corr), { f3_name, "centrality", "runId" } )
 
-    .Define("Tpos_DECOMPOSED", correction_generator(vec_c_tp, vec_s_tp, vec_cov_tp), { tp_name, "centrality" } )
-    .Define("Tneg_DECOMPOSED", correction_generator(vec_c_tn, vec_s_tn, vec_cov_tn), { tn_name, "centrality" } )
+    .Define("Tpos_DECOMPOSED", correction_generator(vec_c_tp, vec_s_tp, tp_corr), { tp_name, "centrality", "runId" } )
+    .Define("Tneg_DECOMPOSED", correction_generator(vec_c_tn, vec_s_tn, tn_corr), { tn_name, "centrality", "runId" } )
     
-    .Define("proton_DECOMPOSED", correction_generator(vec_c_p, vec_s_p, vec_cov_p), { proton_name, "centrality" } )
+    .Define("proton_DECOMPOSED", correction_generator(vec_c_p, vec_s_p, p_corr), { proton_name, "centrality", "runId" } )
   ;
 
   auto file_out = std::unique_ptr< TFile, std::function< void(TFile*) > >{ TFile::Open( "decomposed_out.root", "RECREATE" ), [](auto f){f ->Close(); } };
@@ -197,7 +197,9 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
   auto tree = new TTree("tree", "tree");
   Qn::DataContainerQVector f1{}, f2{}, f3{}, tp{}, tn{}, p{};
   double cent{};
+  double runid{};
   tree->Branch( "centrality", &cent );
+  tree->Branch( "runId", &runid );
 
   tree->Branch( "F1_DECOMPOSED", "Qn::DataContainerQVector", &f1 );
   tree->Branch( "F2_DECOMPOSED", "Qn::DataContainerQVector", &f2 );
@@ -206,8 +208,9 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
   tree->Branch( "Tneg_DECOMPOSED", "Qn::DataContainerQVector", &tn );
   tree->Branch( "proton_DECOMPOSED", "Qn::DataContainerQVector", &p );
 
-  dd.Foreach( [tree, &cent, &f1, &f2, &f3, &tp, &tn, &p]( 
+  dd.Foreach( [tree, &cent, &runid, &f1, &f2, &f3, &tp, &tn, &p]( 
     double centrality,
+    double run_id,
     Qn::DataContainerQVector f1_ev, 
     Qn::DataContainerQVector f2_ev, 
     Qn::DataContainerQVector f3_ev, 
@@ -215,6 +218,7 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
     Qn::DataContainerQVector tn_ev, 
     Qn::DataContainerQVector p_ev ) mutable {
     cent = centrality;
+    runid = runid;
     f1 = f1_ev;
     f2 = f2_ev;
     f3 = f3_ev;
@@ -225,6 +229,7 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
   }, 
   std::vector<std::string>{ 
     "centrality",
+    "runId",
     "F1_DECOMPOSED",
     "F2_DECOMPOSED",
     "F3_DECOMPOSED",
