@@ -119,7 +119,7 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
       auto c_axis = vec_c[0].GetAxis( "centrality" ); 
       auto runid_axis = vec_c[0].GetAxis( "runId" ); 
       auto c_bin = c_axis.FindBin( centrality );
-      auto r_bin = c_axis.FindBin( runid_axis );
+      auto r_bin = runid_axis.FindBin( run_id );
       auto c_bin_lo = c_axis.GetLowerBinEdge( c_bin );
       auto c_bin_hi = c_axis.GetUpperBinEdge( c_bin );
       auto new_c_axis = Qn::AxisD{ "centrality", 1, c_bin_lo, c_bin_hi };
