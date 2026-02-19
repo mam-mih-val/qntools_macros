@@ -115,6 +115,8 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
     return [&vec_c, &vec_s, &vec_cov]( Qn::DataContainerQVector qvec, Double_t centrality, Double_t run_id ) -> Qn::DataContainerQVector {
       if( centrality < 1 || centrality > 60 )
         return qvec;
+      if( 6600 < run_id || run_id > 8300  )
+        return qvec;
       auto new_qvec = qvec;
       auto c_axis = vec_c[0].GetAxis( "centrality" ); 
       auto r_axis = vec_c[0].GetAxis( "runId" ); 
