@@ -151,7 +151,7 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
       if( vec_cov_c.GetAxes().size() > 1 ){
           vec_cov_c = vec_cov_c.Select( new_c_axis );
         } else {
-          vec_cov_c = vec_cov_c.Rebin( new_c_axis );
+          vec_cov_c = vec_cov_c.Rebin( new_c_axis, [](auto a, auto b){ return (a + b) * 0.5; } );
         }
 
       for( auto i=size_t{0}; i<qvec.size(); ++i ){
