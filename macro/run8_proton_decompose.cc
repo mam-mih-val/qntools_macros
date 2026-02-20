@@ -3,13 +3,25 @@
 #include "StatCalculate.hpp"
 #include "QVector.hpp"
 #include <Eigen/Dense>
+#include <algorithm>
 #include <array>
 #include <cassert>
 #include <cstddef>
 #include <string>
 #include <vector>
 
-Qn::DataContainer<Eigen::Matrix4d, Qn::AxisD> MakeCorrectionMatrix(const std::vector<Qn::DataContainerStatCalculate>& vec_c, const std::vector<Qn::DataContainerStatCalculate>& vec_s, const std::vector<Qn::DataContainerStatCalculate>& vec_cov ){
+template<typename T>
+using vector1d = std::vector<T>;
+
+template<typename T>
+using vector2d = std::vector<std::vector<T>>;
+
+template<typename T>
+using vector3d = std::vector<std::vector<std::vector<T>>>;
+
+using DataContainerMatrix = Qn::DataContainer<Eigen::Matrix4d, Qn::AxisD>;
+
+DataContainerMatrix MakeCorrectionMatrix(const vector1d<Qn::DataContainerStatCalculate>& vec_c, const vector1d<Qn::DataContainerStatCalculate>& vec_s, const vector1d<Qn::DataContainerStatCalculate>& vec_cov ){
   auto axes = vec_c[0].GetAxes();
   Qn::DataContainer<Eigen::Matrix4d, Qn::AxisD> corr_matrix{axes};
   for( auto i = size_t{0}; i<vec_c[0].size(); ++i ){
@@ -45,14 +57,14 @@ Qn::DataContainer<Eigen::Matrix4d, Qn::AxisD> MakeCorrectionMatrix(const std::ve
     };
 
     auto solver = Eigen::SelfAdjointEigenSolver<Eigen::Matrix4d>{ M };
-    auto Minv = solver.operatorInverseSqrt() * pow(2.0, 0.5);
+    auto Minv = solver.operatorInverseSqrt() * pow(2.0, - 0.5);
     corr_matrix.At(i) = Minv;
   }
   return corr_matrix;
 }
 
 
-std::tuple< std::vector<Qn::DataContainerStatCalculate>, std::vector<Qn::DataContainerStatCalculate>, std::vector<Qn::DataContainerStatCalculate> > ReadCnSn( std::string str_vec_name, TFile* calib_file ){
+std::tuple< vector1d<Qn::DataContainerStatCalculate>, vector1d<Qn::DataContainerStatCalculate>, vector1d<Qn::DataContainerStatCalculate> > ReadCnSn( std::string str_vec_name, TFile* calib_file ){
   Qn::DataContainerStatCollect* tmp{nullptr};
 
   auto vec_c = std::vector<Qn::DataContainerStatCalculate>{};
@@ -83,7 +95,44 @@ std::tuple< std::vector<Qn::DataContainerStatCalculate>, std::vector<Qn::DataCon
   return {vec_c, vec_s, vec_cov};
 }
 
+template<typename T>
+vector2d < Qn::DataContainer<T, Qn::AxisD> >  ExtractEventAxes( const Qn::DataContainer<T, Qn::AxisD>& container, const std::vector< Qn::AxisD >& axes ){
+  vector2d < Qn::DataContainer<T, Qn::AxisD> > result;
+  result.back().reserve( axes[0].size() );
+  for( auto& bin_1 = size_t{0}; bin_1 < axes[0].size(); ++bin_1 ){
+    auto lo_1 = axes[0].GetLowerBinEdge( bin_1 );
+    auto hi_1 = axes[0].GetUpperBinEdge( bin_1 );
+    auto name_1 = axes[0].Name();
+    auto new_axes_1 = Qn::AxisD{ name, 1, lo_1, hi_1 };
+    auto container_a1 = container.Select( new_axes_1 );
+    result.emplace_back();
+    result.back().reserve( axes[1].size() );
+    for( auto& bin_2 = size_t{0}; bin_2 < axes[1].size(); ++bin_2 ){
+      auto lo_2 = axes[1].GetLowerBinEdge( bin_2 );
+      auto hi_2 = axes[1].GetUpperBinEdge( bin_2 );
+      auto name_2 = axes[2].Name();
+      auto new_axes_2 = Qn::AxisD{ name, 1, lo_2, hi_2 };
+      auto container_a2 = container_a1.GetAxes().size() > 1 ? container_a1.Select( new_axes_2 ) : container_a1.Rebin( new_axes_2, [](auto& a, auto& b){ return (a+b)/2; } );
+      result.back().emplace_back(container_a2);
+    }
+  }
+  return result;
+}
+
+vector3d< Qn::DataContainerStatCalculate > ExtractPack( const vector1d<Qn::DataContainerStatCalculate>& vec_containers, const vector1d<Qn::AxisD>& axes ){
+  auto vector3d< Qn::DataContainerStatCalculate > result;
+  result.reserve( vec_containers.size() );
+  for( const auto& container : vec_containers ){
+    result.push_back( ExtractEventAxes(container, axes) );
+  }
+}
+
 void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
+
+  auto event_axes = std::vector<Qn::AxisD>{
+    Qn::AxisD{ "centrality", 6, 0, 60 },
+    Qn::AxisD{ "runId", 17, 6600, 8300 },
+  };
 
   const std::string f1_name {"F1_PLAIN"};
   const std::string f2_name {"F2_PLAIN"};
@@ -111,60 +160,54 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
   
   auto p_corr = MakeCorrectionMatrix(vec_c_p, vec_s_p, vec_cov_p);
 
-  const auto correction_generator = []( const std::vector<Qn::DataContainerStatCalculate>& vec_c, const std::vector<Qn::DataContainerStatCalculate>& vec_s, const Qn::DataContainer<Eigen::Matrix4d, Qn::AxisD>& vec_cov ){
-    return [&vec_c, &vec_s, &vec_cov]( Qn::DataContainerQVector qvec, Double_t centrality, Double_t run_id ) -> Qn::DataContainerQVector {
+  auto c_f1 = ExtractPack(vec_c_f1, event_axes);
+  auto s_f1 = ExtractPack(vec_s_f1, event_axes);
+  auto cov_f1 = ExtractEventAxes(f1_corr, event_axes);
+
+  auto c_f2 = ExtractPack(vec_c_f2, event_axes);
+  auto s_f2 = ExtractPack(vec_s_f2, event_axes);
+  auto cov_f2 = ExtractEventAxes(f2_corr, event_axes);
+
+  auto c_f3 = ExtractPack(vec_c_f3, event_axes);
+  auto s_f3 = ExtractPack(vec_s_f3, event_axes);
+  auto cov_f3 = ExtractEventAxes(f3_corr, event_axes);
+
+  auto c_tp = ExtractPack(vec_c_tp, event_axes);
+  auto s_tp = ExtractPack(vec_s_tp, event_axes);
+  auto cov_tp = ExtractEventAxes(tp_corr, event_axes);
+
+  auto c_tn = ExtractPack(vec_c_tn, event_axes);
+  auto s_tn = ExtractPack(vec_s_tn, event_axes);
+  auto cov_tn = ExtractEventAxes(tn_corr, event_axes);
+
+  auto p_tn = ExtractPack(vec_c_p, event_axes);
+  auto p_tn = ExtractPack(vec_s_p, event_axes);
+  auto cov_p = ExtractEventAxes(p_corr, event_axes);
+
+  const auto correction_generator = []( 
+    const vector3d<Qn::DataContainerStatCalculate>& vec_c, 
+    const vector3d<Qn::DataContainerStatCalculate>& vec_s, 
+    const vector2d<DataContainerMatrix>& vec_cov,
+    const vector1d<Qn::AxisD> axes 
+  ){
+    return [&vec_c, &vec_s, &vec_cov, &axes]( Qn::DataContainerQVector qvec, Double_t centrality, Double_t run_id ) -> Qn::DataContainerQVector {
       auto new_qvec = qvec;
-      auto c_axis = vec_c[0].GetAxis( "centrality" ); 
-      auto c_bin = c_axis.FindBin( centrality );
-      auto c_bin_lo = c_axis.GetLowerBinEdge( c_bin );
-      auto c_bin_hi = c_axis.GetUpperBinEdge( c_bin );
-      auto new_c_axis = Qn::AxisD{ "centrality", 1, c_bin_lo, c_bin_hi };
-
-      auto r_axis = vec_c[0].GetAxis( "runId" ); 
-      auto r_bin = r_axis.FindBin( run_id );
-      auto r_bin_lo = r_axis.GetLowerBinEdge( r_bin );
-      auto r_bin_hi = r_axis.GetUpperBinEdge( r_bin );
-      auto new_r_axis = Qn::AxisD{ "runId", 1, r_bin_lo, r_bin_hi };
-
-      auto vec_c_c = vec_c;
-      auto vec_s_c = vec_s;
-
-      for( auto& el : vec_c_c ) {
-        el.Select( new_r_axis );
-        if( el.GetAxes().size() > 1 ){
-          el = el.Select( new_c_axis );
-        } else {
-          el = el.Rebin( new_c_axis );
-        }
-      }
-      for( auto& el : vec_s_c ) {
-        el.Select( new_r_axis );
-        if( el.GetAxes().size() > 1 ){
-          el = el.Select( new_c_axis );
-        } else {
-          el = el.Rebin( new_c_axis );
-        }
-      }
-      
-      auto vec_cov_c = vec_cov.Select( new_r_axis );
-      if( vec_cov_c.GetAxes().size() > 1 ){
-          vec_cov_c = vec_cov_c.Select( new_c_axis );
-        } else {
-          vec_cov_c = vec_cov_c.Rebin( new_c_axis, [](auto a, auto b){ return (a + b) * 0.5; } );
-        }
+      auto c_bin = axes[0].FindBin( centrality ); 
+      auto r_bin = axes[1].FindBin( run_id ); 
 
       for( auto i=size_t{0}; i<qvec.size(); ++i ){
-        auto c1 = vec_c_c[0].At(i).Mean();
-        auto c2 = vec_c_c[1].At(i).Mean();
-        auto s1 = vec_s_c[0].At(i).Mean();
-        auto s2 = vec_s_c[1].At(i).Mean();
+        auto c1 = vec_c[0][c_bin][r_bin].At(i).Mean();
+        auto c2 = vec_c[1][c_bin][r_bin].At(i).Mean();
+        
+        auto s1 = vec_s[0][c_bin][r_bin].At(i).Mean();
+        auto s2 = vec_s[1][c_bin][r_bin].At(i).Mean();
 
         auto x1_old = qvec.At(i).x(1) - c1;
         auto x2_old = qvec.At(i).x(2) - c2;
         auto y1_old = qvec.At(i).y(1) - s1;
         auto y2_old = qvec.At(i).y(2) - s2;
     
-        auto Minv = vec_cov_c.At(i);
+        auto Minv = vec_cov[c_bin][r_bin].At(i);
         auto Xold =  Eigen::Vector4d{ x1_old, y1_old, x2_old, y2_old };
         auto Xnew = Minv * Xold;
 
@@ -183,14 +226,14 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
 
   auto d = ROOT::RDataFrame( "tree", in_file_name );
   auto dd = d
-    .Define("F1_DECOMPOSED", correction_generator(vec_c_f1, vec_s_f1, f1_corr), { f1_name, "centrality", "runId" } )
-    .Define("F2_DECOMPOSED", correction_generator(vec_c_f2, vec_s_f2, f2_corr), { f2_name, "centrality", "runId" } )
-    .Define("F3_DECOMPOSED", correction_generator(vec_c_f3, vec_s_f3, f3_corr), { f3_name, "centrality", "runId" } )
+    .Define("F1_DECOMPOSED", correction_generator(c_f1, s_f1, cov_f1, event_axes), { f1_name, "centrality", "runId" } )
+    .Define("F2_DECOMPOSED", correction_generator(c_f2, s_f2, cov_f2, event_axes), { f2_name, "centrality", "runId" } )
+    .Define("F3_DECOMPOSED", correction_generator(c_f3, s_f3, cov_f3, event_axes), { f3_name, "centrality", "runId" } )
 
-    .Define("Tpos_DECOMPOSED", correction_generator(vec_c_tp, vec_s_tp, tp_corr), { tp_name, "centrality", "runId" } )
-    .Define("Tneg_DECOMPOSED", correction_generator(vec_c_tn, vec_s_tn, tn_corr), { tn_name, "centrality", "runId" } )
+    .Define("Tpos_DECOMPOSED", correction_generator(c_tn, s_tn, cov_tn, event_axes), { tp_name, "centrality", "runId" } )
+    .Define("Tneg_DECOMPOSED", correction_generator(c_tp, s_tp, cov_tp, event_axes), { tn_name, "centrality", "runId" } )
     
-    .Define("proton_DECOMPOSED", correction_generator(vec_c_p, vec_s_p, p_corr), { proton_name, "centrality", "runId" } )
+    .Define("proton_DECOMPOSED", correction_generator(c_p, s_p, cov_p, event_axes), { proton_name, "centrality", "runId" } )
     .Filter( "1 < centrality && centrality < 60" )
     .Filter( "6600 < runId && runId < 8300" )
   ;
