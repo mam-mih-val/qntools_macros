@@ -227,6 +227,8 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
 
   auto d = ROOT::RDataFrame( "tree", in_file_name );
   auto dd = d
+    .Filter( "1 < centrality && centrality < 60" )
+    .Filter( "6600 < runId && runId < 8300" )
     .Define("F1_DECOMPOSED", correction_generator(c_f1, s_f1, cov_f1, event_axes), { f1_name, "centrality", "runId" } )
     .Define("F2_DECOMPOSED", correction_generator(c_f2, s_f2, cov_f2, event_axes), { f2_name, "centrality", "runId" } )
     .Define("F3_DECOMPOSED", correction_generator(c_f3, s_f3, cov_f3, event_axes), { f3_name, "centrality", "runId" } )
@@ -235,8 +237,6 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
     .Define("Tneg_DECOMPOSED", correction_generator(c_tp, s_tp, cov_tp, event_axes), { tn_name, "centrality", "runId" } )
     
     .Define("proton_DECOMPOSED", correction_generator(c_p, s_p, cov_p, event_axes), { proton_name, "centrality", "runId" } )
-    .Filter( "1 < centrality && centrality < 60" )
-    .Filter( "6600 < runId && runId < 8300" )
   ;
 
   auto file_out = std::unique_ptr< TFile, std::function< void(TFile*) > >{ TFile::Open( "decomposed_out.root", "RECREATE" ), [](auto f){f ->Close(); } };
