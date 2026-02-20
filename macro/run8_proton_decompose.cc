@@ -120,7 +120,7 @@ vector2d < Qn::DataContainer<T, Qn::AxisD> >  ExtractEventAxes( const Qn::DataCo
 }
 
 vector3d< Qn::DataContainerStatCalculate > ExtractPack( const vector1d<Qn::DataContainerStatCalculate>& vec_containers, const vector1d<Qn::AxisD>& axes ){
-  auto vector3d< Qn::DataContainerStatCalculate > result;
+  auto result = vector3d< Qn::DataContainerStatCalculate >{};
   result.reserve( vec_containers.size() );
   for( const auto& container : vec_containers ){
     result.push_back( ExtractEventAxes(container, axes) );
