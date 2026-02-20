@@ -98,21 +98,21 @@ std::tuple< vector1d<Qn::DataContainerStatCalculate>, vector1d<Qn::DataContainer
 template<typename T>
 vector2d < Qn::DataContainer<T, Qn::AxisD> >  ExtractEventAxes( const Qn::DataContainer<T, Qn::AxisD>& container, const std::vector< Qn::AxisD >& axes ){
   vector2d < Qn::DataContainer<T, Qn::AxisD> > result;
-  result.back().reserve( axes[0].size() );
-  for( auto bin_1 = size_t{0}; bin_1 < axes[0].size(); ++bin_1 ){
-    auto lo_1 = axes[0].GetLowerBinEdge( bin_1 );
-    auto hi_1 = axes[0].GetUpperBinEdge( bin_1 );
-    auto name_1 = axes[0].Name();
+  result.back().reserve( axes.at(0).size() );
+  for( auto bin_1 = size_t{0}; bin_1 < axes.at(0).size(); ++bin_1 ){
+    auto lo_1 = axes.at(0).GetLowerBinEdge( bin_1 );
+    auto hi_1 = axes.at(0).GetUpperBinEdge( bin_1 );
+    auto name_1 = axes.at(0).Name();
     auto new_axes_1 = Qn::AxisD{ name_1, 1, lo_1, hi_1 };
     auto container_a1 = container.Select( new_axes_1 );
     result.emplace_back();
-    result.back().reserve( axes[1].size() );
-    for( auto bin_2 = size_t{0}; bin_2 < axes[1].size(); ++bin_2 ){
-      auto lo_2 = axes[1].GetLowerBinEdge( bin_2 );
-      auto hi_2 = axes[1].GetUpperBinEdge( bin_2 );
-      auto name_2 = axes[1].Name();
+    result.back().reserve( axes.at(1).size() );
+    for( auto bin_2 = size_t{0}; bin_2 < axes.at(1).size(); ++bin_2 ){
+      auto lo_2 = axes.at(1).GetLowerBinEdge( bin_2 );
+      auto hi_2 = axes.at(1).GetUpperBinEdge( bin_2 );
+      auto name_2 = axes.at(1).Name();
       auto new_axes_2 = Qn::AxisD{ name_2, 1, lo_2, hi_2 };
-      auto container_a2 = container_a1.GetAxes().size() > 1 ? container_a1.Select( new_axes_2 ) : container_a1.Rebin( new_axes_2, [](auto& a, auto& b){ return (a+b)/2; } );
+      auto container_a2 = container_a1.GetAxes().size() > 1 ? container_a1.Select( new_axes_2 ) : container_a1.Rebin( new_axes_2, [](const auto& a, const auto& b){ return (a+b)/2; } );
       result.back().emplace_back(container_a2);
     }
   }
@@ -193,15 +193,15 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
   ){
     return [&vec_c, &vec_s, &vec_cov, &axes]( Qn::DataContainerQVector qvec, Double_t centrality, Double_t run_id ) -> Qn::DataContainerQVector {
       auto new_qvec = qvec;
-      auto c_bin = axes[0].FindBin( centrality ); 
-      auto r_bin = axes[1].FindBin( run_id ); 
+      auto c_bin = axes.at(0).FindBin( centrality ); 
+      auto r_bin = axes.at(1).FindBin( run_id ); 
 
       for( auto i=size_t{0}; i<qvec.size(); ++i ){
-        auto c1 = vec_c[0].at(c_bin).at(r_bin).At(i).Mean();
-        auto c2 = vec_c[1].at(c_bin).at(r_bin).At(i).Mean();
+        auto c1 = vec_c.at(0).at(c_bin).at(r_bin).At(i).Mean();
+        auto c2 = vec_c.at(1).at(c_bin).at(r_bin).At(i).Mean();
         
-        auto s1 = vec_s[0].at(c_bin).at(r_bin).At(i).Mean();
-        auto s2 = vec_s[1].at(c_bin).at(r_bin).At(i).Mean();
+        auto s1 = vec_s.at(0).at(c_bin).at(r_bin).At(i).Mean();
+        auto s2 = vec_s.at(1).at(c_bin).at(r_bin).At(i).Mean();
 
         auto x1_old = qvec.At(i).x(1) - c1;
         auto x2_old = qvec.At(i).x(2) - c2;
