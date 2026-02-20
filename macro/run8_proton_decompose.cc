@@ -262,6 +262,8 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
   tree->Branch( "Tneg_DECOMPOSED", "Qn::DataContainerQVector", &tn );
   tree->Branch( "proton_DECOMPOSED", "Qn::DataContainerQVector", &p );
 
+  std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+
   dd.Foreach( [tree, &cent, &runid, &f1, &f2, &f3, &tp, &tn, &p]( 
     double centrality,
     double run_id,
@@ -294,4 +296,8 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
   file_out->cd();
   tree->Write();
 
+  std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+  std::cout << "Elapsed time: " << std::chrono::duration_cast<std::chrono::minutes> (end - begin).count() << " min" << std::endl;
+  auto elapsed_s = std::chrono::duration_cast<std::chrono::microseconds> (end - begin).count();
+  std::cout << "It is " << elapsed_s / tree->GetEntries() << " μs/ev." << std::endl;
 }
