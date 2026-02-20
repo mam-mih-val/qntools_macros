@@ -103,7 +103,7 @@ vector2d < Qn::DataContainer<T, Qn::AxisD> >  ExtractEventAxes( const Qn::DataCo
     auto lo_1 = axes[0].GetLowerBinEdge( bin_1 );
     auto hi_1 = axes[0].GetUpperBinEdge( bin_1 );
     auto name_1 = axes[0].Name();
-    auto new_axes_1 = Qn::AxisD{ name, 1, lo_1, hi_1 };
+    auto new_axes_1 = Qn::AxisD{ name_1, 1, lo_1, hi_1 };
     auto container_a1 = container.Select( new_axes_1 );
     result.emplace_back();
     result.back().reserve( axes[1].size() );
@@ -111,7 +111,7 @@ vector2d < Qn::DataContainer<T, Qn::AxisD> >  ExtractEventAxes( const Qn::DataCo
       auto lo_2 = axes[1].GetLowerBinEdge( bin_2 );
       auto hi_2 = axes[1].GetUpperBinEdge( bin_2 );
       auto name_2 = axes[2].Name();
-      auto new_axes_2 = Qn::AxisD{ name, 1, lo_2, hi_2 };
+      auto new_axes_2 = Qn::AxisD{ name_2, 1, lo_2, hi_2 };
       auto container_a2 = container_a1.GetAxes().size() > 1 ? container_a1.Select( new_axes_2 ) : container_a1.Rebin( new_axes_2, [](auto& a, auto& b){ return (a+b)/2; } );
       result.back().emplace_back(container_a2);
     }
@@ -180,8 +180,8 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
   auto s_tn = ExtractPack(vec_s_tn, event_axes);
   auto cov_tn = ExtractEventAxes(tn_corr, event_axes);
 
-  auto p_tn = ExtractPack(vec_c_p, event_axes);
-  auto p_tn = ExtractPack(vec_s_p, event_axes);
+  auto c_p = ExtractPack(vec_c_p, event_axes);
+  auto s_p = ExtractPack(vec_s_p, event_axes);
   auto cov_p = ExtractEventAxes(p_corr, event_axes);
 
   const auto correction_generator = []( 
