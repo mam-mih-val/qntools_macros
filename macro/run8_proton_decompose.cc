@@ -189,7 +189,7 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
     const vector3d<Qn::DataContainerStatCalculate>& vec_c, 
     const vector3d<Qn::DataContainerStatCalculate>& vec_s, 
     const vector2d<DataContainerMatrix>& vec_cov,
-    const vector1d<Qn::AxisD> axes 
+    const vector1d<Qn::AxisD>& axes 
   ){
     return [&vec_c, &vec_s, &vec_cov, &axes]( Qn::DataContainerQVector qvec, Double_t centrality, Double_t run_id ) -> Qn::DataContainerQVector {
       auto new_qvec = qvec;
