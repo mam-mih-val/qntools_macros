@@ -73,9 +73,11 @@ std::tuple< vector1d<Qn::DataContainerStatCalculate>, vector1d<Qn::DataContainer
   vec_s.reserve(4);
   for( auto i=size_t{0}; i<4; ++i ){
     auto corr_name = str_vec_name+".x"+std::to_string(i+1)+"centralityrunId"s;
+    std::cout << "Extracting " << corr_name << "\n";
     calib_file->GetObject( corr_name.c_str(), tmp );
     assert(tmp);
     vec_c.emplace_back( *tmp );
+    std::cout << "Extracting " << corr_name << "\n";
     corr_name = str_vec_name+".y"+std::to_string(i+1)+"centralityrunId"s;
     calib_file->GetObject( corr_name.c_str(), tmp );
     assert(tmp);
@@ -87,6 +89,7 @@ std::tuple< vector1d<Qn::DataContainerStatCalculate>, vector1d<Qn::DataContainer
   for( auto i=size_t{0}; i<components.size(); ++i ){
     for( auto j=size_t{i}; j<components.size(); ++j ){
       auto corr_name = str_vec_name + "." + components.at(i) + components.at(j) + "centralityrunId"s;
+      std::cout << "Extracting " << corr_name << "\n";
       calib_file->GetObject( corr_name.c_str(), tmp );
       assert(tmp);
       vec_cov.emplace_back( *tmp );
