@@ -296,8 +296,8 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
   file_out->cd();
   tree->Write();
 
-  std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-  std::cout << "Elapsed time: " << std::chrono::duration_cast<std::chrono::minutes> (end - begin).count() << " min" << std::endl;
-  auto elapsed_s = std::chrono::duration_cast<std::chrono::microseconds> (end - begin).count();
+  std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+  std::cout << "Elapsed time: " << std::chrono::duration_cast<std::chrono::minutes>(end - begin).count() << " min" << std::endl;
+  auto elapsed_s = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
   std::cout << "It is " << elapsed_s / tree->GetEntries() << " μs/ev." << std::endl;
 }
