@@ -125,6 +125,7 @@ vector3d< Qn::DataContainerStatCalculate > ExtractPack( const vector1d<Qn::DataC
   for( const auto& container : vec_containers ){
     result.push_back( ExtractEventAxes(container, axes) );
   }
+  return result;
 }
 
 void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
