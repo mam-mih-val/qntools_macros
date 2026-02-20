@@ -104,7 +104,7 @@ template<typename T>
 vector2d < Qn::DataContainer<T, Qn::AxisD> >  ExtractEventAxes( const Qn::DataContainer<T, Qn::AxisD>& container, const std::vector< Qn::AxisD >& axes ){
   std::cout << __func__ << std::endl;
   vector2d < Qn::DataContainer<T, Qn::AxisD> > result;
-  result.back().reserve( axes.at(0).size() );
+  result.reserve( axes.at(0).size() );
   for( auto bin_1 = size_t{0}; bin_1 < axes.at(0).size(); ++bin_1 ){
     auto lo_1 = axes.at(0).GetLowerBinEdge( bin_1 );
     auto hi_1 = axes.at(0).GetUpperBinEdge( bin_1 );
