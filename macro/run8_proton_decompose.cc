@@ -113,10 +113,6 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
 
   const auto correction_generator = []( const std::vector<Qn::DataContainerStatCalculate>& vec_c, const std::vector<Qn::DataContainerStatCalculate>& vec_s, const Qn::DataContainer<Eigen::Matrix4d, Qn::AxisD>& vec_cov ){
     return [&vec_c, &vec_s, &vec_cov]( Qn::DataContainerQVector qvec, Double_t centrality, Double_t run_id ) -> Qn::DataContainerQVector {
-      if( centrality < 1 || centrality > 60 )
-        return qvec;
-      if( 6600 < run_id || run_id > 8300  )
-        return qvec;
       auto new_qvec = qvec;
       auto c_axis = vec_c[0].GetAxis( "centrality" ); 
       auto r_axis = vec_c[0].GetAxis( "runId" ); 
@@ -194,6 +190,8 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
     .Define("Tneg_DECOMPOSED", correction_generator(vec_c_tn, vec_s_tn, tn_corr), { tn_name, "centrality", "runId" } )
     
     .Define("proton_DECOMPOSED", correction_generator(vec_c_p, vec_s_p, p_corr), { proton_name, "centrality", "runId" } )
+    .Filter( "1 < centrality && centrality < 60" )
+    .Filter( "6600 < runId && runId < 8300" )
   ;
 
   auto file_out = std::unique_ptr< TFile, std::function< void(TFile*) > >{ TFile::Open( "decomposed_out.root", "RECREATE" ), [](auto f){f ->Close(); } };
