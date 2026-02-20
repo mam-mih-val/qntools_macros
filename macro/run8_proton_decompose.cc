@@ -22,6 +22,7 @@ using vector3d = std::vector<std::vector<std::vector<T>>>;
 using DataContainerMatrix = Qn::DataContainer<Eigen::Matrix4d, Qn::AxisD>;
 
 DataContainerMatrix MakeCorrectionMatrix(const vector1d<Qn::DataContainerStatCalculate>& vec_c, const vector1d<Qn::DataContainerStatCalculate>& vec_s, const vector1d<Qn::DataContainerStatCalculate>& vec_cov ){
+  std::cout << __func__ << std::endl;
   auto axes = vec_c[0].GetAxes();
   Qn::DataContainer<Eigen::Matrix4d, Qn::AxisD> corr_matrix{axes};
   for( auto i = size_t{0}; i<vec_c[0].size(); ++i ){
@@ -65,6 +66,7 @@ DataContainerMatrix MakeCorrectionMatrix(const vector1d<Qn::DataContainerStatCal
 
 
 std::tuple< vector1d<Qn::DataContainerStatCalculate>, vector1d<Qn::DataContainerStatCalculate>, vector1d<Qn::DataContainerStatCalculate> > ReadCnSn( std::string str_vec_name, TFile* calib_file ){
+  std::cout << __func__ << std::endl;
   Qn::DataContainerStatCollect* tmp{nullptr};
 
   auto vec_c = std::vector<Qn::DataContainerStatCalculate>{};
@@ -100,6 +102,7 @@ std::tuple< vector1d<Qn::DataContainerStatCalculate>, vector1d<Qn::DataContainer
 
 template<typename T>
 vector2d < Qn::DataContainer<T, Qn::AxisD> >  ExtractEventAxes( const Qn::DataContainer<T, Qn::AxisD>& container, const std::vector< Qn::AxisD >& axes ){
+  std::cout << __func__ << std::endl;
   vector2d < Qn::DataContainer<T, Qn::AxisD> > result;
   result.back().reserve( axes.at(0).size() );
   for( auto bin_1 = size_t{0}; bin_1 < axes.at(0).size(); ++bin_1 ){
@@ -123,10 +126,11 @@ vector2d < Qn::DataContainer<T, Qn::AxisD> >  ExtractEventAxes( const Qn::DataCo
 }
 
 vector3d< Qn::DataContainerStatCalculate > ExtractPack( const vector1d<Qn::DataContainerStatCalculate>& vec_containers, const vector1d<Qn::AxisD>& axes ){
+  std::cout << __func__ << std::endl;
   auto result = vector3d< Qn::DataContainerStatCalculate >{};
   result.reserve( vec_containers.size() );
   for( const auto& container : vec_containers ){
-    result.push_back( ExtractEventAxes(container, axes) );
+    result.emplace_back( ExtractEventAxes(container, axes) );
   }
   return result;
 }
