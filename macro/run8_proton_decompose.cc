@@ -6,7 +6,9 @@
 #include <algorithm>
 #include <array>
 #include <cassert>
+#include <cmath>
 #include <cstddef>
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -204,6 +206,8 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
       auto r_bin = axes.at(1).FindBin( run_id ); 
 
       for( auto i=size_t{0}; i<qvec.size(); ++i ){
+        if( fabs( qvec.At(i).sumweights()) < std::numeric_limits<double>::min() )
+          continue;
         auto c1 = vec_c.at(0).at(c_bin).at(r_bin).At(i).Mean();
         auto c2 = vec_c.at(1).at(c_bin).at(r_bin).At(i).Mean();
         
@@ -223,7 +227,7 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
         auto y1_new = static_cast<double>(Xnew(1));
         auto x2_new = static_cast<double>(Xnew(2));
         auto y2_new = static_cast<double>(Xnew(3));
-        
+  
         new_qvec.At(i).SetQ( 1, x1_new, y1_new );
         new_qvec.At(i).SetQ( 2, x2_new, y2_new );
       }
