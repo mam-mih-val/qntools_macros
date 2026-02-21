@@ -220,6 +220,11 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
         auto y2_old = qvec.At(i).y(2) - s2;
     
         auto Minv = vec_cov.at(c_bin).at(r_bin).At(i);
+        
+        if( std::isnan(Minv(0, 0)) ){
+          new_qvec.At(i).Reset();
+        }
+
         auto Xold =  Eigen::Vector4d{ x1_old, y1_old, x2_old, y2_old };
         auto Xnew = Minv * Xold;
 
