@@ -77,7 +77,18 @@ DataContainerMatrix MakeCorrectionMatrix(const vector1d<Qn::DataContainerStatCal
     };
 
     auto solver = Eigen::SelfAdjointEigenSolver<matrix_t>{ M };
-    auto Minv = solver.operatorInverseSqrt() * pow(2.0, - 0.5);
+    auto ll = solver.eigenvalues();
+    auto L = matrix_t{
+      { pow(ll(0, 0), -0.5), 0.0, 0.0, 0.0, 0.0, 0.0 },
+      { 0.0, pow(ll(1, 0), -0.5), 0.0, 0.0, 0.0, 0.0 },
+      { 0.0, 0.0, pow(ll(2, 0), -0.5), 0.0, 0.0, 0.0 },
+      { 0.0, 0.0, 0.0, pow(ll(3, 0), -0.5), 0.0, 0.0 },
+      { 0.0, 0.0, 0.0, 0.0, pow(ll(4, 0), -0.5), 0.0 },
+      { 0.0, 0.0, 0.0, 0.0, 0.0, pow(ll(5, 0), -0.5) }
+    };
+    std::cout << L << std::endl;
+    auto VT = solver.eigenvectors().transpose();
+    auto Minv = L * VT * pow( 2.0, -0.5 );
     corr_matrix.At(i) = Minv;
   }
   return corr_matrix;
