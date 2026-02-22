@@ -38,19 +38,19 @@ DataContainerMatrix MakeCorrectionMatrix(const vector1d<Qn::DataContainerStatCal
     auto s3 = vec_s[2].At(i).Mean();
     auto s4 = vec_s[3].At(i).Mean();
 
-    auto M11 = vec_cov[0].At(i).Mean() - c1*c1;
-    auto M12 = vec_cov[1].At(i).Mean() - c1*s1;
-    auto M13 = vec_cov[2].At(i).Mean() - c1*c2;
-    auto M14 = vec_cov[3].At(i).Mean() - c1*s2;
+    auto M11 = 1 + c2;
+    auto M12 = s2;
+    auto M13 = c1 + c3;
+    auto M14 = s1 + s3;
     
-    auto M22 = vec_cov[4].At(i).Mean() - s1*s1;
-    auto M23 = vec_cov[5].At(i).Mean() - s1*c2;
-    auto M24 = vec_cov[6].At(i).Mean() - s1*s2;
+    auto M22 = 1 - c2;
+    auto M23 = s3 - s1;
+    auto M24 = c1 - c3;
 
-    auto M33 = vec_cov[7].At(i).Mean() - c2*c2;
-    auto M34 = vec_cov[8].At(i).Mean() - c2*s2;
+    auto M33 = 1 + c4;
+    auto M34 = s4;
     
-    auto M44 = vec_cov[9].At(i).Mean() - s2*s2;
+    auto M44 = 1 - c4;
 
     auto M = Eigen::Matrix4d{
       { M11, M12, M13, M14 },
@@ -59,8 +59,8 @@ DataContainerMatrix MakeCorrectionMatrix(const vector1d<Qn::DataContainerStatCal
       { M14, M24, M34, M44 },
     };
 
-    auto solver = Eigen::SelfAdjointEigenSolver<Eigen::Matrix4d>{ M };
-    auto Minv = solver.operatorInverseSqrt() * pow(2.0, - 0.5);
+    // auto solver = Eigen::SelfAdjointEigenSolver<Eigen::Matrix4d>{ M*2 };
+    auto Minv = M.inverse();
     corr_matrix.At(i) = Minv;
   }
   return corr_matrix;
