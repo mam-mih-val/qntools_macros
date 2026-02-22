@@ -248,7 +248,7 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
           continue;
         }
 
-        auto Xold =  Eigen::Vector4d{ x1_old, y1_old, x2_old, y2_old, x3_old, y3_old };
+        auto Xold =  Eigen::Matrix<double, 6, 1>{ x1_old, y1_old, x2_old, y2_old, x3_old, y3_old };
         auto Xnew = Minv * Xold;
 
         auto x1_new = static_cast<double>(Xnew(0));
