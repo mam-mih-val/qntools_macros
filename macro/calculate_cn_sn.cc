@@ -141,8 +141,8 @@ void calculate_cn_sn(string inputFiles="qn.root", string outputFile="CnSn.root")
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x3y4", P1::xy(3, 4), wSumWu1part, wy, corr, corr);
     
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y3y3", P1::yy(3, 3), wSumWu1part, wy, corr, corr);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".x3x4", P1::yx(3, 4), wSumWu1part, wy, corr, corr);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".x3y4", P1::yy(3, 4), wSumWu1part, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y3x4", P1::yx(3, 4), wSumWu1part, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y3y4", P1::yy(3, 4), wSumWu1part, wy, corr, corr);
 
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x4x4", P1::xx(4, 4), wSumWu1part, wy, corr, corr);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x4y4", P1::xy(4, 4), wSumWu1part, wy, corr, corr);
