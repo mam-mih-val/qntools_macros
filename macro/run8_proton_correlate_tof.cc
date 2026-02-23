@@ -315,10 +315,10 @@ void run8_proton_correlate_tof(string inputFiles="qn.root", string outputFile="c
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x2y2", P2::xy(2, 2), wUnity, wn, corr, corr);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y2x2", P2::yx(2, 2), wUnity, wn, corr, corr);
 
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".x2x2", P2::xx(3, 3), wUnity, wn, corr, corr);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".y2y2", P2::yy(3, 3), wUnity, wn, corr, corr);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".x2y2", P2::xy(3, 3), wUnity, wn, corr, corr);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".y2x2", P2::yx(3, 3), wUnity, wn, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x3x3", P2::xx(3, 3), wUnity, wn, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y3y3", P2::yy(3, 3), wUnity, wn, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x3y3", P2::xy(3, 3), wUnity, wn, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y3x3", P2::yx(3, 3), wUnity, wn, corr, corr);
   }
 
   for ( auto &corr: arr_u2Q1Q1 )
