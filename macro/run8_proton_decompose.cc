@@ -12,7 +12,9 @@
 #include <string>
 #include <vector>
 
-using matrix_t = Eigen::Matrix<double, 6, 6>;
+constexpr size_t NDIM = 5;
+
+using matrix_t = Eigen::Matrix<double, NDIM, NDIM>;
 
 template<typename T>
 using vector1d = std::vector<T>;
@@ -40,55 +42,41 @@ DataContainerMatrix MakeCorrectionMatrix(const vector1d<Qn::DataContainerStatCal
     auto s3 = vec_s[2].At(i).Mean();
     auto s4 = vec_s[3].At(i).Mean();
 
-    auto M11 = vec_cov[0].At(i).Mean() - c1*c1;
-    auto M12 = vec_cov[1].At(i).Mean() - c1*s1;
-    auto M13 = vec_cov[2].At(i).Mean() - c1*c2;
-    auto M14 = vec_cov[3].At(i).Mean() - c1*s2;
-    auto M15 = vec_cov[4].At(i).Mean() - c1*c3;
-    auto M16 = vec_cov[5].At(i).Mean() - c1*s3;
+    auto m_arr = std::array<  std::array< double , NDIM>, NDIM >{};
+
+    m_arr[0][0] = 1;
+    m_arr[0][1] = c1;
+    m_arr[0][2] = s1;
+    m_arr[0][3] = c2;
+    m_arr[0][4] = s2;
+
+    m_arr[1][1] = 1+c2;
+    m_arr[1][2] = s2;
+    m_arr[1][3] = c1+c3;
+    m_arr[1][4] = s1+s3;
     
-    auto M22 = vec_cov[6].At(i).Mean() - s1*s1;
-    auto M23 = vec_cov[7].At(i).Mean() - s1*c2;
-    auto M24 = vec_cov[8].At(i).Mean() - s1*s2;
-    auto M25 = vec_cov[9].At(i).Mean() - s1*c3;
-    auto M26 = vec_cov[10].At(i).Mean() - s1*s3;
-
-    auto M33 = vec_cov[11].At(i).Mean() - c2*c2;
-    auto M34 = vec_cov[12].At(i).Mean() - c2*s2;
-    auto M35 = vec_cov[13].At(i).Mean() - c2*c3;
-    auto M36 = vec_cov[14].At(i).Mean() - c2*s3;
+    m_arr[2][2] = 1-c2;
+    m_arr[2][3] = s3-s1;
+    m_arr[2][4] = c1-c3;
     
-    auto M44 = vec_cov[15].At(i).Mean() - s2*s2;
-    auto M45 = vec_cov[16].At(i).Mean() - s2*c3;
-    auto M46 = vec_cov[17].At(i).Mean() - s2*s3;
+    m_arr[3][3] = 1+c4;
+    m_arr[3][4] = s4;
     
-    auto M55 = vec_cov[18].At(i).Mean() - c3*c3;
-    auto M56 = vec_cov[19].At(i).Mean() - c3*s3;
+    m_arr[4][4] = 1-c4;
 
-    auto M66 = vec_cov[20].At(i).Mean() - s3*s3;
 
-    auto M = matrix_t{
-      { M11, M12, M13, M14, M15, M16 },
-      { M12, M22, M23, M24, M25, M26 },
-      { M13, M23, M33, M34, M35, M36 },
-      { M14, M24, M34, M44, M45, M46 },
-      { M15, M25, M35, M45, M55, M56 },
-      { M16, M26, M36, M46, M56, M66 },
-    };
+    auto M = matrix_t{};
 
-    auto solver = Eigen::SelfAdjointEigenSolver<matrix_t>{ M };
-    auto ll = solver.eigenvalues();
-    auto L = matrix_t{
-      { pow(ll(0, 0), -0.5), 0.0, 0.0, 0.0, 0.0, 0.0 },
-      { 0.0, pow(ll(1, 0), -0.5), 0.0, 0.0, 0.0, 0.0 },
-      { 0.0, 0.0, pow(ll(2, 0), -0.5), 0.0, 0.0, 0.0 },
-      { 0.0, 0.0, 0.0, pow(ll(3, 0), -0.5), 0.0, 0.0 },
-      { 0.0, 0.0, 0.0, 0.0, pow(ll(4, 0), -0.5), 0.0 },
-      { 0.0, 0.0, 0.0, 0.0, 0.0, pow(ll(5, 0), -0.5) }
-    };
-    std::cout << L << std::endl;
-    auto VT = solver.eigenvectors().transpose();
-    auto Minv = L * VT * pow( 2.0, -0.5 );
+    auto m_arr_mean = std::array<  std::array< double , NDIM>, NDIM >{};
+    for( auto i=size_t{0}; i<NDIM; ++i ){
+      for( auto j = size_t{i}; j<NDIM; ++j ){
+        auto mean_ij = m_arr[i][j];
+        M(i, j) = mean_ij;
+        M(j, i) = M(i, j);
+      }
+    }
+
+    auto Minv = M.inverse();
     corr_matrix.At(i) = Minv;
   }
   return corr_matrix;
@@ -117,7 +105,7 @@ std::tuple< vector1d<Qn::DataContainerStatCalculate>, vector1d<Qn::DataContainer
   }
 
   auto vec_cov = std::vector<Qn::DataContainerStatCalculate>{};
-  auto components = std::vector<std::string>{ "x1", "y1", "x2", "y2", "x3", "y3" };
+  auto components = std::vector<std::string>{ "x1", "y1", "x2", "y2", "x3", "y3", "x4", "y4",  };
   for( auto i=size_t{0}; i<components.size(); ++i ){
     for( auto j=size_t{i}; j<components.size(); ++j ){
       auto corr_name = str_vec_name + "." + components.at(i) + components.at(j) + "centralityrunId"s;
@@ -236,21 +224,11 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
       for( auto i=size_t{0}; i<qvec.size(); ++i ){
         if( fabs( qvec.At(i).sumweights()) < std::numeric_limits<double>::min() )
           continue;
-        auto c1 = vec_c.at(0).at(c_bin).at(r_bin).At(i).Mean();
-        auto c2 = vec_c.at(1).at(c_bin).at(r_bin).At(i).Mean();
-        auto c3 = vec_c.at(2).at(c_bin).at(r_bin).At(i).Mean();
+        auto x1_old = qvec.At(i).x(1);
+        auto x2_old = qvec.At(i).x(2);
         
-        auto s1 = vec_s.at(0).at(c_bin).at(r_bin).At(i).Mean();
-        auto s2 = vec_s.at(1).at(c_bin).at(r_bin).At(i).Mean();
-        auto s3 = vec_s.at(2).at(c_bin).at(r_bin).At(i).Mean();
-
-        auto x1_old = qvec.At(i).x(1) - c1;
-        auto x2_old = qvec.At(i).x(2) - c2;
-        auto x3_old = qvec.At(i).x(3) - c3;
-        
-        auto y1_old = qvec.At(i).y(1) - s1;
-        auto y2_old = qvec.At(i).y(2) - s2;
-        auto y3_old = qvec.At(i).y(3) - s3;
+        auto y1_old = qvec.At(i).y(1);
+        auto y2_old = qvec.At(i).y(2);
     
         auto Minv = vec_cov.at(c_bin).at(r_bin).At(i);
         
@@ -259,19 +237,16 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
           continue;
         }
 
-        auto Xold =  Eigen::Matrix<double, 6, 1>{ x1_old, y1_old, x2_old, y2_old, x3_old, y3_old };
+        auto Xold =  Eigen::Matrix<double, NDIM, 1>{ 1, x1_old, y1_old, x2_old, y2_old };
         auto Xnew = Minv * Xold;
 
-        auto x1_new = static_cast<double>(Xnew(0));
-        auto y1_new = static_cast<double>(Xnew(1));
-        auto x2_new = static_cast<double>(Xnew(2));
-        auto y2_new = static_cast<double>(Xnew(3));
-        auto x3_new = static_cast<double>(Xnew(4));
-        auto y3_new = static_cast<double>(Xnew(5));
+        auto x1_new = static_cast<double>(Xnew(1));
+        auto y1_new = static_cast<double>(Xnew(2));
+        auto x2_new = static_cast<double>(Xnew(3));
+        auto y2_new = static_cast<double>(Xnew(4));
   
         new_qvec.At(i).SetQ( 1, x1_new, y1_new );
         new_qvec.At(i).SetQ( 2, x2_new, y2_new );
-        new_qvec.At(i).SetQ( 3, x3_new, y3_new );
       }
 
       return new_qvec;
