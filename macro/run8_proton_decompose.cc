@@ -105,16 +105,16 @@ std::tuple< vector1d<Qn::DataContainerStatCalculate>, vector1d<Qn::DataContainer
   }
 
   auto vec_cov = std::vector<Qn::DataContainerStatCalculate>{};
-  auto components = std::vector<std::string>{ "x1", "y1", "x2", "y2", "x3", "y3", "x4", "y4",  };
-  for( auto i=size_t{0}; i<components.size(); ++i ){
-    for( auto j=size_t{i}; j<components.size(); ++j ){
-      auto corr_name = str_vec_name + "." + components.at(i) + components.at(j) + "centralityrunId"s;
-      std::cout << "Extracting " << corr_name << "\n";
-      calib_file->GetObject( corr_name.c_str(), tmp );
-      assert(tmp);
-      vec_cov.emplace_back( *tmp );
-    }
-  }
+  // auto components = std::vector<std::string>{ "x1", "y1", "x2", "y2", "x3", "y3", "x4", "y4",  };
+  // for( auto i=size_t{0}; i<components.size(); ++i ){
+  //   for( auto j=size_t{i}; j<components.size(); ++j ){
+  //     auto corr_name = str_vec_name + "." + components.at(i) + components.at(j) + "centralityrunId"s;
+  //     std::cout << "Extracting " << corr_name << "\n";
+  //     calib_file->GetObject( corr_name.c_str(), tmp );
+  //     assert(tmp);
+  //     vec_cov.emplace_back( *tmp );
+  //   }
+  // }
   return {vec_c, vec_s, vec_cov};
 }
 
