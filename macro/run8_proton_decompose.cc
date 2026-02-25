@@ -42,8 +42,17 @@ DataContainerMatrix MakeCorrectionMatrix(const vector1d<Qn::DataContainerStatCal
     auto s3 = vec_s[2].At(i).Mean();
     auto s4 = vec_s[3].At(i).Mean();
 
-    auto m_arr = std::array<  std::array< double , NDIM>, NDIM >{};
+    auto c1_err = vec_c[0].At(i).StandardErrorOfMean();
+    auto c2_err = vec_c[1].At(i).StandardErrorOfMean();
+    auto c3_err = vec_c[2].At(i).StandardErrorOfMean();
+    auto c4_err = vec_c[3].At(i).StandardErrorOfMean();
 
+    auto s1_err = vec_s[0].At(i).StandardErrorOfMean();
+    auto s2_err = vec_s[1].At(i).StandardErrorOfMean();
+    auto s3_err = vec_s[2].At(i).StandardErrorOfMean();
+    auto s4_err = vec_s[3].At(i).StandardErrorOfMean();
+
+    auto m_arr = std::array<  std::array<double , NDIM>, NDIM >{};
     m_arr[0][0] = 1;
     m_arr[0][1] = c1;
     m_arr[0][2] = s1;
@@ -61,9 +70,27 @@ DataContainerMatrix MakeCorrectionMatrix(const vector1d<Qn::DataContainerStatCal
     
     m_arr[3][3] = 1+c4;
     m_arr[3][4] = s4;
-    
-    m_arr[4][4] = 1-c4;
 
+    auto m_err = std::array< std::array<double, NDIM>, NDIM >{};
+    m_err[0][0] = 0;
+    m_err[0][1] = c1_err;
+    m_err[0][2] = s1_err;
+    m_err[0][3] = c2_err;
+    m_err[0][4] = s2_err;
+
+    m_err[1][1] = c2_err;
+    m_err[1][2] = s2_err;
+    m_err[1][3] = sqrt(c1_err*c1_err+c3_err*c3_err);
+    m_err[1][4] = sqrt(s1_err*s1_err+s3_err*s3_err);
+    
+    m_err[2][2] = c2_err;
+    m_err[2][3] = sqrt(s1_err*s1_err+s3_err*s3_err);
+    m_err[2][4] = sqrt(c1_err*c1_err+c3_err*c3_err);
+    
+    m_err[3][3] = c4_err;
+    m_err[3][4] = s4_err;
+    
+    m_err[4][4] = c4_err;
 
     auto M = matrix_t{};
 
@@ -71,7 +98,8 @@ DataContainerMatrix MakeCorrectionMatrix(const vector1d<Qn::DataContainerStatCal
     for( auto i=size_t{0}; i<NDIM; ++i ){
       for( auto j = size_t{i}; j<NDIM; ++j ){
         auto mean_ij = m_arr[i][j];
-        M(i, j) = mean_ij;
+        auto err_ij = m_err[i][j];
+        M(i, j) = err_ij / mean_ij < 0.1 ? mean_ij : 0.0 ;
         M(j, i) = M(i, j);
       }
     }
