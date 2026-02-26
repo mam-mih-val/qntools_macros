@@ -252,7 +252,7 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
       for( auto i=size_t{0}; i<qvec.size(); ++i ){
         if( fabs( qvec.At(i).sumweights()) < std::numeric_limits<double>::min() )
           continue;
-        auto curr_qvec = qvec.At(i).Denorm();
+        auto curr_qvec = qvec.At(i).DeNormal();
         auto sum_w = qvec.At(i).sumweights();
         auto x1_old = curr_qvec.At(i).x(1);
         auto y1_old = curr_qvec.At(i).y(1);
@@ -273,10 +273,11 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
         }
 
         auto X1old =  Eigen::Matrix<double, NDIM, 1>{ 1, x1_old, y1_old, x2_old, y2_old };
-        std::cout << X1old << std::endl;
+        std::cout << "Old: " << X1old << std::endl;
         auto X2old =  Eigen::Matrix<double, NDIM, 1>{ 1, x21_old, y21_old, x2_old, y2_old };
         auto X1new = Minv * X1old;
         auto X2new = Minv * X2old;
+        std::cout << "New: " << X1new << std::endl;
 
         auto x1_new = static_cast<double>(X1new(1)) / sum_w;
         auto y1_new = static_cast<double>(X1new(2)) / sum_w;
