@@ -253,11 +253,16 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
         if( fabs( qvec.At(i).sumweights()) < std::numeric_limits<double>::min() )
           continue;
         auto x1_old = qvec.At(i).x(1);
-        auto x2_old = qvec.At(i).x(2);
-        
         auto y1_old = qvec.At(i).y(1);
+
+        auto x12_old = x1_old*x1_old - y1_old*y1_old;        
+        auto y12_old = 2.0 * x1_old * y1_old;
+
+        auto x2_old = qvec.At(i).x(2);
         auto y2_old = qvec.At(i).y(2);
-    
+        auto x21_old = sqrt( (1.0 + x2_old)/2 );
+        auto y21_old = sqrt( (1.0 - x2_old)/2 );
+
         auto Minv = vec_cov.at(c_bin).at(r_bin).At(i);
         
         if( std::isnan(Minv(0, 0)) ){
@@ -265,13 +270,15 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
           continue;
         }
 
-        auto Xold =  Eigen::Matrix<double, NDIM, 1>{ 1, x1_old, y1_old, x2_old, y2_old };
-        auto Xnew = Minv * Xold;
+        auto X1old =  Eigen::Matrix<double, NDIM, 1>{ 1, x1_old, y1_old, x12_old, y12_old };
+        auto X2old =  Eigen::Matrix<double, NDIM, 1>{ 1, x21_old, y21_old, x2_old, y2_old };
+        auto X1new = Minv * X1old;
+        auto X2new = Minv * X2old;
 
-        auto x1_new = static_cast<double>(Xnew(1));
-        auto y1_new = static_cast<double>(Xnew(2));
-        auto x2_new = static_cast<double>(Xnew(3));
-        auto y2_new = static_cast<double>(Xnew(4));
+        auto x1_new = static_cast<double>(X1new(1));
+        auto y1_new = static_cast<double>(X1new(2));
+        auto x2_new = static_cast<double>(X2new(3));
+        auto y2_new = static_cast<double>(X2new(4));
   
         new_qvec.At(i).SetQ( 1, x1_new, y1_new );
         new_qvec.At(i).SetQ( 2, x2_new, y2_new );
