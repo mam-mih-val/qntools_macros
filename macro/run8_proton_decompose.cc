@@ -254,14 +254,14 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
           continue;
         auto curr_qvec = qvec.At(i).DeNormal();
         auto sum_w = qvec.At(i).sumweights();
-        auto x1_old = curr_qvec.At(i).x(1);
-        auto y1_old = curr_qvec.At(i).y(1);
+        auto x1_old = curr_qvec.x(1);
+        auto y1_old = curr_qvec.y(1);
 
         auto x12_old = x1_old*x1_old - y1_old*y1_old;        
         auto y12_old = 2.0 * x1_old * y1_old;
 
-        auto x2_old = curr_qvec.At(i).x(2);
-        auto y2_old = curr_qvec.At(i).y(2);
+        auto x2_old = curr_qvec.x(2);
+        auto y2_old = curr_qvec.y(2);
         auto x21_old = sqrt( (1.0 + x2_old)/2 );
         auto y21_old = sqrt( (1.0 - x2_old)/2 );
 
