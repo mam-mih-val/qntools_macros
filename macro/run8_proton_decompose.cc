@@ -271,6 +271,7 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
         }
 
         auto X1old =  Eigen::Matrix<double, NDIM, 1>{ 1, x1_old, y1_old, x12_old, y12_old };
+        std::cout << X1old << std::endl;
         auto X2old =  Eigen::Matrix<double, NDIM, 1>{ 1, x21_old, y21_old, x2_old, y2_old };
         auto X1new = Minv * X1old;
         auto X2new = Minv * X2old;
