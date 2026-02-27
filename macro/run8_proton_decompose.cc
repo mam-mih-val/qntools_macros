@@ -269,7 +269,7 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
         auto cos2 = x2_old / mag2;
         auto sin2 = y2_old / mag2;
         auto cos21 = sqrt( ( 1 + cos2 ) / 2. );
-        auto sin12 = sqrt( ( 1 - cos2 ) / 2. );
+        auto sin21 = sqrt( ( 1 - cos2 ) / 2. );
 
         auto x21_old = cos21 * mag2;        
         auto y21_old = sin21 * mag2;
