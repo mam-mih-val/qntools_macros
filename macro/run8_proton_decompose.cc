@@ -252,18 +252,27 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
       for( auto i=size_t{0}; i<qvec.size(); ++i ){
         if( fabs( qvec.At(i).sumweights()) < std::numeric_limits<double>::min() )
           continue;
-        auto curr_qvec = qvec.At(i).DeNormal();
-        auto sum_w = qvec.At(i).sumweights();
-        auto x1_old = curr_qvec.x(1);
-        auto y1_old = curr_qvec.y(1);
+        auto x1_old = qvec.At(i).x(1);
+        auto y1_old = qvec.At(i).y(1);
+        auto mag1 = sqrt(x1_old*x1_old + y1_old*y1_old);
+        auto cos1 = x1_old / mag1;
+        auto sin1 = y1_old / mag1;
+        auto cos12 = cos1*cos1 - sin1*sin1;
+        auto sin12 = 2*cos1*sin1;
 
-        auto x12_old = x1_old*x1_old - y1_old*y1_old;        
-        auto y12_old = 2.0 * x1_old * y1_old;
+        auto x12_old = cos12 * mag1;        
+        auto y12_old = sin12 * mag1;
 
-        auto x2_old = curr_qvec.x(2);
-        auto y2_old = curr_qvec.y(2);
-        auto x21_old = sqrt( (1.0 + x2_old)/2 );
-        auto y21_old = sqrt( (1.0 - x2_old)/2 );
+        auto x2_old = qvec.At(i).x(2);
+        auto y2_old = qvec.At(i).y(2);
+        auto mag2 = sqrt(x2_old*x2_old + y2_old*y2_old);
+        auto cos2 = x2_old / mag2;
+        auto sin2 = y2_old / mag2;
+        auto cos21 = sqrt( ( 1 + cos2 ) / 2. );
+        auto sin12 = sqrt( ( 1 - cos2 ) / 2. );
+
+        auto x21_old = cos21 * mag2;        
+        auto y21_old = sin21 * mag2;
 
         auto Minv = vec_cov.at(c_bin).at(r_bin).At(i);
         
@@ -272,17 +281,15 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
           continue;
         }
 
-        auto X1old =  Eigen::Matrix<double, NDIM, 1>{ 1, x1_old, y1_old, x2_old, y2_old };
-        std::cout << "Old: " << X1old << std::endl;
+        auto X1old =  Eigen::Matrix<double, NDIM, 1>{ 1, x1_old, y1_old, x12_old, y12_old };
         auto X2old =  Eigen::Matrix<double, NDIM, 1>{ 1, x21_old, y21_old, x2_old, y2_old };
         auto X1new = Minv * X1old;
         auto X2new = Minv * X2old;
-        std::cout << "New: " << X1new << std::endl;
 
-        auto x1_new = static_cast<double>(X1new(1)) / sum_w;
-        auto y1_new = static_cast<double>(X1new(2)) / sum_w;
-        auto x2_new = static_cast<double>(X1new(3)) / sum_w;
-        auto y2_new = static_cast<double>(X1new(4)) / sum_w;
+        auto x1_new = static_cast<double>(X1new(1));
+        auto y1_new = static_cast<double>(X1new(2));
+        auto x2_new = static_cast<double>(X2new(3));
+        auto y2_new = static_cast<double>(X2new(4));
   
         new_qvec.At(i).SetQ( 1, x1_new, y1_new );
         new_qvec.At(i).SetQ( 2, x2_new, y2_new );
