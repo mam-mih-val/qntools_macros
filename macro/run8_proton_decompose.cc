@@ -254,22 +254,20 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
           continue;
         auto x1_old = qvec.At(i).x(1);
         auto y1_old = qvec.At(i).y(1);
+        auto phi1 = atan2( y1_old, x1_old );
         auto mag1 = sqrt(x1_old*x1_old + y1_old*y1_old);
-        auto cos1 = x1_old / mag1;
-        auto sin1 = y1_old / mag1;
-        auto cos12 = cos1*cos1 - sin1*sin1;
-        auto sin12 = 2*cos1*sin1;
+        auto cos12 = cos( phi1*2. );
+        auto sin12 = sin( phi1*2. );
 
         auto x12_old = cos12 * mag1;        
         auto y12_old = sin12 * mag1;
 
         auto x2_old = qvec.At(i).x(2);
         auto y2_old = qvec.At(i).y(2);
+        auto phi2 = atan2( y2_old, x2_old );
         auto mag2 = sqrt(x2_old*x2_old + y2_old*y2_old);
-        auto cos2 = x2_old / mag2;
-        auto sin2 = y2_old / mag2;
-        auto cos21 = sqrt( ( 1 + cos2 ) / 2. );
-        auto sin21 = sqrt( ( 1 - cos2 ) / 2. );
+        auto cos21 = cos( phi2/2. );
+        auto sin21 = sin( phi2/2. );
 
         auto x21_old = cos21 * mag2;        
         auto y21_old = sin21 * mag2;
