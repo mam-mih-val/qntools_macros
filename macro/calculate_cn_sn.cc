@@ -11,6 +11,9 @@ std::string tn_vector{ "Tneg_PLAIN" };
 
 std::vector < std::array<std::string, 1> > arr_u1 {
   std::array<std::string, 1>{u1_vector},
+};
+
+std::vector < std::array<std::string, 1> > arr_Q1 {
   std::array<std::string, 1>{f1_vector},
   std::array<std::string, 1>{f2_vector},  
   std::array<std::string, 1>{f3_vector},
@@ -18,11 +21,12 @@ std::vector < std::array<std::string, 1> > arr_u1 {
   std::array<std::string, 1>{tn_vector},
 };
 
-std::vector < std::array<std::string, 1> > arr_Q1 {
-  
-};
-
 namespace P1 {
+  inline auto mag( unsigned int h_a ) {
+    return [ h_a ](const Qn::QVector &a ) {
+      return sqrt( a.x(h_a)*a.x(h_a) + a.y(h_a)*a.x(h_a) );
+    };
+  }
   inline auto x( unsigned int h_a ) {
     return [ h_a ](const Qn::QVector &a ) {
       return a.x(h_a);
@@ -91,7 +95,8 @@ void calculate_cn_sn(string inputFiles="qn.root", string outputFile="CnSn.root")
 
   for ( auto &corr: arr_u1 ){
     string corrName=corr.at(0);
-
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".mag1", P1::mag(1), wSumWu1part, wy, corr, corr);
+    
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x1", P1::x(1), wSumWu1part, wy, corr, corr);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y1", P1::y(1), wSumWu1part, wy, corr, corr);
 
@@ -109,6 +114,8 @@ void calculate_cn_sn(string inputFiles="qn.root", string outputFile="CnSn.root")
   for ( auto &corr: arr_Q1 ){
     string corrName=corr.at(0);
 
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".mag1", P1::mag(1), wUnity1part, wn, corr, corr);
+    
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x1", P1::x(1), wUnity1part, wn, corr, corr);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y1", P1::y(1), wUnity1part, wn, corr, corr);
 

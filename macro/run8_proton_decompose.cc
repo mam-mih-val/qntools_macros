@@ -32,28 +32,32 @@ DataContainerMatrix MakeCorrectionMatrix(const vector1d<Qn::DataContainerStatCal
   auto axes = vec_c[0].GetAxes();
   Qn::DataContainer<matrix_t, Qn::AxisD> corr_matrix{axes};
   for( auto i = size_t{0}; i<vec_c[0].size(); ++i ){
-    auto c1 = vec_c[0].At(i).Mean();
-    auto c2 = vec_c[1].At(i).Mean();
-    auto c3 = vec_c[2].At(i).Mean();
-    auto c4 = vec_c[3].At(i).Mean();
+    auto mag1 = vec_c[0].At(i).Mean();
+    
+    auto c1 = vec_c[1].At(i).Mean();
+    auto c2 = vec_c[2].At(i).Mean();
+    auto c3 = vec_c[3].At(i).Mean();
+    auto c4 = vec_c[4].At(i).Mean();
 
-    auto s1 = vec_s[0].At(i).Mean();
-    auto s2 = vec_s[1].At(i).Mean();
-    auto s3 = vec_s[2].At(i).Mean();
-    auto s4 = vec_s[3].At(i).Mean();
+    auto s1 = vec_s[1].At(i).Mean();
+    auto s2 = vec_s[2].At(i).Mean();
+    auto s3 = vec_s[3].At(i).Mean();
+    auto s4 = vec_s[4].At(i).Mean();
 
-    auto c1_err = vec_c[0].At(i).StandardErrorOfMean();
-    auto c2_err = vec_c[1].At(i).StandardErrorOfMean();
-    auto c3_err = vec_c[2].At(i).StandardErrorOfMean();
-    auto c4_err = vec_c[3].At(i).StandardErrorOfMean();
+    auto mag1_err = vec_c[0].At(i).StandardErrorOfMean();
+    
+    auto c1_err = vec_c[1].At(i).StandardErrorOfMean();
+    auto c2_err = vec_c[2].At(i).StandardErrorOfMean();
+    auto c3_err = vec_c[3].At(i).StandardErrorOfMean();
+    auto c4_err = vec_c[4].At(i).StandardErrorOfMean();
 
-    auto s1_err = vec_s[0].At(i).StandardErrorOfMean();
-    auto s2_err = vec_s[1].At(i).StandardErrorOfMean();
-    auto s3_err = vec_s[2].At(i).StandardErrorOfMean();
-    auto s4_err = vec_s[3].At(i).StandardErrorOfMean();
+    auto s1_err = vec_s[1].At(i).StandardErrorOfMean();
+    auto s2_err = vec_s[2].At(i).StandardErrorOfMean();
+    auto s3_err = vec_s[3].At(i).StandardErrorOfMean();
+    auto s4_err = vec_s[4].At(i).StandardErrorOfMean();
 
     auto m_arr = std::array<  std::array<double , NDIM>, NDIM >{};
-    m_arr[0][0] = 1;
+    m_arr[0][0] = mag1;
     m_arr[0][1] = c1;
     m_arr[0][2] = s1;
     m_arr[0][3] = c2;
@@ -72,7 +76,7 @@ DataContainerMatrix MakeCorrectionMatrix(const vector1d<Qn::DataContainerStatCal
     m_arr[3][4] = s4;
 
     auto m_err = std::array< std::array<double, NDIM>, NDIM >{};
-    m_err[0][0] = 0;
+    m_err[0][0] = mag1_err;
     m_err[0][1] = c1_err;
     m_err[0][2] = s1_err;
     m_err[0][3] = c2_err;
@@ -117,8 +121,15 @@ std::tuple< vector1d<Qn::DataContainerStatCalculate>, vector1d<Qn::DataContainer
 
   auto vec_c = std::vector<Qn::DataContainerStatCalculate>{};
   auto vec_s = std::vector<Qn::DataContainerStatCalculate>{};
-  vec_c.reserve(4);
-  vec_s.reserve(4);
+  vec_c.reserve(5);
+  vec_s.reserve(5);
+  {
+    auto corr_name = str_vec_name+".mag1centralityrunId"s;
+    std::cout << "Extracting " << corr_name << "\n";
+    calib_file->GetObject( corr_name.c_str(), tmp );
+    vec_c.emplace_back( *tmp );
+    vec_s.emplace_back( *tmp );
+  }
   for( auto i=size_t{0}; i<4; ++i ){
     auto corr_name = str_vec_name+".x"+std::to_string(i+1)+"centralityrunId"s;
     std::cout << "Extracting " << corr_name << "\n";
