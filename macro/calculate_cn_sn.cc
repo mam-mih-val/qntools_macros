@@ -11,14 +11,15 @@ std::string tn_vector{ "Tneg_PLAIN" };
 
 std::vector < std::array<std::string, 1> > arr_u1 {
   std::array<std::string, 1>{u1_vector},
-};
-
-std::vector < std::array<std::string, 1> > arr_Q1 {
   std::array<std::string, 1>{f1_vector},
   std::array<std::string, 1>{f2_vector},  
   std::array<std::string, 1>{f3_vector},
   std::array<std::string, 1>{tp_vector},
   std::array<std::string, 1>{tn_vector},
+};
+
+std::vector < std::array<std::string, 1> > arr_Q1 {
+  
 };
 
 namespace P1 {

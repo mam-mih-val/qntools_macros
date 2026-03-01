@@ -256,18 +256,18 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
         auto y1_old = qvec.At(i).y(1);
         auto phi1 = atan2( y1_old, x1_old );
         auto mag1 = sqrt(x1_old*x1_old + y1_old*y1_old);
-        auto cos12 = cos( phi1*2. );
-        auto sin12 = sin( phi1*2. );
+        auto cos12 = cos( phi1 * 2. );
+        auto sin12 = sin( phi1 * 2. );
 
-        auto x12_old = cos12 * mag1;        
+        auto x12_old = cos12 * mag1;
         auto y12_old = sin12 * mag1;
 
         auto x2_old = qvec.At(i).x(2);
         auto y2_old = qvec.At(i).y(2);
         auto phi2 = atan2( y2_old, x2_old );
         auto mag2 = sqrt(x2_old*x2_old + y2_old*y2_old);
-        auto cos21 = cos( phi2/2. );
-        auto sin21 = sin( phi2/2. );
+        auto cos21 = cos( phi2 / 2. );
+        auto sin21 = sin( phi2 / 2. );
 
         auto x21_old = cos21 * mag2;        
         auto y21_old = sin21 * mag2;
@@ -279,8 +279,8 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
           continue;
         }
 
-        auto X1old =  Eigen::Matrix<double, NDIM, 1>{ 1, x1_old, y1_old, x12_old, y12_old };
-        auto X2old =  Eigen::Matrix<double, NDIM, 1>{ 1, x21_old, y21_old, x2_old, y2_old };
+        auto X1old =  Eigen::Matrix<double, NDIM, 1>{ mag1, x1_old, y1_old, x12_old, y12_old };
+        auto X2old =  Eigen::Matrix<double, NDIM, 1>{ mag2, x21_old, y21_old, x2_old, y2_old };
         auto X1new = Minv * X1old;
         auto X2new = Minv * X2old;
 
