@@ -24,7 +24,7 @@ std::vector < std::array<std::string, 1> > arr_Q1 {
 namespace P1 {
   inline auto mag( unsigned int h_a ) {
     return [ h_a ](const Qn::QVector &a ) {
-      return sqrt( a.x(h_a)*a.x(h_a) + a.y(h_a)*a.x(h_a) );
+      return sqrt( a.x(h_a)*a.x(h_a) + a.y(h_a)*a.y(h_a) );
     };
   }
   inline auto x( unsigned int h_a ) {
