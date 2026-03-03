@@ -355,7 +355,7 @@ void run8_proton_correct_clean( std::string list,
   correction_task.AddEventAxis( { "runId", 17, 6600, 8300 } );
 
   VectorConfig f1( "F1", "fhcalModPhi", "fhcalModE", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
-  f1.SetHarmonicArray( {1, 2, 3, 4} );
+  f1.SetHarmonicArray( {1, 2, 3, 4, 5, 6, 7, 8, 9, 10} );
   f1.SetCorrections( {CORRECTION::PLAIN } );
   f1.AddCut( "fhcalModId", [&f1_modules](double mod_id){
     auto id = static_cast<int>(mod_id);
@@ -365,7 +365,7 @@ void run8_proton_correct_clean( std::string list,
   correction_task.AddVector(f1);
 
   VectorConfig f2( "F2", "fhcalModPhi", "fhcalModE", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
-  f2.SetHarmonicArray( {1, 2, 3, 4} );
+  f2.SetHarmonicArray( {1, 2, 3, 4, 5, 6, 7, 8, 9, 10} );
   f2.SetCorrections( {CORRECTION::PLAIN } );
   f2.AddCut( "fhcalModId", [&f2_modules](double mod_id){
     auto id = static_cast<int>(mod_id);
@@ -375,7 +375,7 @@ void run8_proton_correct_clean( std::string list,
   correction_task.AddVector(f2);
 
   VectorConfig f3( "F3", "fhcalModPhi", "fhcalModE", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
-  f3.SetHarmonicArray( {1, 2, 3, 4} );
+  f3.SetHarmonicArray( {1, 2, 3, 4, 5, 6, 7, 8, 9, 10} );
   f3.SetCorrections( {CORRECTION::PLAIN } );
   f3.AddCut( "fhcalModId", [&f3_modules](double mod_id){
     auto id = static_cast<int>(mod_id);
@@ -385,7 +385,7 @@ void run8_proton_correct_clean( std::string list,
   correction_task.AddVector(f3);
 
   VectorConfig Tneg( "Tneg", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
-  Tneg.SetHarmonicArray( {1, 2, 3, 4} );
+  Tneg.SetHarmonicArray( {1, 2, 3, 4, 5, 6, 7, 8, 9, 10} );
   Tneg.SetCorrections( {CORRECTION::PLAIN } );
   Tneg.AddCut( "trCharge", [](double charge){
     return charge < 0.0;
@@ -405,7 +405,7 @@ void run8_proton_correct_clean( std::string list,
   correction_task.AddVector(Tneg);
 
   VectorConfig Tpos( "Tpos", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
-  Tpos.SetHarmonicArray( {1, 2, 3, 4} );
+  Tpos.SetHarmonicArray( {1, 2, 3, 4, 5, 6, 7, 8, 9, 10} );
   Tpos.SetCorrections( {CORRECTION::PLAIN } );
   Tpos.AddCut( "trCharge", [](double charge){
     return charge >= 0.0;
@@ -430,7 +430,7 @@ void run8_proton_correct_clean( std::string list,
   };
   
   VectorConfig proton( "proton", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
-  proton.SetHarmonicArray( { 1, 2, 3, 4} );
+  proton.SetHarmonicArray( { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10} );
   proton.SetCorrections( { CORRECTION::PLAIN } );
   proton.SetCorrectionAxes( proton_axes );
   proton.AddCut( "trNsigmaProton", [](double n_sigma){
