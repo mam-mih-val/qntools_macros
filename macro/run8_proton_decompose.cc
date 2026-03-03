@@ -44,68 +44,17 @@ DataContainerMatrix MakeCorrectionMatrix(const vector1d<Qn::DataContainerStatCal
     auto s3 = vec_s[3].At(i).Mean();
     auto s4 = vec_s[4].At(i).Mean();
 
-    auto mag1_err = vec_c[0].At(i).StandardErrorOfMean();
-    
-    auto c1_err = vec_c[1].At(i).StandardErrorOfMean();
-    auto c2_err = vec_c[2].At(i).StandardErrorOfMean();
-    auto c3_err = vec_c[3].At(i).StandardErrorOfMean();
-    auto c4_err = vec_c[4].At(i).StandardErrorOfMean();
+    auto M = matrix_t{ 
+      { 1.0, 2*c1, 2*s1, 2*c2, 2*s2 },
+      { c1, 1+c2, s2, c3+c1, s3+s1 },
+      { s1, s2, 1-c2, s3-s1, c1-c3 },
+      { c2, c1+c3, s3-s1, 1+c4, s4 },
+      { c2, s3+s1, c1-c3, s4, 1-c4 },
+    };
 
-    auto s1_err = vec_s[1].At(i).StandardErrorOfMean();
-    auto s2_err = vec_s[2].At(i).StandardErrorOfMean();
-    auto s3_err = vec_s[3].At(i).StandardErrorOfMean();
-    auto s4_err = vec_s[4].At(i).StandardErrorOfMean();
-
-    auto m_arr = std::array<  std::array<double , NDIM>, NDIM >{};
-    m_arr[0][0] = mag1;
-    m_arr[0][1] = c1;
-    m_arr[0][2] = s1;
-    m_arr[0][3] = c2;
-    m_arr[0][4] = s2;
-
-    m_arr[1][1] = 1+c2;
-    m_arr[1][2] = s2;
-    m_arr[1][3] = c1+c3;
-    m_arr[1][4] = s1+s3;
-    
-    m_arr[2][2] = 1-c2;
-    m_arr[2][3] = s3-s1;
-    m_arr[2][4] = c1-c3;
-    
-    m_arr[3][3] = 1+c4;
-    m_arr[3][4] = s4;
-
-    auto m_err = std::array< std::array<double, NDIM>, NDIM >{};
-    m_err[0][0] = mag1_err;
-    m_err[0][1] = c1_err;
-    m_err[0][2] = s1_err;
-    m_err[0][3] = c2_err;
-    m_err[0][4] = s2_err;
-
-    m_err[1][1] = c2_err;
-    m_err[1][2] = s2_err;
-    m_err[1][3] = sqrt(c1_err*c1_err+c3_err*c3_err);
-    m_err[1][4] = sqrt(s1_err*s1_err+s3_err*s3_err);
-    
-    m_err[2][2] = c2_err;
-    m_err[2][3] = sqrt(s1_err*s1_err+s3_err*s3_err);
-    m_err[2][4] = sqrt(c1_err*c1_err+c3_err*c3_err);
-    
-    m_err[3][3] = c4_err;
-    m_err[3][4] = s4_err;
-    
-    m_err[4][4] = c4_err;
-
-    auto M = matrix_t{};
-
-    auto m_arr_mean = std::array<  std::array< double , NDIM>, NDIM >{};
-    for( auto i=size_t{0}; i<NDIM; ++i ){
-      for( auto j = size_t{i}; j<NDIM; ++j ){
-        auto mean_ij = m_arr[i][j];
-        auto err_ij = m_err[i][j];
-        M(i, j) = err_ij / mean_ij < 0.1 ? mean_ij : 0.0 ;
-        M(j, i) = M(i, j);
-      }
+    if( M.determinant() < 1e-2 ){
+      corr_matrix.At(i)(0,0) = std::numeric_limits<double>::quiet_NaN();  
+      continue;
     }
 
     auto Minv = M.inverse();
@@ -265,24 +214,10 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
           continue;
         auto x1_old = qvec.At(i).x(1);
         auto y1_old = qvec.At(i).y(1);
-        auto phi1 = atan2( y1_old, x1_old );
-        auto mag1 = sqrt(x1_old*x1_old + y1_old*y1_old);
-        auto cos12 = cos( phi1 * 2. );
-        auto sin12 = sin( phi1 * 2. );
-
-        auto x12_old = cos12 * mag1;
-        auto y12_old = sin12 * mag1;
-
+    
         auto x2_old = qvec.At(i).x(2);
         auto y2_old = qvec.At(i).y(2);
-        auto phi2 = atan2( y2_old, x2_old );
-        auto mag2 = sqrt(x2_old*x2_old + y2_old*y2_old);
-        auto cos21 = cos( phi2 / 2. );
-        auto sin21 = sin( phi2 / 2. );
-
-        auto x21_old = cos21 * mag2;        
-        auto y21_old = sin21 * mag2;
-
+    
         auto Minv = vec_cov.at(c_bin).at(r_bin).At(i);
         
         if( std::isnan(Minv(0, 0)) ){
@@ -290,15 +225,14 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
           continue;
         }
 
-        auto X1old =  Eigen::Matrix<double, NDIM, 1>{ mag1, x1_old, y1_old, x12_old, y12_old };
-        auto X2old =  Eigen::Matrix<double, NDIM, 1>{ mag2, x21_old, y21_old, x2_old, y2_old };
+        auto X1old =  Eigen::Matrix<double, NDIM, 1>{ 1, x1_old, y1_old, x2_old, y2_old };
         auto X1new = Minv * X1old;
-        auto X2new = Minv * X2old;
+        // auto X2new = Minv * X2old;
 
         auto x1_new = static_cast<double>(X1new(1));
         auto y1_new = static_cast<double>(X1new(2));
-        auto x2_new = static_cast<double>(X2new(3));
-        auto y2_new = static_cast<double>(X2new(4));
+        auto x2_new = static_cast<double>(X1new(3));
+        auto y2_new = static_cast<double>(X1new(4));
   
         new_qvec.At(i).SetQ( 1, x1_new, y1_new );
         new_qvec.At(i).SetQ( 2, x2_new, y2_new );
