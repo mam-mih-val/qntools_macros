@@ -11,15 +11,14 @@ std::string tn_vector{ "Tneg_PLAIN" };
 
 std::vector < std::array<std::string, 1> > arr_u1 {
   std::array<std::string, 1>{u1_vector},
+};
+
+std::vector < std::array<std::string, 1> > arr_Q1 {
   std::array<std::string, 1>{f1_vector},
   std::array<std::string, 1>{f2_vector},  
   std::array<std::string, 1>{f3_vector},
   std::array<std::string, 1>{tp_vector},
   std::array<std::string, 1>{tn_vector},
-};
-
-std::vector < std::array<std::string, 1> > arr_Q1 {
-  
 };
 
 namespace P1 {
@@ -115,19 +114,6 @@ void calculate_cn_sn(string inputFiles="qn.root", string outputFile="CnSn.root")
 
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x6", P1::x(6), wSumWu1part, wy, corr, corr);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y6", P1::y(6), wSumWu1part, wy, corr, corr);
-
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".x7", P1::x(7), wSumWu1part, wy, corr, corr);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".y7", P1::y(7), wSumWu1part, wy, corr, corr);
-
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".x8", P1::x(8), wSumWu1part, wy, corr, corr);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".y8", P1::y(8), wSumWu1part, wy, corr, corr);
-
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".x9", P1::x(9), wSumWu1part, wy, corr, corr);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".y9", P1::y(9), wSumWu1part, wy, corr, corr);
-
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".x10", P1::x(10), wSumWu1part, wy, corr, corr);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".y10", P1::y(10), wSumWu1part, wy, corr, corr);
-
   }
 
   for ( auto &corr: arr_Q1 ){
@@ -146,6 +132,12 @@ void calculate_cn_sn(string inputFiles="qn.root", string outputFile="CnSn.root")
 
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x4", P1::x(4), wUnity1part, wn, corr, corr);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y4", P1::y(4), wUnity1part, wn, corr, corr);
+
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x5", P1::x(5), wUnity1part, wn, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y5", P1::y(5), wUnity1part, wn, corr, corr);
+
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x6", P1::x(6), wUnity1part, wn, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y6", P1::y(6), wUnity1part, wn, corr, corr);
   }
 
   // ---------------- //
