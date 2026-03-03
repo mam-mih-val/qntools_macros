@@ -49,7 +49,7 @@ DataContainerMatrix MakeCorrectionMatrix(const vector1d<Qn::DataContainerStatCal
       { c1, 1+c2, s2, c3+c1, s3+s1 },
       { s1, s2, 1-c2, s3-s1, c1-c3 },
       { c2, c1+c3, s3-s1, 1+c4, s4 },
-      { c2, s3+s1, c1-c3, s4, 1-c4 },
+      { s2, s3+s1, c1-c3, s4, 1-c4 },
     };
 
     if( M.determinant() < 1e-2 ){
