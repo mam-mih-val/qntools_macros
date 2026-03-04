@@ -151,6 +151,7 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
   const std::string f1_name {"F1_PLAIN"};
   const std::string f2_name {"F2_PLAIN"};
   const std::string f3_name {"F3_PLAIN"};
+  const std::string f4_name {"F4_PLAIN"};
   const std::string tp_name {"Tpos_PLAIN"};
   const std::string tn_name {"Tneg_PLAIN"};
   const std::string proton_name {"proton_PLAIN"};
@@ -161,6 +162,7 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
   auto [vec_c_f1, vec_s_f1, vec_cov_f1] = ReadCnSn(f1_name, calib_file.get());
   auto [vec_c_f2, vec_s_f2, vec_cov_f2] = ReadCnSn(f2_name, calib_file.get());
   auto [vec_c_f3, vec_s_f3, vec_cov_f3] = ReadCnSn(f3_name, calib_file.get());
+  auto [vec_c_f4, vec_s_f4, vec_cov_f4] = ReadCnSn(f4_name, calib_file.get());
   auto [vec_c_tp, vec_s_tp, vec_cov_tp] = ReadCnSn(tp_name, calib_file.get());
   auto [vec_c_tn, vec_s_tn, vec_cov_tn] = ReadCnSn(tn_name, calib_file.get());
   auto [vec_c_p, vec_s_p, vec_cov_p] = ReadCnSn(proton_name, calib_file.get());
@@ -168,6 +170,7 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
   auto f1_corr = MakeCorrectionMatrix(vec_c_f1, vec_s_f1, vec_cov_f1);
   auto f2_corr = MakeCorrectionMatrix(vec_c_f2, vec_s_f2, vec_cov_f2);
   auto f3_corr = MakeCorrectionMatrix(vec_c_f3, vec_s_f3, vec_cov_f3);
+  auto f4_corr = MakeCorrectionMatrix(vec_c_f4, vec_s_f4, vec_cov_f4);
   
   auto tp_corr = MakeCorrectionMatrix(vec_c_tp, vec_s_tp, vec_cov_tp);
   auto tn_corr = MakeCorrectionMatrix(vec_c_tn, vec_s_tn, vec_cov_tn);
@@ -185,6 +188,10 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
   auto c_f3 = ExtractPack(vec_c_f3, event_axes);
   auto s_f3 = ExtractPack(vec_s_f3, event_axes);
   auto cov_f3 = ExtractEventAxes(f3_corr, event_axes);
+
+  auto c_f4 = ExtractPack(vec_c_f4, event_axes);
+  auto s_f4 = ExtractPack(vec_s_f4, event_axes);
+  auto cov_f4 = ExtractEventAxes(f4_corr, event_axes);
 
   auto c_tp = ExtractPack(vec_c_tp, event_axes);
   auto s_tp = ExtractPack(vec_s_tp, event_axes);
@@ -249,6 +256,7 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
     .Define("F1_DECOMPOSED", correction_generator(c_f1, s_f1, cov_f1, event_axes), { f1_name, "centrality", "runId" } )
     .Define("F2_DECOMPOSED", correction_generator(c_f2, s_f2, cov_f2, event_axes), { f2_name, "centrality", "runId" } )
     .Define("F3_DECOMPOSED", correction_generator(c_f3, s_f3, cov_f3, event_axes), { f3_name, "centrality", "runId" } )
+    .Define("F4_DECOMPOSED", correction_generator(c_f4, s_f4, cov_f4, event_axes), { f4_name, "centrality", "runId" } )
 
     .Define("Tpos_DECOMPOSED", correction_generator(c_tn, s_tn, cov_tn, event_axes), { tp_name, "centrality", "runId" } )
     .Define("Tneg_DECOMPOSED", correction_generator(c_tp, s_tp, cov_tp, event_axes), { tn_name, "centrality", "runId" } )
@@ -259,7 +267,7 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
   auto file_out = std::unique_ptr< TFile, std::function< void(TFile*) > >{ TFile::Open( "decomposed_out.root", "RECREATE" ), [](auto f){f ->Close(); } };
   file_out->cd();
   auto tree = new TTree("tree", "tree");
-  Qn::DataContainerQVector f1{}, f2{}, f3{}, tp{}, tn{}, p{};
+  Qn::DataContainerQVector f1{}, f2{}, f3{}, f4{}, tp{}, tn{}, p{};
   double cent{};
   double r_id{};
   tree->Branch( "centrality", &cent );
@@ -268,18 +276,20 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
   tree->Branch( "F1_DECOMPOSED", "Qn::DataContainerQVector", &f1 );
   tree->Branch( "F2_DECOMPOSED", "Qn::DataContainerQVector", &f2 );
   tree->Branch( "F3_DECOMPOSED", "Qn::DataContainerQVector", &f3 );
+  tree->Branch( "F4_DECOMPOSED", "Qn::DataContainerQVector", &f4 );
   tree->Branch( "Tpos_DECOMPOSED", "Qn::DataContainerQVector", &tp );
   tree->Branch( "Tneg_DECOMPOSED", "Qn::DataContainerQVector", &tn );
   tree->Branch( "proton_DECOMPOSED", "Qn::DataContainerQVector", &p );
 
   std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
-  dd.Foreach( [tree, &cent, &r_id, &f1, &f2, &f3, &tp, &tn, &p]( 
+  dd.Foreach( [tree, &cent, &r_id, &f1, &f2, &f3, &f4, &tp, &tn, &p]( 
     double centrality,
     double run_id,
     Qn::DataContainerQVector f1_ev, 
     Qn::DataContainerQVector f2_ev, 
     Qn::DataContainerQVector f3_ev, 
+    Qn::DataContainerQVector f4_ev, 
     Qn::DataContainerQVector tp_ev, 
     Qn::DataContainerQVector tn_ev, 
     Qn::DataContainerQVector p_ev ) mutable {
@@ -288,6 +298,7 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
     f1 = f1_ev;
     f2 = f2_ev;
     f3 = f3_ev;
+    f4 = f4_ev;
     tp = tp_ev;
     tn = tn_ev;
     p = p_ev;
@@ -299,6 +310,7 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
     "F1_DECOMPOSED",
     "F2_DECOMPOSED",
     "F3_DECOMPOSED",
+    "F4_DECOMPOSED",
     "Tpos_DECOMPOSED",
     "Tneg_DECOMPOSED",
     "proton_DECOMPOSED",
