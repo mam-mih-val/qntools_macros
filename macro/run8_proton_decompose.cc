@@ -52,7 +52,7 @@ DataContainerMatrix MakeCorrectionMatrix(const vector1d<Qn::DataContainerStatCal
       { s2, s3+s1, c1-c3, s4, 1-c4 },
     };
 
-    if( M.determinant() < 1e-3 ){
+    if( M.determinant() < 1e-6 ){
       corr_matrix.At(i)(0,0) = std::numeric_limits<double>::quiet_NaN();  
       continue;
     }
