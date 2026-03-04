@@ -5,7 +5,7 @@ std::string u1_vector{ "proton_DECOMPOSED" };
 std::string f1_vector{ "F1_DECOMPOSED" };
 std::string f2_vector{ "F2_DECOMPOSED" };
 std::string f3_vector{ "F3_DECOMPOSED" };
-std::string f3_vector{ "F4_DECOMPOSED" };
+std::string f4_vector{ "F4_DECOMPOSED" };
 
 std::string tp_vector{ "Tpos_DECOMPOSED" };
 std::string tn_vector{ "Tneg_DECOMPOSED" };
