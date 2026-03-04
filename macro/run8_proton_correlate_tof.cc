@@ -5,6 +5,7 @@ std::string u1_vector{ "proton_DECOMPOSED" };
 std::string f1_vector{ "F1_DECOMPOSED" };
 std::string f2_vector{ "F2_DECOMPOSED" };
 std::string f3_vector{ "F3_DECOMPOSED" };
+std::string f3_vector{ "F4_DECOMPOSED" };
 
 std::string tp_vector{ "Tpos_DECOMPOSED" };
 std::string tn_vector{ "Tneg_DECOMPOSED" };
@@ -17,32 +18,42 @@ std::vector < std::array<string, 1> > arr_Q1 {
   std::array<std::string, 1>{f1_vector},
   std::array<std::string, 1>{f2_vector},  
   std::array<std::string, 1>{f3_vector},
+  std::array<std::string, 1>{f4_vector},
 };
 
 std::vector < std::array<string, 2> > arr_u1Q1 {
   std::array<std::string, 2>{u1_vector, f1_vector},
   std::array<std::string, 2>{u1_vector, f2_vector},
   std::array<std::string, 2>{u1_vector, f3_vector},
+  std::array<std::string, 2>{u1_vector, f4_vector},
 };
 
 std::vector < std::array<string, 2> > arr_Q1Q1 {
   std::array<std::string, 2>{f1_vector, f2_vector},
   std::array<std::string, 2>{f1_vector, f3_vector},
+  std::array<std::string, 2>{f1_vector, f4_vector},
   std::array<std::string, 2>{f2_vector, f3_vector},
+  std::array<std::string, 2>{f2_vector, f4_vector},
+  std::array<std::string, 2>{f3_vector, f4_vector},
   
   std::array<std::string, 2>{f1_vector, tp_vector},
   std::array<std::string, 2>{f2_vector, tp_vector},
   std::array<std::string, 2>{f3_vector, tp_vector},
+  std::array<std::string, 2>{f4_vector, tp_vector},
 
   std::array<std::string, 2>{f1_vector, tn_vector},
   std::array<std::string, 2>{f2_vector, tn_vector},
   std::array<std::string, 2>{f3_vector, tn_vector},
+  std::array<std::string, 2>{f4_vector, tn_vector},
 };
 
 std::vector < std::array<string, 3> > arr_u2Q1Q1 {
   std::array<std::string, 3>{u1_vector, f1_vector, f2_vector},
   std::array<std::string, 3>{u1_vector, f1_vector, f3_vector},
+  std::array<std::string, 3>{u1_vector, f1_vector, f4_vector},
   std::array<std::string, 3>{u1_vector, f2_vector, f3_vector},
+  std::array<std::string, 3>{u1_vector, f2_vector, f4_vector},
+  std::array<std::string, 3>{u1_vector, f3_vector, f4_vector},
 };
 
 std::vector < std::array<string, 4> > arr_u3Q1Q1Q1 {
