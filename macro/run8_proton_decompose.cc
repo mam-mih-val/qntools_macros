@@ -52,12 +52,24 @@ DataContainerMatrix MakeCorrectionMatrix(const vector1d<Qn::DataContainerStatCal
       { s2, s3+s1, c1-c3, s4, 1-c4 },
     };
 
-    if( M.determinant() < 1e-6 ){
-      corr_matrix.At(i)(0,0) = std::numeric_limits<double>::quiet_NaN();  
-      continue;
+    // 1. Compute the SVD
+    auto svd = Eigen::JacobiSVD<matrix_t> (M, Eigen::ComputeThinU | Eigen::ComputeThinV);
+    // 2. Get the singular values and matrices
+    auto singular_values = svd.singularValues();
+    auto U = svd.matrixU();
+    auto V = svd.matrixV();
+    // 3. Set a tolerance to identify "near-zero" singular values
+    double tolerance = 5e-2; // Adjust based on your problem's scale
+    // 4. Build the reciprocal matrix S+
+    auto Splus = matrix_t{};
+    for (auto i = size_t{0}; i < singular_values.size(); ++i) {
+      if (singular_values(i) > tolerance) {
+          Splus(i, i) = 1.0 / singular_values(i);
+      }
+      // else: leave as 0 (this handles the zero eigenvalues we discussed)
     }
-
-    auto Minv = M.inverse();
+    // 5. Reconstruct the pseudo-inverse: A+ = V * S+ * U.transpose()
+    auto Minv = V * Splus.transpose() * U.transpose();
     corr_matrix.At(i) = Minv;
   }
   return corr_matrix;
