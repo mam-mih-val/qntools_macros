@@ -59,7 +59,7 @@ DataContainerMatrix MakeCorrectionMatrix(const vector1d<Qn::DataContainerStatCal
     auto U = svd.matrixU();
     auto V = svd.matrixV();
     // 3. Set a tolerance to identify "near-zero" singular values
-    double tolerance = 5e-2; // Adjust based on your problem's scale
+    double tolerance = 1e-5; // Adjust based on your problem's scale
     // 4. Build the reciprocal matrix S+
     auto Splus = matrix_t{};
     for (auto i = size_t{0}; i < singular_values.size(); ++i) {
@@ -247,12 +247,13 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
         auto X1old =  Eigen::Matrix<double, NDIM, 1>{ 1, x1_old, y1_old, x2_old, y2_old };
         auto X1new = Minv * X1old;
         // auto X2new = Minv * X2old;
-
+        auto mag = static_cast<double>(X1new(0));
+        X1new = X1new * (1.0 / mag);
         auto x1_new = static_cast<double>(X1new(1));
         auto y1_new = static_cast<double>(X1new(2));
         auto x2_new = static_cast<double>(X1new(3));
         auto y2_new = static_cast<double>(X1new(4));
-  
+
         new_qvec.At(i).SetQ( 1, x1_new, y1_new );
         new_qvec.At(i).SetQ( 2, x2_new, y2_new );
       }
