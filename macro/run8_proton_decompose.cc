@@ -246,7 +246,7 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
 
         auto X1old =  Eigen::Matrix<double, NDIM, 1>{ 1, x1_old, y1_old, x2_old, y2_old };
         auto X1new = Minv * X1old;
-        auto mag = static_cast<double>(X1new(0));
+        auto mag = static_cast<double>( fabs( X1new(0) ) );
         auto x1_new = static_cast<double>(X1new(1)) / mag;
         auto y1_new = static_cast<double>(X1new(2)) / mag;
         auto x2_new = static_cast<double>(X1new(3)) / mag;
