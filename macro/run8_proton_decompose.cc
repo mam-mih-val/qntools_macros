@@ -246,13 +246,11 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
 
         auto X1old =  Eigen::Matrix<double, NDIM, 1>{ 1, x1_old, y1_old, x2_old, y2_old };
         auto X1new = Minv * X1old;
-        // auto X2new = Minv * X2old;
         auto mag = static_cast<double>(X1new(0));
-        X1new = X1new * (1.0 / mag);
-        auto x1_new = static_cast<double>(X1new(1));
-        auto y1_new = static_cast<double>(X1new(2));
-        auto x2_new = static_cast<double>(X1new(3));
-        auto y2_new = static_cast<double>(X1new(4));
+        auto x1_new = static_cast<double>(X1new(1)) / mag;
+        auto y1_new = static_cast<double>(X1new(2)) / mag;
+        auto x2_new = static_cast<double>(X1new(3)) / mag;
+        auto y2_new = static_cast<double>(X1new(4)) / mag;
 
         auto prev_sumw = new_qvec.At(i).sumweights();
         auto new_sumw = prev_sumw*mag;
