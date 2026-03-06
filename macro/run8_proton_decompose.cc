@@ -254,8 +254,13 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
         auto x2_new = static_cast<double>(X1new(3));
         auto y2_new = static_cast<double>(X1new(4));
 
+        auto prev_sumw = new_qvec.At(i).sumweights();
+        auto new_sumw = prev_sumw*mag;
+        new_qvec.At(i).Reset();
+        new_qvec.At(i).Add( 0.0, new_sumw );
         new_qvec.At(i).SetQ( 1, x1_new, y1_new );
         new_qvec.At(i).SetQ( 2, x2_new, y2_new );
+        new_qvec.At(i).SetGood(true);
       }
 
       return new_qvec;
