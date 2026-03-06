@@ -27,6 +27,19 @@ using vector3d = std::vector<std::vector<std::vector<T>>>;
 
 using DataContainerMatrix = Qn::DataContainer<matrix_t, Qn::AxisD>;
 
+matrix_t RegularizedInverse( const matrix_t& M, double l ){
+  auto svd = Eigen::JacobiSVD<matrix_t> (M, Eigen::ComputeThinU | Eigen::ComputeThinV);    
+  auto singular_values = svd.singularValues();
+  auto U = svd.matrixU();
+  auto V = svd.matrixV();
+  auto Splus = matrix_t{};
+  for (auto i = size_t{0}; i < singular_values.size(); ++i) {
+    auto s = singular_values(i);
+    Splus(i, i) = s / ( s*s + l  );   
+  }
+  return V * Splus * U.transpose();
+}
+
 DataContainerMatrix MakeCorrectionMatrix(const vector1d<Qn::DataContainerStatCalculate>& vec_c, const vector1d<Qn::DataContainerStatCalculate>& vec_s, const vector1d<Qn::DataContainerStatCalculate>& vec_cov ){
   std::cout << __func__ << std::endl;
   auto axes = vec_c[0].GetAxes();
@@ -51,25 +64,7 @@ DataContainerMatrix MakeCorrectionMatrix(const vector1d<Qn::DataContainerStatCal
       { c2, c3+c1, s3-s1, 1+c4, s4 },
       { s2, s3+s1, c1-c3, s4, 1-c4 },
     };
-
-    // 1. Compute the SVD
-    auto svd = Eigen::JacobiSVD<matrix_t> (M, Eigen::ComputeThinU | Eigen::ComputeThinV);
-    // 2. Get the singular values and matrices
-    auto singular_values = svd.singularValues();
-    auto U = svd.matrixU();
-    auto V = svd.matrixV();
-    // 3. Set a tolerance to identify "near-zero" singular values
-    double tolerance = 1e-5; // Adjust based on your problem's scale
-    // 4. Build the reciprocal matrix S+
-    auto Splus = matrix_t{};
-    for (auto i = size_t{0}; i < singular_values.size(); ++i) {
-      if (singular_values(i) > tolerance) {
-          Splus(i, i) = 1.0 / singular_values(i);
-      }
-      // else: leave as 0 (this handles the zero eigenvalues we discussed)
-    }
-    // 5. Reconstruct the pseudo-inverse: A+ = V * S+ * U.transpose()
-    auto Minv = V * Splus.transpose() * U.transpose();
+    auto Minv = RegularizedInverse(M, 1e-5);
     corr_matrix.At(i) = Minv;
   }
   return corr_matrix;
@@ -246,19 +241,13 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
 
         auto X1old =  Eigen::Matrix<double, NDIM, 1>{ 1, x1_old, y1_old, x2_old, y2_old };
         auto X1new = Minv * X1old;
-        auto mag = static_cast<double>( fabs( X1new(0) ) );
-        auto x1_new = static_cast<double>(X1new(1)) / mag;
-        auto y1_new = static_cast<double>(X1new(2)) / mag;
-        auto x2_new = static_cast<double>(X1new(3)) / mag;
-        auto y2_new = static_cast<double>(X1new(4)) / mag;
+        auto x1_new = static_cast<double>(X1new(1));
+        auto y1_new = static_cast<double>(X1new(2));
+        auto x2_new = static_cast<double>(X1new(3));
+        auto y2_new = static_cast<double>(X1new(4));
 
-        auto prev_sumw = new_qvec.At(i).sumweights();
-        auto new_sumw = prev_sumw*mag;
-        new_qvec.At(i).Reset();
-        new_qvec.At(i).Add( 0.0, new_sumw );
         new_qvec.At(i).SetQ( 1, x1_new, y1_new );
         new_qvec.At(i).SetQ( 2, x2_new, y2_new );
-        new_qvec.At(i).SetGood(true);
       }
 
       return new_qvec;
