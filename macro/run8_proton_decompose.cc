@@ -35,7 +35,8 @@ matrix_t RegularizedInverse( const matrix_t& M, double l ){
   auto Splus = matrix_t{};
   for (auto i = size_t{0}; i < singular_values.size(); ++i) {
     auto s = singular_values(i);
-    Splus(i, i) = s / ( s*s + l  );   
+    if( s > l )
+      Splus(i, i) = 1 / s;
   }
   return V * Splus * U.transpose();
 }
@@ -64,7 +65,7 @@ DataContainerMatrix MakeCorrectionMatrix(const vector1d<Qn::DataContainerStatCal
       { c2, c3+c1, s3-s1, 1+c4, s4 },
       { s2, s3+s1, c1-c3, s4, 1-c4 },
     };
-    auto Minv = RegularizedInverse(M, 1e-5);
+    auto Minv = RegularizedInverse(M, 1e-2);
     corr_matrix.At(i) = Minv;
   }
   return corr_matrix;
