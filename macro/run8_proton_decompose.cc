@@ -41,6 +41,44 @@ matrix_t RegularizedInverse( const matrix_t& M, double l ){
   return V * Splus * U.transpose();
 }
 
+matrix_t RankCorrection(const matrix_t& M, double l){
+  auto svd = Eigen::JacobiSVD<matrix_t> ( M, Eigen::ComputeThinU | Eigen::ComputeThinV );    
+  auto singular_values = svd.singularValues();
+  auto U = svd.matrixU();
+  auto V = svd.matrixV();
+  auto rank = size_t{ 0 };
+  for (auto i = size_t{0}; i < singular_values.size(); ++i) {
+    auto s = singular_values(i);
+    if( s > l ){
+      rank++;
+    }
+  }
+  auto Vr = V.leftCols(rank);
+  auto E_tilde = Vr * Vr.transpose() * matrix_t::Identity();  // projected basis
+  auto Q = Eigen::MatrixXd(E_tilde.rows(), E_tilde.cols());
+  Eigen::VectorXd norms(E_tilde.cols());
+// Gram-Schmidt
+  for (int i = 0; i < E_tilde.cols(); ++i) {
+      Q.col(i) = E_tilde.col(i);
+      
+      // Subtract projections onto previous q's
+      for (int j = 0; j < i; ++j) {
+          Q.col(i) -= (Q.col(j).dot(E_tilde.col(i))) * Q.col(j);
+      }
+      
+      // Normalize
+      norms(i) = Q.col(i).norm();
+      if (norms(i) > 1e-12) {
+          Q.col(i) /= norms(i);
+      } else {
+          Q.col(i).setZero();  // this vector is redundant
+      }
+  }
+  std::cout << "rank: " << rank << "\n" << Q << std::endl;
+  return Q;
+}
+
+
 DataContainerMatrix MakeCorrectionMatrix(const vector1d<Qn::DataContainerStatCalculate>& vec_c, const vector1d<Qn::DataContainerStatCalculate>& vec_s, const vector1d<Qn::DataContainerStatCalculate>& vec_cov ){
   std::cout << __func__ << std::endl;
   auto axes = vec_c[0].GetAxes();
@@ -65,7 +103,8 @@ DataContainerMatrix MakeCorrectionMatrix(const vector1d<Qn::DataContainerStatCal
       { c2, c3+c1, s3-s1, 1+c4, s4 },
       { s2, s3+s1, c1-c3, s4, 1-c4 },
     };
-    auto Minv = RegularizedInverse(M, 1e-2);
+    auto Q = RankCorrection(Q, 1e-3);
+    auto Minv = Q * ( M * Q ).completeOrthogonalDecomposition().pseudoInverse();
     corr_matrix.At(i) = Minv;
   }
   return corr_matrix;
