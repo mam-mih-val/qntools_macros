@@ -103,7 +103,7 @@ DataContainerMatrix MakeCorrectionMatrix(const vector1d<Qn::DataContainerStatCal
       { c2, c3+c1, s3-s1, 1+c4, s4 },
       { s2, s3+s1, c1-c3, s4, 1-c4 },
     };
-    auto Q = RankCorrection(Q, 1e-3);
+    auto Q = RankCorrection(M, 1e-3);
     auto Minv = Q * ( M * Q ).completeOrthogonalDecomposition().pseudoInverse();
     corr_matrix.At(i) = Minv;
   }
