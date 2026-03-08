@@ -109,7 +109,7 @@ DataContainerMatrix MakeCorrectionMatrix(const vector1d<Qn::DataContainerStatCal
     };
 
     // auto Q = RankCorrection(M, 1e-3);
-    auto Minv = RegularizedInverse(M, 1e-3);
+    auto Minv = RegularizedInverse(M, 1e-2);
     corr_matrix.At(i) = Minv;
   }
   return corr_matrix;
