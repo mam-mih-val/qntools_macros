@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-constexpr size_t NDIM = 5;
+constexpr size_t NDIM = 7;
 
 using matrix_t = Eigen::Matrix<double, NDIM, NDIM>;
 
@@ -83,28 +83,33 @@ DataContainerMatrix MakeCorrectionMatrix(const vector1d<Qn::DataContainerStatCal
   std::cout << __func__ << std::endl;
   auto axes = vec_c[0].GetAxes();
   Qn::DataContainer<matrix_t, Qn::AxisD> corr_matrix{axes};
-  for( auto i = size_t{0}; i<vec_c[0].size(); ++i ){
-    auto mag1 = vec_c[0].At(i).Mean();
-    
-    auto c1 = vec_c[1].At(i).Mean();
-    auto c2 = vec_c[2].At(i).Mean();
-    auto c3 = vec_c[3].At(i).Mean();
-    auto c4 = vec_c[4].At(i).Mean();
+  for( auto i = size_t{0}; i<vec_c[0].size(); ++i ){    
+    auto c1 = vec_c[0].At(i).Mean();
+    auto c2 = vec_c[1].At(i).Mean();
+    auto c3 = vec_c[2].At(i).Mean();
+    auto c4 = vec_c[3].At(i).Mean();
+    auto c5 = vec_c[4].At(i).Mean();
+    auto c6 = vec_c[5].At(i).Mean();
 
-    auto s1 = vec_s[1].At(i).Mean();
-    auto s2 = vec_s[2].At(i).Mean();
-    auto s3 = vec_s[3].At(i).Mean();
-    auto s4 = vec_s[4].At(i).Mean();
+    auto s1 = vec_s[0].At(i).Mean();
+    auto s2 = vec_s[1].At(i).Mean();
+    auto s3 = vec_s[2].At(i).Mean();
+    auto s4 = vec_s[3].At(i).Mean();
+    auto s5 = vec_s[4].At(i).Mean();
+    auto s6 = vec_s[5].At(i).Mean();
 
     auto M = matrix_t{ 
-      { 1.0, 2*c1, 2*s1, 2*c2, 2*s2 },
-      { c1, 1+c2, s2, c3+c1, s3+s1 },
-      { s1, s2, 1-c2, s3-s1, c1-c3 },
-      { c2, c3+c1, s3-s1, 1+c4, s4 },
-      { s2, s3+s1, c1-c3, s4, 1-c4 },
+      { 1.0, 2*c1, 2*s1, 2*c2, 2*s2, 2*c3, 2*s3},
+      { c1, 1+c2, s2, c3+c1, s3+s1, c4+c2, s4+s2 },
+      { s1, s2, 1-c2, s3-s1, c1-c3, s4-s2, c2-c4 },
+      { c2, c3+c1, s3-s1, 1+c4, s4, c1+c3, s1+s3 },
+      { s2, s3+s1, c1-c3, s4, 1-c4, s3-s1, c1-c3 },
+      { c3, c4+c2, s4-s2, c1+c3, s3-s1, 1+c6, s6 },
+      { s3, s4+s2, c2-c4, s1+s3, c1-c3, s6, 1-c6 },
     };
-    auto Q = RankCorrection(M, 1e-3);
-    auto Minv = Q * ( M * Q ).completeOrthogonalDecomposition().pseudoInverse();
+
+    // auto Q = RankCorrection(M, 1e-3);
+    auto Minv = RegularizedInverse(M, 1e-3);
     corr_matrix.At(i) = Minv;
   }
   return corr_matrix;
@@ -117,16 +122,9 @@ std::tuple< vector1d<Qn::DataContainerStatCalculate>, vector1d<Qn::DataContainer
 
   auto vec_c = std::vector<Qn::DataContainerStatCalculate>{};
   auto vec_s = std::vector<Qn::DataContainerStatCalculate>{};
-  vec_c.reserve(5);
-  vec_s.reserve(5);
-  {
-    auto corr_name = str_vec_name+".mag1centralityrunId"s;
-    std::cout << "Extracting " << corr_name << "\n";
-    calib_file->GetObject( corr_name.c_str(), tmp );
-    vec_c.emplace_back( *tmp );
-    vec_s.emplace_back( *tmp );
-  }
-  for( auto i=size_t{0}; i<4; ++i ){
+  vec_c.reserve(6);
+  vec_s.reserve(6);
+  for( auto i=size_t{0}; i<6; ++i ){
     auto corr_name = str_vec_name+".x"+std::to_string(i+1)+"centralityrunId"s;
     std::cout << "Extracting " << corr_name << "\n";
     calib_file->GetObject( corr_name.c_str(), tmp );
@@ -271,6 +269,9 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
     
         auto x2_old = qvec.At(i).x(2);
         auto y2_old = qvec.At(i).y(2);
+
+        auto x3_old = qvec.At(i).x(3);
+        auto y3_old = qvec.At(i).y(3);
     
         auto Minv = vec_cov.at(c_bin).at(r_bin).At(i);
         
@@ -279,15 +280,18 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
           continue;
         }
 
-        auto X1old =  Eigen::Matrix<double, NDIM, 1>{ 1, x1_old, y1_old, x2_old, y2_old };
+        auto X1old =  Eigen::Matrix<double, NDIM, 1>{ 1, x1_old, y1_old, x2_old, y2_old, x3_old, y3_old };
         auto X1new = Minv * X1old;
         auto x1_new = static_cast<double>(X1new(1));
         auto y1_new = static_cast<double>(X1new(2));
         auto x2_new = static_cast<double>(X1new(3));
         auto y2_new = static_cast<double>(X1new(4));
+        auto x3_new = static_cast<double>(X1new(5));
+        auto y3_new = static_cast<double>(X1new(6));
 
         new_qvec.At(i).SetQ( 1, x1_new, y1_new );
         new_qvec.At(i).SetQ( 2, x2_new, y2_new );
+        new_qvec.At(i).SetQ( 3, x3_new, y3_new );
       }
 
       return new_qvec;
