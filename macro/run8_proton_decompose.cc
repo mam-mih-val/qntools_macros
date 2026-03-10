@@ -59,7 +59,7 @@ std::pair<matrix_t, column_t> PseudoInverse( const matrix_t& M, double l ){
 DataContainerMatrix MakeCorrectionMatrix(const vector1d<Qn::DataContainerStatCalculate>& vec_c, const vector1d<Qn::DataContainerStatCalculate>& vec_s, const vector1d<Qn::DataContainerStatCalculate>& vec_cov ){
   std::cout << __func__ << std::endl;
   auto axes = vec_c[0].GetAxes();
-  Qn::DataContainer<matrix_t, Qn::AxisD> corr_matrix{axes};
+  DataContainerMatrix corr_matrix{axes};
   for( auto i = size_t{0}; i<vec_c[0].size(); ++i ){    
     auto c1 = vec_c[0].At(i).Mean();
     auto c2 = vec_c[1].At(i).Mean();
