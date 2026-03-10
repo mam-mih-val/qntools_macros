@@ -143,7 +143,7 @@ vector2d < Qn::DataContainer<T, Qn::AxisD> >  ExtractEventAxes( const Qn::DataCo
       auto hi_2 = axes.at(1).GetUpperBinEdge( bin_2 );
       auto name_2 = axes.at(1).Name();
       auto new_axes_2 = Qn::AxisD{ name_2, 1, lo_2, hi_2 };
-      auto container_a2 = container_a1.GetAxes().size() > 1 ? container_a1.Select( new_axes_2 ) : container_a1.Rebin( new_axes_2, [](const auto& a, const auto& b){ return (a+b)/2; } );
+      auto container_a2 = container_a1.GetAxes().size() > 1 ? container_a1.Select( new_axes_2 ) : container_a1.Rebin( new_axes_2, [](const auto& a, const auto& b){ return a; } );
       result.back().emplace_back(container_a2);
     }
   }
