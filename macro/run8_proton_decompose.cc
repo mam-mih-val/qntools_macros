@@ -46,7 +46,7 @@ std::pair<matrix_t, column_t> PseudoInverse( const matrix_t& M, double l ){
   auto Mpinv = matrix_t{ V * Splus * U.transpose() };
   auto constant = column_t{};
   if( rank < NDIM ){
-    auto Vn = V.rightCols(1);
+    auto Vn = V.rightCols<1>();
     Vn = Vn / Vn(0);
     auto e1 = column_t{}; e1(0) = 1.0;
     Mpinv = Mpinv - Vn * e1.transpose() * Mpinv;
@@ -76,7 +76,8 @@ DataContainerMatrix MakeCorrectionMatrix(const vector1d<Qn::DataContainerStatCal
     auto s6 = vec_s[5].At(i).Mean();
 
     auto M = matrix_t{ 
-      { 1.0, 2*c1, 2*s1, 2*c2, 2*s2  },
+      // { 1.0, 2*c1, 2*s1, 2*c2, 2*s2 },
+      { 0.0, 0.0, 0.0, 0.0, 0.0 },
       { c1, 1+c2, s2, c3+c1, s3+s1 },
       { s1, s2, 1-c2, s3-s1, c1-c3 },
       { c2, c3+c1, s3-s1, 1+c4, s4 },
