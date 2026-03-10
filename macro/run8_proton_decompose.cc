@@ -12,9 +12,10 @@
 #include <string>
 #include <vector>
 
-constexpr size_t NDIM = 7;
+constexpr size_t NDIM = 5;
 
 using matrix_t = Eigen::Matrix<double, NDIM, NDIM>;
+using column_t = Eigen::Matrix<double, NDIM, 1>;
 
 template<typename T>
 using vector1d = std::vector<T>;
@@ -25,59 +26,35 @@ using vector2d = std::vector<std::vector<T>>;
 template<typename T>
 using vector3d = std::vector<std::vector<std::vector<T>>>;
 
-using DataContainerMatrix = Qn::DataContainer<matrix_t, Qn::AxisD>;
+using DataContainerMatrix = Qn::DataContainer< std::pair<matrix_t, column_t>, Qn::AxisD>;
 
-matrix_t RegularizedInverse( const matrix_t& M, double l ){
-  auto svd = Eigen::JacobiSVD<matrix_t> (M, Eigen::ComputeThinU | Eigen::ComputeThinV);    
-  auto singular_values = svd.singularValues();
-  auto U = svd.matrixU();
-  auto V = svd.matrixV();
-  auto Splus = matrix_t{};
-  for (auto i = size_t{0}; i < singular_values.size(); ++i) {
-    auto s = singular_values(i);
-    if( s > l )
-      Splus(i, i) = 1 / s;
-  }
-  return V * Splus * U.transpose();
-}
-
-matrix_t RankCorrection(const matrix_t& M, double l){
+std::pair<matrix_t, column_t> PseudoInverse( const matrix_t& M, double l ){
   auto svd = Eigen::JacobiSVD<matrix_t> ( M, Eigen::ComputeThinU | Eigen::ComputeThinV );    
   auto singular_values = svd.singularValues();
   auto U = svd.matrixU();
   auto V = svd.matrixV();
-  auto rank = size_t{ 0 };
+  auto Splus = matrix_t{};
+  // std::cout << "Det(M): " << M.determinant() << " singular_values: " << singular_values.transpose() << std::endl;
+  auto rank = size_t{0};
   for (auto i = size_t{0}; i < singular_values.size(); ++i) {
     auto s = singular_values(i);
     if( s > l ){
+      Splus(i, i) = 1.0 / s;
       rank++;
     }
   }
-  auto Vr = V.leftCols(rank);
-  auto E_tilde = Vr * Vr.transpose() * matrix_t::Identity();  // projected basis
-  auto Q = Eigen::MatrixXd(E_tilde.rows(), E_tilde.cols());
-  Eigen::VectorXd norms(E_tilde.cols());
-// Gram-Schmidt
-  for (int i = 0; i < E_tilde.cols(); ++i) {
-      Q.col(i) = E_tilde.col(i);
-      
-      // Subtract projections onto previous q's
-      for (int j = 0; j < i; ++j) {
-          Q.col(i) -= (Q.col(j).dot(E_tilde.col(i))) * Q.col(j);
-      }
-      
-      // Normalize
-      norms(i) = Q.col(i).norm();
-      if (norms(i) > 1e-12) {
-          Q.col(i) /= norms(i);
-      } else {
-          Q.col(i).setZero();  // this vector is redundant
-      }
+  auto Mpinv = matrix_t{ V * Splus * U.transpose() };
+  auto constant = column_t{};
+  if( rank < NDIM ){
+    auto Vn = V.rightCols(1);
+    Vn = Vn / Vn(0);
+    auto e1 = column_t{}; e1(0) = 1.0;
+    Mpinv = Mpinv - Vn * e1.transpose() * Mpinv;
+    constant = Vn;
   }
-  std::cout << "rank: " << rank << "\n" << Q << std::endl;
-  return Q;
+  std::cout << "Matrix U:\n" << U << "\nS: " << singular_values.transpose() << "\nMatrix V:\n" << V << "\nInverse:\n" << Mpinv << "\nn: " << constant.transpose() << "\n\n";
+  return std::pair{Mpinv, constant};
 }
-
 
 DataContainerMatrix MakeCorrectionMatrix(const vector1d<Qn::DataContainerStatCalculate>& vec_c, const vector1d<Qn::DataContainerStatCalculate>& vec_s, const vector1d<Qn::DataContainerStatCalculate>& vec_cov ){
   std::cout << __func__ << std::endl;
@@ -99,16 +76,14 @@ DataContainerMatrix MakeCorrectionMatrix(const vector1d<Qn::DataContainerStatCal
     auto s6 = vec_s[5].At(i).Mean();
 
     auto M = matrix_t{ 
-      { 1.0, 2*c1, 2*s1, 2*c2, 2*s2, 2*c3, 2*s3},
-      { c1, 1+c2, s2, c3+c1, s3+s1, c4+c2, s4+s2 },
-      { s1, s2, 1-c2, s3-s1, c1-c3, s4-s2, c2-c4 },
-      { c2, c3+c1, s3-s1, 1+c4, s4, c1+c3, s1+s3 },
-      { s2, s3+s1, c1-c3, s4, 1-c4, s3-s1, c1-c3 },
-      { c3, c4+c2, s4-s2, c1+c3, s3-s1, 1+c6, s6 },
-      { s3, s4+s2, c2-c4, s1+s3, c1-c3, s6, 1-c6 },
+      { 1.0, 2*c1, 2*s1, 2*c2, 2*s2  },
+      { c1, 1+c2, s2, c3+c1, s3+s1 },
+      { s1, s2, 1-c2, s3-s1, c1-c3 },
+      { c2, c3+c1, s3-s1, 1+c4, s4 },
+      { s2, s3+s1, c1-c3, s4, 1-c4 },
     };
 
-    auto Minv = RegularizedInverse( M, 5e-3 );
+    auto Minv = PseudoInverse( M, 5e-3);
     corr_matrix.At(i) = Minv;
   }
   return corr_matrix;
@@ -268,29 +243,23 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
     
         auto x2_old = qvec.At(i).x(2);
         auto y2_old = qvec.At(i).y(2);
-
-        auto x3_old = qvec.At(i).x(3);
-        auto y3_old = qvec.At(i).y(3);
     
-        auto Minv = vec_cov.at(c_bin).at(r_bin).At(i);
+        auto [Minv, n] = vec_cov.at(c_bin).at(r_bin).At(i);
         
         if( std::isnan(Minv(0, 0)) ){
           new_qvec.At(i).Reset();
           continue;
         }
 
-        auto X1old =  Eigen::Matrix<double, NDIM, 1>{ 1, x1_old, y1_old, x2_old, y2_old, x3_old, y3_old };
-        auto X1new = Minv * X1old;
+        auto X1old =  Eigen::Matrix<double, NDIM, 1>{ 1, x1_old, y1_old, x2_old, y2_old };
+        auto X1new = Minv * X1old + n;
         auto x1_new = static_cast<double>(X1new(1));
         auto y1_new = static_cast<double>(X1new(2));
         auto x2_new = static_cast<double>(X1new(3));
         auto y2_new = static_cast<double>(X1new(4));
-        auto x3_new = static_cast<double>(X1new(5));
-        auto y3_new = static_cast<double>(X1new(6));
 
         new_qvec.At(i).SetQ( 1, x1_new, y1_new );
         new_qvec.At(i).SetQ( 2, x2_new, y2_new );
-        new_qvec.At(i).SetQ( 3, x3_new, y3_new );
       }
 
       return new_qvec;
