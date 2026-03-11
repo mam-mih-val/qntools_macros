@@ -74,7 +74,7 @@ DataContainerMatrix MakeCorrectionMatrix(const vector1d<Qn::DataContainerStatCal
       { c2,  c3+c1, s3-s1,  1+c4,      s4, c5+c1, s5+s1 },
       { s2,  s3+s1, c1-c3,    s4,    1-c4, s5-s1, c1-c5 },
       { c3,  c2+c4, s4-s2,  c5+c1,  s5-s1,  1+c6,    s6 },
-      { s3,  s4+s2, c2-c4,  s5+s1,  c1-c5,    s6,  1+-6 },
+      { s3,  s4+s2, c2-c4,  s5+s1,  c1-c5,    s6,  1-c6 },
     };
 
     auto MTM = 2 * M.transpose() * M;
