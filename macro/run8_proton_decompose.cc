@@ -75,7 +75,7 @@ DataContainerMatrix MakeCorrectionMatrix(const vector1d<Qn::DataContainerStatCal
       { s2, s3+s1, c1-c3, s4, 1-c4 },
     };
 
-    auto MTM = M.transpose() * M;
+    auto MTM = 2 * M.transpose() * M;
     std::cout << "MTM\n"  << MTM << "\n\n";
 
     auto C = correction_matrix_t{};
@@ -254,7 +254,7 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
         }
 
         auto X1old =  column_t{ x1_old, y1_old, x2_old, y2_old };
-        auto b = M.transpose() * X1old;
+        auto b = 2 * M.transpose() * X1old;
         auto b_tilda = Eigen::Matrix<double, NDIM+1, 1>{};
         b_tilda << b, 1;
         
