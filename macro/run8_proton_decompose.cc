@@ -260,10 +260,10 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
         
         auto X1new = Minv * b_tilda;
         
-        auto x1_new = static_cast<double>(X1new(0));
-        auto y1_new = static_cast<double>(X1new(1));
-        auto x2_new = static_cast<double>(X1new(2));
-        auto y2_new = static_cast<double>(X1new(3));
+        auto x1_new = static_cast<double>(X1new(1));
+        auto y1_new = static_cast<double>(X1new(2));
+        auto x2_new = static_cast<double>(X1new(3));
+        auto y2_new = static_cast<double>(X1new(4));
 
         new_qvec.At(i).SetQ( 1, x1_new, y1_new );
         new_qvec.At(i).SetQ( 2, x2_new, y2_new );
