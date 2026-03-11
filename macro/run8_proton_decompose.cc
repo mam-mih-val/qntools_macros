@@ -14,8 +14,9 @@
 
 constexpr size_t NDIM = 5;
 
-using matrix_t = Eigen::Matrix<double, NDIM, NDIM>;
-using column_t = Eigen::Matrix<double, NDIM, 1>;
+using correction_matrix_t = Eigen::Matrix<double, NDIM+1, NDIM+1>;
+using mixing_matrix_t = Eigen::Matrix<double, NDIM-1, NDIM>;
+using column_t = Eigen::Matrix<double, NDIM-1, 1>;
 
 template<typename T>
 using vector1d = std::vector<T>;
@@ -26,14 +27,14 @@ using vector2d = std::vector<std::vector<T>>;
 template<typename T>
 using vector3d = std::vector<std::vector<std::vector<T>>>;
 
-using DataContainerMatrix = Qn::DataContainer< std::pair<matrix_t, column_t>, Qn::AxisD>;
+using DataContainerMatrix = Qn::DataContainer< std::pair<correction_matrix_t, mixing_matrix_t>, Qn::AxisD>;
 
-std::pair<matrix_t, column_t> PseudoInverse( const matrix_t& M, double l ){
-  auto svd = Eigen::JacobiSVD<matrix_t> ( M, Eigen::ComputeThinU | Eigen::ComputeThinV );    
+correction_matrix_t PseudoInverse( const correction_matrix_t& M, double l ){
+  auto svd = Eigen::JacobiSVD<correction_matrix_t> ( M, Eigen::ComputeThinU | Eigen::ComputeThinV );    
   auto singular_values = svd.singularValues();
   auto U = svd.matrixU();
   auto V = svd.matrixV();
-  auto Splus = matrix_t{};
+  auto Splus = correction_matrix_t{};
   // std::cout << "Det(M): " << M.determinant() << " singular_values: " << singular_values.transpose() << std::endl;
   auto rank = size_t{0};
   for (auto i = size_t{0}; i < singular_values.size(); ++i) {
@@ -43,17 +44,9 @@ std::pair<matrix_t, column_t> PseudoInverse( const matrix_t& M, double l ){
       rank++;
     }
   }
-  auto Mpinv = matrix_t{ V * Splus * U.transpose() };
-  auto constant = column_t{};
-  if( rank < NDIM ){
-    auto Vn = V.rightCols<1>();
-    Vn = Vn / Vn(0);
-    auto e1 = column_t{}; e1(0) = 1.0;
-    Mpinv = Mpinv - Vn * e1.transpose() * Mpinv;
-    constant = Vn;
-  }
-  std::cout << "Matrix U:\n" << U << "\nS: " << singular_values.transpose() << "\nMatrix V:\n" << V << "\nInverse:\n" << Mpinv << "\nn: " << constant.transpose() << "\n\n";
-  return std::pair{Mpinv, constant};
+  auto Mpinv = correction_matrix_t{ V * Splus * U.transpose() };
+  std::cout << "Matrix U:\n" << U << "\nS: " << singular_values.transpose() << "\nMatrix V:\n" << V << "\nInverse:\n" << Mpinv << "\n\n";
+  return Mpinv;
 }
 
 DataContainerMatrix MakeCorrectionMatrix(const vector1d<Qn::DataContainerStatCalculate>& vec_c, const vector1d<Qn::DataContainerStatCalculate>& vec_s, const vector1d<Qn::DataContainerStatCalculate>& vec_cov ){
@@ -75,17 +68,25 @@ DataContainerMatrix MakeCorrectionMatrix(const vector1d<Qn::DataContainerStatCal
     auto s5 = vec_s[4].At(i).Mean();
     auto s6 = vec_s[5].At(i).Mean();
 
-    auto M = matrix_t{ 
-      // { 1.0, 2*c1, 2*s1, 2*c2, 2*s2 },
-      { 0.0, 0.0, 0.0, 0.0, 0.0 },
+    auto M = mixing_matrix_t{ 
       { c1, 1+c2, s2, c3+c1, s3+s1 },
       { s1, s2, 1-c2, s3-s1, c1-c3 },
       { c2, c3+c1, s3-s1, 1+c4, s4 },
       { s2, s3+s1, c1-c3, s4, 1-c4 },
     };
 
-    auto Minv = PseudoInverse( M, 5e-3);
-    corr_matrix.At(i) = Minv;
+    auto MTM = M.transpose() * M;
+    std::cout << "MTM\n"  << MTM << "\n\n";
+
+    auto C = correction_matrix_t{};
+    C.topLeftCorner(NDIM, NDIM) = MTM;
+    C(NDIM, 0) = 1;
+    C(0, NDIM) = 1;
+
+    auto Minv = PseudoInverse( C, 5e-3);
+    
+    corr_matrix.At(i).first = Minv;
+    corr_matrix.At(i).second = M;
   }
   return corr_matrix;
 }
@@ -245,19 +246,20 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
         auto x2_old = qvec.At(i).x(2);
         auto y2_old = qvec.At(i).y(2);
     
-        auto [Minv, n] = vec_cov.at(c_bin).at(r_bin).At(i);
+        auto [Minv, M] = vec_cov.at(c_bin).at(r_bin).At(i);
         
         if( std::isnan(Minv(0, 0)) ){
           new_qvec.At(i).Reset();
           continue;
         }
 
-        auto X1old =  Eigen::Matrix<double, NDIM, 1>{ 1, x1_old, y1_old, x2_old, y2_old };
-        auto X1new = Minv * X1old + n;
-        auto x1_new = static_cast<double>(X1new(1));
-        auto y1_new = static_cast<double>(X1new(2));
-        auto x2_new = static_cast<double>(X1new(3));
-        auto y2_new = static_cast<double>(X1new(4));
+        auto X1old =  column_t{ x1_old, y1_old, x2_old, y2_old };
+        auto X1new = Minv * M.transpose() * X1old;
+        
+        auto x1_new = static_cast<double>(X1new(0));
+        auto y1_new = static_cast<double>(X1new(1));
+        auto x2_new = static_cast<double>(X1new(2));
+        auto y2_new = static_cast<double>(X1new(3));
 
         new_qvec.At(i).SetQ( 1, x1_new, y1_new );
         new_qvec.At(i).SetQ( 2, x2_new, y2_new );
