@@ -55,13 +55,13 @@ DataContainerMatrix MakeCorrectionMatrix(vector1d<Qn::DataContainerStatCalculate
   DataContainerMatrix corr_matrix{axes};
 
   for( auto& c : vec_c  ){
-    for( const auto& a axes  ){
+    for( const auto& a : axes  ){
       c = c.Rebin(a);
     }
   }
 
   for( auto& c : vec_s  ){
-    for( const auto& a axes  ){
+    for( const auto& a : axes  ){
       c = c.Rebin(a);
     }
   }
