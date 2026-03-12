@@ -81,6 +81,8 @@ DataContainerMatrix MakeCorrectionMatrix(vector1d<Qn::DataContainerStatCalculate
     auto s5 = vec_s[4].At(i).Mean();
     auto s6 = vec_s[5].At(i).Mean();
 
+    auto sumw = vec_c[0].At(i).SumWeights();
+
     auto M = mixing_matrix_t{ 
       { c1,  1+c2,    s2,   c3+c1,  s3+s1, c4+c2, s4+s2 },
       { s1,  s2,    1-c2,   s3-s1,  c1-c3, s4-s2, c2-c4 },
@@ -98,7 +100,7 @@ DataContainerMatrix MakeCorrectionMatrix(vector1d<Qn::DataContainerStatCalculate
     C(NDIM, 0) = 1;
     C(0, NDIM) = 1;
 
-    auto Minv = PseudoInverse( C, 5e-3);
+    auto Minv = PseudoInverse( C, 50 / sumw );
     
     corr_matrix.At(i).first = Minv;
     corr_matrix.At(i).second = M;
