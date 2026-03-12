@@ -49,10 +49,23 @@ correction_matrix_t PseudoInverse( const correction_matrix_t& M, double l ){
   return Mpinv;
 }
 
-DataContainerMatrix MakeCorrectionMatrix(const vector1d<Qn::DataContainerStatCalculate>& vec_c, const vector1d<Qn::DataContainerStatCalculate>& vec_s, const vector1d<Qn::DataContainerStatCalculate>& vec_cov ){
+DataContainerMatrix MakeCorrectionMatrix(vector1d<Qn::DataContainerStatCalculate>& vec_c, vector1d<Qn::DataContainerStatCalculate>& vec_s, const vector1d<Qn::DataContainerStatCalculate>& vec_cov ){
   std::cout << __func__ << std::endl;
   auto axes = vec_c[0].GetAxes();
   DataContainerMatrix corr_matrix{axes};
+
+  for( auto& c : vec_c  ){
+    for( const auto& a axes  ){
+      c = c.Rebin(a);
+    }
+  }
+
+  for( auto& c : vec_s  ){
+    for( const auto& a axes  ){
+      c = c.Rebin(a);
+    }
+  }
+  
   for( auto i = size_t{0}; i<vec_c[0].size(); ++i ){    
     auto c1 = vec_c[0].At(i).Mean();
     auto c2 = vec_c[1].At(i).Mean();
@@ -69,11 +82,11 @@ DataContainerMatrix MakeCorrectionMatrix(const vector1d<Qn::DataContainerStatCal
     auto s6 = vec_s[5].At(i).Mean();
 
     auto M = mixing_matrix_t{ 
-      { c1,  1+c2,    s2,   c3+c1,  s3+s1, c2+c4, s4+s2 },
+      { c1,  1+c2,    s2,   c3+c1,  s3+s1, c4+c2, s4+s2 },
       { s1,  s2,    1-c2,   s3-s1,  c1-c3, s4-s2, c2-c4 },
       { c2,  c3+c1, s3-s1,  1+c4,      s4, c5+c1, s5+s1 },
       { s2,  s3+s1, c1-c3,    s4,    1-c4, s5-s1, c1-c5 },
-      { c3,  c2+c4, s4-s2,  c5+c1,  s5-s1,  1+c6,    s6 },
+      { c3,  c4+c2, s4-s2,  c5+c1,  s5-s1,  1+c6,    s6 },
       { s3,  s4+s2, c2-c4,  s5+s1,  c1-c5,    s6,  1-c6 },
     };
 
@@ -108,8 +121,9 @@ std::tuple< vector1d<Qn::DataContainerStatCalculate>, vector1d<Qn::DataContainer
     calib_file->GetObject( corr_name.c_str(), tmp );
     assert(tmp);
     vec_c.emplace_back( *tmp );
-    std::cout << "Extracting " << corr_name << "\n";
+    
     corr_name = str_vec_name+".y"+std::to_string(i+1)+"centralityrunId"s;
+    std::cout << "Extracting " << corr_name << "\n";
     calib_file->GetObject( corr_name.c_str(), tmp );
     assert(tmp);
     vec_s.emplace_back( *tmp );
@@ -168,7 +182,7 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
 
   auto event_axes = std::vector<Qn::AxisD>{
     Qn::AxisD{ "centrality", 6, 0, 60 },
-    Qn::AxisD{ "runId", 17, 6600, 8300 },
+    Qn::AxisD{ "runId", 4, 6700, 8300 },
   };
 
   const std::string f1_name {"F1_PLAIN"};
