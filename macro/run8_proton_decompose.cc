@@ -100,7 +100,7 @@ DataContainerMatrix MakeCorrectionMatrix(vector1d<Qn::DataContainerStatCalculate
     C(NDIM, 0) = 1;
     C(0, NDIM) = 1;
 
-    auto Minv = PseudoInverse( C, 50 / sumw );
+    auto Minv = PseudoInverse( C, 5e-4 );
     
     corr_matrix.At(i).first = Minv;
     corr_matrix.At(i).second = M;
