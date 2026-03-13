@@ -51,21 +51,19 @@ correction_matrix_t PseudoInverse( const correction_matrix_t& M, double l ){
 
 DataContainerMatrix MakeCorrectionMatrix(vector1d<Qn::DataContainerStatCalculate>& vec_c, vector1d<Qn::DataContainerStatCalculate>& vec_s, const vector1d<Qn::DataContainerStatCalculate>& vec_cov ){
   std::cout << __func__ << std::endl;
-  auto axes = vec_c[0].GetAxes();
-  DataContainerMatrix corr_matrix{axes};
-
   for( auto& c : vec_c  ){
     for( const auto& a : axes  ){
       c = c.Rebin(a);
     }
   }
-
   for( auto& c : vec_s  ){
     for( const auto& a : axes  ){
       c = c.Rebin(a);
     }
   }
-  
+
+  auto axes = vec_c[0].GetAxes();
+  DataContainerMatrix corr_matrix{axes};
   for( auto i = size_t{0}; i<vec_c[0].size(); ++i ){    
     auto c1 = vec_c[0].At(i).Mean();
     auto c2 = vec_c[1].At(i).Mean();
