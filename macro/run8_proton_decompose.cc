@@ -49,15 +49,15 @@ correction_matrix_t PseudoInverse( const correction_matrix_t& M, double l ){
   return Mpinv;
 }
 
-DataContainerMatrix MakeCorrectionMatrix(vector1d<Qn::DataContainerStatCalculate>& vec_c, vector1d<Qn::DataContainerStatCalculate>& vec_s, const vector1d<Qn::DataContainerStatCalculate>& vec_cov ){
+DataContainerMatrix MakeCorrectionMatrix( const vector1d<Qn::AxisD>& event_axes, vector1d<Qn::DataContainerStatCalculate>& vec_c, vector1d<Qn::DataContainerStatCalculate>& vec_s ){
   std::cout << __func__ << std::endl;
   for( auto& c : vec_c  ){
-    for( const auto& a : axes  ){
+    for( const auto& a : event_axes  ){
       c = c.Rebin(a);
     }
   }
   for( auto& c : vec_s  ){
-    for( const auto& a : axes  ){
+    for( const auto& a : event_axes  ){
       c = c.Rebin(a);
     }
   }
@@ -204,15 +204,15 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
   auto [vec_c_tn, vec_s_tn, vec_cov_tn] = ReadCnSn(tn_name, calib_file.get());
   auto [vec_c_p, vec_s_p, vec_cov_p] = ReadCnSn(proton_name, calib_file.get());
 
-  auto f1_corr = MakeCorrectionMatrix(vec_c_f1, vec_s_f1, vec_cov_f1);
-  auto f2_corr = MakeCorrectionMatrix(vec_c_f2, vec_s_f2, vec_cov_f2);
-  auto f3_corr = MakeCorrectionMatrix(vec_c_f3, vec_s_f3, vec_cov_f3);
-  auto f4_corr = MakeCorrectionMatrix(vec_c_f4, vec_s_f4, vec_cov_f4);
+  auto f1_corr = MakeCorrectionMatrix(event_axes, vec_c_f1, vec_s_f1);
+  auto f2_corr = MakeCorrectionMatrix(event_axes, vec_c_f2, vec_s_f2);
+  auto f3_corr = MakeCorrectionMatrix(event_axes, vec_c_f3, vec_s_f3);
+  auto f4_corr = MakeCorrectionMatrix(event_axes, vec_c_f4, vec_s_f4);
   
-  auto tp_corr = MakeCorrectionMatrix(vec_c_tp, vec_s_tp, vec_cov_tp);
-  auto tn_corr = MakeCorrectionMatrix(vec_c_tn, vec_s_tn, vec_cov_tn);
+  auto tp_corr = MakeCorrectionMatrix(event_axes, vec_c_tp, vec_s_tp);
+  auto tn_corr = MakeCorrectionMatrix(event_axes, vec_c_tn, vec_s_tn);
   
-  auto p_corr = MakeCorrectionMatrix(vec_c_p, vec_s_p, vec_cov_p);
+  auto p_corr = MakeCorrectionMatrix(event_axes, vec_c_p, vec_s_p);
 
   auto c_f1 = ExtractPack(vec_c_f1, event_axes);
   auto s_f1 = ExtractPack(vec_s_f1, event_axes);
