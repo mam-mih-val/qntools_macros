@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-constexpr size_t NDIM = 7;
+constexpr size_t NDIM = 5;
 
 using correction_matrix_t = Eigen::Matrix<double, NDIM+1, NDIM+1>;
 using mixing_matrix_t = Eigen::Matrix<double, NDIM-1, NDIM>;
@@ -82,12 +82,10 @@ DataContainerMatrix MakeCorrectionMatrix( const vector1d<Qn::AxisD>& event_axes,
     auto sumw = vec_c[0].At(i).SumWeights();
 
     auto M = mixing_matrix_t{ 
-      { c1,  1+c2,    s2,   c3+c1,  s3+s1, c4+c2, s4+s2 },
-      { s1,  s2,    1-c2,   s3-s1,  c1-c3, s4-s2, c2-c4 },
-      { c2,  c3+c1, s3-s1,  1+c4,      s4, c5+c1, s5+s1 },
-      { s2,  s3+s1, c1-c3,    s4,    1-c4, s5-s1, c1-c5 },
-      { c3,  c4+c2, s4-s2,  c5+c1,  s5-s1,  1+c6,    s6 },
-      { s3,  s4+s2, c2-c4,  s5+s1,  c1-c5,    s6,  1-c6 },
+      { c1,  1+c2,    s2,   c3+c1,  s3+s1 },
+      { s1,  s2,    1-c2,   s3-s1,  c1-c3 },
+      { c2,  c3+c1, s3-s1,  1+c4,      s4 },
+      { s2,  s3+s1, c1-c3,    s4,    1-c4 }
     };
 
     auto MTM = 2 * M.transpose() * M;
@@ -272,7 +270,7 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
           continue;
         }
 
-        auto X1old =  column_t{ x1_old, y1_old, x2_old, y2_old, x3_old, y3_old };
+        auto X1old =  column_t{ x1_old, y1_old, x2_old, y2_old };
         auto b = 2 * M.transpose() * X1old;
         auto b_tilda = Eigen::Matrix<double, NDIM+1, 1>{};
         b_tilda << b, 1;
@@ -283,12 +281,9 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
         auto y1_new = static_cast<double>(X1new(2));
         auto x2_new = static_cast<double>(X1new(3));
         auto y2_new = static_cast<double>(X1new(4));
-        auto x3_new = static_cast<double>(X1new(5));
-        auto y3_new = static_cast<double>(X1new(6));
 
         new_qvec.At(i).SetQ( 1, x1_new, y1_new );
         new_qvec.At(i).SetQ( 2, x2_new, y2_new );
-        new_qvec.At(i).SetQ( 3, x3_new, y3_new );
       }
 
       return new_qvec;
