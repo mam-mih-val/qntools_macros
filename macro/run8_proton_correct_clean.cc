@@ -13,6 +13,8 @@ void run8_proton_correct_clean( std::string list,
                           std::string str_pid_tof700_file,
                           std::string calib_in_file="qa.root" ){
 
+  ROOT::DisableImplicitMT();
+  
   std::cout << "starting execution" << std::endl;
   
   const float PROTON_M = 0.938; // GeV/c2
