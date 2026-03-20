@@ -354,7 +354,7 @@ void run8_proton_correct_clean( std::string list,
   ; // at least one filter is mandatory!!!
 
   auto correction_task = CorrectionTask( dd, "correction_out.root", calib_in_file );
-  correction_task.SetEventVariables(std::regex("centrality|runId"));
+  correction_task.SetEventVariables(std::regex("centrality|runId|vtxX|vtxY|vtxZ"));
   correction_task.SetChannelVariables({std::regex("fhcalMod(X|Y|Phi|E|Id)")});
   correction_task.SetTrackVariables({
                                             std::regex("tr(Pt|Px|Py|Eta|Phi|NsigmaProton|NsigmaProton400|NsigmaProton700|Charge|ProtonY|DcaR|Chi2Ndf|Nhits|Weight|WeightTof400|WeightTof700|FhcalX|FhcalY|StsNhits|StsChi2|Q)"),
