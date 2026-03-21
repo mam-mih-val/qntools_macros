@@ -114,13 +114,13 @@ std::tuple< vector1d<Qn::DataContainerStatCalculate>, vector1d<Qn::DataContainer
   vec_c.reserve(6);
   vec_s.reserve(6);
   for( auto i=size_t{0}; i<6; ++i ){
-    auto corr_name = str_vec_name+".x"+std::to_string(i+1)+"centralityrunId"s;
+    auto corr_name = str_vec_name+".x"+std::to_string(i+1)+"centralityvtxXvtxY"s;
     std::cout << "Extracting " << corr_name << "\n";
     calib_file->GetObject( corr_name.c_str(), tmp );
     assert(tmp);
     vec_c.emplace_back( *tmp );
     
-    corr_name = str_vec_name+".y"+std::to_string(i+1)+"centralityrunId"s;
+    corr_name = str_vec_name+".y"+std::to_string(i+1)+"centralityvtxXvtxY"s;
     std::cout << "Extracting " << corr_name << "\n";
     calib_file->GetObject( corr_name.c_str(), tmp );
     assert(tmp);
@@ -248,10 +248,11 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
     const vector2d<DataContainerMatrix>& vec_cov,
     const vector1d<Qn::AxisD>& axes 
   ){
-    return [&vec_c, &vec_s, &vec_cov, &axes]( Qn::DataContainerQVector qvec, Double_t centrality, Double_t run_id ) -> Qn::DataContainerQVector {
+    return [&vec_c, &vec_s, &vec_cov, &axes]( Qn::DataContainerQVector qvec, Double_t centrality, Double vtx_x, Double vtx_y ) -> Qn::DataContainerQVector {
       auto new_qvec = qvec;
       auto c_bin = axes.at(0).FindBin( centrality ); 
-      auto r_bin = axes.at(1).FindBin( run_id ); 
+      auto x_bin = axes.at(1).FindBin( vtx_x ); 
+      auto y_bin = axes.at(2).FindBin( vtx_y ); 
 
       for( auto i=size_t{0}; i<qvec.size(); ++i ){
         if( fabs( qvec.At(i).sumweights()) < std::numeric_limits<double>::min() )
@@ -265,7 +266,7 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
         auto x3_old = qvec.At(i).x(3);
         auto y3_old = qvec.At(i).y(3);
     
-        auto [Minv, M] = vec_cov.at(c_bin).at(r_bin).At(i);
+        auto [Minv, M] = vec_cov.at(c_bin).at(x_bin).at(y_bin).At(i);
         
         if( std::isnan(Minv(0, 0)) ){
           new_qvec.At(i).Reset();
@@ -296,15 +297,15 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
   auto dd = d
     .Filter( "1 < centrality && centrality < 60" )
     .Filter( "6700 < runId && runId < 8300" )
-    .Define("F1_DECOMPOSED", correction_generator(c_f1, s_f1, cov_f1, event_axes), { f1_name, "centrality", "runId" } )
-    .Define("F2_DECOMPOSED", correction_generator(c_f2, s_f2, cov_f2, event_axes), { f2_name, "centrality", "runId" } )
-    .Define("F3_DECOMPOSED", correction_generator(c_f3, s_f3, cov_f3, event_axes), { f3_name, "centrality", "runId" } )
-    .Define("F4_DECOMPOSED", correction_generator(c_f4, s_f4, cov_f4, event_axes), { f4_name, "centrality", "runId" } )
+    .Define("F1_DECOMPOSED", correction_generator(c_f1, s_f1, cov_f1, event_axes), { f1_name, "centrality", "vtxX", "vtxY" } )
+    .Define("F2_DECOMPOSED", correction_generator(c_f2, s_f2, cov_f2, event_axes), { f2_name, "centrality", "vtxX", "vtxY" } )
+    .Define("F3_DECOMPOSED", correction_generator(c_f3, s_f3, cov_f3, event_axes), { f3_name, "centrality", "vtxX", "vtxY" } )
+    .Define("F4_DECOMPOSED", correction_generator(c_f4, s_f4, cov_f4, event_axes), { f4_name, "centrality", "vtxX", "vtxY" } )
 
-    .Define("Tpos_DECOMPOSED", correction_generator(c_tn, s_tn, cov_tn, event_axes), { tp_name, "centrality", "runId" } )
-    .Define("Tneg_DECOMPOSED", correction_generator(c_tp, s_tp, cov_tp, event_axes), { tn_name, "centrality", "runId" } )
+    .Define("Tpos_DECOMPOSED", correction_generator(c_tn, s_tn, cov_tn, event_axes), { tp_name, "centrality", "vtxX", "vtxY" } )
+    .Define("Tneg_DECOMPOSED", correction_generator(c_tp, s_tp, cov_tp, event_axes), { tn_name, "centrality", "vtxX", "vtxY" } )
     
-    .Define("proton_DECOMPOSED", correction_generator(c_p, s_p, cov_p, event_axes), { proton_name, "centrality", "runId" } )
+    .Define("proton_DECOMPOSED", correction_generator(c_p, s_p, cov_p, event_axes), { proton_name, "centrality", "vtxX", "vtxY" } )
   ;
 
   auto file_out = std::unique_ptr< TFile, std::function< void(TFile*) > >{ TFile::Open( "decomposed_out.root", "RECREATE" ), [](auto f){f ->Close(); } };
@@ -313,8 +314,12 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
   Qn::DataContainerQVector f1{}, f2{}, f3{}, f4{}, tp{}, tn{}, p{};
   double cent{};
   double r_id{};
+  double v_x{};
+  double v_y{};
   tree->Branch( "centrality", &cent );
   tree->Branch( "runId", &r_id );
+  tree->Branch( "vtxX", &v_x );
+  tree->Branch( "vtxY", &v_y );
 
   tree->Branch( "F1_DECOMPOSED", "Qn::DataContainerQVector", &f1 );
   tree->Branch( "F2_DECOMPOSED", "Qn::DataContainerQVector", &f2 );
@@ -326,9 +331,11 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
 
   std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
-  dd.Foreach( [tree, &cent, &r_id, &f1, &f2, &f3, &f4, &tp, &tn, &p]( 
+  dd.Foreach( [tree, &cent, &r_id, &v_x, &v_y, &f1, &f2, &f3, &f4, &tp, &tn, &p]( 
     double centrality,
     double run_id,
+    double vtx_x,
+    double vtx_y,
     Qn::DataContainerQVector f1_ev, 
     Qn::DataContainerQVector f2_ev, 
     Qn::DataContainerQVector f3_ev, 
@@ -338,6 +345,8 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
     Qn::DataContainerQVector p_ev ) mutable {
     cent = centrality;
     r_id = run_id;
+    v_x = vtx_x;
+    v_y = vtx_y;
     f1 = f1_ev;
     f2 = f2_ev;
     f3 = f3_ev;
@@ -350,6 +359,8 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
   std::vector<std::string>{ 
     "centrality",
     "runId",
+    "vtxX",
+    "vtxY",
     "F1_DECOMPOSED",
     "F2_DECOMPOSED",
     "F3_DECOMPOSED",
