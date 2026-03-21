@@ -124,7 +124,7 @@ void run8_proton_correlate_tof(string inputFiles="qn.root", string outputFile="c
 {
   int nSamples = 100;
   Qn::AxisD centAxis({"centrality", 6, 0, 60});
-  Qn::AxisD runIdAxis({ "runId", 4, 6700, 8300 });
+  Qn::AxisD runIdAxis({ "runId", 12, 7100, 8300 });
   auto axes_correlation = Qn::MakeAxes(centAxis, runIdAxis);
   std::string treename = "tree";
   auto* chain = new TChain( treename.c_str() );
@@ -161,8 +161,8 @@ void run8_proton_correlate_tof(string inputFiles="qn.root", string outputFile="c
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y1", P1::y(1), wSumWu1part, wy, corr, corr);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x2", P1::x(2), wSumWu1part, wy, corr, corr);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y2", P1::y(2), wSumWu1part, wy, corr, corr);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".x3", P1::x(3), wSumWu1part, wy, corr, corr);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".y3", P1::y(3), wSumWu1part, wy, corr, corr);
+    // corrBuilder.AddCorrelationWithInternalReader(corrName+".x3", P1::x(3), wSumWu1part, wy, corr, corr);
+    // corrBuilder.AddCorrelationWithInternalReader(corrName+".y3", P1::y(3), wSumWu1part, wy, corr, corr);
   }
 
   for ( auto &corr: arr_Q1 )
@@ -173,8 +173,8 @@ void run8_proton_correlate_tof(string inputFiles="qn.root", string outputFile="c
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y1", P1::y(1), wUnity1part, wn, corr, corr);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x2", P1::x(2), wUnity1part, wn, corr, corr);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y2", P1::y(2), wUnity1part, wn, corr, corr);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".x3", P1::x(3), wUnity1part, wn, corr, corr);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".y3", P1::y(3), wUnity1part, wn, corr, corr);
+    // corrBuilder.AddCorrelationWithInternalReader(corrName+".x3", P1::x(3), wUnity1part, wn, corr, corr);
+    // corrBuilder.AddCorrelationWithInternalReader(corrName+".y3", P1::y(3), wUnity1part, wn, corr, corr);
   }
 
   for ( auto &corr: arr_u1Q1 ){
@@ -189,20 +189,20 @@ void run8_proton_correlate_tof(string inputFiles="qn.root", string outputFile="c
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x2y2", P2::xy(2, 2), wSumWu, wy, corr, corr);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y2x2", P2::yx(2, 2), wSumWu, wy, corr, corr);
 
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".x3x3", P2::xx(3, 3), wSumWu, wy, corr, corr);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".y3y3", P2::yy(3, 3), wSumWu, wy, corr, corr);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".x3y3", P2::xy(3, 3), wSumWu, wy, corr, corr);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".y3x3", P2::yx(3, 3), wSumWu, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1x2", P2::xx(1, 2), wSumWu, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1y2", P2::yy(1, 2), wSumWu, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1y2", P2::xy(1, 2), wSumWu, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1x2", P2::yx(1, 2), wSumWu, wy, corr, corr);
 
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".x2x1", P2::xx(2, 1), wSumWu, wy, corr, corr);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".y2y1", P2::yy(2, 1), wSumWu, wy, corr, corr);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".x2y1", P2::xy(2, 1), wSumWu, wy, corr, corr);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".y2x1", P2::yx(2, 1), wSumWu, wy, corr, corr);
+    // corrBuilder.AddCorrelationWithInternalReader(corrName+".x3x3", P2::xx(3, 3), wSumWu, wy, corr, corr);
+    // corrBuilder.AddCorrelationWithInternalReader(corrName+".y3y3", P2::yy(3, 3), wSumWu, wy, corr, corr);
+    // corrBuilder.AddCorrelationWithInternalReader(corrName+".x3y3", P2::xy(3, 3), wSumWu, wy, corr, corr);
+    // corrBuilder.AddCorrelationWithInternalReader(corrName+".y3x3", P2::yx(3, 3), wSumWu, wy, corr, corr);
 
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".x3x1", P2::xx(3, 1), wSumWu, wy, corr, corr);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".y3y1", P2::yy(3, 1), wSumWu, wy, corr, corr);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".x3y1", P2::xy(3, 1), wSumWu, wy, corr, corr);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".y3x1", P2::yx(3, 1), wSumWu, wy, corr, corr);
+    // corrBuilder.AddCorrelationWithInternalReader(corrName+".x3x1", P2::xx(3, 1), wSumWu, wy, corr, corr);
+    // corrBuilder.AddCorrelationWithInternalReader(corrName+".y3y1", P2::yy(3, 1), wSumWu, wy, corr, corr);
+    // corrBuilder.AddCorrelationWithInternalReader(corrName+".x3y1", P2::xy(3, 1), wSumWu, wy, corr, corr);
+    // corrBuilder.AddCorrelationWithInternalReader(corrName+".y3x1", P2::yx(3, 1), wSumWu, wy, corr, corr);
   }
 
   for (auto &corr: arr_Q1Q1)
@@ -246,13 +246,13 @@ void run8_proton_correlate_tof(string inputFiles="qn.root", string outputFile="c
     // corrBuilder.AddCorrelationWithInternalReader(corrName+".y3y1y1", P3::yyy(3, 1, 1), wSumWu3part, wy, corr, corr);
   }
 
-  for ( auto &corr: arr_u3Q1Q1Q1 )
-  {
-    string corrName=corr.at(0)+"."+corr.at(1)+"."+corr.at(2)+"."+corr.at(3);
-    // diagonal/non-zero
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".x3y1y1y1", P4::yyyy(3, 1, 1, 1), wSumWu4part, wy, corr, corr);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".y3y1y1y1", P4::xyyy(3, 1, 1, 1), wSumWu4part, wy, corr, corr);
-  }
+  // for ( auto &corr: arr_u3Q1Q1Q1 )
+  // {
+  //   string corrName=corr.at(0)+"."+corr.at(1)+"."+corr.at(2)+"."+corr.at(3);
+  //   // diagonal/non-zero
+  //   corrBuilder.AddCorrelationWithInternalReader(corrName+".x3y1y1y1", P4::yyyy(3, 1, 1, 1), wSumWu4part, wy, corr, corr);
+  //   corrBuilder.AddCorrelationWithInternalReader(corrName+".y3y1y1y1", P4::xyyy(3, 1, 1, 1), wSumWu4part, wy, corr, corr);
+  // }
 
   // ---------------- //
   // saving to output //
