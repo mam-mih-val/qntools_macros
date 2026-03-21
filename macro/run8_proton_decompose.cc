@@ -180,7 +180,9 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
 
   auto event_axes = std::vector<Qn::AxisD>{
     Qn::AxisD{ "centrality", 6, 0, 60 },
-    Qn::AxisD{ "runId", 12, 7100, 8300 },
+    Qn::AxisD{ "vtxX", 5, -1.0, 1.0 },
+    Qn::AxisD{ "vtxY", 5, -1.0, 1.0 },
+    // Qn::AxisD{ "runId", 12, 7100, 8300 },
   };
 
   const std::string f1_name {"F1_PLAIN"};
