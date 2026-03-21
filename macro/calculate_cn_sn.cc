@@ -71,7 +71,7 @@ void calculate_cn_sn(string inputFiles="qn.root", string outputFile="CnSn.root")
 {
   int nSamples = 100;
   Qn::AxisD centAxis({"centrality", 6, 0, 60});
-  Qn::AxisD runIdAxis({ "runId", 17, 6600, 8300 });
+  Qn::AxisD runIdAxis({ "runId", 12, 7100, 8300 });
   auto axes_correlation = Qn::MakeAxes(centAxis, runIdAxis);
   std::string treename = "tree";
   auto* chain = new TChain( treename.c_str() );
