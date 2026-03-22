@@ -248,7 +248,7 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
     const vector2d<DataContainerMatrix>& vec_cov,
     const vector1d<Qn::AxisD>& axes 
   ){
-    return [&vec_c, &vec_s, &vec_cov, &axes]( Qn::DataContainerQVector qvec, Double_t centrality, Double vtx_x, Double vtx_y ) -> Qn::DataContainerQVector {
+    return [&vec_c, &vec_s, &vec_cov, &axes]( Qn::DataContainerQVector qvec, Double_t centrality, Double_t vtx_x, Double_t vtx_y ) -> Qn::DataContainerQVector {
       auto new_qvec = qvec;
       auto c_bin = axes.at(0).FindBin( centrality ); 
       auto x_bin = axes.at(1).FindBin( vtx_x ); 
