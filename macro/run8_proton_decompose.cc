@@ -273,7 +273,7 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
   auto p_corr = MakeCorrectionMatrix(v2_c_p, v2_s_p);
 
   const auto correction_generator = []( 
-    const vector2d<DataContainerMatrix>& vec_cor,
+    const vector1d<DataContainerMatrix>& vec_cor,
     const Linearization& lin 
   ){
     return [&vec_cor, &lin]( Qn::DataContainerQVector qvec, Double_t centrality, Double_t vtx_x, Double_t vtx_y ) -> Qn::DataContainerQVector {
