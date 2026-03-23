@@ -328,8 +328,8 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
     .Define("F3_DECOMPOSED", correction_generator(f3_corr, lin), { f3_name, "centrality", "vtxX", "vtxY" } )
     .Define("F4_DECOMPOSED", correction_generator(f4_corr, lin), { f4_name, "centrality", "vtxX", "vtxY" } )
 
-    .Define("Tpos_DECOMPOSED", correction_generator(tn_cor, lin), { tp_name, "centrality", "vtxX", "vtxY" } )
-    .Define("Tneg_DECOMPOSED", correction_generator(tp_cor, lin), { tn_name, "centrality", "vtxX", "vtxY" } )
+    .Define("Tpos_DECOMPOSED", correction_generator(tn_corr, lin), { tp_name, "centrality", "vtxX", "vtxY" } )
+    .Define("Tneg_DECOMPOSED", correction_generator(tp_corr, lin), { tn_name, "centrality", "vtxX", "vtxY" } )
     
     .Define("proton_DECOMPOSED", correction_generator(p_corr, lin), { proton_name, "centrality", "vtxX", "vtxY" } )
   ;
