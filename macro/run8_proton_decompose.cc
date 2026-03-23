@@ -323,6 +323,8 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
   auto dd = d
     .Filter( "1 < centrality && centrality < 60" )
     .Filter( "6700 < runId && runId < 8300" )
+    .Filter( "-1.0 < vtxX && vtxX < 1.0" )
+    .Filter( "-1.0 < vtxY && vtxY < 1.0" )
     .Define("F1_DECOMPOSED", correction_generator(f1_corr, lin), { f1_name, "centrality", "vtxX", "vtxY" } )
     .Define("F2_DECOMPOSED", correction_generator(f2_corr, lin), { f2_name, "centrality", "vtxX", "vtxY" } )
     .Define("F3_DECOMPOSED", correction_generator(f3_corr, lin), { f3_name, "centrality", "vtxX", "vtxY" } )
