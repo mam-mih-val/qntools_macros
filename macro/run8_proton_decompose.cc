@@ -401,5 +401,5 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
   std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
   std::cout << "Elapsed time: " << std::chrono::duration_cast<std::chrono::minutes>(end - begin).count() << " min" << std::endl;
   auto elapsed_s = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
-  std::cout << "It is " << tree->GetEntries() > 0 ? elapsed_s / tree->GetEntries() : "0/0" << " μs/ev." << std::endl;
+  std::cout << "It is " << ( tree->GetEntries() > 0 ? elapsed_s / tree->GetEntries() : 0.0 ) << " μs/ev." << std::endl;
 }
