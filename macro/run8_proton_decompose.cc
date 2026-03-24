@@ -276,9 +276,9 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
     const vector1d<DataContainerMatrix>& vec_cor,
     const Linearization& lin 
   ){
-    return [&vec_cor, &lin]( Qn::DataContainerQVector qvec, Double_t centrality, Double_t vtx_x, Double_t vtx_y ) -> Qn::DataContainerQVector {
+    return [&vec_cor, &lin]( Qn::DataContainerQVector qvec, Double_t centrality, Double_t run_id ) -> Qn::DataContainerQVector {
       auto new_qvec = qvec;
-      auto l_idx = lin[ std::vector<double>{ centrality, vtx_x, vtx_y } ];
+      auto l_idx = lin[ std::vector<double>{ centrality, run_id } ];
 
       for( auto i=size_t{0}; i<qvec.size(); ++i ){
         if( fabs( qvec.At(i).sumweights()) < std::numeric_limits<double>::min() )
@@ -325,15 +325,15 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
     .Filter( "7100 < runId && runId < 8300" )
     .Filter( "-1.0 < vtxX && vtxX < 1.0" )
     .Filter( "-1.0 < vtxY && vtxY < 1.0" )
-    .Define("F1_DECOMPOSED", correction_generator(f1_corr, lin), { f1_name, "centrality", "vtxX", "vtxY" } )
-    .Define("F2_DECOMPOSED", correction_generator(f2_corr, lin), { f2_name, "centrality", "vtxX", "vtxY" } )
-    .Define("F3_DECOMPOSED", correction_generator(f3_corr, lin), { f3_name, "centrality", "vtxX", "vtxY" } )
-    .Define("F4_DECOMPOSED", correction_generator(f4_corr, lin), { f4_name, "centrality", "vtxX", "vtxY" } )
+    .Define("F1_DECOMPOSED", correction_generator(f1_corr, lin), { f1_name, "centrality", "runId" } )
+    .Define("F2_DECOMPOSED", correction_generator(f2_corr, lin), { f2_name, "centrality", "runId" } )
+    .Define("F3_DECOMPOSED", correction_generator(f3_corr, lin), { f3_name, "centrality", "runId" } )
+    .Define("F4_DECOMPOSED", correction_generator(f4_corr, lin), { f4_name, "centrality", "runId" } )
 
-    .Define("Tpos_DECOMPOSED", correction_generator(tn_corr, lin), { tp_name, "centrality", "vtxX", "vtxY" } )
-    .Define("Tneg_DECOMPOSED", correction_generator(tp_corr, lin), { tn_name, "centrality", "vtxX", "vtxY" } )
+    .Define("Tpos_DECOMPOSED", correction_generator(tn_corr, lin), { tp_name, "centrality", "runId" } )
+    .Define("Tneg_DECOMPOSED", correction_generator(tp_corr, lin), { tn_name, "centrality", "runId" } )
     
-    .Define("proton_DECOMPOSED", correction_generator(p_corr, lin), { proton_name, "centrality", "vtxX", "vtxY" } )
+    .Define("proton_DECOMPOSED", correction_generator(p_corr, lin), { proton_name, "centrality", "runId" } )
   ;
 
   auto file_out = std::unique_ptr< TFile, std::function< void(TFile*) > >{ TFile::Open( "decomposed_out.root", "RECREATE" ), [](auto f){f ->Close(); } };
