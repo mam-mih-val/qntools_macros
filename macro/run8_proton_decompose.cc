@@ -169,13 +169,13 @@ std::tuple< vector1d<Qn::DataContainerStatCalculate>, vector1d<Qn::DataContainer
   vec_c.reserve(6);
   vec_s.reserve(6);
   for( auto i=size_t{0}; i<6; ++i ){
-    auto corr_name = str_vec_name+".x"+std::to_string(i+1)+"centralityvtxXvtxY"s;
+    auto corr_name = str_vec_name+".x"+std::to_string(i+1)+"centralityrunId"s;
     std::cout << "Extracting " << corr_name << "\n";
     calib_file->GetObject( corr_name.c_str(), tmp );
     assert(tmp);
     vec_c.emplace_back( *tmp );
     
-    corr_name = str_vec_name+".y"+std::to_string(i+1)+"centralityvtxXvtxY"s;
+    corr_name = str_vec_name+".y"+std::to_string(i+1)+"centralityrunId"s;
     std::cout << "Extracting " << corr_name << "\n";
     calib_file->GetObject( corr_name.c_str(), tmp );
     assert(tmp);
@@ -215,9 +215,9 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
 
   auto event_axes = std::vector<Qn::AxisD>{
     Qn::AxisD{ "centrality", 6, 0, 60 },
-    Qn::AxisD{ "vtxX", 5, -1.0, 1.0 },
-    Qn::AxisD{ "vtxY", 5, -1.0, 1.0 },
-    // Qn::AxisD{ "runId", 12, 7100, 8300 },
+    // Qn::AxisD{ "vtxX", 5, -1.0, 1.0 },
+    // Qn::AxisD{ "vtxY", 5, -1.0, 1.0 },
+    Qn::AxisD{ "runId", 120, 7100, 8300 },
   };
 
   const std::string f1_name {"F1_PLAIN"};
@@ -322,7 +322,7 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
   auto d = ROOT::RDataFrame( "tree", in_file_name );
   auto dd = d
     .Filter( "1 < centrality && centrality < 60" )
-    .Filter( "6700 < runId && runId < 8300" )
+    .Filter( "7100 < runId && runId < 8300" )
     .Filter( "-1.0 < vtxX && vtxX < 1.0" )
     .Filter( "-1.0 < vtxY && vtxY < 1.0" )
     .Define("F1_DECOMPOSED", correction_generator(f1_corr, lin), { f1_name, "centrality", "vtxX", "vtxY" } )
