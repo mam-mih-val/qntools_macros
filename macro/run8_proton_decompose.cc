@@ -80,7 +80,7 @@ public:
     auto coordinates = this->operator()( l_idx );
     return SelectionAxes( coordinates );
   }
-  auto Axes() -> const vector1d<Qn::AxisD>& { return axis_vector; }
+  auto Axes() const -> const vector1d<Qn::AxisD>& { return axis_vector; }
 
 private:
   vector1d<Qn::AxisD> axis_vector{};
