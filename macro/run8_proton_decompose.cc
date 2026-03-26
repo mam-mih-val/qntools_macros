@@ -150,7 +150,7 @@ vector1d<DataContainerMatrix> MakeCorrectionMatrix(const vector2d<Qn::DataContai
       // C(NDIM, 0) = 1;
       // C(0, NDIM) = 1;
 
-      auto Minv = PseudoInverse( M, 5e-3 );      
+      auto Minv = PseudoInverse( M, 10.0 / sqrt(sumw) );      
       std::cout << " 1 / sqrt(sumw) = " << 1.0 / sqrt(sumw) << "\n";
 
       corr_matrix.At(i).first = Minv;
