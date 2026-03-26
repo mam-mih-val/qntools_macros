@@ -251,7 +251,7 @@ void run8_proton_correlate_tof(string inputFiles="qn.root", string outputFile="c
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x2x1y1", P3::xxy(2, 1, 1), wSumWu3part, wy, corr, corr);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x2y1x1", P3::xyx(2, 1, 1), wSumWu3part, wy, corr, corr);
     // v1 variance
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".y12x1x1", P3::yyy(1, 1, 1), wSumWu3part, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y12y1y1", P12::yyy(1, 1, 1), wSumWu3part, wy, corr, corr);
 
     // corrBuilder.AddCorrelationWithInternalReader(corrName+".y3y1y1", P3::yyy(3, 1, 1), wSumWu3part, wy, corr, corr);
   }
