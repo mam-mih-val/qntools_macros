@@ -81,6 +81,14 @@ namespace P4{
   }
 }
 
+namespace P12{
+  inline auto yyy( unsigned int h_a, unsigned int h_b, unsigned int h_c ) {
+    return [ h_a, h_b, h_c ]( const Qn::QVector &a, const Qn::QVector &b, const Qn::QVector &c ) {
+      return a.y(h_a) * a.y(h_a) * b.y(h_b) * c.y(h_c);
+    };
+  }
+}
+
 namespace P1 {
   inline auto x( unsigned int h_a ) {
     return [ h_a ](const Qn::QVector &a ) {
@@ -242,7 +250,9 @@ void run8_proton_correlate_tof(string inputFiles="qn.root", string outputFile="c
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y2y1y1", P3::yyy(2, 1, 1), wSumWu3part, wy, corr, corr);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x2x1y1", P3::xxy(2, 1, 1), wSumWu3part, wy, corr, corr);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x2y1x1", P3::xyx(2, 1, 1), wSumWu3part, wy, corr, corr);
-    // third harmonic
+    // v1 variance
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y12x1x1", P3::yyy(1, 1, 1), wSumWu3part, wy, corr, corr);
+
     // corrBuilder.AddCorrelationWithInternalReader(corrName+".y3y1y1", P3::yyy(3, 1, 1), wSumWu3part, wy, corr, corr);
   }
 
