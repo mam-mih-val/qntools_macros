@@ -80,6 +80,7 @@ public:
     auto coordinates = this->operator()( l_idx );
     return SelectionAxes( coordinates );
   }
+  auto Axes() -> const vector1d<Qn::AxisD>& { return axis_vector; }
 
 private:
   vector1d<Qn::AxisD> axis_vector{};
@@ -190,9 +191,13 @@ vector1d < Qn::DataContainer<T, Qn::AxisD> > ExtractEventAxes( const Qn::DataCon
   std::cout << __func__ << std::endl;
   vector1d < Qn::DataContainer<T, Qn::AxisD> > result;
   result.reserve( lin.size() );
+  auto rebinned_container = container;
+  for( const auto& a : lin.Axes() ){
+    rebinned_container = rebinned_container.Rebin( a );
+  }
   for( auto i=size_t{0}; i<lin.size(); ++i ){
     auto axes = lin.SelectionAxes( i );
-    auto dc = container;
+    auto dc = rebinned_container;
     for( const auto& a : axes ){
       dc = dc.GetAxes().size() > 1 ? dc.Select( a ) : dc.Rebin( a );
     }
@@ -218,7 +223,7 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
     Qn::AxisD{ "centrality", 6, 0, 60 },
     // Qn::AxisD{ "vtxX", 5, -1.0, 1.0 },
     // Qn::AxisD{ "vtxY", 5, -1.0, 1.0 },
-    Qn::AxisD{ "runId", 120, 7100, 8300 },
+    Qn::AxisD{ "runId", 60, 7100, 8300 },
   };
 
   const std::string f1_name {"F1_PLAIN"};
