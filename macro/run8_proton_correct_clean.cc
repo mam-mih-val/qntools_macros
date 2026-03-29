@@ -83,15 +83,18 @@ void run8_proton_correct_clean( std::string list,
     return 
     [ f1_mean, f1_sigma ]
     ( std::vector<float> vec_pq, ROOT::VecOps::RVec<float> vec_m2 ){
-        auto vec_n_sigma = std::vector<float>{};
-        vec_n_sigma.reserve( vec_pq.size() );
+        auto vec_n_sigma = std::vector<float>( vec_pq.size(), 999. );
         for( size_t i=0; i < vec_pq.size(); ++i ){
           auto m2 = vec_m2.at(i);
           auto pq = vec_pq.at(i);
           auto mean = f1_mean->Eval(pq);
           auto sigma = f1_sigma->Eval(pq);
           auto n_sigma = fabs( m2 - mean ) / sigma;
-          vec_n_sigma.push_back( pq > 0 ? n_sigma : 999. );
+          if( pq < 1.0 )
+            continue;
+          if( pq > 8.0 )
+            continue;
+          vec_n_sigma[i] = n_sigma;
         }
       return vec_n_sigma;
     };
@@ -365,7 +368,7 @@ void run8_proton_correct_clean( std::string list,
   // correction_task.AddEventAxis( { "runId", 12, 7100, 8300 } );
 
   VectorConfig f1( "F1", "fhcalModPhi", "fhcalModE", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
-  f1.SetHarmonicArray( {1, 2, 3, 4, 5, 6 } );
+  f1.SetHarmonicArray( { 1, 2, 3, 4, 5, 6, 7, 8 } );
   f1.SetCorrections( {CORRECTION::PLAIN } );
   f1.AddCut( "fhcalModId", [&f1_modules](double mod_id){
     auto id = static_cast<int>(mod_id);
@@ -375,7 +378,7 @@ void run8_proton_correct_clean( std::string list,
   correction_task.AddVector(f1);
 
   VectorConfig f2( "F2", "fhcalModPhi", "fhcalModE", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
-  f2.SetHarmonicArray( {1, 2, 3, 4, 5, 6 } );
+  f2.SetHarmonicArray( {1, 2, 3, 4, 5, 6, 7, 8 } );
   f2.SetCorrections( {CORRECTION::PLAIN } );
   f2.AddCut( "fhcalModId", [&f2_modules](double mod_id){
     auto id = static_cast<int>(mod_id);
@@ -385,7 +388,7 @@ void run8_proton_correct_clean( std::string list,
   correction_task.AddVector(f2);
 
   VectorConfig f3( "F3", "fhcalModPhi", "fhcalModE", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
-  f3.SetHarmonicArray( {1, 2, 3, 4, 5, 6 } );
+  f3.SetHarmonicArray( {1, 2, 3, 4, 5, 6, 7, 8 } );
   f3.SetCorrections( {CORRECTION::PLAIN } );
   f3.AddCut( "fhcalModId", [&f3_modules](double mod_id){
     auto id = static_cast<int>(mod_id);
@@ -395,7 +398,7 @@ void run8_proton_correct_clean( std::string list,
   correction_task.AddVector(f3);
 
   VectorConfig f4( "F4", "fhcalModPhi", "fhcalModE", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
-  f4.SetHarmonicArray( {1, 2, 3, 4, 5, 6 } );
+  f4.SetHarmonicArray( {1, 2, 3, 4, 5, 6, 7, 8 } );
   f4.SetCorrections( {CORRECTION::PLAIN } );
   f4.AddCut( "fhcalModId", [&f4_modules](double mod_id){
     auto id = static_cast<int>(mod_id);
@@ -405,7 +408,7 @@ void run8_proton_correct_clean( std::string list,
   correction_task.AddVector(f4);
 
   VectorConfig Tneg( "Tneg", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
-  Tneg.SetHarmonicArray( {1, 2, 3, 4, 5, 6 } );
+  Tneg.SetHarmonicArray( {1, 2, 3, 4, 5, 6, 7, 8 } );
   Tneg.SetCorrections( {CORRECTION::PLAIN } );
   Tneg.AddCut( "trCharge", [](double charge){
     return charge < 0.0;
@@ -425,7 +428,7 @@ void run8_proton_correct_clean( std::string list,
   correction_task.AddVector(Tneg);
 
   VectorConfig Tpos( "Tpos", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
-  Tpos.SetHarmonicArray( {1, 2, 3, 4, 5, 6 } );
+  Tpos.SetHarmonicArray( {1, 2, 3, 4, 5, 6, 7, 8 } );
   Tpos.SetCorrections( {CORRECTION::PLAIN } );
   Tpos.AddCut( "trCharge", [](double charge){
     return charge >= 0.0;
@@ -445,12 +448,12 @@ void run8_proton_correct_clean( std::string list,
   correction_task.AddVector(Tpos);
 
   std::vector<Qn::AxisD> proton_axes{
-        { "trProtonY", 6, -0.1, 1.1 },
-        { "trPt", 5, 0.0, 2.0 },
+        { "trProtonY", 12, -0.1, 1.1 },
+        { "trPt", 10, 0.0, 2.0 },
   };
   
   VectorConfig proton( "proton", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
-  proton.SetHarmonicArray( { 1, 2, 3, 4, 5, 6 } );
+  proton.SetHarmonicArray( { 1, 2, 3, 4, 5, 6, 7, 8 } );
   proton.SetCorrections( { CORRECTION::PLAIN } );
   proton.SetCorrectionAxes( proton_axes );
   proton.AddCut( "trNsigmaProton", [](double n_sigma){
