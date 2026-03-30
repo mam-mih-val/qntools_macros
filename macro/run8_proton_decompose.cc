@@ -321,10 +321,10 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
         auto c = vec_cor.at(l_idx).At(i);
         // auto [Minv, c] = vec_cor.at(l_idx).At(i);
         
-        if( std::isnan(Minv(0, 0)) ){
-          new_qvec.At(i).Reset();
-          continue;
-        }
+        // if( std::isnan(Minv(0, 0)) ){
+        //   new_qvec.At(i).Reset();
+        //   continue;
+        // }
 
         auto X1old =  column_t{ 1, x1_old, y1_old, x2_old, y2_old, x3_old, y3_old, x4_old, y4_old, x5_old, y5_old, x6_old, y6_old };
         // auto b = 2 * M.transpose() * X1old;
