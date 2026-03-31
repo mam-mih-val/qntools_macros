@@ -332,7 +332,8 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
         // auto b_tilda = Eigen::Matrix<double, NDIM+1, 1>{};
         // b_tilda << b, 1;
         
-        auto X1new =  Minv * X1old;
+        // auto X1new =  Minv * ( X1old - c );
+        auto X1new =  X1old - c;
         
         auto x1_new = static_cast<double>(X1new(0));
         auto y1_new = static_cast<double>(X1new(1));
