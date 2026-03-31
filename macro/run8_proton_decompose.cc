@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-constexpr size_t NDIM = 13;
+constexpr size_t NDIM = 4;
 
 using correction_matrix_t = Eigen::Matrix<double, NDIM, NDIM>;
 using mixing_matrix_t = Eigen::Matrix<double, NDIM, NDIM>;
@@ -27,7 +27,7 @@ using vector2d = std::vector<std::vector<T>>;
 template<typename T>
 using vector3d = std::vector<std::vector<std::vector<T>>>;
 
-using DataContainerMatrix = Qn::DataContainer<column_t, Qn::AxisD>;
+using DataContainerMatrix = Qn::DataContainer< std::pair<correction_matrix_t, column_t>, Qn::AxisD>;
 
 class Linearization{
 public:
@@ -139,15 +139,14 @@ vector1d<DataContainerMatrix> MakeCorrectionMatrix(const vector2d<Qn::DataContai
       // auto s8 = vec_s[7][ev_bin].At(i).Mean();
 
       auto sumw = vec_c[0][ev_bin].At(i).SumWeights();
-      // auto M = mixing_matrix_t{ 
-      //   { 1+c2,    s2,   c3+c1,  s3+s1 },
-      //   { s2,    1-c2,   s3-s1,  c1-c3 },
-      //   { c3+c1, s3-s1,  1+c4,      s4 },
-      //   { s3+s1, c1-c3,    s4,    1-c4 }
-      // };
+      auto M = mixing_matrix_t{ 
+        { 1+c2,    s2,   c3+c1,  s3+s1 },
+        { s2,    1-c2,   s3-s1,  c1-c3 },
+        { c3+c1, s3-s1,  1+c4,      s4 },
+        { s3+s1, c1-c3,    s4,    1-c4 }
+      };
       auto c = column_t{};
-      c << 0.5, c1, s1, c2, s2, c3, s3, c4, s4, c5, s5, c6, s6;
-      c = c*2.0;
+      c << c1, s1, c2, s2;
 
       // auto MTM = 2 * M.transpose() * M;
       // std::cout << "MTM\n"  << MTM << "\n\n";
@@ -156,11 +155,11 @@ vector1d<DataContainerMatrix> MakeCorrectionMatrix(const vector2d<Qn::DataContai
       // C(NDIM, 0) = 1;
       // C(0, NDIM) = 1;
 
-      // auto Minv = PseudoInverse( M, 10.0 / sqrt(sumw) );      
+      auto Minv = PseudoInverse( M, 5e-3 );
       std::cout << " 1 / sqrt(sumw) = " << 1.0 / sqrt(sumw) << "\n";
 
-      // corr_matrix.At(i).first = Minv;
-      corr_matrix.At(i) = c;
+      corr_matrix.At(i).first = Minv;
+      corr_matrix.At(i).second = c;
     }
     result.push_back(corr_matrix);
   }
@@ -319,26 +318,26 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
         // auto x8_old = qvec.At(i).x(8);
         // auto y8_old = qvec.At(i).y(8);
     
-        auto c = vec_cor.at(l_idx).At(i);
-        // auto [Minv, c] = vec_cor.at(l_idx).At(i);
+        // auto c = vec_cor.at(l_idx).At(i);
+        auto [Minv, c] = vec_cor.at(l_idx).At(i);
         
-        // if( std::isnan(Minv(0, 0)) ){
-        //   new_qvec.At(i).Reset();
-        //   continue;
-        // }
+        if( std::isnan(Minv(0, 0)) ){
+          new_qvec.At(i).Reset();
+          continue;
+        }
 
         auto X1old =  column_t{};
-        X1old << 1.0, x1_old, y1_old, x2_old, y2_old, x3_old, y3_old, x4_old, y4_old, x5_old, y5_old, x6_old, y6_old;
+        X1old << x1_old, y1_old, x2_old, y2_old;
         // auto b = 2 * M.transpose() * X1old;
         // auto b_tilda = Eigen::Matrix<double, NDIM+1, 1>{};
         // b_tilda << b, 1;
         
-        auto X1new = 1.0 / ( c.transpose() * X1old ) * X1old;
+        auto X1new =  Minv * X1old;
         
-        auto x1_new = static_cast<double>(X1new(1));
-        auto y1_new = static_cast<double>(X1new(2));
-        auto x2_new = static_cast<double>(X1new(3));
-        auto y2_new = static_cast<double>(X1new(4));
+        auto x1_new = static_cast<double>(X1new(0));
+        auto y1_new = static_cast<double>(X1new(1));
+        auto x2_new = static_cast<double>(X1new(2));
+        auto y2_new = static_cast<double>(X1new(3));
 
         new_qvec.At(i).SetQ( 1, x1_new, y1_new );
         new_qvec.At(i).SetQ( 2, x2_new, y2_new );
