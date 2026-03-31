@@ -448,8 +448,8 @@ void run8_proton_correct_clean( std::string list,
   correction_task.AddVector(Tpos);
 
   std::vector<Qn::AxisD> proton_axes{
-        { "trProtonY", 12, -0.1, 1.1 },
-        { "trPt", 10, 0.0, 2.0 },
+        { "trProtonY", 6, 0.0, 1.2 },
+        { "trPt", 5, 0.0, 2.0 },
   };
   
   VectorConfig proton( "proton", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
