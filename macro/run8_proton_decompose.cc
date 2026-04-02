@@ -147,9 +147,9 @@ vector1d<DataContainerMatrix> MakeCorrectionMatrix(const vector2d<Qn::DataContai
       //   s3+s1, c1-c3,    s4,    1-c4;
       M << 
         1+c2,    s2,   c4+c2,  s4+s2,
-        s2,    1-c2,   s4-s2,  c4-c2,
+        s2,    1-c2,   s4-s2,  c2-c4,
         c4+c2, s4-s2,  1+c6,      s6,
-        s4+s2, c4-c2,    s6,    1-c6;
+        s4+s2, c2-c4,    s6,    1-c6;
       auto c = column_t{};
       c << c1, s1, c3, s3;
 
