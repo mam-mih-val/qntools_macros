@@ -169,6 +169,8 @@ void run8_proton_correlate_tof(string inputFiles="qn.root", string outputFile="c
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y1", P1::y(1), wSumWu1part, wy, corr, corr);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x2", P1::x(2), wSumWu1part, wy, corr, corr);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y2", P1::y(2), wSumWu1part, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x2", P1::x(3), wSumWu1part, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y2", P1::y(3), wSumWu1part, wy, corr, corr);
 
     // corrBuilder.AddCorrelationWithInternalReader(corrName+".x1x1", P1::xx(1, 1), wSumWu1part, wy, corr, corr);
     // corrBuilder.AddCorrelationWithInternalReader(corrName+".y1y1", P1::yy(1, 1), wSumWu1part, wy, corr, corr);
@@ -196,6 +198,8 @@ void run8_proton_correlate_tof(string inputFiles="qn.root", string outputFile="c
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y1y1", P2::yy(1, 1), wSumWu, wy, corr, corr);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x1y1", P2::xy(1, 1), wSumWu, wy, corr, corr);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y1x1", P2::yx(1, 1), wSumWu, wy, corr, corr);
+
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1y1", P2::yy(3, 1), wSumWu, wy, corr, corr);
 
     // corrBuilder.AddCorrelationWithInternalReader(corrName+".x2x2", P2::xx(2, 2), wSumWu, wy, corr, corr);
     // corrBuilder.AddCorrelationWithInternalReader(corrName+".y2y2", P2::yy(2, 2), wSumWu, wy, corr, corr);
@@ -261,13 +265,13 @@ void run8_proton_correlate_tof(string inputFiles="qn.root", string outputFile="c
     // corrBuilder.AddCorrelationWithInternalReader(corrName+".y3y1y1", P3::yyy(3, 1, 1), wSumWu3part, wy, corr, corr);
   }
 
-  // for ( auto &corr: arr_u3Q1Q1Q1 )
-  // {
-  //   string corrName=corr.at(0)+"."+corr.at(1)+"."+corr.at(2)+"."+corr.at(3);
-  //   // diagonal/non-zero
-  //   corrBuilder.AddCorrelationWithInternalReader(corrName+".x3y1y1y1", P4::yyyy(3, 1, 1, 1), wSumWu4part, wy, corr, corr);
-  //   corrBuilder.AddCorrelationWithInternalReader(corrName+".y3y1y1y1", P4::xyyy(3, 1, 1, 1), wSumWu4part, wy, corr, corr);
-  // }
+  for ( auto &corr: arr_u3Q1Q1Q1 )
+  {
+    string corrName=corr.at(0)+"."+corr.at(1)+"."+corr.at(2)+"."+corr.at(3);
+    // diagonal/non-zero
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x3y1y1y1", P4::yyyy(3, 1, 1, 1), wSumWu4part, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y3y1y1y1", P4::xyyy(3, 1, 1, 1), wSumWu4part, wy, corr, corr);
+  }
 
   // ---------------- //
   // saving to output //
