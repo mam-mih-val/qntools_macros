@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-constexpr size_t NDIM = 4;
+constexpr size_t NDIM = 2;
 
 using correction_matrix_t = Eigen::Matrix<double, NDIM, NDIM>;
 using mixing_matrix_t = Eigen::Matrix<double, NDIM, NDIM>;
@@ -140,13 +140,16 @@ vector1d<DataContainerMatrix> MakeCorrectionMatrix(const vector2d<Qn::DataContai
 
       auto sumw = vec_c[0][ev_bin].At(i).SumWeights();
       auto M = mixing_matrix_t{};
+      // M << 
+      //   1+c2,    s2,   c3+c1,  s3+s1,
+      //   s2,    1-c2,   s3-s1,  c1-c3,
+      //   c3+c1, s3-s1,  1+c4,      s4,
+      //   s3+s1, c1-c3,    s4,    1-c4;
       M << 
-        1+c2,    s2,   c3+c1,  s3+s1,
-        s2,    1-c2,   s3-s1,  c1-c3,
-        c3+c1, s3-s1,  1+c4,      s4,
-        s3+s1, c1-c3,    s4,    1-c4;
+        1-c2,   s3-s1
+        s3-s1,  1+c4;
       auto c = column_t{};
-      c << c1, s1, c2, s2;
+      c << s1, c2;
 
       // auto MTM = 2 * M.transpose() * M;
       // std::cout << "MTM\n"  << MTM << "\n\n";
@@ -327,7 +330,8 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
         }
 
         auto X1old =  column_t{};
-        X1old << x1_old, y1_old, x2_old, y2_old;
+        // X1old << x1_old, y1_old, x2_old, y2_old;
+        X1old << y1_old, x2_old;
         // auto b = 2 * M.transpose() * X1old;
         // auto b_tilda = Eigen::Matrix<double, NDIM+1, 1>{};
         // b_tilda << b, 1;
@@ -335,10 +339,11 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
         auto X1new =  Minv * ( X1old - c );
         // auto X1new =  X1old - c;
         
-        auto x1_new = static_cast<double>(X1new(0));
-        auto y1_new = static_cast<double>(X1new(1));
-        auto x2_new = static_cast<double>(X1new(2));
-        auto y2_new = static_cast<double>(X1new(3));
+        // auto x1_new = static_cast<double>(X1new(0));
+        auto x1_new = x1_old;
+        auto y1_new = static_cast<double>(X1new(0));
+        auto x2_new = static_cast<double>(X1new(1));
+        auto y2_new = y2_old;
 
         new_qvec.At(i).SetQ( 1, x1_new, y1_new );
         new_qvec.At(i).SetQ( 2, x2_new, y2_new );
