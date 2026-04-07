@@ -363,16 +363,19 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
     .Define("Tneg_DECOMPOSED", correction_generator(tp_corr, lin), { tn_name, "centrality", "runId" } )
     
     .Define("proton_DECOMPOSED", correction_generator(p_corr, lin), { proton_name, "centrality", "runId" } )
+    .Define("proton1_DECOMPOSED", correction_generator(p_corr, lin), { "proton1_PLAIN", "centrality", "runId" } )
+    .Define("proton2_DECOMPOSED", correction_generator(p_corr, lin), { "proton2_PLAIN", "centrality", "runId" } )
   ;
 
   auto file_out = std::unique_ptr< TFile, std::function< void(TFile*) > >{ TFile::Open( "decomposed_out.root", "RECREATE" ), [](auto f){f ->Close(); } };
   file_out->cd();
   auto tree = new TTree("tree", "tree");
-  Qn::DataContainerQVector f1{}, f2{}, f3{}, f4{}, tp{}, tn{}, p{};
+  Qn::DataContainerQVector f1{}, f2{}, f3{}, f4{}, tp{}, tn{}, p{}, p1{}, p2{};
   double cent{};
   double r_id{};
   double v_x{};
   double v_y{};
+  
   tree->Branch( "centrality", &cent );
   tree->Branch( "runId", &r_id );
   tree->Branch( "vtxX", &v_x );
@@ -385,10 +388,12 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
   tree->Branch( "Tpos_DECOMPOSED", "Qn::DataContainerQVector", &tp );
   tree->Branch( "Tneg_DECOMPOSED", "Qn::DataContainerQVector", &tn );
   tree->Branch( "proton_DECOMPOSED", "Qn::DataContainerQVector", &p );
+  tree->Branch( "proton1_DECOMPOSED", "Qn::DataContainerQVector", &p1 );
+  tree->Branch( "proton2_DECOMPOSED", "Qn::DataContainerQVector", &p2 );
 
   std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
-  dd.Foreach( [tree, &cent, &r_id, &v_x, &v_y, &f1, &f2, &f3, &f4, &tp, &tn, &p]( 
+  dd.Foreach( [tree, &cent, &r_id, &v_x, &v_y, &f1, &f2, &f3, &f4, &tp, &tn, &p, &p1, &p2]( 
     double centrality,
     double run_id,
     double vtx_x,
@@ -399,7 +404,10 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
     Qn::DataContainerQVector f4_ev, 
     Qn::DataContainerQVector tp_ev, 
     Qn::DataContainerQVector tn_ev, 
-    Qn::DataContainerQVector p_ev ) mutable {
+    Qn::DataContainerQVector p_ev,
+    Qn::DataContainerQVector p1_ev,
+    Qn::DataContainerQVector p2_ev
+   ) mutable {
     cent = centrality;
     r_id = run_id;
     v_x = vtx_x;
@@ -411,6 +419,8 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
     tp = tp_ev;
     tn = tn_ev;
     p = p_ev;
+    p1 = p1_ev
+    p2 = p2_ev
     tree->Fill();
   }, 
   std::vector<std::string>{ 
@@ -425,6 +435,8 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
     "Tpos_DECOMPOSED",
     "Tneg_DECOMPOSED",
     "proton_DECOMPOSED",
+    "proton1_DECOMPOSED",
+    "proton2_DECOMPOSED",
   } );
   file_out->cd();
   tree->Write();
