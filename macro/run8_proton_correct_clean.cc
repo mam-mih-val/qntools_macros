@@ -4,6 +4,7 @@
 
 #include <cassert>
 #include <cmath>
+#include <random>
 #include <vector>
 
 void run8_proton_correct_clean( std::string list, 
@@ -210,6 +211,18 @@ void run8_proton_correct_clean( std::string list,
     };
   };
 
+  auto device = std::random_device{};
+  auto engine = std::mt19937{ device() };
+  auto distribution = std::uniform_real_distribution<double>{ 0.0, 1.0 };
+
+  auto random_subevent = [&engine, &distribution]( std::vector<float> vec_pq ){
+    std::vector<double> vec_is{};
+    for( auto pq : vec_pq ){
+      vec_is.push_back( distribution(engine) );
+    }
+    return vec_is;
+  }
+
   auto charge_function = []( std::vector<float> vec_pq, ROOT::VecOps::RVec<float> vec_dedx ){
     auto bb_body = [](Double_t *x, Double_t *par) {
     // x[0] = p/q (momentum over charge) in GeV/c
@@ -328,6 +341,7 @@ void run8_proton_correct_clean( std::string list,
           .Define( "pz", " std::vector<float> pz; for( auto mom : trMom ){ pz.push_back( mom.Pz() ); } return pz; " )
           .Define( "pq", " std::vector<float> pq; for( int i=0; i<trMom.size(); i++ ){ pq.push_back( trMom.at(i).P() / trCharge.at(i) ); } return pq;" )
           .Define( "trQ", charge_function, {"pq", "trEnergyLoss"} )
+          .Define( "trRndSe", random_subevent, {"pq"} )
           // .Define( "trM2Tof700", m2_function, { "trMom", "trBetaTof700" } )
           // .Define( "trM2Tof400", m2_function, { "trMom", "trBetaTof400" } )
           .Define( "trNsigmaProton400", n_sigma_generator(f1_2212_m_400, f1_2212_s_400), { "pq", "trM2Tof400" } )
@@ -360,7 +374,7 @@ void run8_proton_correct_clean( std::string list,
   correction_task.SetEventVariables(std::regex("centrality|runId|vtxX|vtxY|vtxZ"));
   correction_task.SetChannelVariables({std::regex("fhcalMod(X|Y|Phi|E|Id)")});
   correction_task.SetTrackVariables({
-                                            std::regex("tr(Pt|Px|Py|Eta|Phi|NsigmaProton|NsigmaProton400|NsigmaProton700|Charge|ProtonY|DcaR|Chi2Ndf|Nhits|Weight|WeightTof400|WeightTof700|FhcalX|FhcalY|StsNhits|StsChi2|Q)"),
+                                            std::regex("tr(Pt|Px|Py|Eta|Phi|NsigmaProton|NsigmaProton400|NsigmaProton700|Charge|ProtonY|DcaR|Chi2Ndf|Nhits|Weight|WeightTof400|WeightTof700|FhcalX|FhcalY|StsNhits|StsChi2|Q|RndSe)"),
                                     });
 
   correction_task.InitVariables();
@@ -479,6 +493,68 @@ void run8_proton_correct_clean( std::string list,
   }, "cut on charge == 1" );
   proton.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}});
   correction_task.AddVector(proton);
+
+  VectorConfig proton1( "proton1", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  proton1.SetHarmonicArray( { 1, 2, 3, 4, 5, 6, 7, 8 } );
+  proton1.SetCorrections( { CORRECTION::PLAIN } );
+  proton1.SetCorrectionAxes( proton_axes );
+  proton1.AddCut( "trRndSe", [](double se){
+    return se < 0.5;
+  }, "SE cut" );
+  proton1.AddCut( "trNsigmaProton", [](double n_sigma){
+    return n_sigma < 3;
+  }, "proton cut" );
+  proton1.AddCut( "trFhcalX", [](double pos){
+    return pos < -30.0 || pos > 160;
+  }, "cut on x-pos in fhcal plane" );
+  proton1.AddCut( "trFhcalY", [](double pos){
+    return pos < -60.0 || pos > 60;
+  }, "cut on y-pos in fhcal plane" );
+  proton1.AddCut( "trStsNhits", [](double nhits){
+    return nhits > 5.5;
+  }, "cut on fake tracks" );
+  proton1.AddCut( "trDcaR", [](double dca){
+    return dca < 5.0;
+  }, "DCA cut" );
+  proton1.AddCut( "trStsChi2", [](double chi2){
+    return chi2 < 5.0;
+  }, "cut on chi2 in sts" );
+  proton1.AddCut( "trQ", [](double q){
+    return 0.5 < q && q < 1.5;
+  }, "cut on charge == 1" );
+  proton1.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}});
+  correction_task.AddVector(proton1);
+
+  VectorConfig proton2( "proton2", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  proton2.SetHarmonicArray( { 1, 2, 3, 4, 5, 6, 7, 8 } );
+  proton2.SetCorrections( { CORRECTION::PLAIN } );
+  proton2.SetCorrectionAxes( proton_axes );
+  proton2.AddCut( "trRndSe", [](double se){
+    return se >= 0.5;
+  }, "SE cut" );
+  proton2.AddCut( "trNsigmaProton", [](double n_sigma){
+    return n_sigma < 3;
+  }, "proton2 cut" );
+  proton2.AddCut( "trFhcalX", [](double pos){
+    return pos < -30.0 || pos > 160;
+  }, "cut on x-pos in fhcal plane" );
+  proton2.AddCut( "trFhcalY", [](double pos){
+    return pos < -60.0 || pos > 60;
+  }, "cut on y-pos in fhcal plane" );
+  proton2.AddCut( "trStsNhits", [](double nhits){
+    return nhits > 5.5;
+  }, "cut on fake tracks" );
+  proton2.AddCut( "trDcaR", [](double dca){
+    return dca < 5.0;
+  }, "DCA cut" );
+  proton2.AddCut( "trStsChi2", [](double chi2){
+    return chi2 < 5.0;
+  }, "cut on chi2 in sts" );
+  proton2.AddCut( "trQ", [](double q){
+    return 0.5 < q && q < 1.5;
+  }, "cut on charge == 1" );
+  proton2.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}});
+  correction_task.AddVector(proton2);
 
   std::cout << "Initialized" << std::endl;
 
