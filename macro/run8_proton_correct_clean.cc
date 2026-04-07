@@ -221,7 +221,7 @@ void run8_proton_correct_clean( std::string list,
       vec_is.push_back( distribution(engine) );
     }
     return vec_is;
-  }
+  };
 
   auto charge_function = []( std::vector<float> vec_pq, ROOT::VecOps::RVec<float> vec_dedx ){
     auto bb_body = [](Double_t *x, Double_t *par) {
