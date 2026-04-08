@@ -419,8 +419,8 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
     tp = tp_ev;
     tn = tn_ev;
     p = p_ev;
-    p1 = p1_ev
-    p2 = p2_ev
+    p1 = p1_ev;
+    p2 = p2_ev;
     tree->Fill();
   }, 
   std::vector<std::string>{ 
