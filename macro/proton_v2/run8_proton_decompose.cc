@@ -406,7 +406,7 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
     Qn::DataContainerQVector f4_ev, 
     Qn::DataContainerQVector tp_ev, 
     Qn::DataContainerQVector tn_ev, 
-    Qn::DataContainerQVector p_ev,
+    Qn::DataContainerQVector p_ev
    ) mutable {
     cent = centrality;
     r_id = run_id;
