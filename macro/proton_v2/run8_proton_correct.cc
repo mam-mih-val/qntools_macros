@@ -1,0 +1,533 @@
+//
+// Created by Misha on 3/7/2023.
+//
+
+#include <cassert>
+#include <cmath>
+#include <random>
+#include <vector>
+
+void run8_proton_correct( std::string list, 
+                          std::string str_run_id_efficiency_file,
+                          std::string str_effieciency_file,
+                          std::string centrality_calib_file,
+                          std::string str_pid_tof400_file,
+                          std::string str_pid_tof700_file,
+                          std::string calib_in_file="qa.root" ){
+
+  ROOT::DisableImplicitMT();
+
+  std::cout << "starting execution" << std::endl;
+  
+  const float PROTON_M = 0.938; // GeV/c2
+  const float PI_POS_M = 0.134;
+  const float DEUTERON_M = 1.875;  
+  const float Y_CM = 1.15141;
+  const float FHCAL_Z = 980; // cm
+
+  auto file_pid400 = std::unique_ptr< TFile, std::function< void(TFile*) > >{ TFile::Open( str_pid_tof400_file.c_str(), "READ" ), [](auto f){f->Close(); } };
+  auto file_pid700 = std::unique_ptr< TFile, std::function< void(TFile*) > >{ TFile::Open( str_pid_tof700_file.c_str(), "READ" ), [](auto f){f->Close(); } };
+
+  assert(file_pid400);
+  assert(file_pid700);
+
+  TF1* f1_2212_m_400{nullptr};
+  file_pid400->GetObject( "fit_2212_x0", f1_2212_m_400 );
+  assert(f1_2212_m_400);
+
+  TF1* f1_2212_m_700{nullptr};
+  file_pid700->GetObject( "fit_2212_x0", f1_2212_m_700 );
+  assert(f1_2212_m_700);
+
+  TF1* f1_2212_s_400{nullptr};
+  file_pid400->GetObject( "fit_2212_sigma", f1_2212_s_400 );
+  assert(f1_2212_s_400);
+
+  TF1* f1_2212_s_700{nullptr};
+  file_pid700->GetObject( "fit_2212_sigma", f1_2212_s_700 );
+  assert(f1_2212_s_700);
+
+  auto file_fit = TFile::Open( centrality_calib_file.c_str(), "READ" );
+	file_fit->cd();
+	auto g1_FitVtxX = file_fit->Get<TGraphErrors>("grNew_def_h2_RunId_vtx_x");
+	auto g1_FitVtxY = file_fit->Get<TGraphErrors>("grNew_def_h2_RunId_vtx_y");
+	auto g1_FitVtxZ = file_fit->Get<TGraphErrors>("grNew_def_h2_RunId_vtx_z");
+
+	auto g1_FitRunIdFactor_1 = file_fit->Get<TGraphErrors>("RunId_corr_factor_h2_RunId_nTracks_8120_8170");
+	auto g1_FitRunIdFactor_2 = file_fit->Get<TGraphErrors>("RunId_corr_factor_h2_RunId_nTracks_7400_7450");
+
+  auto file_run_id_eff = std::unique_ptr< TFile, std::function< void(TFile*) > >{ TFile::Open( str_run_id_efficiency_file.c_str(), "READ" ), [](auto f){f->Close(); } };
+  assert(file_run_id_eff);
+  THn* efficiency_eta_pT_phi_run_id{nullptr};
+	file_run_id_eff->GetObject("hn_efficiency", efficiency_eta_pT_phi_run_id);
+  assert(efficiency_eta_pT_phi_run_id);
+
+  auto vtx_correction_generator = 
+  []( TGraphErrors* g1_calib ){
+    return [g1_calib](double _vtx, UInt_t _runId){return _vtx - g1_calib->Eval( static_cast<double>(_runId) ); };
+  };
+  auto ref_mult_generator =
+  []( TGraphErrors* g1_calib ){
+    return [g1_calib](unsigned long _mult, UInt_t _runId){ return (_mult * g1_calib->Eval( static_cast<double>(_runId) )); };
+  };
+
+  const auto trWeightFunction = [efficiency_eta_pT_phi_run_id]( 
+    ROOT::VecOps::RVec<ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiE4D<double> >> vec_mom, UInt_t run_id 
+  ){  
+    std::vector<float> vec_efficiency(vec_mom.size(), 0.f);
+		for( int i=0; i<vec_mom.size(); i++ ){
+			auto p = vec_mom.at(i);
+			auto pT = p.Pt();
+			auto eta = p.Eta();
+			auto phi = p.Phi();
+			auto coord = std::vector<double>{ eta, pT, phi, static_cast<double>(run_id) };
+			auto bin = efficiency_eta_pT_phi_run_id->GetBin( coord.data() );
+			if( bin <= 0 )
+				continue;
+			if( bin > efficiency_eta_pT_phi_run_id->GetNbins() )
+				continue;
+			auto weight = efficiency_eta_pT_phi_run_id->GetBinContent(bin);
+			vec_efficiency[i] = weight;
+		}
+		return vec_efficiency;
+  };
+
+
+  auto m2_function = 
+  []
+  ( ROOT::VecOps::RVec<ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiE4D<double> >> vec_mom, 
+    ROOT::VecOps::RVec<double> vec_beta){
+      std::vector<float> vec_m2;
+      vec_m2.reserve( vec_beta.size() );
+      for( size_t i=0; i<vec_mom.size(); i++ ){
+        auto p = vec_mom.at(i).P();
+        auto p2 = p*p;
+        auto beta = vec_beta.at(i);
+        auto beta2 = beta*beta;
+        auto gamma2 = 1 - beta2;
+        auto m2 = beta > -990. ? p2 / beta2 * gamma2 : -999.0;
+        vec_m2.push_back( m2 );
+      }
+      return vec_m2;
+    };
+  const auto n_sigma_generator = []( auto f1_mean, auto f1_sigma ){
+    return 
+    [ f1_mean, f1_sigma ]
+    ( std::vector<float> vec_pq, ROOT::VecOps::RVec<float> vec_m2 ){
+        auto vec_n_sigma = std::vector<float>( vec_pq.size(), 999. );
+        for( size_t i=0; i < vec_pq.size(); ++i ){
+          auto m2 = vec_m2.at(i);
+          auto pq = vec_pq.at(i);
+          auto mean = f1_mean->Eval(pq);
+          auto sigma = f1_sigma->Eval(pq);
+          auto n_sigma = fabs( m2 - mean ) / sigma;
+          if( pq < 1.0 )
+            continue;
+          if( pq > 8.0 )
+            continue;
+          vec_n_sigma[i] = n_sigma;
+        }
+      return vec_n_sigma;
+    };
+  };
+   
+	const auto n_sigma_particle_function = 
+  []
+  ( std::vector<float> n_sigma_400, 
+    std::vector<float> n_sigma_700 ){
+      std::vector<int> vec_n_simga{};
+      vec_n_simga.reserve( n_sigma_400.size() );
+      for( int i=0; i<n_sigma_400.size(); ++i ){ 
+        vec_n_simga.push_back( std::min( n_sigma_400.at(i), n_sigma_700.at(i) ) ); }
+      return vec_n_simga;
+  };
+  
+	const auto rapidity_generator = []( auto particle_m, auto y_cm ){
+    return 
+    [particle_m, y_cm]( std::vector<float> vec_pz, std::vector<float> vec_pq ){
+      std::vector<float> vec_y{};
+      vec_y.reserve( vec_pz.size() );
+      for( int i=0; i<vec_pz.size(); ++i ){
+        auto pz = vec_pz.at(i);
+        auto p = vec_pq.at(i);
+        auto E = sqrt( p*p + particle_m*particle_m );
+        auto y = 0.5 * log( ( E + pz ) / ( E - pz ) ) - y_cm;
+        vec_y.push_back( y );
+      }
+      return vec_y;
+    };
+  };
+  const auto function_fhcal_x = 
+  [FHCAL_Z]
+  ( ROOT::VecOps::RVec<std::vector<float>> vec_param ){
+      std::vector<float> vec_x{};
+      vec_x.reserve( vec_param.size() );
+      for( auto par : vec_param ){
+        auto x = par.at(0);
+        auto z = par.at(2);
+        auto tx = par.at(3);
+        auto dz = FHCAL_Z - z;
+        auto dx = tx * dz;
+        vec_x.push_back( x+dx );
+      }
+      return vec_x;
+    };
+  const auto function_fhcal_y = 
+  [FHCAL_Z]
+  ( ROOT::VecOps::RVec<vector<float>> vec_param ){
+      std::vector<float> vec_y{};
+      vec_y.reserve( vec_param.size() );
+      for( auto par : vec_param ){
+        auto y = par.at(1);
+        auto z = par.at(2);
+        auto ty = par.at(4);
+        auto dz = FHCAL_Z - z;
+        auto dy = ty * dz;
+        vec_y.push_back( y+dy );
+      }
+      return vec_y;
+    };
+
+  const auto centrality_function = 
+  []
+  (double multiplicity){
+      float centrality;
+      // std::vector<float> centrality_percentage{ 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 30, 40, 50, 60, 70, 100 };
+      std::vector<float> centrality_percentage{ 0, 10, 20, 30, 40, 50, 60, 70, 100 };
+      // std::vector<int> multiplicity_edges{ 236, 183, 167, 155, 145, 136, 127, 119, 111, 104, 97, 71, 49, 33, 22, 12, 0  };
+      std::vector<int> multiplicity_edges{ 206, 98, 70, 49, 34, 22, 14, 8, 0  };
+      if( multiplicity > multiplicity_edges[0] )
+        return -1.0f;
+      int idx = 0;
+      float bin_edge = multiplicity_edges[idx];
+      while( multiplicity < bin_edge &&
+        idx < multiplicity_edges.size()-1 ){
+        idx++;
+        bin_edge = multiplicity_edges[idx];
+      }
+      centrality = (centrality_percentage[idx-1] + centrality_percentage[idx])/2.0f;
+      return centrality;
+  };
+  
+  const auto dca_function = [](std::vector<float> vec_x, std::vector<float> vec_y){
+    std::vector<float> vec_r{};
+    vec_r.reserve(vec_x.size());
+    for (int i=0; i<vec_x.size(); ++i) {
+      auto x = vec_x.at(i);
+      auto y = vec_y.at(i);
+      auto r = std::sqrt( x*x + y*y );
+      vec_r.push_back(r);
+    }
+    return vec_r;
+  };
+
+  const auto weight_generator = []( auto efficiency_map ){
+    return [efficiency_map](std::vector<float> vec_y, ROOT::VecOps::RVec<float> vec_pT){
+      if( !efficiency_map ){
+          return std::vector<float>(vec_y.size(), 1);
+        }
+      std::vector<float> vec_weight{};
+      vec_weight.reserve(vec_y.size());
+      for( int i=0; i<vec_y.size(); ++i ){
+        auto pT = vec_pT.at(i);
+        auto y = vec_y.at(i);
+        auto y_bin = efficiency_map->GetXaxis()->FindBin( y );
+        auto pT_bin = efficiency_map->GetYaxis()->FindBin( pT );
+        auto efficiency = efficiency_map->GetBinContent( y_bin, pT_bin );
+        auto weight = 5e-2 < efficiency && efficiency < 1 ? 1.0 / efficiency : 0.0;
+        vec_weight.push_back( weight );
+      }
+      return vec_weight;
+    };
+  };
+
+  auto device = std::random_device{};
+  auto engine = std::mt19937{ device() };
+  auto distribution = std::uniform_real_distribution<double>{ 0.0, 1.0 };
+
+  auto random_subevent = [&engine, &distribution]( std::vector<float> vec_pq ){
+    std::vector<double> vec_is{};
+    for( auto pq : vec_pq ){
+      vec_is.push_back( distribution(engine) );
+    }
+    return vec_is;
+  };
+
+  auto charge_function = []( std::vector<float> vec_pq, ROOT::VecOps::RVec<float> vec_dedx ){
+    auto bb_body = [](Double_t *x, Double_t *par) {
+    // x[0] = p/q (momentum over charge) in GeV/c
+      Double_t p = x[0];
+      Double_t m = par[0];
+      Double_t A = par[1];
+      Double_t delta = par[2];
+      Double_t norm = par[3];
+      Double_t me = 0.000511;
+
+      Double_t bg = p / m;
+      Double_t beta = bg / sqrt(1. + bg * bg);
+      Double_t gamma_fac = sqrt(1. + bg * bg);
+      Double_t ekin_max = 2*pow(m * gamma_fac + me, 2) * me / (m * m);
+      Double_t dEdx = A * (1. / (beta * beta)) * (-5.296 + log(bg) + log(ekin_max) - 2 * beta * beta - delta);
+
+      return norm * dEdx;
+    };
+    auto f1_bethebloch_d = new TF1("fBetheBloch_d", bb_body, 0.1, 10, 4);
+    f1_bethebloch_d->SetParameter(0, 2.26);
+    f1_bethebloch_d->SetParameter(1, -1.64);
+    f1_bethebloch_d->SetParameter(2, 35.73);
+    f1_bethebloch_d->SetParameter(3, 2.02);
+
+    auto vec_q = std::vector<float>( vec_pq.size(), -1.f );
+    for( auto i = size_t{0}; i<vec_pq.size(); ++i ){
+      auto pq = vec_pq.at(i);
+      auto dedx = vec_dedx.at(i);
+      if( pq < 0 ) 
+        continue; 
+      auto cut = f1_bethebloch_d->Eval( pq );
+      vec_q.at(i) =  dedx < cut ? 1.f : 2.f;
+    }
+    return vec_q;
+  };
+
+  std::unique_ptr<TFile> effieciency_file{TFile::Open( str_effieciency_file.c_str(), "READ" )};
+  TH2D* efficiency_histo{nullptr};
+  TH2D* efficiency_tof400{nullptr};
+  TH2D* efficiency_tof700{nullptr};
+
+  effieciency_file->GetObject("efficiency_2212_tof", efficiency_histo);
+  if( !efficiency_histo )
+    std::cerr << "Warning: No efficiency for both tof was found in file " << str_effieciency_file << "\n";
+  effieciency_file->GetObject("efficiency_2212_tof400", efficiency_tof400);
+  if( !efficiency_tof400 )
+    std::cerr << "Warning: No efficiency for tof-400 was found in file " << str_effieciency_file << "\n";
+  effieciency_file->GetObject("efficiency_2212_tof700", efficiency_tof700);
+  if( !efficiency_tof700 )
+    std::cerr << "Warning: No efficiency for tof-700 was found in file " << str_effieciency_file << "\n";
+  
+  std::vector<int> physical_runs{ 7100, 7101, 7102, 7103, 7104, 7125, 7126, 7127, 7128, 7129, 7130, 7131, 7132, 7133, 7135, 7136, 7137, 7138, 7146, 7149, 7150, 7151, 7154, 7155, 7156, 7157, 7159, 7160, 7161, 7162, 7163, 7164, 7165, 7166, 7167, 7168, 7173, 7174, 7175, 7176, 7177, 7178, 7179, 7180, 7181, 7182, 7184, 7186, 7187, 7188, 7191, 7192, 7193, 7194, 7195, 7200, 7202, 7203, 7205, 7206, 7207, 7208, 7209, 7211, 7212, 7213, 7214, 7215, 7216, 7217, 7218, 7219, 7220, 7223, 7225, 7255, 7258, 7261, 7263, 7265, 7267, 7268, 7269, 7271, 7272, 7274, 7276, 7278, 7279, 7281, 7284, 7286, 7288, 7290, 7291, 7312, 7313, 7320, 7321, 7322, 7323, 7325, 7326, 7327, 7328, 7337, 7342, 7343, 7344, 7345, 7346, 7348, 7349, 7351, 7352, 7353, 7354, 7355, 7356, 7357, 7358, 7359, 7361, 7363, 7364, 7365, 7367, 7369, 7374, 7376, 7377, 7378, 7379, 7380, 7381, 7382, 7386, 7387, 7388, 7389, 7390, 7391, 7392, 7393, 7395, 7396, 7397, 7398, 7399, 7400, 7401, 7402, 7403, 7405, 7406, 7408, 7409, 7410, 7411, 7412, 7413, 7414, 7415, 7417, 7418, 7419, 7421, 7422, 7423, 7425, 7427, 7428, 7429, 7431, 7432, 7433, 7434, 7435, 7437, 7439, 7440, 7441, 7442, 7444, 7445, 7446, 7447, 7449, 7451, 7452, 7453, 7454, 7455, 7456, 7457, 7458, 7460, 7461, 7469, 7471, 7472, 7473, 7474, 7477, 7478, 7480, 7481, 7482, 7483, 7484, 7487, 7488, 7489, 7490, 7491, 7492, 7493, 7495, 7497, 7498, 7500, 7501, 7502, 7513, 7514, 7515, 7517, 7519, 7520, 7521, 7528, 7529, 7530, 7531, 7532, 7533, 7534, 7537, 7538, 7539, 7542, 7543, 7545, 7546, 7547, 7549, 7550, 7551, 7552, 7553, 7554, 7564, 7565, 7566, 7567, 7569, 7570, 7572, 7573, 7574, 7575, 7577, 7579, 7581, 7584, 7585, 7586, 7587, 7590, 7591, 7592, 7596, 7597, 7599, 7600, 7604, 7605, 7606, 7607, 7608, 7609, 7611, 7612, 7613, 7622, 7623, 7625, 7626, 7627, 7628, 7630, 7631, 7633, 7634, 7635, 7636, 7638, 7639, 7640, 7641, 7643, 7644, 7645, 7646, 7647, 7649, 7655, 7656, 7657, 7659, 7660, 7662, 7663, 7664, 7665, 7666, 7668, 7669, 7670, 7671, 7673, 7674, 7675, 7676, 7677, 7678, 7679, 7681, 7682, 7684, 7685, 7687, 7688, 7689, 7690, 7692, 7693, 7694, 7696, 7698, 7700, 7701, 7702, 7703, 7704, 7705, 7710, 7712, 7713, 7714, 7715, 7716, 7717, 7718, 7721, 7723, 7724, 7725, 7726, 7727, 7728, 7729, 7730, 7732, 7733, 7734, 7735, 7736, 7737, 7751, 7752, 7753, 7755, 7756, 7761, 7762, 7763, 7764, 7766, 7767, 7768, 7769, 7771, 7772, 7775, 7776, 7778, 7779, 7780, 7781, 7783, 7784, 7785, 7786, 7788, 7789, 7790, 7791, 7794, 7795, 7796, 7797, 7798, 7801, 7802, 7803, 7814, 7816, 7819, 7821, 7824, 7825, 7828, 7829, 7830, 7831, 7832, 7834, 7835, 7836, 7842, 7843, 7845, 7846, 7847, 7848, 7850, 7851, 7852, 7853, 7855, 7856, 7857, 7858, 7859, 7865, 7868, 7869, 7870, 7871, 7873, 7874, 7876, 7877, 7878, 7880, 7882, 7883, 7884, 7885, 7886, 7887, 7890, 7891, 7892, 7893, 7894, 7896, 7897, 7898, 7899, 7900, 7901, 7903, 7904, 7905, 7906, 7907, 7908, 7910, 7911, 7912, 7913, 7914, 7931, 7932, 7933, 7935, 7937, 7938, 7939, 7941, 7942, 7944, 7948, 7949, 7950, 7952, 7954, 7955, 7957, 7958, 7960, 7961, 7962, 7963, 7965, 7966, 7967, 7975, 7977, 7978, 7979, 7981, 7982, 7986, 7988, 7989, 7990, 7991, 7992, 7995, 7996, 7997, 7998, 7999, 8000, 8001, 8002, 8004, 8005, 8006, 8007, 8008, 8009, 8013, 8014, 8015, 8016, 8018, 8020, 8021, 8022, 8023, 8026, 8027, 8028, 8029, 8030, 8031, 8032, 8033, 8038, 8039, 8040, 8041, 8042, 8044, 8045, 8046, 8047, 8048, 8050, 8051, 8052, 8053, 8055, 8056, 8057, 8058, 8059, 8061, 8063, 8064, 8065, 8066, 8068, 8069, 8070, 8071, 8072, 8074, 8075, 8076, 8077, 8079, 8080, 8081, 8082, 8084, 8086, 8087, 8088, 8089, 8090, 8097, 8100, 8101, 8102, 8104, 8106, 8108, 8109, 8110, 8111, 8112, 8113, 8115, 8116, 8117, 8118, 8119, 8121, 8122, 8123, 8124, 8129, 8130, 8131, 8133, 8137, 8138, 8139, 8140, 8141, 8142, 8144, 8156, 8157, 8158, 8159, 8160, 8161, 8162, 8165, 8166, 8167, 8168, 8169, 8170, 8173, 8174, 8175, 8176, 8177, 8180, 8183, 8184, 8186, 8188, 8190, 8191, 8192, 8193, 8195, 8196, 8198, 8199, 8240, 8242, 8244, 8245, 8246, 8247, 8248, 8250, 8251, 8253, 8254, 8255, 8256, 8257, 8258, 8265, 8266, 8267, 8268, 8270, 8271, 8273, 8274, 8275, 8276, 8277, 8278, 8279, 8281, 8284, 8286, 8287, 8288, 8289, 8290, 8292, 8293, 8294, 8295, 8297, 8298, 8299, 8300, 8305, 8306};
+  std::vector<int> bad_runs{7313, 7415, 7417, 7435, 7469, 7517, 7519, 7520, 7537, 7575, 7604, 7630, 7657, 7659, 7679, 7681, 7705, 7735, 7843, 7847, 7848, 7850, 7851, 7852, 7853, 7855, 7856, 7857, 7858, 7859, 7865, 7868, 7907, 7931, 7932, 7933, 7935, 7937, 7938, 7939, 7954, 7955, 8031, 8032, 8033, 8115, 8121, 8167, 8201, 8204, 8205, 8208, 8209, 8210, 8211, 8212, 8213, 8215, 8247, 8265, 8266, 8267, 8281, 8289};
+
+  std::vector<int> f1_modules = {
+    6,  7,  8,
+    11, 12, 13,
+    16,     17,
+    20, 21, 22, 
+    25, 26, 27
+  };
+  std::vector<int> f2_modules = {
+    0,  1,  2,  3,  4,
+    5,              9,
+    10,             14,
+    15,             18,
+    19,             23,
+    24,             28,
+    29, 30, 31, 32, 33,
+  };
+  std::vector<int> f3_modules = {
+    35,                 44,
+    37,                 46, 
+    39,                 48, 
+    41,                 50,
+    43,                 52
+  };
+
+  std::vector<int> f4_modules = {
+    34,                     45,
+    36,                     47, 
+    38,                     49, 
+    40,                     51,
+    42,                     53
+  };
+
+  TStopwatch timer;
+  timer.Start();
+  std::string treename = "t";
+  TFileCollection collection( "collection", "", list.c_str() );
+  auto* chain = new TChain( treename.c_str() );
+  chain->AddFileInfoList( collection.GetList() );
+  ROOT::RDataFrame d( *chain );
+  std::cout << "Preparing the RDF" << std::endl;
+  auto dd=d
+          .Define( "vtxXcorr", vtx_correction_generator(g1_FitVtxX), {"vtxX","runId"})
+          .Define( "vtxYcorr", vtx_correction_generator(g1_FitVtxY), {"vtxY","runId"})
+          .Define( "vtxZcorr", vtx_correction_generator(g1_FitVtxY), {"vtxZ","runId"})
+          .Define( "vtxRcorr", "return sqrt(vtxXcorr*vtxXcorr + vtxYcorr*vtxYcorr);" )
+          .Define("track_multiplicity", "return trMom.size();")
+          .Define( "ref_multiplicity", ref_mult_generator( g1_FitRunIdFactor_2 ), {"track_multiplicity","runId"} )
+          .Define("stsNdigits","return stsDigits.size()" )
+          .Define("centrality", centrality_function, {"ref_multiplicity"} )
+          .Define("fhcalModPhi","ROOT::VecOps::RVec<float> phi; for(auto& pos:fhcalModPos) phi.push_back(pos.phi()); return phi;")
+          .Define("fhcalModX","ROOT::VecOps::RVec<float> x; for(auto& pos:fhcalModPos) x.push_back(pos.x()); return x;")
+          .Define("fhcalModY","ROOT::VecOps::RVec<float> y; for(auto& pos:fhcalModPos) y.push_back(pos.y()); return y;")
+          .Define("trPt","ROOT::VecOps::RVec<float> pt; for(auto& mom:trMom) pt.push_back(mom.pt()); return pt;")
+          .Define( "trDcaX", " std::vector<float> vec_par; for( auto par : globalTrackParameters ){ vec_par.push_back( par.at(0) - vtxX ); } return vec_par; " )
+		      .Define( "trDcaY", " std::vector<float> vec_par; for( auto par : globalTrackParameters ){ vec_par.push_back( par.at(1) - vtxY ); } return vec_par; " )
+          .Define( "trDcaR", dca_function, {"trDcaX", "trDcaY"} )
+          .Define( "trFhcalX", function_fhcal_x, {"trParamLast"} )
+          .Define( "trFhcalY", function_fhcal_y, {"trParamLast"} )
+          .Define( "trChi2Ndf", " std::vector<float> vec_par; for( int i=0; i<trChi2.size(); ++i ){ vec_par.push_back( trChi2.at(i)/trNdf.at(i) ); } return vec_par; " )
+          .Define( "trPx", " std::vector<float> px; for( auto mom : trMom ){ px.push_back( mom.Px() ); } return px; " )
+          .Define( "trPy", " std::vector<float> py; for( auto mom : trMom ){ py.push_back( mom.Py() ); } return py; " )
+          .Define( "pz", " std::vector<float> pz; for( auto mom : trMom ){ pz.push_back( mom.Pz() ); } return pz; " )
+          .Define( "pq", " std::vector<float> pq; for( int i=0; i<trMom.size(); i++ ){ pq.push_back( trMom.at(i).P() / trCharge.at(i) ); } return pq;" )
+          .Define( "trQ", charge_function, {"pq", "trEnergyLoss"} )
+          .Define( "trRndSe", random_subevent, {"pq"} )
+          // .Define( "trM2Tof700", m2_function, { "trMom", "trBetaTof700" } )
+          // .Define( "trM2Tof400", m2_function, { "trMom", "trBetaTof400" } )
+          .Define( "trNsigmaProton400", n_sigma_generator(f1_2212_m_400, f1_2212_s_400), { "pq", "trM2Tof400" } )
+          .Define( "trNsigmaProton700", n_sigma_generator(f1_2212_m_700, f1_2212_s_700), { "pq", "trM2Tof700"  } )
+          .Define( "trNsigmaProton", n_sigma_particle_function, {"trNsigmaProton400", "trNsigmaProton700"} )
+          .Define( "trProtonY", rapidity_generator(PROTON_M, Y_CM), {"pz", "pq"} )
+          .Define( "trWeight", trWeightFunction, {"trMom", "runId"} )
+          .Define( "trProtonWeight", weight_generator(efficiency_histo), {"trProtonY", "trPt"} )
+          .Define( "trProtonWeightTof400", weight_generator(efficiency_tof400), {"trProtonY", "trPt"} )
+          .Define( "trProtonWeightTof700", weight_generator(efficiency_tof700), {"trProtonY", "trPt"} )
+          .Alias("trStsNhits", "stsTrackNhits")
+          .Alias("trStsChi2", "stsTrackChi2Ndf")
+          .Define("trEta","ROOT::VecOps::RVec<float> eta; for(auto& mom : trMom) eta.push_back(mom.eta()); return eta;")
+          .Define("trPhi","ROOT::VecOps::RVec<float> phi;for(auto& mom : trMom) phi.push_back(mom.phi()); return phi;")
+          .Filter([&physical_runs, &bad_runs]( UInt_t run_id ){ 
+            if( std::find( physical_runs.begin(), physical_runs.end(), run_id) == physical_runs.end() )
+              return false;
+            if( std::find( bad_runs.begin(), bad_runs.end(), run_id) != bad_runs.end() )
+              return false;
+            return true;
+          }, {"runId"} )
+          .Filter("runId < 8312")
+          .Filter( []( ROOT::VecOps::RVec<unsigned int> map ){ return map[0] & (1<<7); }, {"triggerMapAR"} )
+          .Filter("vtxNtracks > 2")
+          .Filter("fabs(vtxRcorr)<1.5")
+          .Filter("fabs(vtxZcorr)<1.0")
+          .Filter("noPileup == 1")
+  ; // at least one filter is mandatory!!!
+
+  auto correction_task = CorrectionTask( dd, "correction_out.root", calib_in_file );
+  correction_task.SetEventVariables(std::regex("centrality|runId|vtxX|vtxY|vtxZ"));
+  correction_task.SetChannelVariables({std::regex("fhcalMod(X|Y|Phi|E|Id)")});
+  correction_task.SetTrackVariables({
+                                      std::regex("tr(Pt|Px|Py|Eta|Phi|NsigmaProton|NsigmaProton400|NsigmaProton700|Charge|ProtonY|DcaR|Chi2Ndf|Nhits|Weight|FhcalX|FhcalY|StsNhits|StsChi2|Q|RndSe)"),
+                                    });
+
+  correction_task.InitVariables();
+  correction_task.AddEventAxis( {"centrality", 6, 0, 60} );
+  // correction_task.AddEventAxis( { "runId", 12, 7100, 8300 } );
+
+  VectorConfig f1( "F1", "fhcalModPhi", "fhcalModE", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
+  f1.SetHarmonicArray( { 1, 2, 3, 4, 5, 6, 7, 8 } );
+  f1.SetCorrections( {CORRECTION::PLAIN } );
+  f1.AddCut( "fhcalModId", [&f1_modules](double mod_id){
+    auto id = static_cast<int>(mod_id);
+    return std::find( f1_modules.begin(), f1_modules.end(), id) != f1_modules.end();
+    }, "F1 Cut" );
+  f1.AddHisto2D({{"fhcalModX", 100, -100, 100}, {"fhcalModY", 100, -100, 100}});
+  correction_task.AddVector(f1);
+
+  VectorConfig f2( "F2", "fhcalModPhi", "fhcalModE", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
+  f2.SetHarmonicArray( {1, 2, 3, 4, 5, 6, 7, 8 } );
+  f2.SetCorrections( {CORRECTION::PLAIN } );
+  f2.AddCut( "fhcalModId", [&f2_modules](double mod_id){
+    auto id = static_cast<int>(mod_id);
+    return std::find( f2_modules.begin(), f2_modules.end(), id) != f2_modules.end();
+    }, "F2 Cut" );
+  f2.AddHisto2D({{"fhcalModX", 100, -100, 100}, {"fhcalModY", 100, -100, 100}});
+  correction_task.AddVector(f2);
+
+  VectorConfig f3( "F3", "fhcalModPhi", "fhcalModE", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
+  f3.SetHarmonicArray( {1, 2, 3, 4, 5, 6, 7, 8 } );
+  f3.SetCorrections( {CORRECTION::PLAIN } );
+  f3.AddCut( "fhcalModId", [&f3_modules](double mod_id){
+    auto id = static_cast<int>(mod_id);
+    return std::find( f3_modules.begin(), f3_modules.end(), id) != f3_modules.end();
+    }, "F3 Cut" );
+  f3.AddHisto2D({{"fhcalModX", 100, -100, 100}, {"fhcalModY", 100, -100, 100}});
+  correction_task.AddVector(f3);
+
+  VectorConfig f4( "F4", "fhcalModPhi", "fhcalModE", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
+  f4.SetHarmonicArray( {1, 2, 3, 4, 5, 6, 7, 8 } );
+  f4.SetCorrections( {CORRECTION::PLAIN } );
+  f4.AddCut( "fhcalModId", [&f4_modules](double mod_id){
+    auto id = static_cast<int>(mod_id);
+    return std::find( f4_modules.begin(), f4_modules.end(), id) != f4_modules.end();
+    }, "F3 Cut" );
+  f4.AddHisto2D({{"fhcalModX", 100, -100, 100}, {"fhcalModY", 100, -100, 100}});
+  correction_task.AddVector(f4);
+
+  VectorConfig Tneg( "Tneg", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  Tneg.SetHarmonicArray( {1, 2, 3, 4, 5, 6, 7, 8 } );
+  Tneg.SetCorrections( {CORRECTION::PLAIN } );
+  Tneg.AddCut( "trCharge", [](double charge){
+    return charge < 0.0;
+    }, "charge" );
+  Tneg.AddCut( "trEta", [](double eta){
+    return 1.5 < eta && eta < 4.0;
+    }, "eta cut" );
+  Tneg.AddCut( "trPt", [](double pT){
+    return pT > 0.2;
+    }, "pT cut" );
+  Tneg.AddCut( "trFhcalX", [](double pos){
+    return pos < -40.0 || pos > 170;
+    }, "cut on x-pos in fhcal plane" );
+  Tneg.AddCut( "trFhcalY", [](double pos){
+    return pos < -100.0 || pos > 100;
+    }, "cut on y-pos in fhcal plane" );
+  correction_task.AddVector(Tneg);
+
+  VectorConfig Tpos( "Tpos", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  Tpos.SetHarmonicArray( {1, 2, 3, 4, 5, 6, 7, 8 } );
+  Tpos.SetCorrections( {CORRECTION::PLAIN } );
+  Tpos.AddCut( "trCharge", [](double charge){
+    return charge >= 0.0;
+    }, "charge" );
+  Tpos.AddCut( "trEta", [](double eta){
+    return 2.0 < eta && eta < 3.0;
+  }, "eta cut" );
+  Tpos.AddCut( "trPt", [](double pT){
+    return pT > 0.2;
+  }, "pT cut" );
+  Tpos.AddCut( "trFhcalX", [](double pos){
+    return pos < -40.0 || pos > 170;
+    }, "cut on x-pos in fhcal plane" );
+  Tpos.AddCut( "trFhcalY", [](double pos){
+    return pos < -100.0 || pos > 100;
+    }, "cut on y-pos in fhcal plane" );
+  correction_task.AddVector(Tpos);
+
+  std::vector<Qn::AxisD> proton_axes{
+        { "trProtonY", 6, 0.0, 1.2 },
+        { "trPt", 5, 0.0, 2.0 },
+  };
+  
+  VectorConfig proton( "proton", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  proton.SetHarmonicArray( { 1, 2, 3, 4, 5, 6, 7, 8 } );
+  proton.SetCorrections( { CORRECTION::PLAIN } );
+  proton.SetCorrectionAxes( proton_axes );
+  proton.AddCut( "trNsigmaProton", [](double n_sigma){
+    return n_sigma < 3;
+  }, "proton cut" );
+  proton.AddCut( "trFhcalX", [](double pos){
+    return pos < -30.0 || pos > 160;
+  }, "cut on x-pos in fhcal plane" );
+  proton.AddCut( "trFhcalY", [](double pos){
+    return pos < -60.0 || pos > 60;
+  }, "cut on y-pos in fhcal plane" );
+  proton.AddCut( "trStsNhits", [](double nhits){
+    return nhits > 5.5;
+  }, "cut on fake tracks" );
+  proton.AddCut( "trDcaR", [](double dca){
+    return dca < 5.0;
+  }, "DCA cut" );
+  proton.AddCut( "trStsChi2", [](double chi2){
+    return chi2 < 5.0;
+  }, "cut on chi2 in sts" );
+  proton.AddCut( "trQ", [](double q){
+    return 0.5 < q && q < 1.5;
+  }, "cut on charge == 1" );
+  proton.AddHisto2D({{"trProtonY", 100, -0.5, 1.5}, {"trPt", 100, 0.0, 2.0}});
+  correction_task.AddVector(proton);
+
+  std::cout << "Initialized" << std::endl;
+
+  correction_task.Run();
+  auto n_events_filtered = *(dd.Count());
+  std::cout << "Number of filtered events: " << n_events_filtered << std::endl;
+}
