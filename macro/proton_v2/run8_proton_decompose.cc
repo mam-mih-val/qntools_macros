@@ -28,7 +28,7 @@ using vector2d = std::vector<std::vector<T>>;
 template<typename T>
 using vector3d = std::vector<std::vector<std::vector<T>>>;
 
-using DataContainerMatrix = Qn::DataContainer< std::tuple<bool, correction_matrix_t, column_t>, Qn::AxisD>;
+using DataContainerMatrix = Qn::DataContainer< std::pair<correction_matrix_t, column_t>, Qn::AxisD>;
 
 class Linearization{
 public:
