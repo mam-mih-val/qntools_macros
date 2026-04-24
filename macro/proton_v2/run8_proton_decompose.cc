@@ -10,6 +10,7 @@
 #include <cstddef>
 #include <limits>
 #include <string>
+#include <tuple>
 #include <vector>
 
 constexpr size_t NDIM = 4;
@@ -27,7 +28,7 @@ using vector2d = std::vector<std::vector<T>>;
 template<typename T>
 using vector3d = std::vector<std::vector<std::vector<T>>>;
 
-using DataContainerMatrix = Qn::DataContainer< std::pair<correction_matrix_t, column_t>, Qn::AxisD>;
+using DataContainerMatrix = Qn::DataContainer< std::tuple<bool, correction_matrix_t, column_t>, Qn::AxisD>;
 
 class Linearization{
 public:
@@ -235,7 +236,7 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
     Qn::AxisD{ "centrality", 6, 0, 60 },
     // Qn::AxisD{ "vtxX", 5, -1.0, 1.0 },
     // Qn::AxisD{ "vtxY", 5, -1.0, 1.0 },
-    Qn::AxisD{ "runId", 60, 7100, 8300 },
+    Qn::AxisD{ "runId", 11, 7100, 8200 },
   };
 
   const std::string f1_name {"F1_PLAIN"};
@@ -358,7 +359,7 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
   auto d = ROOT::RDataFrame( "tree", in_file_name );
   auto dd = d
     .Filter( "1 < centrality && centrality < 60" )
-    .Filter( "7100 < runId && runId < 8300" )
+    .Filter( "7100 < runId && runId < 8200" )
     .Filter( "-1.0 < vtxX && vtxX < 1.0" )
     .Filter( "-1.0 < vtxY && vtxY < 1.0" )
     .Define("F1_DECOMPOSED", correction_generator(f1_corr, lin), { f1_name, "centrality", "runId" } )
