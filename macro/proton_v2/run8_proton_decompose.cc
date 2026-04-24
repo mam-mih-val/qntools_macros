@@ -140,16 +140,17 @@ vector1d<DataContainerMatrix> MakeCorrectionMatrix(const vector2d<Qn::DataContai
 
       auto sumw = vec_c[0][ev_bin].At(i).SumWeights();
       auto M = mixing_matrix_t{};
-      // M << 
-      //   1+c2,    s2,   c3+c1,  s3+s1,
-      //   s2,    1-c2,   s3-s1,  c1-c3,
-      //   c3+c1, s3-s1,  1+c4,      s4,
-      //   s3+s1, c1-c3,    s4,    1-c4;
       M << 
-        1+c2,    s2,     0,       0,
-        s2,    1-c2,     0,       0,
-          0,      0,  1+c4,      s4,
-          0,      0,    s4,    1-c4;
+        1+c2,    s2,   c3+c1,  s3+s1,
+        s2,    1-c2,   s3-s1,  c1-c3,
+        c3+c1, s3-s1,  1+c4,      s4,
+        s3+s1, c1-c3,    s4,    1-c4;
+      
+      // M << 
+      //   1+c2,    s2,     0,       0,
+      //   s2,    1-c2,     0,       0,
+      //     0,      0,  1+c4,      s4,
+      //     0,      0,    s4,    1-c4;
       
       auto c = column_t{};
       c << c1, s1, c2, s2;
