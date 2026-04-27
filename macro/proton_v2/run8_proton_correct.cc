@@ -379,9 +379,10 @@ void run8_proton_correct( std::string list,
           .Define( "trNsigmaProton", n_sigma_particle_function, {"trNsigmaProton400", "trNsigmaProton700"} )
           .Define( "trProtonY", rapidity_generator(PROTON_M, Y_CM), {"pz", "pq"} )
           .Define( "trWeight", trWeightFunction, {"trMom", "runId"} )
-          .Define( "trProtonWeight", weight_generator(efficiency_histo), {"trProtonY", "trPt"} )
-          .Define( "trProtonWeightTof400", weight_generator(efficiency_tof400), {"trProtonY", "trPt"} )
-          .Define( "trProtonWeightTof700", weight_generator(efficiency_tof700), {"trProtonY", "trPt"} )
+          .Define( "trProtonEfficiency", weight_generator(efficiency_histo), {"trProtonY", "trPt"} )
+          .Define( "trProtonEfficiencyTof400", weight_generator(efficiency_tof400), {"trProtonY", "trPt"} )
+          .Define( "trProtonEfficiencyTof700", weight_generator(efficiency_tof700), {"trProtonY", "trPt"} )
+          .Define( "trProtonWeight", "std::vector<double> weights{}; for( auto i=size_t{0}; i<trWeight.size(); ++i ){ weights.push_back( trWeight[i]*trProtonEfficiency[i] ); } return weights;" )
           .Alias("trStsNhits", "stsTrackNhits")
           .Alias("trStsChi2", "stsTrackChi2Ndf")
           .Define("trEta","ROOT::VecOps::RVec<float> eta; for(auto& mom : trMom) eta.push_back(mom.eta()); return eta;")
@@ -405,7 +406,7 @@ void run8_proton_correct( std::string list,
   correction_task.SetEventVariables(std::regex("centrality|runId|vtxX|vtxY|vtxZ"));
   correction_task.SetChannelVariables({std::regex("fhcalMod(X|Y|Phi|E|Id)")});
   correction_task.SetTrackVariables({
-                                      std::regex("tr(Pt|Px|Py|Eta|Phi|NsigmaProton|NsigmaProton400|NsigmaProton700|Charge|ProtonY|DcaR|Chi2Ndf|Nhits|Weight|FhcalX|FhcalY|StsNhits|StsChi2|Q|RndSe)"),
+                                      std::regex("tr(Pt|Px|Py|Eta|Phi|NsigmaProton|NsigmaProton400|NsigmaProton700|Charge|ProtonY|DcaR|Chi2Ndf|Nhits|Weight|ProtonWeight|FhcalX|FhcalY|StsNhits|StsChi2|Q|RndSe)"),
                                     });
 
   correction_task.InitVariables();
@@ -497,7 +498,7 @@ void run8_proton_correct( std::string list,
         { "trPt", 5, 0.0, 2.0 },
   };
   
-  VectorConfig proton( "proton", "trPhi", "trWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  VectorConfig proton( "proton", "trPhi", "trProtonWeight", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   proton.SetHarmonicArray( { 1, 2, 3, 4, 5, 6, 7, 8 } );
   proton.SetCorrections( { CORRECTION::PLAIN } );
   proton.SetCorrectionAxes( proton_axes );
