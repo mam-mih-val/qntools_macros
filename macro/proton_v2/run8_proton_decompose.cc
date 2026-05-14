@@ -13,7 +13,7 @@
 #include <tuple>
 #include <vector>
 
-constexpr size_t NDIM = 4;
+constexpr size_t NDIM = 6;
 
 using correction_matrix_t = Eigen::Matrix<double, NDIM, NDIM>;
 using mixing_matrix_t = Eigen::Matrix<double, NDIM, NDIM>;
@@ -142,11 +142,11 @@ vector1d<DataContainerMatrix> MakeCorrectionMatrix(const vector2d<Qn::DataContai
 
       auto sumw = vec_c[0][ev_bin].At(i).SumWeights();
       auto M = mixing_matrix_t{};
-      M << 
-        1+c2,    s2,   c3+c1,  s3+s1,
-        s2,    1-c2,   s3-s1,  c1-c3,
-        c3+c1, s3-s1,  1+c4,      s4,
-        s3+s1, c1-c3,    s4,    1-c4;
+      // M << 
+      //   1+c2,    s2,   c3+c1,  s3+s1,
+      //   s2,    1-c2,   s3-s1,  c1-c3,
+      //   c3+c1, s3-s1,  1+c4,      s4,
+      //   s3+s1, c1-c3,    s4,    1-c4;
       
       // M << 
       //   1+c2,    s2,     0,       0,
@@ -154,8 +154,18 @@ vector1d<DataContainerMatrix> MakeCorrectionMatrix(const vector2d<Qn::DataContai
       //     0,      0,  1+c4,      s4,
       //     0,      0,    s4,    1-c4;
       
+      M << 
+        1+c2,    s2,   c3+c1,  s3+s1, c4+c2, s4+s2,
+        s2,    1-c2,   s3-s1,  c1-c3, s4-s2, c2-c4
+        c3+c1, s3-s1,  1+c4,      s4, c5+c1, s5+s1
+        s3+s1, c1-c3,    s4,    1-c4, s5-s1, c1-c5,
+        c4+c2, s4-s2,  c5+c1,  s5-s1,  1+c6,    s6,
+        s4+s2, c2-c4,  s5+s1,  c1-c5,    s6,  1-c6
+      ;
+      
+
       auto c = column_t{};
-      c << c1, s1, c2, s2;
+      c << c1, s1, c2, s2, c3, s3;
 
       // auto MTM = 2 * M.transpose() * M;
       // std::cout << "MTM\n"  << MTM << "\n\n";
@@ -340,7 +350,7 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
         }
 
         auto X1old =  column_t{};
-        X1old << x1_old, y1_old, x2_old, y2_old;
+        X1old << x1_old, y1_old, x2_old, y2_old, x3_old, y3_old;
         // auto b = 2 * M.transpose() * X1old;
         // auto b_tilda = Eigen::Matrix<double, NDIM+1, 1>{};
         // b_tilda << b, 1;
