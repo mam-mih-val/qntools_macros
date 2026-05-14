@@ -28,7 +28,7 @@ using vector2d = std::vector<std::vector<T>>;
 template<typename T>
 using vector3d = std::vector<std::vector<std::vector<T>>>;
 
-using DataContainerMatrix = Qn::DataContainer< std::pair<correction_matrix_t, column_t>, Qn::AxisD>;
+using DataContainerMatrix = Qn::DataContainer< std::tuple<bool, correction_matrix_t, column_t>, Qn::AxisD>;
 
 class Linearization{
 public:
@@ -88,7 +88,7 @@ private:
   vector1d<size_t> offset_vector{};
 };
 
-correction_matrix_t PseudoInverse( const correction_matrix_t& M, double l ){
+std::tuple<bool, correction_matrix_t> PseudoInverse( const correction_matrix_t& M, double l ){
   auto svd = Eigen::JacobiSVD<correction_matrix_t> ( M, Eigen::ComputeThinU | Eigen::ComputeThinV );    
   auto singular_values = svd.singularValues();
   auto U = svd.matrixU();
@@ -102,12 +102,13 @@ correction_matrix_t PseudoInverse( const correction_matrix_t& M, double l ){
       rank++;
     }
   }
+  auto is_valid = rank == NDIM;
   auto E = correction_matrix_t::Identity();
   auto Vr = V.leftCols(rank);
   auto Etilda = Vr * Vr.transpose() * E;
   auto Mpinv = correction_matrix_t{ V * Splus * U.transpose() };
   std::cout << "l: " << l << "\nMatrix M:\n" << M << "\nMatrix U:\n" << U << "\nS: " << singular_values.transpose() << "\nMatrix V:\n" << V << "\nInverse:\n" << Mpinv << "\nEtilda:\n" << Etilda << "\n";
-  return Mpinv;
+  return {is_valid, Mpinv};
 }
 
 
@@ -163,11 +164,10 @@ vector1d<DataContainerMatrix> MakeCorrectionMatrix(const vector2d<Qn::DataContai
       // C(NDIM, 0) = 1;
       // C(0, NDIM) = 1;
 
-      auto Minv = PseudoInverse( M, 5e-3 );
+      auto [is_valid, Minv] = PseudoInverse( M, 5e-3 );
       std::cout << " 1 / sqrt(sumw) = " << 1.0 / sqrt(sumw) << "\n";
 
-      corr_matrix.At(i).first = Minv;
-      corr_matrix.At(i).second = c;
+      corr_matrix.At(i) = std::tuple{is_valid, Minv, c};
     }
     result.push_back(corr_matrix);
   }
@@ -327,9 +327,14 @@ void run8_proton_decompose(std::string in_file_name, std::string in_calib_file){
         // auto y8_old = qvec.At(i).y(8);
     
         // auto c = vec_cor.at(l_idx).At(i);
-        auto [Minv, c] = vec_cor.at(l_idx).At(i);
+        auto [is_valid, Minv, c] = vec_cor.at(l_idx).At(i);
         
         if( std::isnan(Minv(0, 0)) ){
+          new_qvec.At(i).Reset();
+          continue;
+        }
+
+        if( !is_valid ){
           new_qvec.At(i).Reset();
           continue;
         }
