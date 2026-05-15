@@ -93,15 +93,15 @@ const auto decomposition_mixing_matrix = [](const vector1d<double>& vec_c, const
   auto c2 = vec_c[1];
   auto c3 = vec_c[2];
   auto c4 = vec_c[3];
-  auto c5 = vec_c[4];
-  auto c6 = vec_c[5];
+  // auto c5 = vec_c[4];
+  // auto c6 = vec_c[5];
 
   auto s1 = vec_s[0];
   auto s2 = vec_s[1];
   auto s3 = vec_s[2];
   auto s4 = vec_s[3];
-  auto s5 = vec_s[4];
-  auto s6 = vec_s[5];
+  // auto s5 = vec_s[4];
+  // auto s6 = vec_s[5];
 
   auto M = mixing_matrix_t{};
 
@@ -129,15 +129,15 @@ const auto twist_rescaling_mixing_matrix = [](const vector1d<double>& vec_c, con
   auto c2 = vec_c[1];
   auto c3 = vec_c[2];
   auto c4 = vec_c[3];
-  auto c5 = vec_c[4];
-  auto c6 = vec_c[5];
+  // auto c5 = vec_c[4];
+  // auto c6 = vec_c[5];
 
   auto s1 = vec_s[0];
   auto s2 = vec_s[1];
   auto s3 = vec_s[2];
   auto s4 = vec_s[3];
-  auto s5 = vec_s[4];
-  auto s6 = vec_s[5];
+  // auto s5 = vec_s[4];
+  // auto s6 = vec_s[5];
 
   auto M = mixing_matrix_t{};
 
@@ -205,15 +205,15 @@ vector1d<DataContainerMatrix> MakeCorrectionMatrix(
       vec_double_c[1] = vec_c[1][ev_bin].At(i).Mean();
       vec_double_c[2] = vec_c[2][ev_bin].At(i).Mean();
       vec_double_c[3] = vec_c[3][ev_bin].At(i).Mean();
-      vec_double_c[4] = vec_c[4][ev_bin].At(i).Mean();
-      vec_double_c[5] = vec_c[5][ev_bin].At(i).Mean();
+      // vec_double_c[4] = vec_c[4][ev_bin].At(i).Mean();
+      // vec_double_c[5] = vec_c[5][ev_bin].At(i).Mean();
 
       vec_double_s[0] = vec_s[0][ev_bin].At(i).Mean();
       vec_double_s[1] = vec_s[1][ev_bin].At(i).Mean();
       vec_double_s[2] = vec_s[2][ev_bin].At(i).Mean();
       vec_double_s[3] = vec_s[3][ev_bin].At(i).Mean();
-      vec_double_s[4] = vec_s[4][ev_bin].At(i).Mean();
-      vec_double_s[5] = vec_s[5][ev_bin].At(i).Mean();
+      // vec_double_s[4] = vec_s[4][ev_bin].At(i).Mean();
+      // vec_double_s[5] = vec_s[5][ev_bin].At(i).Mean();
 
       auto sumw = vec_c[0][ev_bin].At(i).SumWeights();
       auto M = func( vec_double_c, vec_double_s );
