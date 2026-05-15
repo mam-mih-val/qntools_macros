@@ -163,6 +163,10 @@ vector1d<DataContainerMatrix> MakeCorrectionMatrix(const vector2d<Qn::DataContai
         s4+s2, c2-c4,  s5+s1,  c1-c5,    s6,  1-c6
       ;
       
+      for( auto i=size_t; i < NDIM*NDIM; ++i ){
+        if( fabs(M(i)) < 0.05  )
+          M(i) = 0.0;
+      }
 
       auto c = column_t{};
       c << c1, s1, c2, s2, c3, s3;
