@@ -88,22 +88,20 @@ private:
   vector1d<size_t> offset_vector{};
 };
 
-const auto decomposition_mixing_matrix = [](const vector1d<Qn::DataContainerStatCalculate>& vec_c, const vector1d<Qn::DataContainerStatCalculate>& vec_s){
-  auto c1 = vec_c[0][ev_bin].At(i).Mean();
-  auto c2 = vec_c[1][ev_bin].At(i).Mean();
-  auto c3 = vec_c[2][ev_bin].At(i).Mean();
-  auto c4 = vec_c[3][ev_bin].At(i).Mean();
-  auto c5 = vec_c[4][ev_bin].At(i).Mean();
-  auto c6 = vec_c[5][ev_bin].At(i).Mean();
-  // auto c7 = vec_c[6][ev_bin].At(i).Mean();
-  // auto c8 = vec_c[7][ev_bin].At(i).Mean();
+const auto decomposition_mixing_matrix = [](const vector1d<double>& vec_c, const vector1d<double>& vec_s){
+  auto c1 = vec_c[0];
+  auto c2 = vec_c[1];
+  auto c3 = vec_c[2];
+  auto c4 = vec_c[3];
+  auto c5 = vec_c[4];
+  auto c6 = vec_c[5];
 
-  auto s1 = vec_s[0][ev_bin].At(i).Mean();
-  auto s2 = vec_s[1][ev_bin].At(i).Mean();
-  auto s3 = vec_s[2][ev_bin].At(i).Mean();
-  auto s4 = vec_s[3][ev_bin].At(i).Mean();
-  auto s5 = vec_s[4][ev_bin].At(i).Mean();
-  auto s6 = vec_s[5][ev_bin].At(i).Mean();
+  auto s1 = vec_s[0];
+  auto s2 = vec_s[1];
+  auto s3 = vec_s[2];
+  auto s4 = vec_s[3];
+  auto s5 = vec_s[4];
+  auto s6 = vec_s[5];
 
   auto M = mixing_matrix_t{};
 
