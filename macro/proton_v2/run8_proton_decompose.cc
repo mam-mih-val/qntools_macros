@@ -115,7 +115,7 @@ const auto decomposition_mixing_matrix = [](const vector1d<double>& vec_c, const
   ;
 
   return M;
-}
+};
 
 const auto twist_rescaling_mixing_matrix = [](const vector1d<double>& vec_c, const vector1d<double>& vec_s){
   auto c1 = vec_c[0];
@@ -144,7 +144,7 @@ const auto twist_rescaling_mixing_matrix = [](const vector1d<double>& vec_c, con
   ;
 
   return M;
-}
+};
 
 std::tuple<bool, correction_matrix_t> PseudoInverse( const correction_matrix_t& M, double l ){
   auto svd = Eigen::JacobiSVD<correction_matrix_t> ( M, Eigen::ComputeThinU | Eigen::ComputeThinV );    
@@ -184,8 +184,8 @@ vector1d<DataContainerMatrix> MakeCorrectionMatrix(
     corr_matrix.AddAxes(axes);
 
     for( auto i = size_t{0}; i<vec_c[0][ev_bin].size(); ++i ){
-      auto vec_double_c std::vector<double>(NDIM, 0);
-      auto vec_double_s std::vector<double>(NDIM, 0);
+      auto vec_double_c = std::vector<double>(NDIM, 0);
+      auto vec_double_s = std::vector<double>(NDIM, 0);
 
       vec_double_c[0] = vec_c[0][ev_bin].At(i).Mean();
       vec_double_c[1] = vec_c[1][ev_bin].At(i).Mean();
