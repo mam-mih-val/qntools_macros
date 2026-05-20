@@ -107,7 +107,7 @@ void mcini_proton_correct(  std::string list,
           .Define( "y", ycm_function, { "event.fParticles.fE", "event.fParticles.fPz" } )
           .Define( "eta", eta_function, { "event.fParticles.fPx", "event.fParticles.fPy", "event.fParticles.fPz" } )
           .Define( "Ekin", ekin_function, {  "event.fParticles.fPx", "event.fParticles.fPy", "event.fParticles.fPz", "event.fParticles.fE" } )
-          // .Alias( "pdg", "event.fParticles.fPdg"  )
+          .Alias( "pdg", "event.fParticles.fPdg"  )
           .Filter( "b > 0." )
   ; // at least one filter is mandatory!!!
 
@@ -121,56 +121,25 @@ void mcini_proton_correct(  std::string list,
   correction_task.AddEventAxis( {"b", 7, 0, 14} );
 
   VectorConfig psi_rp( "psi_rp", "psi_rp", "Ones", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
-  psi_rp.SetHarmonicArray( {1, 2, 3} );
-  psi_rp.SetCorrections( {CORRECTION::PLAIN } );
-  // psi_rp.AddHisto1D({"psiRp", 100, -3.5, 3.5}, "psiRP");
+  psi_rp.SetHarmonicArray( { 1 } );
+  psi_rp.SetCorrections( { CORRECTION::PLAIN } );
   correction_task.AddVector(psi_rp);
 
   std::vector<Qn::AxisD> tru_proton_axes{
-        { "y", 10, -0.6, 1.4 },
+        { "y", 16, -0.2, 1.4 },
         { "pT", 10, 0.0, 2.0 },
   };
 
   VectorConfig tru_proton( "tru_proton", "phi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
-  tru_proton.SetHarmonicArray( {1, 2, 3} );
+  tru_proton.SetHarmonicArray( { 1, 2 } );
   tru_proton.SetCorrections( {CORRECTION::PLAIN } );
   tru_proton.SetCorrectionAxes( tru_proton_axes );
   tru_proton.AddCut( "pdg", [](double pid){
     auto pdg_code = static_cast<int>(pid);
     return pdg_code == 2212;
     }, "proton cut" );
-  tru_proton.AddCut( "eta", [](double eta){
-    return eta < 2.7;
-    }, "rapidity cut" );
   tru_proton.AddHisto2D({{"simProtonY", 100, -0.5, 1.5}, {"simPt", 100, 0.0, 2.0}}, "simIsProton");
   correction_task.AddVector(tru_proton);
-
-  VectorConfig S1( "S1", "phi", "Ekin", VECTOR_TYPE::TRACK, NORMALIZATION::M );
-  S1.SetHarmonicArray( {1, 2, 3} );
-  S1.SetCorrections( {CORRECTION::PLAIN } );
-  S1.AddCut( "eta", [](double eta){
-    return 3.8 < eta && eta < 5.4;
-    }, "rapidity cut" );
-  S1.AddHisto2D({{"simProtonY", 100, -0.5, 1.5}, {"simPt", 100, 0.0, 2.0}}, "simIsProton");
-  correction_task.AddVector(S1);
-
-  VectorConfig S2( "S2", "phi", "Ekin", VECTOR_TYPE::TRACK, NORMALIZATION::M );
-  S2.SetHarmonicArray( {1, 2, 3} );
-  S2.SetCorrections( {CORRECTION::PLAIN } );
-  S2.AddCut( "eta", [](double eta){
-    return 3.3 < eta && eta < 3.8;
-    }, "rapidity cut" );
-  S2.AddHisto2D({{"simProtonY", 100, -0.5, 1.5}, {"simPt", 100, 0.0, 2.0}}, "simIsProton");
-  correction_task.AddVector(S2);
-
-  VectorConfig S3( "S3", "phi", "Ekin", VECTOR_TYPE::TRACK, NORMALIZATION::M );
-  S3.SetHarmonicArray( {1, 2, 3} );
-  S3.SetCorrections( {CORRECTION::PLAIN } );
-  S3.AddCut( "eta", [](double eta){
-    return 2.7 < eta && eta < 3.3;
-    }, "rapidity cut" );
-  S3.AddHisto2D({{"simProtonY", 100, -0.5, 1.5}, {"simPt", 100, 0.0, 2.0}}, "simIsProton");
-  correction_task.AddVector(S3);
 
   correction_task.Run();
   auto n_events_filtered = *(dd.Count());
