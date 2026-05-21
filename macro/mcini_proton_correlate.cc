@@ -8,7 +8,7 @@ vector <vector<string>> u_psi_rp=
 void mcini_proton_correlate(string inputFiles="qn.root", string outputFile="corr.root")
 {
   int nSamples = 100;
-  Qn::AxisD centAxis({"b", 16, 0, 116});
+  Qn::AxisD centAxis({"b", 16, 0, 16});
   auto axes_correlation = Qn::MakeAxes(centAxis);
   ROOT::RDataFrame d( "tree", inputFiles.c_str() );
   auto d_samples = Qn::Correlation::Resample(d, nSamples);
