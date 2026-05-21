@@ -1,4 +1,4 @@
-//
+auto//
 // Created by Misha on 3/7/2023.
 //
 
@@ -26,21 +26,23 @@ void mcini_proton_correct(  std::string list,
   std::random_device dev{}; 
   std::mt19937 engine(dev()); 
   std::uniform_real_distribution<float> distribution{M_PI*-1, M_PI};
-  auto psi_rp_function = [ &distribution, &engine ] ( float psi_rp ){
+  auto psi_rp_function = [ &distribution, &engine ] ( double psi_rp ){
     return distribution(engine);
   };
-  auto phi_function = []( float psi_rp, ROOT::VecOps::RVec<float> vec_px, ROOT::VecOps::RVec<float> vec_py ){
+  auto phi_function = []( float psi_rp, ROOT::VecOps::RVec<double> vec_px, ROOT::VecOps::RVec<double> vec_py ){
     ROOT::VecOps::RVec<float> vec_phi{};
     vec_phi.reserve( vec_px.size() );
     for( size_t i=0; i<vec_px.size(); ++i ){
       auto px = vec_px.at(i);
       auto py = vec_py.at(i);
-      auto phi = atan2( py, px );
-      vec_phi.push_back( phi+psi_rp );
+      auto px_new = px * cos( psi_rp ) - py * sin( psi_rp );
+      auto py_new = px * sin( psi_rp ) + py * cos( psi_rp );
+      auto phi = atan2( py_new, px_new );
+      vec_phi.push_back( phi );
     }
     return vec_phi;
   };
-  auto pT_function = []( ROOT::VecOps::RVec<float> vec_px, ROOT::VecOps::RVec<float> vec_py ){
+  auto pT_function = []( ROOT::VecOps::RVec<double> vec_px, ROOT::VecOps::RVec<double> vec_py ){
     ROOT::VecOps::RVec<float> vec_pT{};
     vec_pT.reserve( vec_py.size() );
     for( size_t i=0; i<vec_py.size(); ++i ){
@@ -51,18 +53,18 @@ void mcini_proton_correct(  std::string list,
     }
     return vec_pT;
   };
-  auto ycm_function = [Y_CM]( ROOT::VecOps::RVec<float> vec_e, ROOT::VecOps::RVec<float> vec_pz ){
+  auto ycm_function = []( ROOT::VecOps::RVec<double> vec_e, ROOT::VecOps::RVec<double> vec_pz ){
     ROOT::VecOps::RVec<float> vec_ycm{};
     vec_ycm.reserve( vec_e.size() );
     for( size_t i=0; i<vec_e.size(); ++i ){
       auto pz = vec_pz.at(i);
       auto E = vec_e.at(i);
-      auto ycm = log( E + pz ) - log( E - pz ) - Y_CM;
+      auto ycm = 0.5 * log( E + pz ) - 0.5 * log( E - pz );
       vec_ycm.push_back( ycm );
     }
     return vec_ycm;
   };
-  auto eta_function = [Y_CM]( ROOT::VecOps::RVec<float> vec_px, ROOT::VecOps::RVec<float> vec_py, ROOT::VecOps::RVec<float> vec_pz ){
+  auto eta_function = [Y_CM]( ROOT::VecOps::RVec<double> vec_px, ROOT::VecOps::RVec<double> vec_py, ROOT::VecOps::RVec<double> vec_pz ){
     ROOT::VecOps::RVec<float> vec_eta{};
     vec_eta.reserve( vec_px.size() );
     for( size_t i=0; i<vec_px.size(); ++i ){
@@ -75,20 +77,6 @@ void mcini_proton_correct(  std::string list,
       vec_eta.push_back( eta );
     }
     return vec_eta;
-  };
-  auto ekin_function = [Y_CM]( ROOT::VecOps::RVec<float> vec_px, ROOT::VecOps::RVec<float> vec_py, ROOT::VecOps::RVec<float> vec_pz, ROOT::VecOps::RVec<float> vec_e ){
-    ROOT::VecOps::RVec<float> vec_ekin{};
-    vec_ekin.reserve( vec_px.size() );
-    for( size_t i=0; i<vec_px.size(); ++i ){
-      auto E = vec_e.at(i);
-      auto px = vec_px.at(i);
-      auto py = vec_py.at(i);
-      auto pz = vec_pz.at(i);
-      auto M = sqrt( E*E - px*px - py*py - pz*pz );
-      auto Ekin = E - M;
-      vec_ekin.push_back( Ekin );
-    }
-    return vec_ekin;
   };
   
   TStopwatch timer;
@@ -106,31 +94,30 @@ void mcini_proton_correct(  std::string list,
           .Define( "pT", pT_function, { "event.fParticles.fPx", "event.fParticles.fPy" } )
           .Define( "y", ycm_function, { "event.fParticles.fE", "event.fParticles.fPz" } )
           .Define( "eta", eta_function, { "event.fParticles.fPx", "event.fParticles.fPy", "event.fParticles.fPz" } )
-          .Define( "Ekin", ekin_function, {  "event.fParticles.fPx", "event.fParticles.fPy", "event.fParticles.fPz", "event.fParticles.fE" } )
           .Alias( "pdg", "event.fParticles.fPdg"  )
           .Filter( "b > 0." )
   ; // at least one filter is mandatory!!!
 
   auto correction_task = CorrectionTask( dd, "correction_out.root", calib_in_file );
-  correction_task.SetEventVariables(std::regex("fB|psi_rp"));
+  correction_task.SetEventVariables(std::regex("b|psi_rp"));
   correction_task.SetTrackVariables({
-                                      std::regex("phi|pT|y|Ekin|pdg"),
+                                      std::regex("phi|pT|y|pdg"),
                                     });
 
   correction_task.InitVariables();
-  correction_task.AddEventAxis( {"b", 7, 0, 14} );
+  correction_task.AddEventAxis( { "b", 16, 0, 16 } );
 
   VectorConfig psi_rp( "psi_rp", "psi_rp", "Ones", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
-  psi_rp.SetHarmonicArray( { 1 } );
+  psi_rp.SetHarmonicArray( { 1, 2 } );
   psi_rp.SetCorrections( { CORRECTION::PLAIN } );
   correction_task.AddVector(psi_rp);
 
   std::vector<Qn::AxisD> tru_proton_axes{
-        { "y", 16, -0.2, 1.4 },
+        { "y", 20, -0.5, 1.5 },
         { "pT", 10, 0.0, 2.0 },
   };
 
-  VectorConfig tru_proton( "tru_proton", "phi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  VectorConfig tru_proton( "proton", "phi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   tru_proton.SetHarmonicArray( { 1, 2 } );
   tru_proton.SetCorrections( {CORRECTION::PLAIN } );
   tru_proton.SetCorrectionAxes( tru_proton_axes );
@@ -138,7 +125,6 @@ void mcini_proton_correct(  std::string list,
     auto pdg_code = static_cast<int>(pid);
     return pdg_code == 2212;
     }, "proton cut" );
-  tru_proton.AddHisto2D({{"simProtonY", 100, -0.5, 1.5}, {"simPt", 100, 0.0, 2.0}}, "simIsProton");
   correction_task.AddVector(tru_proton);
 
   correction_task.Run();
