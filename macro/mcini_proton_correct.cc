@@ -88,13 +88,6 @@ void mcini_proton_correct(  std::string list,
   ROOT::RDataFrame d( *chain );
   
   auto dd=d
-          .Alias( "b", "fB" )
-          .Define( "psi_rp", psi_rp_function, {"fPhi"} )
-          .Define( "phi", phi_function, { "psi_rp", "event.fParticles.fPx", "event.fParticles.fPy" } )
-          .Define( "pT", pT_function, { "event.fParticles.fPx", "event.fParticles.fPy" } )
-          .Define( "y", ycm_function, { "event.fParticles.fE", "event.fParticles.fPz" } )
-          .Define( "eta", eta_function, { "event.fParticles.fPx", "event.fParticles.fPy", "event.fParticles.fPz" } )
-          .Alias( "pdg", "event.fParticles.fPdg"  )
           .Filter( "b > 0." )
   ; // at least one filter is mandatory!!!
 
