@@ -81,7 +81,7 @@ void mcini_proton_correct(  std::string list,
   
   TStopwatch timer;
   timer.Start();
-  std::string treename = "events";
+  std::string treename = "t";
   TFileCollection collection( "collection", "", list.c_str() );
   auto* chain = new TChain( treename.c_str() );
   chain->AddFileInfoList( collection.GetList() );
