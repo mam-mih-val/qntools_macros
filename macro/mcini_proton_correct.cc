@@ -121,7 +121,7 @@ void mcini_proton_correct(  std::string list,
   correction_task.AddVector(tru_proton);
 
   tru_proton.AddCut( "mate", [](double mate){
-    auto mate_code = static_cast<int>(pid);
+    auto mate_code = static_cast<int>(mate);
     return mate_code != 1 && mate_code != -1;
     }, "mate cut" );
   correction_task.AddVector(tru_proton);
