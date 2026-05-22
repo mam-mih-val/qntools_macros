@@ -94,7 +94,7 @@ void mcini_proton_correct(  std::string list,
   auto correction_task = CorrectionTask( dd, "correction_out.root", calib_in_file );
   correction_task.SetEventVariables(std::regex("b|psi_rp"));
   correction_task.SetTrackVariables({
-                                      std::regex("phi|pT|y|pdg"),
+                                      std::regex("phi|pT|y|pdg|mate"),
                                     });
 
   correction_task.InitVariables();
@@ -118,6 +118,12 @@ void mcini_proton_correct(  std::string list,
     auto pdg_code = static_cast<int>(pid);
     return pdg_code == 2212;
     }, "proton cut" );
+  correction_task.AddVector(tru_proton);
+
+  tru_proton.AddCut( "mate", [](double mate){
+    auto mate_code = static_cast<int>(pid);
+    return mate_code != 1 && mate_code != -1;
+    }, "mate cut" );
   correction_task.AddVector(tru_proton);
 
   correction_task.Run();
