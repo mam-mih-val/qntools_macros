@@ -154,7 +154,7 @@ namespace P1 {
 
 }
 
-void run8_proton_correlate(string inputFiles="qn.root", string outputFile="corr.root")
+void run8_mc_proton_correlate(string inputFiles="qn.root", string outputFile="corr.root")
 {
   int nSamples = 100;
   Qn::AxisD centAxis({"centrality", 6, 0, 60});
