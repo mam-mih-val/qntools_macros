@@ -263,7 +263,7 @@ void run8_mc_proton_correct( std::string list,
   ; 
 
   auto correction_task = CorrectionTask( dd, "correction_out.root", calib_in_file );
-  correction_task.SetEventVariables(std::regex("centrality"));
+  correction_task.SetEventVariables(std::regex("centrality|psiRP"));
   correction_task.SetChannelVariables({std::regex("fhcalMod(X|Y|Phi|E|Id)")});
   correction_task.SetTrackVariables({
                                       std::regex("tr(Pt|Px|Py|Eta|Phi|Charge|ProtonY|DcaR|ProtonEfficiency|FhcalX|FhcalY|StsNhits|StsChi2|HasAnyTofHit|IsProton)"),
