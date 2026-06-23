@@ -222,7 +222,7 @@ void run8_mc_proton_correct( std::string list,
   std::cout << "Preparing the RDF" << std::endl;
   
   auto dd=d
-    .Define("track_multiplicity", "return trMom.size();")
+    .Define("track_multiplicity", "return static_cast<double>(trMom.size());")
     .Define("centrality", centrality_function, {"track_multiplicity"} )
     .Define("fhcalModPhi","ROOT::VecOps::RVec<float> phi; for(auto& pos:fhcalModPos) phi.push_back(pos.phi()); return phi;")
     .Define("fhcalModX","ROOT::VecOps::RVec<float> x; for(auto& pos:fhcalModPos) x.push_back(pos.x()); return x;")
