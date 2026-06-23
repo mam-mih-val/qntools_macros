@@ -129,12 +129,9 @@ void run8_mc_proton_correct( std::string list,
   const auto tr_has_tof_hit = []( ROOT::VecOps::RVec<double> vec_beta ){
     auto vec_has = std::vector<int>( vec_beta.size(), 0 );
     for( auto i = size_t{0}; i < vec_beta.size(); ++i ){
-      std::cout << i << " vec_beta[i] =  "  << vec_beta[i] << std::endl;
       if( vec_beta[i] < -9. )
               continue;
       vec_has[i] = 1;
-      std::cout << i << " vec_has[i] =  "  << vec_has[i] << std::endl;
-      std::cout << std::endl;
     }
     return vec_has;
   };
