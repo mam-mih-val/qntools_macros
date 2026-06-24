@@ -158,8 +158,7 @@ void run8_mc_proton_correlate(string inputFiles="qn.root", string outputFile="co
 {
   int nSamples = 100;
   Qn::AxisD centAxis({"centrality", 6, 0, 60});
-  Qn::AxisD runIdAxis({ "runId", 12, 7100, 8300 });
-  auto axes_correlation = Qn::MakeAxes(centAxis, runIdAxis);
+  auto axes_correlation = Qn::MakeAxes( centAxis );
   std::string treename = "tree";
   auto* chain = new TChain( treename.c_str() );
   chain->AddFile( inputFiles.c_str() );
