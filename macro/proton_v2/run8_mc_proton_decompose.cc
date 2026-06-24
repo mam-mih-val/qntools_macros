@@ -88,7 +88,7 @@ private:
   vector1d<size_t> offset_vector{};
 };
 
-const auto run8_mc_proton_decompose = [](const vector1d<double>& vec_c, const vector1d<double>& vec_s){
+const auto decomposition_mixing_matrix = [](const vector1d<double>& vec_c, const vector1d<double>& vec_s){
   auto c1 = vec_c[0];
   auto c2 = vec_c[1];
   auto c3 = vec_c[2];
@@ -297,7 +297,7 @@ vector2d< Qn::DataContainer<T, Qn::AxisD> > ExtractPack( const vector1d< Qn::Dat
 void run8_mc_proton_decompose(std::string in_file_name, std::string in_calib_file){
 
   auto event_axes = std::vector<Qn::AxisD>{
-    Qn::AxisD{ "centrality", 6, 0, 60 },
+    Qn::AxisD{ "centrality", 6, 0, 60 },2
   };
 
   const std::string f1_name {"F1_PLAIN"};
