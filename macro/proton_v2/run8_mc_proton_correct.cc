@@ -391,7 +391,7 @@ void run8_mc_proton_correct( std::string list,
   VectorConfig sim_proton( "tru_proton", "simPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   sim_proton.SetHarmonicArray( { 1, 2, 3, 4, 5, 6, 7, 8 } );
   sim_proton.SetCorrections( { CORRECTION::PLAIN } );
-  sim_proton.SetCorrectionAxes( proton_axes );
+  sim_proton.SetCorrectionAxes( sim_proton_axes );
   sim_proton.AddCut( "simIsProton", [](double is){
     return 0.9 < is && is < 1.1;
   }, "cut on if it is proton from MC info" );
