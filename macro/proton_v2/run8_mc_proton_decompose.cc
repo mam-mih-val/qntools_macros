@@ -444,8 +444,8 @@ void run8_mc_proton_decompose(std::string in_file_name, std::string in_calib_fil
     Qn::DataContainerQVector f4_ev, 
     Qn::DataContainerQVector tp_ev, 
     Qn::DataContainerQVector tn_ev, 
-    Qn::DataContainerQVector p_ev
-    Qn::DataContainerQVector tru_p_ev
+    Qn::DataContainerQVector p_ev,
+    Qn::DataContainerQVector tru_p_ev,
     Qn::DataContainerQVector psi_rp_ev
    ) mutable {
     cent = centrality;
