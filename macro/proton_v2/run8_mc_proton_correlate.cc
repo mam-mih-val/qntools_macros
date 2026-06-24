@@ -73,15 +73,6 @@ std::vector < std::array<string, 2> > arr_u1psiRp {
   
 };
 
-std::vector < std::array<string, 4> > arr_u1u1Q1Q1 {
-  std::array<std::string, 4>{p1_vector, p2_vector, f1_vector, f2_vector},
-  std::array<std::string, 4>{p1_vector, p2_vector, f1_vector, f3_vector},
-  std::array<std::string, 4>{p1_vector, p2_vector, f1_vector, f4_vector},
-  std::array<std::string, 4>{p1_vector, p2_vector, f2_vector, f3_vector},
-  std::array<std::string, 4>{p1_vector, p2_vector, f2_vector, f4_vector},
-  std::array<std::string, 4>{p1_vector, p2_vector, f3_vector, f4_vector},
-};
-
 std::vector < std::array<string, 4> > arr_u3Q1Q1Q1 {
   std::array<std::string, 4>{u1_vector, f2_vector, f3_vector, f4_vector},
   std::array<std::string, 4>{u1_vector, f1_vector, f3_vector, f4_vector},
