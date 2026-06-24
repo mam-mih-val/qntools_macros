@@ -248,13 +248,13 @@ std::tuple< vector1d<Qn::DataContainerStatCalculate>, vector1d<Qn::DataContainer
   vec_c.reserve(6);
   vec_s.reserve(6);
   for( auto i=size_t{0}; i<6; ++i ){
-    auto corr_name = str_vec_name+".x"+std::to_string(i+1)+"centralityrunId"s;
+    auto corr_name = str_vec_name+".x"+std::to_string(i+1)+"centrality"s;
     std::cout << "Extracting " << corr_name << "\n";
     calib_file->GetObject( corr_name.c_str(), tmp );
     assert(tmp);
     vec_c.emplace_back( *tmp );
     
-    corr_name = str_vec_name+".y"+std::to_string(i+1)+"centralityrunId"s;
+    corr_name = str_vec_name+".y"+std::to_string(i+1)+"centrality"s;
     std::cout << "Extracting " << corr_name << "\n";
     calib_file->GetObject( corr_name.c_str(), tmp );
     assert(tmp);
