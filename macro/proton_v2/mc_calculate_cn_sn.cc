@@ -67,7 +67,7 @@ namespace P1 {
 
 }
 
-void calculate_cn_sn(string inputFiles="qn.root", string outputFile="CnSn.root")
+void mc_calculate_cn_sn(string inputFiles="qn.root", string outputFile="CnSn.root")
 {
   int nSamples = 100;
   Qn::AxisD centAxis({"centrality", 6, 0, 60});
