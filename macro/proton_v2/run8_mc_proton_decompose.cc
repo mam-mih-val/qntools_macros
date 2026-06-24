@@ -297,7 +297,7 @@ vector2d< Qn::DataContainer<T, Qn::AxisD> > ExtractPack( const vector1d< Qn::Dat
 void run8_mc_proton_decompose(std::string in_file_name, std::string in_calib_file){
 
   auto event_axes = std::vector<Qn::AxisD>{
-    Qn::AxisD{ "centrality", 6, 0, 60 },2
+    Qn::AxisD{ "centrality", 6, 0, 60 },
   };
 
   const std::string f1_name {"F1_PLAIN"};
@@ -449,9 +449,6 @@ void run8_mc_proton_decompose(std::string in_file_name, std::string in_calib_fil
     Qn::DataContainerQVector psi_rp_ev
    ) mutable {
     cent = centrality;
-    r_id = run_id;
-    v_x = vtx_x;
-    v_y = vtx_y;
     f1 = f1_ev;
     f2 = f2_ev;
     f3 = f3_ev;
