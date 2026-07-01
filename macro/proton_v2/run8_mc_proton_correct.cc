@@ -384,8 +384,8 @@ void run8_mc_proton_correct( std::string list,
   correction_task.AddVector(proton);
 
   std::vector<Qn::AxisD> sim_proton_axes{
-        { "simProtonY", 6, 0.0, 1.2 },
-        { "simPt", 5, 0.0, 2.0 },
+        { "simProtonY", 24, 0.0, 1.2 },
+        { "simPt", 20, 0.0, 2.0 },
   };
 
   VectorConfig sim_proton( "tru_proton", "simPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
@@ -398,7 +398,7 @@ void run8_mc_proton_correct( std::string list,
   correction_task.AddVector(sim_proton);
 
   VectorConfig psi_rp( "psi_rp", "psiRP", "Ones", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
-  psi_rp.SetHarmonicArray( { 1, 2 } );
+  psi_rp.SetHarmonicArray( { 1, 2, 3, 4, 5, 6, 7, 8 } );
   psi_rp.SetCorrections( { CORRECTION::PLAIN } );
   correction_task.AddVector(psi_rp);
 
