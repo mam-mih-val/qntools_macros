@@ -13,7 +13,7 @@
 #include <tuple>
 #include <vector>
 
-constexpr size_t NDIM = 4;
+constexpr size_t NDIM = 6;
 
 using correction_matrix_t = Eigen::Matrix<double, NDIM, NDIM>;
 using mixing_matrix_t = Eigen::Matrix<double, NDIM, NDIM>;
@@ -93,33 +93,33 @@ const auto decomposition_mixing_matrix = [](const vector1d<double>& vec_c, const
   auto c2 = vec_c[1];
   auto c3 = vec_c[2];
   auto c4 = vec_c[3];
-  // auto c5 = vec_c[4];
-  // auto c6 = vec_c[5];
+  auto c5 = vec_c[4];
+  auto c6 = vec_c[5];
 
   auto s1 = vec_s[0];
   auto s2 = vec_s[1];
   auto s3 = vec_s[2];
   auto s4 = vec_s[3];
-  // auto s5 = vec_s[4];
-  // auto s6 = vec_s[5];
+  auto s5 = vec_s[4];
+  auto s6 = vec_s[5];
 
   auto M = mixing_matrix_t{};
 
-  // M << 
-  //   1+c2,    s2,   c3+c1,  s3+s1, c4+c2, s4+s2,
-  //   s2,    1-c2,   s3-s1,  c1-c3, s4-s2, c2-c4,
-  //   c3+c1, s3-s1,  1+c4,      s4, c5+c1, s5+s1,
-  //   s3+s1, c1-c3,    s4,    1-c4, s5-s1, c1-c5,
-  //   c4+c2, s4-s2,  c5+c1,  s5-s1,  1+c6,    s6,
-  //   s4+s2, c2-c4,  s5+s1,  c1-c5,    s6,  1-c6
-  // ;
-
   M << 
-    1+c2,    s2,   c3+c1,  s3+s1,
-    s2,    1-c2,   s3-s1,  c1-c3,
-    c3+c1, s3-s1,  1+c4,      s4,
-    s3+s1, c1-c3,    s4,    1-c4
+    1+c2,    s2,   c3+c1,  s3+s1, c4+c2, s4+s2,
+    s2,    1-c2,   s3-s1,  c1-c3, s4-s2, c2-c4,
+    c3+c1, s3-s1,  1+c4,      s4, c5+c1, s5+s1,
+    s3+s1, c1-c3,    s4,    1-c4, s5-s1, c1-c5,
+    c4+c2, s4-s2,  c5+c1,  s5-s1,  1+c6,    s6,
+    s4+s2, c2-c4,  s5+s1,  c1-c5,    s6,  1-c6
   ;
+
+  // M << 
+  //   1+c2,    s2,   c3+c1,  s3+s1,
+  //   s2,    1-c2,   s3-s1,  c1-c3,
+  //   c3+c1, s3-s1,  1+c4,      s4,
+  //   s3+s1, c1-c3,    s4,    1-c4
+  // ;
 
   return M;
 };
@@ -129,33 +129,33 @@ const auto twist_rescaling_mixing_matrix = [](const vector1d<double>& vec_c, con
   auto c2 = vec_c[1];
   auto c3 = vec_c[2];
   auto c4 = vec_c[3];
-  // auto c5 = vec_c[4];
-  // auto c6 = vec_c[5];
+  auto c5 = vec_c[4];
+  auto c6 = vec_c[5];
 
   auto s1 = vec_s[0];
   auto s2 = vec_s[1];
   auto s3 = vec_s[2];
   auto s4 = vec_s[3];
-  // auto s5 = vec_s[4];
-  // auto s6 = vec_s[5];
+  auto s5 = vec_s[4];
+  auto s6 = vec_s[5];
 
   auto M = mixing_matrix_t{};
 
-  // M << 
-  //   1+c2,    s2,    0,     0,     0,     0,
-  //   s2,    1-c2,    0,     0,     0,     0,
-  //   0,        0, 1+c4,    s4,     0,     0,
-  //   0,        0,   s4,  1-c4,     0,     0,
-  //   0,        0,    0,     0,  1+c6,    s6,
-  //   0,        0,    0,     0,    s6,  1-c6
-  // ;
-  
   M << 
-    1+c2,    s2,    0,     0,
-    s2,    1-c2,    0,     0,
-    0,        0, 1+c4,    s4,
-    0,        0,   s4,  1-c4
+    1+c2,    s2,    0,     0,     0,     0,
+    s2,    1-c2,    0,     0,     0,     0,
+    0,        0, 1+c4,    s4,     0,     0,
+    0,        0,   s4,  1-c4,     0,     0,
+    0,        0,    0,     0,  1+c6,    s6,
+    0,        0,    0,     0,    s6,  1-c6
   ;
+  
+  // M << 
+  //   1+c2,    s2,    0,     0,
+  //   s2,    1-c2,    0,     0,
+  //   0,        0, 1+c4,    s4,
+  //   0,        0,   s4,  1-c4
+  // ;
 
   // M << 
   //   1+c2,    0,    0,     0,
@@ -212,15 +212,15 @@ vector1d<DataContainerMatrix> MakeCorrectionMatrix(
       vec_double_c[1] = vec_c[1][ev_bin].At(i).Mean();
       vec_double_c[2] = vec_c[2][ev_bin].At(i).Mean();
       vec_double_c[3] = vec_c[3][ev_bin].At(i).Mean();
-      // vec_double_c[4] = vec_c[4][ev_bin].At(i).Mean();
-      // vec_double_c[5] = vec_c[5][ev_bin].At(i).Mean();
+      vec_double_c[4] = vec_c[4][ev_bin].At(i).Mean();
+      vec_double_c[5] = vec_c[5][ev_bin].At(i).Mean();
 
       vec_double_s[0] = vec_s[0][ev_bin].At(i).Mean();
       vec_double_s[1] = vec_s[1][ev_bin].At(i).Mean();
       vec_double_s[2] = vec_s[2][ev_bin].At(i).Mean();
       vec_double_s[3] = vec_s[3][ev_bin].At(i).Mean();
-      // vec_double_s[4] = vec_s[4][ev_bin].At(i).Mean();
-      // vec_double_s[5] = vec_s[5][ev_bin].At(i).Mean();
+      vec_double_s[4] = vec_s[4][ev_bin].At(i).Mean();
+      vec_double_s[5] = vec_s[5][ev_bin].At(i).Mean();
 
       auto sumw = vec_c[0][ev_bin].At(i).SumWeights();
       auto M = func( vec_double_c, vec_double_s );
@@ -231,7 +231,7 @@ vector1d<DataContainerMatrix> MakeCorrectionMatrix(
       }
 
       auto c = column_t{};
-      c << vec_double_c[0], vec_double_s[0], vec_double_c[1], vec_double_s[1];
+      c << vec_double_c[0], vec_double_s[0], vec_double_c[1], vec_double_s[1], vec_double_c[2], vec_double_s[2];
 
       auto [is_valid, Minv] = PseudoInverse( M, 5e-3 );
       if( std::isinf( 1.0 / sqrt(sumw) ) )
@@ -392,17 +392,22 @@ void run8_mc_proton_decompose(std::string in_file_name, std::string in_calib_fil
         }
 
         auto X1old =  column_t{};
-        X1old << x1_old, y1_old, x2_old, y2_old;
+        X1old << x1_old, y1_old, x2_old, y2_old, x3_old, y3_old;
         
         auto X1new =  Minv * ( X1old - c );
         
         auto x1_new = static_cast<double>(X1new(0));
         auto y1_new = static_cast<double>(X1new(1));
+        
         auto x2_new = static_cast<double>(X1new(2));
         auto y2_new = static_cast<double>(X1new(3));
 
+        auto x3_new = static_cast<double>(X1new(4));
+        auto y3_new = static_cast<double>(X1new(5));
+
         new_qvec.At(i).SetQ( 1, x1_new, y1_new );
         new_qvec.At(i).SetQ( 2, x2_new, y2_new );
+        new_qvec.At(i).SetQ( 3, x3_new, y3_new );
       }
 
       return new_qvec;
