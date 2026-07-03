@@ -1,6 +1,7 @@
 #include "QnDataFrame.hpp"
 
 std::string u1_vector{ "proton_PLAIN" };
+std::string tru_p_vector{ "tru_proton_PLAIN" };
 
 std::string f1_vector{ "F1_PLAIN" };
 std::string f2_vector{ "F2_PLAIN" };
@@ -10,10 +11,13 @@ std::string f4_vector{ "F4_PLAIN" };
 std::string tp_vector{ "Tpos_PLAIN" };
 std::string tn_vector{ "Tneg_PLAIN" };
 
+std::string psi_vector{ "psi_rp_PLAIN" };
+
 std::vector < std::array<std::string, 1> > arr_u1 {  };
 
 std::vector < std::array<std::string, 1> > arr_Q1 {
   std::array<std::string, 1>{u1_vector},
+  std::array<std::string, 1>{tru_p_vector},
 
   std::array<std::string, 1>{f1_vector},
   std::array<std::string, 1>{f2_vector},  
@@ -21,6 +25,7 @@ std::vector < std::array<std::string, 1> > arr_Q1 {
   std::array<std::string, 1>{f4_vector},
   std::array<std::string, 1>{tp_vector},
   std::array<std::string, 1>{tn_vector},
+  std::array<std::string, 1>{psi_vector},
 };
 
 namespace P1 {
@@ -150,11 +155,11 @@ void mc_calculate_cn_sn(string inputFiles="qn.root", string outputFile="CnSn.roo
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x6", P1::x(6), wUnity1part, wn, corr, corr);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y6", P1::y(6), wUnity1part, wn, corr, corr);
 
-    // corrBuilder.AddCorrelationWithInternalReader(corrName+".x7", P1::x(7), wUnity1part, wn, corr, corr);
-    // corrBuilder.AddCorrelationWithInternalReader(corrName+".y7", P1::y(7), wUnity1part, wn, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x7", P1::x(7), wUnity1part, wn, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y7", P1::y(7), wUnity1part, wn, corr, corr);
 
-    // corrBuilder.AddCorrelationWithInternalReader(corrName+".x8", P1::x(8), wUnity1part, wn, corr, corr);
-    // corrBuilder.AddCorrelationWithInternalReader(corrName+".y8", P1::y(8), wUnity1part, wn, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x8", P1::x(8), wUnity1part, wn, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y8", P1::y(8), wUnity1part, wn, corr, corr);
   }
 
   // ---------------- //
