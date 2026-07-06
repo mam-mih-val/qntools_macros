@@ -165,7 +165,7 @@ void run8_mc_proton_correct( std::string list,
         if( efficiency < 1e-2 )
           continue;
         auto weight = 1.0 / efficiency;
-        vec_weight.push_back( weight );
+        vec_weight[i] = static_cast<float>(weight);
       }
       return vec_weight;
     };
