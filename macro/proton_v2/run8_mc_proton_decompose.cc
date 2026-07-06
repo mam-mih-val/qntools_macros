@@ -357,7 +357,7 @@ void run8_mc_proton_decompose(std::string in_file_name, std::string in_calib_fil
   auto tp_corr = MakeCorrectionMatrix(v2_c_tp, v2_s_tp, decomposition_mixing_matrix);
   auto tn_corr = MakeCorrectionMatrix(v2_c_tn, v2_s_tn, decomposition_mixing_matrix);
   
-  auto p_corr = MakeCorrectionMatrix(v2_c_p, v2_s_p, decomposition_mixing_matrix );
+  auto p_corr = MakeCorrectionMatrix(v2_c_p, v2_s_p, twist_rescaling_mixing_matrix );
 
   const auto correction_generator = []( 
     const vector1d<DataContainerMatrix>& vec_cor,
