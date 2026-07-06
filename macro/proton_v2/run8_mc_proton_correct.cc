@@ -147,19 +147,24 @@ void run8_mc_proton_correct( std::string list,
   };
 
   const auto weight_generator = []( auto efficiency_map ){
-    return [efficiency_map](std::vector<float> vec_y, ROOT::VecOps::RVec<float> vec_pT){
+    return [efficiency_map](std::vector<float> vec_px, std::vector<float> vec_py, std::vector<float> vec_pz){
       if( !efficiency_map ){
-          return std::vector<float>(vec_y.size(), 1);
+          return std::vector<float>(vec_px.size(), 1);
         }
-      std::vector<float> vec_weight{};
-      vec_weight.reserve(vec_y.size());
-      for( int i=0; i<vec_y.size(); ++i ){
-        auto pT = vec_pT.at(i);
-        auto y = vec_y.at(i);
-        auto y_bin = efficiency_map->GetXaxis()->FindBin( y );
-        auto pT_bin = efficiency_map->GetYaxis()->FindBin( pT );
-        auto efficiency = efficiency_map->GetBinContent( y_bin, pT_bin );
-        auto weight = 5e-2 < efficiency && efficiency < 1 ? 1.0 / efficiency : 0.0;
+      auto vec_weight = std::vector<float>( vec_px.size(), 0.0 );
+      for( int i=0; i<vec_px.size(); ++i ){
+        auto px = vec_px[i];
+        auto py = vec_py[i];
+        auto pz = vec_pz[i];
+
+        auto px_bin = efficiency_map->GetXaxis()->FindBin( px );
+        auto py_bin = efficiency_map->GetYaxis()->FindBin( py );
+        auto pz_bin = efficiency_map->GetZaxis()->FindBin( pz );
+        
+        auto efficiency = efficiency_map->GetBinContent( px_bin, py_bin, pz_bin );
+        if( efficiency < 1e-2 )
+          continue;
+        auto weight = 1.0 / efficiency;
         vec_weight.push_back( weight );
       }
       return vec_weight;
@@ -171,9 +176,9 @@ void run8_mc_proton_correct( std::string list,
   auto distribution = std::uniform_real_distribution<double>{ 0.0, 1.0 };
 
   std::unique_ptr<TFile> effieciency_file{TFile::Open( str_effieciency_file.c_str(), "READ" )};
-  TH2D* efficiency_histo{nullptr};
+  TH3* efficiency_histo{nullptr};
   
-  effieciency_file->GetObject("efficiency_2212_tof", efficiency_histo);
+  effieciency_file->GetObject("h3_efficiency_2212_good", efficiency_histo);
   if( !efficiency_histo )
     std::cerr << "Warning: No efficiency for both tof was found in file " << str_effieciency_file << "\n";
 
@@ -236,7 +241,7 @@ void run8_mc_proton_correct( std::string list,
     .Define( "pz", " std::vector<float> pz; for( auto mom : trMom ){ pz.push_back( mom.Pz() ); } return pz; " )
     .Define( "pq", " std::vector<float> pq; for( int i=0; i<trMom.size(); i++ ){ pq.push_back( trMom.at(i).P() / trCharge.at(i) ); } return pq;" )
     .Define( "trProtonY", rapidity_generator(PROTON_M, Y_CM), {"pz", "pq"} )
-    .Define( "trProtonEfficiency", weight_generator(efficiency_histo), {"trProtonY", "trPt"} )
+    .Define( "trProtonEfficiency", weight_generator(efficiency_histo), {"trPx", "trPy", "pz"} )
     .Define( "trHasTof400Hit", tr_has_tof_hit, { "trBetaTof400" } )
     .Define( "trHasTof700Hit", tr_has_tof_hit, { "trBetaTof700" } )
     .Define( "trHasAnyTofHit", tr_has_any_tof_hit, { "trHasTof400Hit", "trHasTof700Hit" } )
