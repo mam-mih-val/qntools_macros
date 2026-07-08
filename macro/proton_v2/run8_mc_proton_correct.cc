@@ -9,6 +9,8 @@
 #include <random>
 #include <vector>
 
+#include <DataContainer.hpp>
+
 void run8_mc_proton_correct( std::string list, 
                           std::string str_effieciency_file,
                           std::string str_file_calib_recentering,
