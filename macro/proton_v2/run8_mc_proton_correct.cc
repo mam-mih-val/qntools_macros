@@ -305,7 +305,7 @@ void run8_mc_proton_correct( std::string list,
     .Define( "simProtonY", rapidity_generator(PROTON_M, Y_CM), {"simPz", "simP"} )
     
     .Define( "trIsProton", tr_is_particle, {"trSimIndex", "simIsProton"} )
-    .Range( 1000 )
+    // .Range( 1000 )
 
     .Filter("vtxNtracks > 2")      
   ; 
