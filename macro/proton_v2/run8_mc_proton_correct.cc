@@ -4,11 +4,14 @@
 
 #include <cassert>
 #include <cmath>
+#include <limits>
+#include <memory>
 #include <random>
 #include <vector>
 
 void run8_mc_proton_correct( std::string list, 
                           std::string str_effieciency_file,
+                          std::string str_file_calib_recentering,
                           std::string calib_in_file="qa.root" ){
 
   std::cout << "starting execution" << std::endl;
@@ -18,6 +21,14 @@ void run8_mc_proton_correct( std::string list,
   const float DEUTERON_M = 1.875;  
   const float Y_CM = 1.15141;
   const float FHCAL_Z = 980; // cm
+
+  auto file_calib_recentering = std::unique_ptr<TFile, std::function<void(TFile*)> >{ TFile::Open(str_file_calib_recentering.c_str(), "READ"), [](auto f){ f->Close(); } };
+  
+  DataContainerStatCollect* proton_avg_x{nullptr}; 
+  DataContainerStatCollect* proton_avg_y{nullptr}; 
+  
+  file_calib_recentering->GetObject( "proton_PLAIN.x1centrality", proton_avg_x );
+  file_calib_recentering->GetObject( "proton_PLAIN.y1centrality", proton_avg_y );
   
 	const auto rapidity_generator = []( auto particle_m, auto y_cm ){
     return 
@@ -171,6 +182,31 @@ void run8_mc_proton_correct( std::string list,
     };
   };
 
+  const auto recentered_phi_function = [proton_avg_x, proton_avg_y]( float centrality, std::vector<float> vec_phi, std::vector<float> vec_pT, std::vector<float> vec_y ){
+    auto vec_rec_phi = vec_phi;
+    if( !proton_avg_x )
+      return vec_rec_phi;
+    if( !proton_avg_y )
+      return vec_rec_phi;
+
+    for( auto i=size_t{}; i<vec_phi.size(); ++i ){
+      auto pT = vec_pT[i];
+      auto y = vec_y[i];
+      auto phi = vec_phi[i];
+      auto bin = proton_avg_x->FindBin( std::vector<double>{ centrality, y, pT } );
+      auto sum_w = proton_avg_x->At(bin).SumWeights();
+      if( fabs(sum_w) < std::numeric_limits<float>::epsilon() )
+        continue;
+      auto avg_x = proton_avg_x->At(bin).Mean();
+      auto avg_y = proton_avg_y->At(bin).Mean();
+      auto new_x = cos(phi) - avg_x ;
+      auto new_y = sin(phi) - avg_y;
+      auto new_phi = atan2( new_y, new_x );
+      vec_rec_phi[i] = new_phi;
+    }
+    return vec_rec_phi;
+  };
+
   auto device = std::random_device{};
   auto engine = std::mt19937{ device() };
   auto distribution = std::uniform_real_distribution<double>{ 0.0, 1.0 };
@@ -251,6 +287,8 @@ void run8_mc_proton_correct( std::string list,
     .Define("trEta","ROOT::VecOps::RVec<float> eta; for(auto& mom : trMom) eta.push_back(mom.eta()); return eta;")
     .Define("trPhi","ROOT::VecOps::RVec<float> phi;for(auto& mom : trMom) phi.push_back(mom.phi()); return phi;")
 
+    .Define("trRecPhi", recentered_phi_function, {"centrality", "trPhi", "trPt", "trProtonY"})
+
     .Define( "simP", "std::vector<float> simP; for( auto mom : simMom ){ simP.push_back( mom.P() ); } return simP; " )
     .Define( "simPt", "std::vector<float> simPt; for( auto mom : simMom ){ simPt.push_back( mom.Pt() ); } return simPt; " )
     .Define( "simPz", "std::vector<float> simPz; for( auto mom : simMom ){ simPz.push_back( mom.Pz() ); } return simPz; " )
@@ -268,7 +306,7 @@ void run8_mc_proton_correct( std::string list,
   correction_task.SetEventVariables(std::regex("centrality|psiRP"));
   correction_task.SetChannelVariables({std::regex("fhcalMod(X|Y|Phi|E|Id)")});
   correction_task.SetTrackVariables({
-                                      std::regex("tr(Pt|Px|Py|Eta|Phi|Charge|ProtonY|DcaR|ProtonEfficiency|FhcalX|FhcalY|StsNhits|StsChi2|HasAnyTofHit|IsProton)"),
+                                      std::regex("tr(Pt|Px|Py|Eta|Phi|Charge|ProtonY|DcaR|ProtonEfficiency|FhcalX|FhcalY|StsNhits|StsChi2|HasAnyTofHit|IsProton|RecPhi)"),
                                       std::regex("sim(Pt|ProtonY|Phi|IsProton)"),
                                     });
 
@@ -361,7 +399,7 @@ void run8_mc_proton_correct( std::string list,
         { "trPt", 20, 0.0, 2.0 },
   };
   
-  VectorConfig proton( "proton", "trPhi", "trProtonEfficiency", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  VectorConfig proton( "proton", "RecPhi", "trProtonEfficiency", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   proton.SetHarmonicArray( { 1, 2, 3, 4, 5, 6, 7, 8 } );
   proton.SetCorrections( { CORRECTION::PLAIN } );
   proton.SetCorrectionAxes( proton_axes );
