@@ -287,7 +287,7 @@ void run8_mc_proton_correct( std::string list,
     .Alias("trStsNhits", "stsTrackNhits")
     .Alias("trStsChi2", "stsTrackChi2Ndf")
     .Define("trEta","ROOT::VecOps::RVec<float> eta; for(auto& mom : trMom) eta.push_back(mom.eta()); return eta;")
-    .Define("trPhi","ROOT::VecOps::RVec<float> phi;for(auto& mom : trMom) phi.push_back(mom.phi()); return phi;")
+    .Define("trPhi","std::vector<float> phi;for(auto& mom : trMom) phi.push_back(mom.phi()); return phi;")
 
     .Define("trRecPhi", recentered_phi_function, {"centrality", "trPhi", "trPt", "trProtonY"})
 
