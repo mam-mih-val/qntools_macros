@@ -26,8 +26,8 @@ void run8_mc_proton_correct( std::string list,
 
   auto file_calib_recentering = std::unique_ptr<TFile, std::function<void(TFile*)> >{ TFile::Open(str_file_calib_recentering.c_str(), "READ"), [](auto f){ f->Close(); } };
   
-  DataContainerStatCollect* proton_avg_x{nullptr}; 
-  DataContainerStatCollect* proton_avg_y{nullptr}; 
+  Qn::DataContainerStatCollect* proton_avg_x{nullptr}; 
+  Qn::DataContainerStatCollect* proton_avg_y{nullptr}; 
   
   file_calib_recentering->GetObject( "proton_PLAIN.x1centrality", proton_avg_x );
   file_calib_recentering->GetObject( "proton_PLAIN.y1centrality", proton_avg_y );
