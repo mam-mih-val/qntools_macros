@@ -196,11 +196,11 @@ void run8_mc_proton_correct( std::string list,
       auto y = vec_y[i];
       auto phi = vec_phi[i];
       auto bin = proton_avg_x->FindBin( std::vector<double>{ centrality, y, pT } );
-      auto sum_w = proton_avg_x->At(bin).SumWeights();
+      auto sum_w = proton_avg_x->At(bin).GetStatistics().SumWeights();
       if( fabs(sum_w) < std::numeric_limits<float>::epsilon() )
         continue;
-      auto avg_x = proton_avg_x->At(bin).Mean();
-      auto avg_y = proton_avg_y->At(bin).Mean();
+      auto avg_x = proton_avg_x->At(bin).GetStatistics().Mean();
+      auto avg_y = proton_avg_y->At(bin).GetStatistics().Mean();
       auto new_x = cos(phi) - avg_x ;
       auto new_y = sin(phi) - avg_y;
       auto new_phi = atan2( new_y, new_x );
