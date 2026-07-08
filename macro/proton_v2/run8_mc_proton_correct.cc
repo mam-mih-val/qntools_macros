@@ -35,7 +35,7 @@ void run8_mc_proton_correct( std::string list,
 	const auto rapidity_generator = []( auto particle_m, auto y_cm ){
     return 
     [particle_m, y_cm]( std::vector<float> vec_pz, std::vector<float> vec_pq ){
-      std::vector<float> vec_y{};
+      ROOT::VecOps::RVec<float> vec_y{};
       vec_y.reserve( vec_pz.size() );
       for( int i=0; i<vec_pz.size(); ++i ){
         auto pz = vec_pz.at(i);
@@ -184,7 +184,7 @@ void run8_mc_proton_correct( std::string list,
     };
   };
 
-  const auto recentered_phi_function = [proton_avg_x, proton_avg_y]( float centrality, std::vector<float> vec_phi, std::vector<float> vec_pT, std::vector<float> vec_y ){
+  const auto recentered_phi_function = [proton_avg_x, proton_avg_y]( float centrality, ROOT::VecOps::RVec<float> vec_phi, ROOT::VecOps::RVec<float> vec_pT, ROOT::VecOps::RVec<float> vec_y ){
     auto vec_rec_phi = vec_phi;
     if( !proton_avg_x )
       return vec_rec_phi;
@@ -287,7 +287,7 @@ void run8_mc_proton_correct( std::string list,
     .Alias("trStsNhits", "stsTrackNhits")
     .Alias("trStsChi2", "stsTrackChi2Ndf")
     .Define("trEta","ROOT::VecOps::RVec<float> eta; for(auto& mom : trMom) eta.push_back(mom.eta()); return eta;")
-    .Define("trPhi","std::vector<float> phi;for(auto& mom : trMom) phi.push_back(mom.phi()); return phi;")
+    .Define("trPhi","ROOT::VecOps::RVec<float> phi;for(auto& mom : trMom) phi.push_back(mom.phi()); return phi;")
 
     .Define("trRecPhi", recentered_phi_function, {"centrality", "trPhi", "trPt", "trProtonY"})
 
