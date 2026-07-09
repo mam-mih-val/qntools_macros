@@ -332,7 +332,7 @@ void run8_mc_proton_twist_rescale(std::string in_file_name, std::string in_calib
       for( auto i=size_t{0}; i<qvec.size(); ++i ){
         if( fabs( qvec.At(i).sumweights()) < std::numeric_limits<double>::min() )
           continue;
-        for( auto harm = size_t{1}; harm <= n_harm; ++n_harm ){
+        for( auto harm = size_t{1}; harm <= n_harm; ++harm ){
           // std::cout << "Here: 1" << "\n";
           auto x_old = qvec.At(i).x(harm);
           auto y_old = qvec.At(i).y(harm);
