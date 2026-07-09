@@ -324,7 +324,7 @@ void run8_mc_proton_twist_rescale(std::string in_file_name, std::string in_calib
   const auto correction_generator = []( 
     const vector2d<DataContainerMatrix>& vec_cor,
     const Linearization& lin,
-    const size_t n_harm = 4
+    const size_t n_harm = 2
   ){
     return [&vec_cor, &lin, n_harm]( Qn::DataContainerQVector qvec, Double_t centrality ) -> Qn::DataContainerQVector {
       auto new_qvec = qvec;
@@ -332,13 +332,13 @@ void run8_mc_proton_twist_rescale(std::string in_file_name, std::string in_calib
       for( auto i=size_t{0}; i<qvec.size(); ++i ){
         if( fabs( qvec.At(i).sumweights()) < std::numeric_limits<double>::min() )
           continue;
-        for( auto harm = size_t{1}; harm <= n_harm; ++i ){
-          std::cout << "Here: 1" << "\n";
+        for( auto harm = size_t{1}; harm <= n_harm; ++n_harm ){
+          // std::cout << "Here: 1" << "\n";
           auto x_old = qvec.At(i).x(harm);
           auto y_old = qvec.At(i).y(harm);
-          std::cout << "Here: 2" << "\n";
+          // std::cout << "Here: 2" << "\n";
           auto [is_valid, Minv, c] = vec_cor.at(harm-1).at(l_idx).At(i);
-          std::cout << "Here: 3" << "\n";
+          // std::cout << "Here: 3" << "\n";
           if( !is_valid ){
             new_qvec.At(i).Reset();
             continue;
@@ -346,7 +346,7 @@ void run8_mc_proton_twist_rescale(std::string in_file_name, std::string in_calib
           auto Xold =  column_t{};
           Xold << x_old, y_old;
           auto Xnew =  Minv * ( Xold - c );
-          std::cout << "Here: 4" << "\n";
+          // std::cout << "Here: 4" << "\n";
           auto x_new = static_cast<double>(Xnew(0));
           auto y_new = static_cast<double>(Xnew(1));
           new_qvec.At(i).SetQ( harm, x_new, y_new );
