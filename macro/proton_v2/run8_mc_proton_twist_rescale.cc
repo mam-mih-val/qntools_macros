@@ -294,26 +294,26 @@ void run8_mc_proton_twist_rescale(std::string in_file_name, std::string in_calib
 
   auto lin = Linearization( event_axes );
 
-  auto v2_c_f1 = ExtractPack( vec_c_f1, lin );
-  auto v2_s_f1 = ExtractPack( vec_s_f1, lin );
+  auto v2_c_f1 = ExtractPack( vec2_c_f1, lin );
+  auto v2_s_f1 = ExtractPack( vec2_s_f1, lin );
 
-  auto v2_c_f2 = ExtractPack( vec_c_f2, lin );
-  auto v2_s_f2 = ExtractPack( vec_s_f2, lin );
+  auto v2_c_f2 = ExtractPack( vec2_c_f2, lin );
+  auto v2_s_f2 = ExtractPack( vec2_s_f2, lin );
 
-  auto v2_c_f3 = ExtractPack( vec_c_f3, lin );
-  auto v2_s_f3 = ExtractPack( vec_s_f3, lin );
+  auto v2_c_f3 = ExtractPack( vec2_c_f3, lin );
+  auto v2_s_f3 = ExtractPack( vec2_s_f3, lin );
 
-  auto v2_c_f4 = ExtractPack( vec_c_f4, lin );
-  auto v2_s_f4 = ExtractPack( vec_s_f4, lin );
+  auto v2_c_f4 = ExtractPack( vec2_c_f4, lin );
+  auto v2_s_f4 = ExtractPack( vec2_s_f4, lin );
 
-  auto v2_c_tp = ExtractPack( vec_c_tp, lin );
-  auto v2_s_tp = ExtractPack( vec_s_tp, lin );
+  auto v2_c_tp = ExtractPack( vec2_c_tp, lin );
+  auto v2_s_tp = ExtractPack( vec2_s_tp, lin );
 
-  auto v2_c_tn = ExtractPack( vec_c_tn, lin );
-  auto v2_s_tn = ExtractPack( vec_s_tn, lin );
+  auto v2_c_tn = ExtractPack( vec2_c_tn, lin );
+  auto v2_s_tn = ExtractPack( vec2_s_tn, lin );
 
-  auto v2_c_p = ExtractPack( vec_c_p, lin );
-  auto v2_s_p = ExtractPack( vec_s_p, lin );
+  auto v2_c_p = ExtractPack( vec2_c_p, lin );
+  auto v2_s_p = ExtractPack( vec2_s_p, lin );
   
 
   auto f1_corr = MakeCorrectionMatrix(v2_c_f1, v2_s_f1, twist_rescaling_mixing_matrix, 2);
