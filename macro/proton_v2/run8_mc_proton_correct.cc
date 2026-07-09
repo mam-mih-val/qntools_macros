@@ -30,8 +30,8 @@ void run8_mc_proton_correct( std::string list,
   Qn::DataContainerStatCollect* proton_avg_x{nullptr}; 
   Qn::DataContainerStatCollect* proton_avg_y{nullptr}; 
   
-  file_calib_recentering->GetObject( "proton_PLAIN.x1centrality", proton_avg_x );
-  file_calib_recentering->GetObject( "proton_PLAIN.y1centrality", proton_avg_y );
+  if(file_calib_recentering) file_calib_recentering->GetObject( "proton_PLAIN.x1centrality", proton_avg_x );
+  if(file_calib_recentering) file_calib_recentering->GetObject( "proton_PLAIN.y1centrality", proton_avg_y );
   
 	const auto rapidity_generator = []( auto particle_m, auto y_cm ){
     return 
