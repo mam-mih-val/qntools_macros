@@ -340,7 +340,7 @@ void run8_mc_proton_twist_rescale(std::string in_file_name, std::string in_calib
         for( auto harm = size_t{1}; harm <= n_harm; ++i ){
           auto x_old = qvec.At(i).x(harm);
           auto y_old = qvec.At(i).y(harm);
-          auto [is_valid, Minv, c] = vec_cor.at(harm).at(l_idx).At(i);
+          auto [is_valid, Minv, c] = vec_cor.at(harm-1).at(l_idx).At(i);
           if( !is_valid ){
             new_qvec.At(i).Reset();
             continue;
