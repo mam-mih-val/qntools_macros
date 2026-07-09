@@ -407,7 +407,7 @@ void run8_mc_proton_correct( std::string list,
         { "trPt", 20, 0.0, 2.0 },
   };
   
-  VectorConfig proton( "proton", "trRecPhi", "trProtonEfficiency", VECTOR_TYPE::TRACK, NORMALIZATION::M );
+  VectorConfig proton( "proton", "trPhi", "trProtonEfficiency", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   proton.SetHarmonicArray( { 1, 2, 3, 4, 5, 6, 7, 8 } );
   proton.SetCorrections( { CORRECTION::PLAIN } );
   proton.SetCorrectionAxes( proton_axes );
