@@ -54,7 +54,7 @@ namespace P1 {
 
   inline auto y2( unsigned int h_a ) {
     return [ h_a ](const Qn::QVector &a ) {
-      return 2 * x(h_a) * y(h_a);
+      return 2 * a.x(h_a) * a.y(h_a);
     };
   }
 }
