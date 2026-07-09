@@ -331,7 +331,7 @@ void run8_mc_proton_twist_rescale(std::string in_file_name, std::string in_calib
     const Linearization& lin,
     const size_t n_harm = 4
   ){
-    return [&vec_cor, &lin]( Qn::DataContainerQVector qvec, Double_t centrality ) -> Qn::DataContainerQVector {
+    return [&vec_cor, &lin, &n_harm]( Qn::DataContainerQVector qvec, Double_t centrality ) -> Qn::DataContainerQVector {
       auto new_qvec = qvec;
       auto l_idx = lin[ std::vector<double>{ centrality } ];
       for( auto i=size_t{0}; i<qvec.size(); ++i ){
