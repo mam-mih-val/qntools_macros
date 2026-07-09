@@ -268,13 +268,13 @@ void run8_mc_proton_twist_rescale(std::string in_file_name, std::string in_calib
     Qn::AxisD{ "centrality", 6, 0, 60 },
   };
 
-  const std::string f1_name {"F1_PLAIN"};
-  const std::string f2_name {"F2_PLAIN"};
-  const std::string f3_name {"F3_PLAIN"};
-  const std::string f4_name {"F4_PLAIN"};
-  const std::string tp_name {"Tpos_PLAIN"};
-  const std::string tn_name {"Tneg_PLAIN"};
-  const std::string proton_name {"proton_PLAIN"};
+  const std::string f1_name {"F1_RECENTERED"};
+  const std::string f2_name {"F2_RECENTERED"};
+  const std::string f3_name {"F3_RECENTERED"};
+  const std::string f4_name {"F4_RECENTERED"};
+  const std::string tp_name {"Tpos_RECENTERED"};
+  const std::string tn_name {"Tneg_RECENTERED"};
+  const std::string proton_name {"proton_RECENTERED"};
 
   auto calib_file = std::unique_ptr< TFile, std::function< void(TFile*) > >{ TFile::Open( in_calib_file.c_str(), "READ" ), [](auto f){f ->Close(); } };
   assert(calib_file);
