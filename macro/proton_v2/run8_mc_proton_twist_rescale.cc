@@ -331,7 +331,7 @@ void run8_mc_proton_twist_rescale(std::string in_file_name, std::string in_calib
     const Linearization& lin,
     const size_t n_harm = 4
   ){
-    return [&vec_cor, &lin, &n_harm]( Qn::DataContainerQVector qvec, Double_t centrality ) -> Qn::DataContainerQVector {
+    return [&vec_cor, &lin, n_harm]( Qn::DataContainerQVector qvec, Double_t centrality ) -> Qn::DataContainerQVector {
       auto new_qvec = qvec;
       auto l_idx = lin[ std::vector<double>{ centrality } ];
       for( auto i=size_t{0}; i<qvec.size(); ++i ){
@@ -360,15 +360,15 @@ void run8_mc_proton_twist_rescale(std::string in_file_name, std::string in_calib
   auto d = ROOT::RDataFrame( "tree", in_file_name );
   auto dd = d
     .Filter( "1 < centrality && centrality < 60" )
-    .Define("F1_DECOMPOSED", correction_generator(f1_corr, lin), { f1_name, "centrality" }, 2 )
-    .Define("F2_DECOMPOSED", correction_generator(f2_corr, lin), { f2_name, "centrality" }, 2 )
-    .Define("F3_DECOMPOSED", correction_generator(f3_corr, lin), { f3_name, "centrality" }, 2 )
-    .Define("F4_DECOMPOSED", correction_generator(f4_corr, lin), { f4_name, "centrality" }, 2 )
+    .Define("F1_DECOMPOSED", correction_generator(f1_corr, lin, 2), { f1_name, "centrality" })
+    .Define("F2_DECOMPOSED", correction_generator(f2_corr, lin, 2), { f2_name, "centrality" })
+    .Define("F3_DECOMPOSED", correction_generator(f3_corr, lin, 2), { f3_name, "centrality" })
+    .Define("F4_DECOMPOSED", correction_generator(f4_corr, lin, 2), { f4_name, "centrality" })
 
-    .Define("Tpos_DECOMPOSED", correction_generator(tn_corr, lin), { tp_name, "centrality" }, 2 )
-    .Define("Tneg_DECOMPOSED", correction_generator(tp_corr, lin), { tn_name, "centrality" }, 2 )
+    .Define("Tpos_DECOMPOSED", correction_generator(tn_corr, lin, 2), { tp_name, "centrality" })
+    .Define("Tneg_DECOMPOSED", correction_generator(tp_corr, lin, 2), { tn_name, "centrality" })
     
-    .Define("proton_DECOMPOSED", correction_generator(p_corr, lin), { proton_name, "centrality" }, 2 )
+    .Define("proton_DECOMPOSED", correction_generator(p_corr, lin, 2), { proton_name, "centrality" })
   ;
 
   auto file_out = std::unique_ptr< TFile, std::function< void(TFile*) > >{ TFile::Open( "decomposed_out.root", "RECREATE" ), [](auto f){f ->Close(); } };
