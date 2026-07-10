@@ -13,7 +13,7 @@
 #include <tuple>
 #include <vector>
 
-constexpr size_t NDIM = 2;
+constexpr size_t NDIM = 4;
 constexpr size_t N_HARM = 4;
 
 using correction_matrix_t = Eigen::Matrix<double, NDIM, NDIM>;
@@ -92,15 +92,44 @@ private:
 const auto twist_rescaling_mixing_matrix = [](const vector1d<double>& vec_c, const vector1d<double>& vec_s){
   auto c1 = vec_c[0];
   auto c2 = vec_c[1];
+  auto c3 = vec_c[2];
+  auto c4 = vec_c[3];
   
   auto s1 = vec_s[0];
   auto s2 = vec_s[1];
+  auto s3 = vec_s[2];
+  auto s4 = vec_s[3];
   
   auto M = mixing_matrix_t{};
 
   M << 
-    1+c2,    s2,
-    s2,    1-c2
+    1+c2,    s2,    0,    0,
+    s2,    1-c2,    0,    0,
+    0,        0, 1+c4,   s4,
+    0,        0,   s4, 1-c4,
+  ;
+
+  return M;
+};
+
+const auto decomposition_mixing_matrix = [](const vector1d<double>& vec_c, const vector1d<double>& vec_s){
+  auto c1 = vec_c[0];
+  auto c2 = vec_c[1];
+  auto c3 = vec_c[2];
+  auto c4 = vec_c[3];
+  
+  auto s1 = vec_s[0];
+  auto s2 = vec_s[1];
+  auto s3 = vec_s[2];
+  auto s4 = vec_s[3];
+  
+  auto M = mixing_matrix_t{};
+
+  M << 
+    1+c2,     s2,   c3+c1,  s3+s1,
+    s2,     1-c2,   s3-s1,  c1-c3,
+    c3+c1, s3-s1,    1+c4,     s4,
+    s3+s1, c1-c3,      s4,   1-c4
   ;
 
   return M;
@@ -135,7 +164,7 @@ vector2d<DataContainerMatrix> MakeCorrectionMatrix(
   const vector3d<Qn::DataContainerStatCalculate>& vec3_c, 
   const vector3d<Qn::DataContainerStatCalculate>& vec3_s,
   const Func& func, 
-  size_t n_harm = 4 ){
+  size_t n_harm = 2 ){
   auto result = vector2d<DataContainerMatrix>{};
   result.reserve( n_harm );
 
@@ -155,15 +184,19 @@ vector2d<DataContainerMatrix> MakeCorrectionMatrix(
 
         vec_double_c[0] = vec_c[0][ev_bin].At(i).Mean();
         vec_double_c[1] = vec_c[1][ev_bin].At(i).Mean();
+        vec_double_c[2] = vec_c[2][ev_bin].At(i).Mean();
+        vec_double_c[3] = vec_c[4][ev_bin].At(i).Mean();
 
         vec_double_s[0] = vec_s[0][ev_bin].At(i).Mean();
         vec_double_s[1] = vec_s[1][ev_bin].At(i).Mean();
+        vec_double_s[2] = vec_s[2][ev_bin].At(i).Mean();
+        vec_double_s[3] = vec_s[3][ev_bin].At(i).Mean();
 
         auto sumw = vec_c[0][ev_bin].At(i).SumWeights();
         auto M = func( vec_double_c, vec_double_s );
 
         auto c = column_t{};
-        c << vec_double_c[0], vec_double_s[0];
+        c << vec_double_c[0], vec_double_s[0], vec_double_c[3], vec_double_s[3];
       
         auto [is_valid, Minv] = PseudoInverse( M, 5e-3 );
         if( std::isinf( 1.0 / sqrt(sumw) ) )
@@ -180,7 +213,7 @@ vector2d<DataContainerMatrix> MakeCorrectionMatrix(
 
 
 std::tuple< vector2d<Qn::DataContainerStatCalculate>, vector2d<Qn::DataContainerStatCalculate> > ReadCnSn( 
-  std::string str_vec_name, TFile* calib_file, const size_t n_harm = 4
+  std::string str_vec_name, TFile* calib_file, const size_t n_harm = 2
 ){
   std::cout << __func__ << std::endl;
   Qn::DataContainerStatCollect* tmp{nullptr};
@@ -190,10 +223,12 @@ std::tuple< vector2d<Qn::DataContainerStatCalculate>, vector2d<Qn::DataContainer
   vec_c.reserve( n_harm );
   vec_s.reserve( n_harm );
   for( auto i=size_t{0}; i < n_harm; ++i ){
-    vec_c.emplace_back(); vec_c.back().reserve( 2 );
-    vec_s.emplace_back(); vec_s.back().reserve( 2 );
+    vec_c.emplace_back(); vec_c.back().reserve( 4 );
+    vec_s.emplace_back(); vec_s.back().reserve( 4 );
+    
+    auto corr_name = std::string{};
 
-    auto corr_name = str_vec_name+".x"+std::to_string(i+1)+"centrality"s;
+    corr_name = str_vec_name+".x"+std::to_string(i+1)+"centrality"s;
     std::cout << "Extracting " << corr_name << "\n";
     calib_file->GetObject( corr_name.c_str(), tmp );
     assert(tmp);
@@ -205,13 +240,49 @@ std::tuple< vector2d<Qn::DataContainerStatCalculate>, vector2d<Qn::DataContainer
     assert(tmp);
     vec_s.back().emplace_back( *tmp );
 
-    corr_name = str_vec_name+".x"+std::to_string(i+1)+std::to_string((i+1)*2)+"centrality"s;
+    corr_name = str_vec_name+".x"+std::to_string(i+1)+std::to_string(1)+"centrality"s;
     std::cout << "Extracting " << corr_name << "\n";
     calib_file->GetObject( corr_name.c_str(), tmp );
     assert(tmp);
     vec_c.back().emplace_back( *tmp );
 
-    corr_name = str_vec_name+".y"+std::to_string(i+1)+std::to_string((i+1)*2)+"centrality"s;
+    corr_name = str_vec_name+".y"+std::to_string(i+1)+std::to_string(1)+"centrality"s;
+    std::cout << "Extracting " << corr_name << "\n";
+    calib_file->GetObject( corr_name.c_str(), tmp );
+    assert(tmp);
+    vec_s.back().emplace_back( *tmp );
+
+    corr_name = str_vec_name+".x"+std::to_string(i+1)+std::to_string(2)+"centrality"s;
+    std::cout << "Extracting " << corr_name << "\n";
+    calib_file->GetObject( corr_name.c_str(), tmp );
+    assert(tmp);
+    vec_c.back().emplace_back( *tmp );
+
+    corr_name = str_vec_name+".y"+std::to_string(i+1)+std::to_string(2)+"centrality"s;
+    std::cout << "Extracting " << corr_name << "\n";
+    calib_file->GetObject( corr_name.c_str(), tmp );
+    assert(tmp);
+    vec_s.back().emplace_back( *tmp );
+
+    corr_name = str_vec_name+".x"+std::to_string(i+1)+std::to_string(3)+"centrality"s;
+    std::cout << "Extracting " << corr_name << "\n";
+    calib_file->GetObject( corr_name.c_str(), tmp );
+    assert(tmp);
+    vec_c.back().emplace_back( *tmp );
+
+    corr_name = str_vec_name+".y"+std::to_string(i+1)+std::to_string(3)+"centrality"s;
+    std::cout << "Extracting " << corr_name << "\n";
+    calib_file->GetObject( corr_name.c_str(), tmp );
+    assert(tmp);
+    vec_s.back().emplace_back( *tmp );
+
+    corr_name = str_vec_name+".x"+std::to_string(i+1)+std::to_string(4)+"centrality"s;
+    std::cout << "Extracting " << corr_name << "\n";
+    calib_file->GetObject( corr_name.c_str(), tmp );
+    assert(tmp);
+    vec_c.back().emplace_back( *tmp );
+
+    corr_name = str_vec_name+".y"+std::to_string(i+1)+std::to_string(4)+"centrality"s;
     std::cout << "Extracting " << corr_name << "\n";
     calib_file->GetObject( corr_name.c_str(), tmp );
     assert(tmp);
@@ -333,22 +404,26 @@ void run8_mc_proton_twist_rescale(std::string in_file_name, std::string in_calib
         if( fabs( qvec.At(i).sumweights()) < std::numeric_limits<double>::min() )
           continue;
         for( auto harm = size_t{1}; harm <= n_harm; ++harm ){
-          // std::cout << "Here: 1" << "\n";
-          auto x_old = qvec.At(i).x(harm);
-          auto y_old = qvec.At(i).y(harm);
-          // std::cout << "Here: 2" << "\n";
+          auto mag = qvec.At(i).mag(harm);
+          auto phi = qvec.At(i).psi(harm);
+
+          auto x1_old = mag * cos( 1.0 / harm * phi );
+          auto y1_old = mag * sin( 1.0 / harm * phi );
+
+          auto x2_old = mag * cos( 2.0 / harm * phi );
+          auto y2_old = mag * sin( 2.0 / harm * phi );
+
           auto [is_valid, Minv, c] = vec_cor.at(harm-1).at(l_idx).At(i);
-          // std::cout << "Here: 3" << "\n";
           if( !is_valid ){
             new_qvec.At(i).Reset();
             continue;
           }
           auto Xold =  column_t{};
-          Xold << x_old, y_old;
+          Xold << x1_old, y1_old, x2_old, y2_old;
           auto Xnew =  Minv * ( Xold - c );
-          // std::cout << "Here: 4" << "\n";
-          auto x_new = static_cast<double>(Xnew(0));
-          auto y_new = static_cast<double>(Xnew(1));
+          auto x_new = static_cast<double>(Xnew( 2 * (harm-1) ));
+          auto y_new = static_cast<double>(Xnew( 2 * (harm-1)+1 );
+          
           new_qvec.At(i).SetQ( harm, x_new, y_new );
         }
       }
