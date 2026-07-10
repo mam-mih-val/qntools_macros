@@ -57,6 +57,24 @@ namespace P1 {
       return 2 * a.x(h_a) * a.y(h_a);
     };
   }
+
+  inline auto xn( unsigned int h_a, unsigned int h_b ) {
+    return [ h_a, h_b ](const Qn::QVector &a ) {
+      auto mag = a.mag(h_a);
+      auto phi = a.psi(h_a);
+      auto ratio = std::static_cast<double>( h_b ) / std::static_cast<double>( h_a );
+      return mag * cos( ratio * phi );
+    };
+  }
+
+  inline auto yn( unsigned int h_a, unsigned int h_b ) {
+    return [ h_a, h_b ](const Qn::QVector &a ) {
+      auto mag = a.mag(h_a);
+      auto phi = a.psi(h_a);
+      auto ratio = std::static_cast<double>( h_b ) / std::static_cast<double>( h_a );
+      return mag * sin( ratio * phi );
+    };
+  }
 }
 
 void mc_calculate_cn_sn(string inputFiles="qn.root", string outputFile="CnSn.root")
@@ -92,32 +110,44 @@ void mc_calculate_cn_sn(string inputFiles="qn.root", string outputFile="CnSn.roo
 
   for ( auto &corr: arr_u1 ){
     string corrName=corr.at(0);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1", P1::x(1), wSumWu1part, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1", P1::y(1), wSumWu1part, wy, corr, corr);
+    
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x12", P1::xn(1, 2), wSumWu1part, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y12", P1::yn(1, 2), wSumWu1part, wy, corr, corr);
 
-    for( auto i=size_t{1}; i<=8; ++i ){
-      auto full_name = std::string{ corrName }.append(".x").append( std::to_string(i) );
-      corrBuilder.AddCorrelationWithInternalReader(full_name, P1::x(i), wSumWu1part, wy, corr, corr);
-      full_name = std::string{ corrName }.append(".y").append( std::to_string(i) );
-      corrBuilder.AddCorrelationWithInternalReader(full_name, P1::y(i), wSumWu1part, wy, corr, corr);
-      full_name = std::string{ corrName }.append(".x").append( std::to_string(i) ).append( std::to_string(i*2) );
-      corrBuilder.AddCorrelationWithInternalReader(full_name, P1::x2(i), wSumWu1part, wy, corr, corr);
-      full_name = std::string{ corrName }.append(".y").append( std::to_string(i) ).append( std::to_string(i*2) );
-      corrBuilder.AddCorrelationWithInternalReader(full_name, P1::y2(i), wSumWu1part, wy, corr, corr);
-    }
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x13", P1::xn(1, 3), wSumWu1part, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y13", P1::yn(1, 3), wSumWu1part, wy, corr, corr);
+
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x2", P1::x(2), wSumWu1part, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y2", P1::y(2), wSumWu1part, wy, corr, corr);
+    
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x24", P1::xn(2, 4), wSumWu1part, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y24", P1::yn(2, 4), wSumWu1part, wy, corr, corr);
+
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x23", P1::xn(2, 3), wSumWu1part, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y23", P1::yn(2, 3), wSumWu1part, wy, corr, corr);
   }
 
   for ( auto &corr: arr_Q1 ){
     string corrName=corr.at(0);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x1", P1::x(1), wUnity1part, wn, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1", P1::y(1), wUnity1part, wn, corr, corr);
     
-    for( auto i=size_t{1}; i<=8; ++i ){
-      auto full_name = std::string{ corrName }.append(".x").append( std::to_string(i) );
-      corrBuilder.AddCorrelationWithInternalReader(full_name, P1::x(i), wUnity1part, wn, corr, corr);
-      full_name = std::string{ corrName }.append(".y").append( std::to_string(i) );
-      corrBuilder.AddCorrelationWithInternalReader(full_name, P1::y(i), wUnity1part, wn, corr, corr);
-      full_name = std::string{ corrName }.append(".x").append( std::to_string(i) ).append( std::to_string(i*2) );
-      corrBuilder.AddCorrelationWithInternalReader(full_name, P1::x2(i), wUnity1part, wn, corr, corr);
-      full_name = std::string{ corrName }.append(".y").append( std::to_string(i) ).append( std::to_string(i*2) );
-      corrBuilder.AddCorrelationWithInternalReader(full_name, P1::y2(i), wUnity1part, wn, corr, corr);
-    }
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x12", P1::xn(1, 2), wUnity1part, wn, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y12", P1::yn(1, 2), wUnity1part, wn, corr, corr);
+
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x13", P1::xn(1, 3), wUnity1part, wn, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y13", P1::yn(1, 3), wUnity1part, wn, corr, corr);
+
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x2", P1::x(2), wUnity1part, wn, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y2", P1::y(2), wUnity1part, wn, corr, corr);
+    
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x24", P1::xn(2, 4), wUnity1part, wn, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y24", P1::yn(2, 4), wUnity1part, wn, corr, corr);
+
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x23", P1::xn(2, 3), wUnity1part, wn, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y23", P1::yn(2, 3), wUnity1part, wn, corr, corr);
   }
 
   // ---------------- //
