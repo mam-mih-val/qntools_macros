@@ -57,6 +57,24 @@ namespace P1 {
       return 2 * a.x(h_a) * a.y(h_a);
     };
   }
+
+  inline auto xn( unsigned int h_a, unsigned int h_b ) {
+    return [ h_a, h_b ](const Qn::QVector &a ) {
+      auto mag = a.mag(h_a);
+      auto phi = a.psi(h_a);
+      auto ratio = std::static_cast<double>( h_b ) / std::static_cast<double>( h_a );
+      return mag * cos( ratio * phi );
+    };
+  }
+
+  inline auto yn( unsigned int h_a, unsigned int h_b ) {
+    return [ h_a, h_b ](const Qn::QVector &a ) {
+      auto mag = a.mag(h_a);
+      auto phi = a.psi(h_a);
+      auto ratio = std::static_cast<double>( h_b ) / std::static_cast<double>( h_a );
+      return mag * sin( ratio * phi );
+    };
+  }
 }
 
 void mc_tw_rec_cn_sn(string inputFiles="qn.root", string outputFile="CnSn.root")
