@@ -62,7 +62,7 @@ namespace P1 {
     return [ h_a, h_b ](const Qn::QVector &a ) {
       auto mag = a.mag(h_a);
       auto phi = a.psi(h_a);
-      auto ratio = std::static_cast<double>( h_b ) / std::static_cast<double>( h_a );
+      auto ratio = static_cast<double>( h_b ) / static_cast<double>( h_a );
       return mag * cos( ratio * phi );
     };
   }
@@ -71,7 +71,7 @@ namespace P1 {
     return [ h_a, h_b ](const Qn::QVector &a ) {
       auto mag = a.mag(h_a);
       auto phi = a.psi(h_a);
-      auto ratio = std::static_cast<double>( h_b ) / std::static_cast<double>( h_a );
+      auto ratio = static_cast<double>( h_b ) / static_cast<double>( h_a );
       return mag * sin( ratio * phi );
     };
   }
