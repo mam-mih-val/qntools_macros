@@ -421,8 +421,8 @@ void run8_mc_proton_twist_rescale(std::string in_file_name, std::string in_calib
           auto Xold =  column_t{};
           Xold << x1_old, y1_old, x2_old, y2_old;
           auto Xnew =  Minv * ( Xold - c );
-          auto x_new = static_cast<double>(Xnew( 2 * (harm-1) ));
-          auto y_new = static_cast<double>(Xnew( 2 * (harm-1)+1 );
+          auto x_new = static_cast<double>( Xnew( 2 * (harm-1) ) );
+          auto y_new = static_cast<double>( Xnew( 2 * (harm-1)+1 ) );
           
           new_qvec.At(i).SetQ( harm, x_new, y_new );
         }
