@@ -197,7 +197,7 @@ vector2d<DataContainerMatrix> MakeCorrectionMatrix(
         auto M = func( vec_double_c, vec_double_s );
 
         auto c = column_t{};
-        c << vec_double_c[0], vec_double_s[0], vec_double_c[3], vec_double_s[3];
+        c << vec_double_c[0], vec_double_s[0], vec_double_c[1], vec_double_s[1];
       
         auto [is_valid, Minv] = PseudoInverse( M, 5e-3 );
         if( std::isinf( 1.0 / sqrt(sumw) ) )
