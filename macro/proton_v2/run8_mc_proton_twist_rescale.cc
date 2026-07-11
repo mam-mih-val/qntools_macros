@@ -165,6 +165,7 @@ vector2d<DataContainerMatrix> MakeCorrectionMatrix(
   const vector3d<Qn::DataContainerStatCalculate>& vec3_s,
   const Func& func, 
   size_t n_harm = 2 ){
+  std::cout << __func__ << std::endl;
   auto result = vector2d<DataContainerMatrix>{};
   result.reserve( n_harm );
 
@@ -185,7 +186,7 @@ vector2d<DataContainerMatrix> MakeCorrectionMatrix(
         vec_double_c[0] = vec_c[0][ev_bin].At(i).Mean();
         vec_double_c[1] = vec_c[1][ev_bin].At(i).Mean();
         vec_double_c[2] = vec_c[2][ev_bin].At(i).Mean();
-        vec_double_c[3] = vec_c[4][ev_bin].At(i).Mean();
+        vec_double_c[3] = vec_c[3][ev_bin].At(i).Mean();
 
         vec_double_s[0] = vec_s[0][ev_bin].At(i).Mean();
         vec_double_s[1] = vec_s[1][ev_bin].At(i).Mean();
