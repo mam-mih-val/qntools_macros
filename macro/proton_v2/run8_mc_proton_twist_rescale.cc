@@ -106,7 +106,7 @@ const auto twist_rescaling_mixing_matrix = [](const vector1d<double>& vec_c, con
     1+c2,    s2,    0,    0,
     s2,    1-c2,    0,    0,
     0,        0, 1+c4,   s4,
-    0,        0,   s4, 1-c4,
+    0,        0,   s4, 1-c4
   ;
 
   return M;
