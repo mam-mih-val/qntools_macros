@@ -228,18 +228,6 @@ std::tuple< vector2d<Qn::DataContainerStatCalculate>, vector2d<Qn::DataContainer
     
     auto corr_name = std::string{};
 
-    corr_name = str_vec_name+".x"+std::to_string(i+1)+"centrality"s;
-    std::cout << "Extracting " << corr_name << "\n";
-    calib_file->GetObject( corr_name.c_str(), tmp );
-    assert(tmp);
-    vec_c.back().emplace_back( *tmp );
-    
-    corr_name = str_vec_name+".y"+std::to_string(i+1)+"centrality"s;
-    std::cout << "Extracting " << corr_name << "\n";
-    calib_file->GetObject( corr_name.c_str(), tmp );
-    assert(tmp);
-    vec_s.back().emplace_back( *tmp );
-
     corr_name = str_vec_name+".x"+std::to_string(i+1)+std::to_string(1)+"centrality"s;
     std::cout << "Extracting " << corr_name << "\n";
     calib_file->GetObject( corr_name.c_str(), tmp );
