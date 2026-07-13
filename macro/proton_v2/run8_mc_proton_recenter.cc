@@ -180,7 +180,7 @@ vector2d<DataContainerMatrix> MakeCorrectionMatrix(
         auto M = func( vec_double_c, vec_double_s );
 
         auto c = column_t{};
-        c << vec_double_c[0], vec_double_s[0];
+        c << vec_double_c[1], vec_double_s[1];
       
         auto [is_valid, Minv] = PseudoInverse( M, 5e-3 );
         if( std::isinf( 1.0 / sqrt(sumw) ) )
@@ -222,13 +222,13 @@ std::tuple< vector2d<Qn::DataContainerStatCalculate>, vector2d<Qn::DataContainer
     assert(tmp);
     vec_s.back().emplace_back( *tmp );
 
-    corr_name = str_vec_name+".x"+std::to_string(i+1)+std::to_string((i+1)*2)+"centrality"s;
+    corr_name = str_vec_name+".x"+std::to_string(i+1)+"05centrality"s;
     std::cout << "Extracting " << corr_name << "\n";
     calib_file->GetObject( corr_name.c_str(), tmp );
     assert(tmp);
     vec_c.back().emplace_back( *tmp );
 
-    corr_name = str_vec_name+".y"+std::to_string(i+1)+std::to_string((i+1)*2)+"centrality"s;
+    corr_name = str_vec_name+".y"+std::to_string(i+1)+"05centrality"s;
     std::cout << "Extracting " << corr_name << "\n";
     calib_file->GetObject( corr_name.c_str(), tmp );
     assert(tmp);
@@ -351,8 +351,12 @@ void run8_mc_proton_recenter(std::string in_file_name, std::string in_calib_file
           continue;
         for( auto harm = size_t{1}; harm <= n_harm; ++harm ){
           // std::cout << "Here: 1" << "\n";
-          auto x_old = qvec.At(i).x(harm);
-          auto y_old = qvec.At(i).y(harm);
+          auto mag = qvec.At(i).mag(harm);
+          auto phi = qvec.At(i).psi(harm);
+
+          auto x_old = mag * cos( phi * 0.5 );
+          auto y_old = mag * sin( phi * 0.5 );
+          
           // std::cout << "Here: 2" << "\n";
           auto [is_valid, Minv, c] = vec_cor.at(harm-1).at(l_idx).At(i);
           // std::cout << "Here: 3" << "\n";
@@ -364,8 +368,13 @@ void run8_mc_proton_recenter(std::string in_file_name, std::string in_calib_file
           Xold << x_old, y_old;
           auto Xnew =  Minv * ( Xold - c );
           // std::cout << "Here: 4" << "\n";
-          auto x_new = static_cast<double>(Xnew(0));
-          auto y_new = static_cast<double>(Xnew(1));
+          auto x05_new = static_cast<double>(Xnew(0));
+          auto y05_new = static_cast<double>(Xnew(1));
+          auto mag_new = sqrt( x05_new*x05_new + y05_new*y05_new );
+          auto phi = atan2( y05_new, x05_new );
+          auto x_new = mag_new * cos( phi*2 );
+          auto y_new = mag_new * sin( phi*2 );
+          
           new_qvec.At(i).SetQ( harm, x_new, y_new );
         }
       }
