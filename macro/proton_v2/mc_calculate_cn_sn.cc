@@ -119,8 +119,8 @@ void mc_calculate_cn_sn(string inputFiles="qn.root", string outputFile="CnSn.roo
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x2", P1::x(2), wSumWu1part, wy, corr, corr);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y2", P1::y(2), wSumWu1part, wy, corr, corr);
 
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".x21", P1::xn(2, 1), wSumWu1part, wy, corr, corr);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".y21", P1::yn(2, 1), wSumWu1part, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x205", P1::xn(2, 1), wSumWu1part, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y205", P1::yn(2, 1), wSumWu1part, wy, corr, corr);
   }
 
   for ( auto &corr: arr_Q1 ){
@@ -135,8 +135,8 @@ void mc_calculate_cn_sn(string inputFiles="qn.root", string outputFile="CnSn.roo
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x2", P1::x(2), wUnity1part, wn, corr, corr);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y2", P1::y(2), wUnity1part, wn, corr, corr);
 
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".x21", P1::xn(2, 1), wUnity1part, wn, corr, corr);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".y21", P1::yn(2, 1), wUnity1part, wn, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x205", P1::xn(2, 1), wUnity1part, wn, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y205", P1::yn(2, 1), wUnity1part, wn, corr, corr);
   }
 
   // ---------------- //
