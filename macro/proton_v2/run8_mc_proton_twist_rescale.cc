@@ -379,7 +379,7 @@ void run8_mc_proton_twist_rescale(std::string in_file_name, std::string in_calib
   auto tp_corr = MakeCorrectionMatrix(v2_c_tp, v2_s_tp, twist_rescaling_mixing_matrix, 2);
   auto tn_corr = MakeCorrectionMatrix(v2_c_tn, v2_s_tn, twist_rescaling_mixing_matrix, 2);
   
-  auto p_corr = MakeCorrectionMatrix(v2_c_p, v2_s_p, decomposition_mixing_matrix, 2 );
+  auto p_corr = MakeCorrectionMatrix(v2_c_p, v2_s_p, twist_rescaling_mixing_matrix, 2 );
 
   const auto correction_generator = []( 
     const vector2d<DataContainerMatrix>& vec_cor,
@@ -410,10 +410,14 @@ void run8_mc_proton_twist_rescale(std::string in_file_name, std::string in_calib
           auto Xold =  column_t{};
           Xold << x1_old, y1_old, x2_old, y2_old;
           auto Xnew =  Minv * ( Xold - c );
-          auto x_new = static_cast<double>( Xnew( 2 * (harm-1) ) );
-          auto y_new = static_cast<double>( Xnew( 2 * (harm-1)+1 ) );
+          auto x1_new = static_cast<double>( Xnew( 2 * (harm-1) ) );
+          auto y1_new = static_cast<double>( Xnew( 2 * (harm-1)+1 ) );
           
-          new_qvec.At(i).SetQ( harm, x_new, y_new );
+          auto x2_new = static_cast<double>( Xnew( 2 * (harm) ) );
+          auto y2_new = static_cast<double>( Xnew( 2 * (harm)+1 ) );
+          
+          new_qvec.At(i).SetQ( harm, x1_new, y1_new );
+          new_qvec.At(i).SetQ( harm+1, x2_new, y2_new );
         }
       }
       return new_qvec;
@@ -423,15 +427,15 @@ void run8_mc_proton_twist_rescale(std::string in_file_name, std::string in_calib
   auto d = ROOT::RDataFrame( "tree", in_file_name );
   auto dd = d
     .Filter( "1 < centrality && centrality < 60" )
-    .Define("F1_DECOMPOSED", correction_generator(f1_corr, lin, 2), { f1_name, "centrality" })
-    .Define("F2_DECOMPOSED", correction_generator(f2_corr, lin, 2), { f2_name, "centrality" })
-    .Define("F3_DECOMPOSED", correction_generator(f3_corr, lin, 2), { f3_name, "centrality" })
-    .Define("F4_DECOMPOSED", correction_generator(f4_corr, lin, 2), { f4_name, "centrality" })
+    .Define("F1_DECOMPOSED", correction_generator(f1_corr, lin, 1), { f1_name, "centrality" })
+    .Define("F2_DECOMPOSED", correction_generator(f2_corr, lin, 1), { f2_name, "centrality" })
+    .Define("F3_DECOMPOSED", correction_generator(f3_corr, lin, 1), { f3_name, "centrality" })
+    .Define("F4_DECOMPOSED", correction_generator(f4_corr, lin, 1), { f4_name, "centrality" })
 
-    .Define("Tpos_DECOMPOSED", correction_generator(tn_corr, lin, 2), { tp_name, "centrality" })
-    .Define("Tneg_DECOMPOSED", correction_generator(tp_corr, lin, 2), { tn_name, "centrality" })
+    .Define("Tpos_DECOMPOSED", correction_generator(tn_corr, lin, 1), { tp_name, "centrality" })
+    .Define("Tneg_DECOMPOSED", correction_generator(tp_corr, lin, 1), { tn_name, "centrality" })
     
-    .Define("proton_DECOMPOSED", correction_generator(p_corr, lin, 2), { proton_name, "centrality" })
+    .Define("proton_DECOMPOSED", correction_generator(p_corr, lin, 1), { proton_name, "centrality" })
   ;
 
   auto file_out = std::unique_ptr< TFile, std::function< void(TFile*) > >{ TFile::Open( "decomposed_out.root", "RECREATE" ), [](auto f){f ->Close(); } };
