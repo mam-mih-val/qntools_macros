@@ -292,14 +292,14 @@ void run8_mc_proton_correct( std::string list,
     .Alias("trStsNhits", "stsTrackNhits")
     .Alias("trStsChi2", "stsTrackChi2Ndf")
     .Define("trEta","ROOT::VecOps::RVec<float> eta; for(auto& mom : trMom) eta.push_back(mom.eta()); return eta;")
-    .Define("trPhi","ROOT::VecOps::RVec<float> phi;for(auto& mom : trMom) phi.push_back(mom.phi()); return phi;")
+    .Define("trPhi","ROOT::VecOps::RVec<float> phi;for(auto& mom : trMom) phi.push_back( mom.phi() / 2.0 ); return phi;")
 
     .Define("trRecPhi", recentered_phi_function, {"centrality", "trPhi", "trPt", "trProtonY"})
 
     .Define( "simP", "std::vector<float> simP; for( auto mom : simMom ){ simP.push_back( mom.P() ); } return simP; " )
     .Define( "simPt", "std::vector<float> simPt; for( auto mom : simMom ){ simPt.push_back( mom.Pt() ); } return simPt; " )
     .Define( "simPz", "std::vector<float> simPz; for( auto mom : simMom ){ simPz.push_back( mom.Pz() ); } return simPz; " )
-    .Define( "simPhi", "std::vector<float> simPhi; for( auto mom : simMom ){ simPhi.push_back( mom.Phi() ); } return simPhi; " )
+    .Define( "simPhi", "std::vector<float> simPhi; for( auto mom : simMom ){ simPhi.push_back( mom.Phi() / 2.0 ); } return simPhi; " )
           
     .Define( "simIsProton", is_sim_particle(2212), {"simPdg", "simMotherId"} )
     .Define( "simProtonY", rapidity_generator(PROTON_M, Y_CM), {"simPz", "simP"} )
@@ -408,7 +408,7 @@ void run8_mc_proton_correct( std::string list,
   };
   
   VectorConfig proton( "proton", "trPhi", "trProtonEfficiency", VECTOR_TYPE::TRACK, NORMALIZATION::M );
-  proton.SetHarmonicArray( { 1, 2 } );
+  proton.SetHarmonicArray( { 1, 2, 3, 4 } );
   proton.SetCorrections( { CORRECTION::PLAIN } );
   proton.SetCorrectionAxes( proton_axes );
   proton.AddCut( "trIsProton", [](double is){
@@ -440,7 +440,7 @@ void run8_mc_proton_correct( std::string list,
   };
 
   VectorConfig sim_proton( "tru_proton", "simPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
-  sim_proton.SetHarmonicArray( { 1, 2 } );
+  sim_proton.SetHarmonicArray( { 1, 2, 3, 4 } );
   sim_proton.SetCorrections( { CORRECTION::PLAIN } );
   sim_proton.SetCorrectionAxes( sim_proton_axes );
   sim_proton.AddCut( "simIsProton", [](double is){
