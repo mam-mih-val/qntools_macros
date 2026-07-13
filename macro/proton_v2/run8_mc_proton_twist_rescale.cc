@@ -13,7 +13,7 @@
 #include <tuple>
 #include <vector>
 
-constexpr size_t NDIM = 8;
+constexpr size_t NDIM = 4;
 constexpr size_t N_HARM = 4;
 
 using correction_matrix_t = Eigen::Matrix<double, NDIM, NDIM>;
@@ -110,12 +110,12 @@ const auto twist_rescaling_mixing_matrix = [](const vector1d<double>& vec_c, con
   
   auto M = mixing_matrix_t{};
 
-  // M << 
-  //   1+c2,    s2,    0,    0,
-  //   s2,    1-c2,    0,    0,
-  //   0,        0, 1+c4,   s4,
-  //   0,        0,   s4, 1-c4
-  // ;
+  M << 
+    1+c2,    s2,    0,    0,
+    s2,    1-c2,    0,    0,
+    0,        0, 1+c4,   s4,
+    0,        0,   s4, 1-c4
+  ;
 
   // M << 
   //   1+c2,    s2,    0,     0,     0,     0,
@@ -126,16 +126,16 @@ const auto twist_rescaling_mixing_matrix = [](const vector1d<double>& vec_c, con
   //   0,        0,    0,     0,    s6,  1-c6
   // ;
 
-  M << 
-    1+c2,    s2,    0,     0,     0,     0,      0,     0,
-    s2,    1-c2,    0,     0,     0,     0,      0,     0,
-    0,        0, 1+c4,    s4,     0,     0,      0,     0,
-    0,        0,   s4,  1-c4,     0,     0,      0,     0,
-    0,        0,    0,     0,  1+c6,    s6,      0,     0,
-    0,        0,    0,     0,    s6,  1-c6,      0,     0,
-    0,        0,    0,     0,     0,     0,   1+c8,    s8,
-    0,        0,    0,     0,     0,     0,     s8,  1-c8
-  ;
+  // M << 
+  //   1+c2,    s2,    0,     0,     0,     0,      0,     0,
+  //   s2,    1-c2,    0,     0,     0,     0,      0,     0,
+  //   0,        0, 1+c4,    s4,     0,     0,      0,     0,
+  //   0,        0,   s4,  1-c4,     0,     0,      0,     0,
+  //   0,        0,    0,     0,  1+c6,    s6,      0,     0,
+  //   0,        0,    0,     0,    s6,  1-c6,      0,     0,
+  //   0,        0,    0,     0,     0,     0,   1+c8,    s8,
+  //   0,        0,    0,     0,     0,     0,     s8,  1-c8
+  // ;
   return M;
 };
 
@@ -161,17 +161,16 @@ const auto decomposition_mixing_matrix = [](const vector1d<double>& vec_c, const
   auto M = mixing_matrix_t{};
 
 
-  M << 
-    1+c2,    s2,   c3+c1,  s3+s1, c4+c2, s4+s2, c5+c3, s5+s3,
-    s2,    1-c2,   s3-s1,  c1-c3, s4-s2, c2-c4, s5-s3, c3-c5,
-    c3+c1, s3-s1,  1+c4,      s4, c5+c1, s5+s1, c6+c2, s6+s2,
-    s3+s1, c1-c3,    s4,    1-c4, s5-s1, c1-c5, s6-s2, c2-c6,
-    c4+c2, s4-s2,  c5+c1,  s5-s1,  1+c6,    s6, c7+c1, s7+s1,
-    s4+s2, c2-c4,  s5+s1,  c1-c5,    s6,  1-c6, s7-s1, c1-c7,
-    c5+c3, s5-s3,  c6+c2,  s6-s2, c7+c1, s7-s1,  1+c8,    s8,
-    s5+s3, c3-c5,  s6+s2,  c2-c6, s7+s1, c1-c7,    s8,  1-c8
-    
-  ;
+  // M << 
+  //   1+c2,    s2,   c3+c1,  s3+s1, c4+c2, s4+s2, c5+c3, s5+s3,
+  //   s2,    1-c2,   s3-s1,  c1-c3, s4-s2, c2-c4, s5-s3, c3-c5,
+  //   c3+c1, s3-s1,  1+c4,      s4, c5+c1, s5+s1, c6+c2, s6+s2,
+  //   s3+s1, c1-c3,    s4,    1-c4, s5-s1, c1-c5, s6-s2, c2-c6,
+  //   c4+c2, s4-s2,  c5+c1,  s5-s1,  1+c6,    s6, c7+c1, s7+s1,
+  //   s4+s2, c2-c4,  s5+s1,  c1-c5,    s6,  1-c6, s7-s1, c1-c7,
+  //   c5+c3, s5-s3,  c6+c2,  s6-s2, c7+c1, s7-s1,  1+c8,    s8,
+  //   s5+s3, c3-c5,  s6+s2,  c2-c6, s7+s1, c1-c7,    s8,  1-c8
+  // ;
 
   // M << 
   //   1+c2,    s2,   c3+c1,  s3+s1, c4+c2, s4+s2,
@@ -182,12 +181,12 @@ const auto decomposition_mixing_matrix = [](const vector1d<double>& vec_c, const
   //   s4+s2, c2-c4,  s5+s1,  c1-c5,    s6,  1-c6
   // ;
 
-  // M << 
-  //   1+c2,     s2,   c3+c1,  s3+s1,
-  //   s2,     1-c2,   s3-s1,  c1-c3,
-  //   c3+c1, s3-s1,    1+c4,     s4,
-  //   s3+s1, c1-c3,      s4,   1-c4
-  // ;
+  M << 
+    1+c2,     s2,   c3+c1,  s3+s1,
+    s2,     1-c2,   s3-s1,  c1-c3,
+    c3+c1, s3-s1,    1+c4,     s4,
+    s3+s1, c1-c3,      s4,   1-c4
+  ;
 
   return M;
 };
@@ -262,8 +261,9 @@ vector2d<DataContainerMatrix> MakeCorrectionMatrix(
         auto M = func( vec_double_c, vec_double_s );
 
         auto c = column_t{};
-        c << vec_double_c[0], vec_double_s[0], vec_double_c[1], vec_double_s[1], vec_double_c[2], vec_double_s[2], vec_double_c[3], vec_double_s[3];
-      
+        c << vec_double_c[0], vec_double_s[0], vec_double_c[1], vec_double_s[1]
+        // , vec_double_c[2], vec_double_s[2], vec_double_c[3], vec_double_s[3];
+        ;
         auto [is_valid, Minv] = PseudoInverse( M, 5e-3 );
         if( std::isinf( 1.0 / sqrt(sumw) ) )
           is_valid = false;
