@@ -289,8 +289,8 @@ std::tuple< vector2d<Qn::DataContainerStatCalculate>, vector2d<Qn::DataContainer
   vec_c.reserve( n_harm );
   vec_s.reserve( n_harm );
   for( auto i=size_t{0}; i < n_harm; ++i ){
-    vec_c.emplace_back(); vec_c.back().reserve( 6 );
-    vec_s.emplace_back(); vec_s.back().reserve( 6 );
+    vec_c.emplace_back(); vec_c.back().reserve( 8 );
+    vec_s.emplace_back(); vec_s.back().reserve( 8 );
     
     auto corr_name = std::string{};
 
