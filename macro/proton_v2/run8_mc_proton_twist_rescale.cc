@@ -432,7 +432,7 @@ void run8_mc_proton_twist_rescale(std::string in_file_name, std::string in_calib
   auto tp_corr = MakeCorrectionMatrix(v2_c_tp, v2_s_tp, twist_rescaling_mixing_matrix, 2);
   auto tn_corr = MakeCorrectionMatrix(v2_c_tn, v2_s_tn, twist_rescaling_mixing_matrix, 2);
   
-  auto p_corr = MakeCorrectionMatrix(v2_c_p, v2_s_p, decomposition_mixing_matrix, 1 );
+  auto p_corr = MakeCorrectionMatrix(v2_c_p, v2_s_p, decomposition_mixing_matrix, 2 );
 
   const auto correction_generator = []( 
     const vector2d<DataContainerMatrix>& vec_cor,
@@ -455,13 +455,16 @@ void run8_mc_proton_twist_rescale(std::string in_file_name, std::string in_calib
           auto x2_old = mag * cos( 2.0 / harm * phi );
           auto y2_old = mag * sin( 2.0 / harm * phi );
 
+          auto x3_old = mag * cos( 3.0 / harm * phi );
+          auto y3_old = mag * sin( 3.0 / harm * phi );
+
           auto [is_valid, Minv, c] = vec_cor.at(harm-1).at(l_idx).At(i);
           if( !is_valid ){
             new_qvec.At(i).Reset();
             continue;
           }
           auto Xold =  column_t{};
-          Xold << x1_old, y1_old, x2_old, y2_old;
+          Xold << x1_old, y1_old, x2_old, y2_old, x3_old, y3_old;
           auto Xnew =  Minv * ( Xold - c );
           auto x1_new = static_cast<double>( Xnew( 2 * (harm-1) ) );
           auto y1_new = static_cast<double>( Xnew( 2 * (harm-1)+1 ) );
