@@ -296,13 +296,13 @@ void run8_mc_proton_recenter(std::string in_file_name, std::string in_calib_file
   auto calib_file = std::unique_ptr< TFile, std::function< void(TFile*) > >{ TFile::Open( in_calib_file.c_str(), "READ" ), [](auto f){f ->Close(); } };
   assert(calib_file);
 
-  auto [vec2_c_f1, vec2_s_f1] = ReadCnSn(f1_name, calib_file.get(), 2);
-  auto [vec2_c_f2, vec2_s_f2] = ReadCnSn(f2_name, calib_file.get(), 2);
-  auto [vec2_c_f3, vec2_s_f3] = ReadCnSn(f3_name, calib_file.get(), 2);
-  auto [vec2_c_f4, vec2_s_f4] = ReadCnSn(f4_name, calib_file.get(), 2);
-  auto [vec2_c_tp, vec2_s_tp] = ReadCnSn(tp_name, calib_file.get(), 2);
-  auto [vec2_c_tn, vec2_s_tn] = ReadCnSn(tn_name, calib_file.get(), 2);
-  auto [vec2_c_p, vec2_s_p] = ReadCnSn(proton_name, calib_file.get(), 2);
+  auto [vec2_c_f1, vec2_s_f1] = ReadCnSn(f1_name, calib_file.get(), 1);
+  auto [vec2_c_f2, vec2_s_f2] = ReadCnSn(f2_name, calib_file.get(), 1);
+  auto [vec2_c_f3, vec2_s_f3] = ReadCnSn(f3_name, calib_file.get(), 1);
+  auto [vec2_c_f4, vec2_s_f4] = ReadCnSn(f4_name, calib_file.get(), 1);
+  auto [vec2_c_tp, vec2_s_tp] = ReadCnSn(tp_name, calib_file.get(), 1);
+  auto [vec2_c_tn, vec2_s_tn] = ReadCnSn(tn_name, calib_file.get(), 1);
+  auto [vec2_c_p, vec2_s_p] = ReadCnSn(proton_name, calib_file.get(), 1);
 
   auto lin = Linearization( event_axes );
 
@@ -328,15 +328,15 @@ void run8_mc_proton_recenter(std::string in_file_name, std::string in_calib_file
   auto v2_s_p = ExtractPack( vec2_s_p, lin );
   
 
-  auto f1_corr = MakeCorrectionMatrix(v2_c_f1, v2_s_f1, recentering_mixing_matrix, 2);
-  auto f2_corr = MakeCorrectionMatrix(v2_c_f2, v2_s_f2, recentering_mixing_matrix, 2);
-  auto f3_corr = MakeCorrectionMatrix(v2_c_f3, v2_s_f3, recentering_mixing_matrix, 2);
-  auto f4_corr = MakeCorrectionMatrix(v2_c_f4, v2_s_f4, recentering_mixing_matrix, 2);
+  auto f1_corr = MakeCorrectionMatrix(v2_c_f1, v2_s_f1, recentering_mixing_matrix, 1);
+  auto f2_corr = MakeCorrectionMatrix(v2_c_f2, v2_s_f2, recentering_mixing_matrix, 1);
+  auto f3_corr = MakeCorrectionMatrix(v2_c_f3, v2_s_f3, recentering_mixing_matrix, 1);
+  auto f4_corr = MakeCorrectionMatrix(v2_c_f4, v2_s_f4, recentering_mixing_matrix, 1);
 
-  auto tp_corr = MakeCorrectionMatrix(v2_c_tp, v2_s_tp, recentering_mixing_matrix, 2);
-  auto tn_corr = MakeCorrectionMatrix(v2_c_tn, v2_s_tn, recentering_mixing_matrix, 2);
+  auto tp_corr = MakeCorrectionMatrix(v2_c_tp, v2_s_tp, recentering_mixing_matrix, 1);
+  auto tn_corr = MakeCorrectionMatrix(v2_c_tn, v2_s_tn, recentering_mixing_matrix, 1);
   
-  auto p_corr = MakeCorrectionMatrix(v2_c_p, v2_s_p, recentering_mixing_matrix, 2 );
+  auto p_corr = MakeCorrectionMatrix(v2_c_p, v2_s_p, recentering_mixing_matrix, 1 );
 
   const auto correction_generator = []( 
     const vector2d<DataContainerMatrix>& vec_cor,
@@ -385,15 +385,15 @@ void run8_mc_proton_recenter(std::string in_file_name, std::string in_calib_file
   auto d = ROOT::RDataFrame( "tree", in_file_name );
   auto dd = d
     .Filter( "1 < centrality && centrality < 60" )
-    .Define("F1_DECOMPOSED", correction_generator(f1_corr, lin, 2), { f1_name, "centrality" })
-    .Define("F2_DECOMPOSED", correction_generator(f2_corr, lin, 2), { f2_name, "centrality" })
-    .Define("F3_DECOMPOSED", correction_generator(f3_corr, lin, 2), { f3_name, "centrality" })
-    .Define("F4_DECOMPOSED", correction_generator(f4_corr, lin, 2), { f4_name, "centrality" })
+    .Define("F1_DECOMPOSED", correction_generator(f1_corr, lin, 1), { f1_name, "centrality" })
+    .Define("F2_DECOMPOSED", correction_generator(f2_corr, lin, 1), { f2_name, "centrality" })
+    .Define("F3_DECOMPOSED", correction_generator(f3_corr, lin, 1), { f3_name, "centrality" })
+    .Define("F4_DECOMPOSED", correction_generator(f4_corr, lin, 1), { f4_name, "centrality" })
 
-    .Define("Tpos_DECOMPOSED", correction_generator(tn_corr, lin, 2), { tp_name, "centrality" })
-    .Define("Tneg_DECOMPOSED", correction_generator(tp_corr, lin, 2), { tn_name, "centrality" })
+    .Define("Tpos_DECOMPOSED", correction_generator(tn_corr, lin, 1), { tp_name, "centrality" })
+    .Define("Tneg_DECOMPOSED", correction_generator(tp_corr, lin, 1), { tn_name, "centrality" })
     
-    .Define("proton_DECOMPOSED", correction_generator(p_corr, lin, 2), { proton_name, "centrality" })
+    .Define("proton_DECOMPOSED", correction_generator(p_corr, lin, 1), { proton_name, "centrality" })
   ;
 
   auto file_out = std::unique_ptr< TFile, std::function< void(TFile*) > >{ TFile::Open( "decomposed_out.root", "RECREATE" ), [](auto f){f ->Close(); } };
