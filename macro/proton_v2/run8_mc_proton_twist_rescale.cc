@@ -236,8 +236,8 @@ vector2d<DataContainerMatrix> MakeCorrectionMatrix(
       corr_matrix.AddAxes(axes);
 
       for( auto i = size_t{0}; i<vec_c[0][ev_bin].size(); ++i ){
-        auto vec_double_c = std::vector<double>(NDIM, 0);
-        auto vec_double_s = std::vector<double>(NDIM, 0);
+        auto vec_double_c = std::vector<double>(8, 0);
+        auto vec_double_s = std::vector<double>(8, 0);
 
         vec_double_c[0] = vec_c[0][ev_bin].At(i).Mean();
         vec_double_c[1] = vec_c[1][ev_bin].At(i).Mean();
