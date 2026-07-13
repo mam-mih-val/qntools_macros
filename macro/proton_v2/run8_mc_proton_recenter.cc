@@ -371,10 +371,10 @@ void run8_mc_proton_recenter(std::string in_file_name, std::string in_calib_file
           auto x05_new = static_cast<double>(Xnew(0));
           auto y05_new = static_cast<double>(Xnew(1));
           auto mag_new = sqrt( x05_new*x05_new + y05_new*y05_new );
-          auto phi = atan2( y05_new, x05_new );
-          auto x_new = mag_new * cos( phi*2 );
-          auto y_new = mag_new * sin( phi*2 );
-          
+          auto phi_new = atan2( y05_new, x05_new );
+          auto x_new = mag_new * cos( phi_new*2 );
+          auto y_new = mag_new * sin( phi_new*2 );
+
           new_qvec.At(i).SetQ( harm, x_new, y_new );
         }
       }
