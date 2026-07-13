@@ -379,7 +379,7 @@ void run8_mc_proton_twist_rescale(std::string in_file_name, std::string in_calib
   auto tp_corr = MakeCorrectionMatrix(v2_c_tp, v2_s_tp, twist_rescaling_mixing_matrix, 2);
   auto tn_corr = MakeCorrectionMatrix(v2_c_tn, v2_s_tn, twist_rescaling_mixing_matrix, 2);
   
-  auto p_corr = MakeCorrectionMatrix(v2_c_p, v2_s_p, twist_rescaling_mixing_matrix, 2 );
+  auto p_corr = MakeCorrectionMatrix(v2_c_p, v2_s_p, decomposition_mixing_matrix, 2 );
 
   const auto correction_generator = []( 
     const vector2d<DataContainerMatrix>& vec_cor,
