@@ -122,17 +122,29 @@ void mc_tw_rec_cn_sn(string inputFiles="qn.root", string outputFile="CnSn.root")
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x14", P1::xn(1, 4), wSumWu1part, wy, corr, corr);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y14", P1::yn(1, 4), wSumWu1part, wy, corr, corr);
 
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x15", P1::xn(1, 5), wSumWu1part, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y15", P1::yn(1, 5), wSumWu1part, wy, corr, corr);
+
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x16", P1::xn(1, 6), wSumWu1part, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y16", P1::yn(1, 6), wSumWu1part, wy, corr, corr);
+
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x21", P1::xn(2, 1), wSumWu1part, wy, corr, corr);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y21", P1::yn(2, 1), wSumWu1part, wy, corr, corr);
 
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x22", P1::x(2), wSumWu1part, wy, corr, corr);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y22", P1::y(2), wSumWu1part, wy, corr, corr);
+
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x23", P1::xn(2, 3), wSumWu1part, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y23", P1::yn(2, 3), wSumWu1part, wy, corr, corr);
     
     corrBuilder.AddCorrelationWithInternalReader(corrName+".x24", P1::xn(2, 4), wSumWu1part, wy, corr, corr);
     corrBuilder.AddCorrelationWithInternalReader(corrName+".y24", P1::yn(2, 4), wSumWu1part, wy, corr, corr);
 
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".x23", P1::xn(2, 3), wSumWu1part, wy, corr, corr);
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".y23", P1::yn(2, 3), wSumWu1part, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x25", P1::xn(2, 5), wSumWu1part, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y25", P1::yn(2, 5), wSumWu1part, wy, corr, corr);
+
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".x26", P1::xn(2, 6), wSumWu1part, wy, corr, corr);
+    corrBuilder.AddCorrelationWithInternalReader(corrName+".y26", P1::yn(2, 6), wSumWu1part, wy, corr, corr);
   }
 
   for ( auto &corr: arr_Q1 ){
