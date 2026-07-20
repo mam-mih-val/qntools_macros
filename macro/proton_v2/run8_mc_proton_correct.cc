@@ -292,14 +292,14 @@ void run8_mc_proton_correct( std::string list,
     .Alias("trStsNhits", "stsTrackNhits")
     .Alias("trStsChi2", "stsTrackChi2Ndf")
     .Define("trEta","ROOT::VecOps::RVec<float> eta; for(auto& mom : trMom) eta.push_back(mom.eta()); return eta;")
-    .Define("trPhi","ROOT::VecOps::RVec<float> phi;for(auto& mom : trMom) phi.push_back( mom.phi() / 2.0 ); return phi;")
+    .Define("trPhi","ROOT::VecOps::RVec<float> phi;for(auto& mom : trMom) phi.push_back( mom.phi() ); return phi;")
 
     .Define("trRecPhi", recentered_phi_function, {"centrality", "trPhi", "trPt", "trProtonY"})
 
     .Define( "simP", "std::vector<float> simP; for( auto mom : simMom ){ simP.push_back( mom.P() ); } return simP; " )
     .Define( "simPt", "std::vector<float> simPt; for( auto mom : simMom ){ simPt.push_back( mom.Pt() ); } return simPt; " )
     .Define( "simPz", "std::vector<float> simPz; for( auto mom : simMom ){ simPz.push_back( mom.Pz() ); } return simPz; " )
-    .Define( "simPhi", "std::vector<float> simPhi; for( auto mom : simMom ){ simPhi.push_back( mom.Phi() / 2.0 ); } return simPhi; " )
+    .Define( "simPhi", "std::vector<float> simPhi; for( auto mom : simMom ){ simPhi.push_back( mom.Phi() ); } return simPhi; " )
           
     .Define( "simIsProton", is_sim_particle(2212), {"simPdg", "simMotherId"} )
     .Define( "simProtonY", rapidity_generator(PROTON_M, Y_CM), {"simPz", "simP"} )
@@ -330,7 +330,7 @@ void run8_mc_proton_correct( std::string list,
     return std::find( f1_modules.begin(), f1_modules.end(), id) != f1_modules.end();
     }, "F1 Cut" );
   f1.AddHisto2D({{"fhcalModX", 100, -100, 100}, {"fhcalModY", 100, -100, 100}});
-  correction_task.AddVector(f1);
+  // correction_task.AddVector(f1);
 
   VectorConfig f2( "F2", "fhcalModPhi", "fhcalModE", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
   f2.SetHarmonicArray( {1, 2, 3, 4 } );
@@ -340,7 +340,7 @@ void run8_mc_proton_correct( std::string list,
     return std::find( f2_modules.begin(), f2_modules.end(), id) != f2_modules.end();
     }, "F2 Cut" );
   f2.AddHisto2D({{"fhcalModX", 100, -100, 100}, {"fhcalModY", 100, -100, 100}});
-  correction_task.AddVector(f2);
+  // correction_task.AddVector(f2);
 
   VectorConfig f3( "F3", "fhcalModPhi", "fhcalModE", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
   f3.SetHarmonicArray( {1, 2, 3, 4 } );
@@ -350,7 +350,7 @@ void run8_mc_proton_correct( std::string list,
     return std::find( f3_modules.begin(), f3_modules.end(), id) != f3_modules.end();
     }, "F3 Cut" );
   f3.AddHisto2D({{"fhcalModX", 100, -100, 100}, {"fhcalModY", 100, -100, 100}});
-  correction_task.AddVector(f3);
+  // correction_task.AddVector(f3);
 
   VectorConfig f4( "F4", "fhcalModPhi", "fhcalModE", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
   f4.SetHarmonicArray( {1, 2, 3, 4 } );
@@ -360,7 +360,7 @@ void run8_mc_proton_correct( std::string list,
     return std::find( f4_modules.begin(), f4_modules.end(), id) != f4_modules.end();
     }, "F3 Cut" );
   f4.AddHisto2D({{"fhcalModX", 100, -100, 100}, {"fhcalModY", 100, -100, 100}});
-  correction_task.AddVector(f4);
+  // correction_task.AddVector(f4);
 
   VectorConfig Tneg( "Tneg", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   Tneg.SetHarmonicArray( {1, 2, 3, 4 } );
@@ -380,7 +380,7 @@ void run8_mc_proton_correct( std::string list,
   Tneg.AddCut( "trFhcalY", [](double pos){
     return pos < -100.0 || pos > 100;
     }, "cut on y-pos in fhcal plane" );
-  correction_task.AddVector(Tneg);
+  // correction_task.AddVector(Tneg);
 
   VectorConfig Tpos( "Tpos", "trPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
   Tpos.SetHarmonicArray( {1, 2, 3, 4} );
@@ -400,7 +400,7 @@ void run8_mc_proton_correct( std::string list,
   Tpos.AddCut( "trFhcalY", [](double pos){
     return pos < -100.0 || pos > 100;
     }, "cut on y-pos in fhcal plane" );
-  correction_task.AddVector(Tpos);
+  // correction_task.AddVector(Tpos);
 
   std::vector<Qn::AxisD> proton_axes{
         { "trProtonY", 24, 0.0, 1.2 },
