@@ -208,25 +208,25 @@ std::tuple< vector1d<Qn::DataContainerStatCalculate>, vector1d<Qn::DataContainer
     vec_mean.emplace_back( *tmp );
 
     for( auto h_b = h_a; h_b <= 4; ++h_b ){
-      corr_name = str_vec_name+".x"+std::to_string(h_a)+"centrality"s+"x"s+std::to_string(h_b)+"centrality"s;
+      corr_name = str_vec_name+".x"+std::to_string(h_a)+"x"s+std::to_string(h_b)+"centrality"s;
       std::cout << "Extracting " << corr_name << "\n";
       calib_file->GetObject( corr_name.c_str(), tmp );
       assert(tmp);
       vec_cov.emplace_back( *tmp );
       
-      corr_name = str_vec_name+".x"+std::to_string(h_a)+"centrality"s+"y"s+std::to_string(h_b)+"centrality"s;
+      corr_name = str_vec_name+".x"+std::to_string(h_a)+"y"s+std::to_string(h_b)+"centrality"s;
       std::cout << "Extracting " << corr_name << "\n";
       calib_file->GetObject( corr_name.c_str(), tmp );
       assert(tmp);
       vec_cov.emplace_back( *tmp );
 
-      corr_name = str_vec_name+".y"+std::to_string(h_a)+"centrality"s+"x"s+std::to_string(h_b)+"centrality"s;
+      corr_name = str_vec_name+".y"+std::to_string(h_a)+"x"s+std::to_string(h_b)+"centrality"s;
       std::cout << "Extracting " << corr_name << "\n";
       calib_file->GetObject( corr_name.c_str(), tmp );
       assert(tmp);
       vec_cov.emplace_back( *tmp );
 
-      corr_name = str_vec_name+".y"+std::to_string(h_a)+"centrality"s+"y"s+std::to_string(h_b)+"centrality"s;
+      corr_name = str_vec_name+".y"+std::to_string(h_a)+"y"s+std::to_string(h_b)+"centrality"s;
       std::cout << "Extracting " << corr_name << "\n";
       calib_file->GetObject( corr_name.c_str(), tmp );
       assert(tmp);
