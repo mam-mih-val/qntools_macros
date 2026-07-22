@@ -208,25 +208,25 @@ std::tuple< vector1d<Qn::DataContainerStatCalculate>, vector1d<Qn::DataContainer
     vec_mean.emplace_back( *tmp );
 
     for( auto h_b = h_a; h_b <= 4; ++h_b ){
-      auto corr_name = str_vec_name+".x"+std::to_string(h_a)+"centrality"s+"x"s+std::to_string(h_b)+"centrality"s;
+      corr_name = str_vec_name+".x"+std::to_string(h_a)+"centrality"s+"x"s+std::to_string(h_b)+"centrality"s;
       std::cout << "Extracting " << corr_name << "\n";
       calib_file->GetObject( corr_name.c_str(), tmp );
       assert(tmp);
       vec_cov.emplace_back( *tmp );
       
-      auto corr_name = str_vec_name+".x"+std::to_string(h_a)+"centrality"s+"y"s+std::to_string(h_b)+"centrality"s;
+      corr_name = str_vec_name+".x"+std::to_string(h_a)+"centrality"s+"y"s+std::to_string(h_b)+"centrality"s;
       std::cout << "Extracting " << corr_name << "\n";
       calib_file->GetObject( corr_name.c_str(), tmp );
       assert(tmp);
       vec_cov.emplace_back( *tmp );
 
-      auto corr_name = str_vec_name+".y"+std::to_string(h_a)+"centrality"s+"x"s+std::to_string(h_b)+"centrality"s;
+      corr_name = str_vec_name+".y"+std::to_string(h_a)+"centrality"s+"x"s+std::to_string(h_b)+"centrality"s;
       std::cout << "Extracting " << corr_name << "\n";
       calib_file->GetObject( corr_name.c_str(), tmp );
       assert(tmp);
       vec_cov.emplace_back( *tmp );
 
-      auto corr_name = str_vec_name+".y"+std::to_string(h_a)+"centrality"s+"y"s+std::to_string(h_b)+"centrality"s;
+      corr_name = str_vec_name+".y"+std::to_string(h_a)+"centrality"s+"y"s+std::to_string(h_b)+"centrality"s;
       std::cout << "Extracting " << corr_name << "\n";
       calib_file->GetObject( corr_name.c_str(), tmp );
       assert(tmp);
@@ -323,7 +323,7 @@ void run8_mc_proton_whitening(std::string in_file_name, std::string in_calib_fil
   // auto tp_corr = MakeCorrectionMatrix(v2_mean_tp, v2_cov_tp, decomposition_mixing_matrix);
   // auto tn_corr = MakeCorrectionMatrix(v2_mean_tn, v2_cov_tn, decomposition_mixing_matrix);
   
-  auto p_corr = MakeCorrectionMatrix(v2_mean_p, v2_cov_p, twist_rescaling_mixing_matrix );
+  auto p_corr = MakeCorrectionMatrix(v2_mean_p, v2_cov_p, whitening_mixing_matrix );
 
   const auto correction_generator = []( 
     const vector1d<DataContainerMatrix>& vec_cor,
