@@ -132,7 +132,7 @@ std::tuple<bool, correction_matrix_t> PseudoInverse( const correction_matrix_t& 
   for (auto i = size_t{0}; i < singular_values.size(); ++i) {
     auto s = singular_values(i);
     if( fabs(s) > l ){
-      Splus(i, i) = 1.0 / s;
+      Splus(i, i) = sqrt(2.0 / s);
       rank++;
     }
   }
