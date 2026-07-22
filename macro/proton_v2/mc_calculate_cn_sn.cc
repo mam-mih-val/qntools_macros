@@ -138,13 +138,13 @@ void mc_calculate_cn_sn(string inputFiles="qn.root", string outputFile="CnSn.roo
       fullName = std::string{corrName}.append( ".y" ).append( std::to_string(h_a) );
       corrBuilder.AddCorrelationWithInternalReader(fullName, P1::y(h_a), wSumWu1part, wy, corr, corr);
       for( auto h_b = h_a; h_b<=4; h_b++ ){
-        fullName = std::string{corrName}.append( ".x" ).append( std::to_string(h_a) ).append( ".x" ).append( std::to_string(h_b) );
+        fullName = std::string{corrName}.append( ".x" ).append( std::to_string(h_a) ).append( "x" ).append( std::to_string(h_b) );
         corrBuilder.AddCorrelationWithInternalReader(fullName, P1::xx(h_a, h_b), wSumWu1part, wy, corr, corr);
-        fullName = std::string{corrName}.append( ".y" ).append( std::to_string(h_a) ).append( ".y" ).append( std::to_string(h_b) );
+        fullName = std::string{corrName}.append( ".y" ).append( std::to_string(h_a) ).append( "y" ).append( std::to_string(h_b) );
         corrBuilder.AddCorrelationWithInternalReader(fullName, P1::yy(h_a, h_b), wSumWu1part, wy, corr, corr);
-        fullName = std::string{corrName}.append( ".x" ).append( std::to_string(h_a) ).append( ".y" ).append( std::to_string(h_b) );
+        fullName = std::string{corrName}.append( ".x" ).append( std::to_string(h_a) ).append( "y" ).append( std::to_string(h_b) );
         corrBuilder.AddCorrelationWithInternalReader(fullName, P1::xy(h_a, h_b), wSumWu1part, wy, corr, corr);
-        fullName = std::string{corrName}.append( ".y" ).append( std::to_string(h_a) ).append( ".x" ).append( std::to_string(h_b) );
+        fullName = std::string{corrName}.append( ".y" ).append( std::to_string(h_a) ).append( "x" ).append( std::to_string(h_b) );
         corrBuilder.AddCorrelationWithInternalReader(fullName, P1::xy(h_b, h_a), wSumWu1part, wy, corr, corr);
       }
     }
