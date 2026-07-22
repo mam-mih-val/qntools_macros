@@ -194,7 +194,7 @@ std::tuple< vector1d<Qn::DataContainerStatCalculate>, vector1d<Qn::DataContainer
   vec_mean.reserve(2);
   vec_cov.reserve(3);
 
-  for( auto h_a = size_t{1}; h_a <= 4; ++h_a ){
+  for( auto h_a = size_t{1}; h_a <= 2; ++h_a ){
     auto corr_name = str_vec_name+".x"+std::to_string(h_a)+"centrality"s;
     std::cout << "Extracting " << corr_name << "\n";
     calib_file->GetObject( corr_name.c_str(), tmp );
@@ -207,7 +207,7 @@ std::tuple< vector1d<Qn::DataContainerStatCalculate>, vector1d<Qn::DataContainer
     assert(tmp);
     vec_mean.emplace_back( *tmp );
 
-    for( auto h_b = h_a; h_b <= 4; ++h_b ){
+    for( auto h_b = h_a; h_b <= 2; ++h_b ){
       corr_name = str_vec_name+".x"+std::to_string(h_a)+"x"s+std::to_string(h_b)+"centrality"s;
       std::cout << "Extracting " << corr_name << "\n";
       calib_file->GetObject( corr_name.c_str(), tmp );
