@@ -94,20 +94,20 @@ const auto whitening_mixing_matrix = [](const vector1d<double>& vec_mean, const 
   auto x2 = vec_mean[2];
   auto y2 = vec_mean[3];
 
-  auto x1x1 = vec_cov[0] - x1*x1;
-  auto x1y1 = vec_cov[1] - x1*y1;
-  auto y1x1 = vec_cov[2] - x1*y1;
-  auto y1y1 = vec_cov[3] - y1*y1;
+  auto x1x1 = vec_cov[0] - x1*x1; // Extracting proton_PLAIN.x1x1centrality
+  auto x1y1 = vec_cov[1] - x1*y1; // Extracting proton_PLAIN.x1y1centrality
+  auto y1x1 = vec_cov[2] - x1*y1; // Extracting proton_PLAIN.y1x1centrality
+  auto y1y1 = vec_cov[3] - y1*y1; // Extracting proton_PLAIN.y1y1centrality
 
-  auto x1x2 = vec_cov[4] - x1*x2;
-  auto x1y2 = vec_cov[5] - x1*y2;
-  auto y1x2 = vec_cov[6] - y1*x2;
-  auto y1y2 = vec_cov[7] - y1*y2;
+  auto x1x2 = vec_cov[4] - x1*x2; // Extracting proton_PLAIN.x1x2centrality
+  auto x1y2 = vec_cov[5] - x1*y2; // Extracting proton_PLAIN.x1y2centrality
+  auto y1x2 = vec_cov[6] - y1*x2; // Extracting proton_PLAIN.y1x2centrality
+  auto y1y2 = vec_cov[7] - y1*y2; // Extracting proton_PLAIN.y1y2centrality
 
-  auto x2x2 = vec_cov[8] - x2*x2;
-  auto x2y2 = vec_cov[9] - x2*y2;
-  auto y2x2 = vec_cov[10] - y2*x2;
-  auto y2y2 = vec_cov[11] - y2*y2;
+  auto x2x2 = vec_cov[8] - x2*x2; // Extracting proton_PLAIN.x2x2centrality
+  auto x2y2 = vec_cov[9] - x2*y2; // Extracting proton_PLAIN.x2y2centrality
+  auto y2x2 = vec_cov[10] - y2*x2; // Extracting proton_PLAIN.y2x2centrality
+  auto y2y2 = vec_cov[11] - y2*y2; // Extracting proton_PLAIN.y2y2centrality
   
   auto M = mixing_matrix_t{};
 
@@ -132,7 +132,7 @@ std::tuple<bool, correction_matrix_t> PseudoInverse( const correction_matrix_t& 
   for (auto i = size_t{0}; i < singular_values.size(); ++i) {
     auto s = singular_values(i);
     if( fabs(s) > l ){
-      Splus(i, i) = sqrt(2.0 / s);
+      Splus(i, i) = 0.5 * sqrt(1 / s);
       rank++;
     }
   }
