@@ -246,7 +246,7 @@ void run8_mc_proton_correlate(string inputFiles="qn.root", string outputFile="co
     string corrName=corr.at(0)+"."+corr.at(1);
     for( auto h_a = size_t{1}; h_a<=4; h_a++ ){
       auto fullName = std::string{};
-      for( auto h_b = size_t{1}; h_b<=4; h_b++ ){
+      for( auto h_b = size_t{1}; h_b<=2; h_b++ ){
         fullName = std::string{corrName}.append( ".x" ).append( std::to_string(h_a) ).append( "x" ).append( std::to_string(h_b) );
         corrBuilder.AddCorrelationWithInternalReader(fullName, P2::xx(h_a, h_b), wSumWu, wy, corr, corr);
         fullName = std::string{corrName}.append( ".y" ).append( std::to_string(h_a) ).append( "y" ).append( std::to_string(h_b) );
