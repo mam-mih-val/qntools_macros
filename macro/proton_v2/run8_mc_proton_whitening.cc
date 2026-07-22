@@ -113,8 +113,8 @@ const auto whitening_mixing_matrix = [](const vector1d<double>& vec_mean, const 
 
   M << 
     //       x1    y1    x2    y2
-  /*x1*/    x1x1, y1x1, x2x1, x1y2,
-  /*y1*/    x1y1, y1y1, y1x2, y1y2,
+  /*x1*/    x1x1, y1x1, x1x2, x1y2,
+  /*y1*/    y1x1, y1y1, y1x2, y1y2,
   /*x2*/    x1x2, y1x2, x2x2, x2y2,
   /*y2*/    x1y2, y1y2, x2y2, y2y2
   ;
