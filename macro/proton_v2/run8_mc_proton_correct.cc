@@ -408,7 +408,7 @@ void run8_mc_proton_correct( std::string list,
   };
   
   VectorConfig proton( "proton", "trPhi", "trProtonEfficiency", VECTOR_TYPE::TRACK, NORMALIZATION::M );
-  proton.SetHarmonicArray( { 1, 2, 3, 4 } );
+  proton.SetHarmonicArray( { 1, 2, 3, 4, 5, 6, 7, 8 } );
   proton.SetCorrections( { CORRECTION::PLAIN } );
   proton.SetCorrectionAxes( proton_axes );
   proton.AddCut( "trIsProton", [](double is){
@@ -440,7 +440,7 @@ void run8_mc_proton_correct( std::string list,
   };
 
   VectorConfig sim_proton( "tru_proton", "simPhi", "Ones", VECTOR_TYPE::TRACK, NORMALIZATION::M );
-  sim_proton.SetHarmonicArray( { 1, 2, 3, 4 } );
+  sim_proton.SetHarmonicArray( { 1, 2, 3, 4, 5, 6, 7, 8 } );
   sim_proton.SetCorrections( { CORRECTION::PLAIN } );
   sim_proton.SetCorrectionAxes( sim_proton_axes );
   sim_proton.AddCut( "simIsProton", [](double is){
@@ -449,7 +449,7 @@ void run8_mc_proton_correct( std::string list,
   correction_task.AddVector(sim_proton);
 
   VectorConfig psi_rp( "psi_rp", "psiRP", "Ones", VECTOR_TYPE::CHANNEL, NORMALIZATION::M );
-  psi_rp.SetHarmonicArray( { 1, 2 } );
+  psi_rp.SetHarmonicArray( { 1, 2, 3, 4, 5, 6, 7, 8 } );
   psi_rp.SetCorrections( { CORRECTION::PLAIN } );
   correction_task.AddVector(psi_rp);
 
