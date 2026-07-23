@@ -132,7 +132,7 @@ std::tuple<bool, correction_matrix_t> PseudoInverse( const correction_matrix_t& 
   for (auto i = size_t{0}; i < singular_values.size(); ++i) {
     auto s = singular_values(i);
     if( fabs(s) > l ){
-      Splus(i, i) = sqrt(0.5) * sqrt(1 / s);
+      Splus(i, i) = 1.0 / sqrt( s);
       rank++;
     }
   }
@@ -140,7 +140,7 @@ std::tuple<bool, correction_matrix_t> PseudoInverse( const correction_matrix_t& 
   auto E = correction_matrix_t::Identity();
   auto Vr = V.leftCols(rank);
   auto Etilda = Vr * Vr.transpose() * E;
-  auto Mpinv = correction_matrix_t{ V * Splus * U.transpose() };
+  auto Mpinv = correction_matrix_t{ V * Splus * U.transpose() } * sqrt(0.5);
   std::cout << "l: " << l << "\nMatrix M:\n" << M << "\nMatrix U:\n" << U << "\nS: " << singular_values.transpose() << "\nMatrix V:\n" << V << "\nInverse:\n" << Mpinv << "\nEtilda:\n" << Etilda << "\n";
   return {is_valid, Mpinv};
 }
@@ -191,8 +191,8 @@ std::tuple< vector1d<Qn::DataContainerStatCalculate>, vector1d<Qn::DataContainer
 
   auto vec_mean = std::vector<Qn::DataContainerStatCalculate>{};
   auto vec_cov = std::vector<Qn::DataContainerStatCalculate>{};
-  vec_mean.reserve(2);
-  vec_cov.reserve(3);
+  vec_mean.reserve(4);
+  vec_cov.reserve(13);
 
   for( auto h_a = size_t{1}; h_a <= 2; ++h_a ){
     auto corr_name = str_vec_name+".x"+std::to_string(h_a)+"centrality"s;
