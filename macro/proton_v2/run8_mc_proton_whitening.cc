@@ -172,7 +172,7 @@ std::tuple<bool, correction_matrix_t> PseudoInverse( const correction_matrix_t& 
   auto Vr = V.leftCols(rank);
   auto Etilda = Vr * Vr.transpose() * E;
   auto Mpinv = correction_matrix_t{ V * Splus * U.transpose() } * sqrt(0.5);
-  std::cout << "l: " << l << "\nMatrix M:\n" << M << "\nMatrix U:\n" << U << "\nS: " << singular_values.transpose() << "\nMatrix V:\n" << V << "\nInverse:\n" << Mpinv << "\nEtilda:\n" << Etilda << "\n";
+  std::cout << "l: " << l << "\nMatrix M:\n" << M << "\nMatrix U:\n" << U << "\nS: " << singular_values.transpose() << "\nMatrix V:\n" << V << "\nMatrix S:\n" << Splus << "\nInverse:\n" << Mpinv << "\nEtilda:\n" << Etilda << "\n";
   return {is_valid, Mpinv};
 }
 
