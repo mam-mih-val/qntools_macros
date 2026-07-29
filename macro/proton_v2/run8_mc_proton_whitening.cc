@@ -158,7 +158,7 @@ std::tuple<bool, correction_matrix_t> PseudoInverse( const correction_matrix_t& 
   auto singular_values = svd.singularValues();
   auto U = svd.matrixU();
   auto V = svd.matrixV();
-  auto Splus = correction_matrix_t::Zero();
+  auto Splus = correction_matrix_t{correction_matrix_t::Zero()};
   auto rank = size_t{0};
   for (auto i = size_t{0}; i < singular_values.size(); ++i) {
     auto s = singular_values(i);
