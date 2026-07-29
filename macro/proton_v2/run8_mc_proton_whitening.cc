@@ -158,14 +158,14 @@ std::tuple<bool, correction_matrix_t> PseudoInverse( const correction_matrix_t& 
   auto singular_values = svd.singularValues();
   auto U = svd.matrixU();
   auto V = svd.matrixV();
-  auto Splus = correction_matrix_t{};
+  auto Splus = correction_matrix_t::Zero();
   auto rank = size_t{0};
   for (auto i = size_t{0}; i < singular_values.size(); ++i) {
     auto s = singular_values(i);
-    if( fabs(s) > l ){
-      Splus(i, i) = 1.0 / sqrt( s);
-      rank++;
-    }
+    if( fabs(s) < l )
+      continue;
+    Splus(i, i) = 1.0 / sqrt( s);
+    rank++;
   }
   auto is_valid = rank == NDIM;
   auto E = correction_matrix_t::Identity();
