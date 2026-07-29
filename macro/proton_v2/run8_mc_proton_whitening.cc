@@ -13,7 +13,8 @@
 #include <tuple>
 #include <vector>
 
-constexpr size_t NDIM = 4;
+constexpr size_t NHARM = 8;
+constexpr size_t NDIM = NHARM*2;
 
 using correction_matrix_t = Eigen::Matrix<double, NDIM, NDIM>;
 using mixing_matrix_t = Eigen::Matrix<double, NDIM, NDIM>;
@@ -89,35 +90,65 @@ private:
 };
 
 const auto whitening_mixing_matrix = [](const vector1d<double>& vec_mean, const vector1d<double>& vec_cov){
-  auto x1 = vec_mean[0];
-  auto y1 = vec_mean[1];
-  auto x2 = vec_mean[2];
-  auto y2 = vec_mean[3];
-
-  auto x1x1 = vec_cov[0] - x1*x1; // Extracting proton_PLAIN.x1x1centrality
-  auto x1y1 = vec_cov[1] - x1*y1; // Extracting proton_PLAIN.x1y1centrality
-  auto y1x1 = vec_cov[2] - x1*y1; // Extracting proton_PLAIN.y1x1centrality
-  auto y1y1 = vec_cov[3] - y1*y1; // Extracting proton_PLAIN.y1y1centrality
-
-  auto x1x2 = vec_cov[4] - x1*x2; // Extracting proton_PLAIN.x1x2centrality
-  auto x1y2 = vec_cov[5] - x1*y2; // Extracting proton_PLAIN.x1y2centrality
-  auto y1x2 = vec_cov[6] - y1*x2; // Extracting proton_PLAIN.y1x2centrality
-  auto y1y2 = vec_cov[7] - y1*y2; // Extracting proton_PLAIN.y1y2centrality
-
-  auto x2x2 = vec_cov[8] - x2*x2; // Extracting proton_PLAIN.x2x2centrality
-  auto x2y2 = vec_cov[9] - x2*y2; // Extracting proton_PLAIN.x2y2centrality
-  auto y2x2 = vec_cov[10] - y2*x2; // Extracting proton_PLAIN.y2x2centrality
-  auto y2y2 = vec_cov[11] - y2*y2; // Extracting proton_PLAIN.y2y2centrality
-  
   auto M = mixing_matrix_t{};
+  auto i = size_t {0};
+  for( auto h_a = size_t{0}; h_a < NHARM; ++h_a ){
+    auto x_a = vec_mean[2*h_a];
+    auto y_a = vec_mean[2*h_a+1];
+    for( auto h_b = h_a; h_b < NHARM; ++h_b ){
+      auto x_b = vec_mean[2*h_b];
+      auto y_b = vec_mean[2*h_b+1];
+      auto cov = vector1d<double>{}; cov.reserve(4);
+      for( auto j=size_t{0}; j<4; ++j ){
+        cov.push_back( vec_cov.at(i+j) );
+      } i+=4;
+      cov[0] -= x_a*x_b;
+      cov[1] -= x_a*y_b;
+      cov[2] -= y_a*x_b;
+      cov[3] -= y_a*y_b;
+      M( 2*h_a, 2*h_b ) = cov[0];
+      M( 2*h_a+1, 2*h_b ) = cov[1];
+      M( 2*h_a, 2*h_b+1 ) = cov[2];
+      M( 2*h_a+1, 2*h_b+1 ) = cov[3];
 
-  M << 
-    //       x1    y1    x2    y2
-  /*x1*/    x1x1, y1x1, x1x2, x1y2,
-  /*y1*/    y1x1, y1y1, y1x2, y1y2,
-  /*x2*/    x1x2, y1x2, x2x2, x2y2,
-  /*y2*/    x1y2, y1y2, x2y2, y2y2
-  ;
+      M( 2*h_b, 2*h_a ) = cov[0];
+      M( 2*h_b, 2*h_a+1 ) = cov[1];
+      M( 2*h_b+1, 2*h_a ) = cov[2];
+      M( 2*h_b+1, 2*h_a+1 ) = cov[3];
+    }
+  }
+  // auto x1 = vec_mean[0];
+  // auto y1 = vec_mean[1];
+
+  // auto x2 = vec_mean[2];
+  // auto y2 = vec_mean[3];
+
+  // auto x3 = vec_mean[2];
+  // auto y3 = vec_mean[3];
+
+  // auto x1x1 = vec_cov[0] - x1*x1; // Extracting proton_PLAIN.x1x1centrality
+  // auto x1y1 = vec_cov[1] - x1*y1; // Extracting proton_PLAIN.x1y1centrality
+  // auto y1x1 = vec_cov[2] - x1*y1; // Extracting proton_PLAIN.y1x1centrality
+  // auto y1y1 = vec_cov[3] - y1*y1; // Extracting proton_PLAIN.y1y1centrality
+
+  // auto x1x2 = vec_cov[4] - x1*x2; // Extracting proton_PLAIN.x1x2centrality
+  // auto x1y2 = vec_cov[5] - x1*y2; // Extracting proton_PLAIN.x1y2centrality
+  // auto y1x2 = vec_cov[6] - y1*x2; // Extracting proton_PLAIN.y1x2centrality
+  // auto y1y2 = vec_cov[7] - y1*y2; // Extracting proton_PLAIN.y1y2centrality
+
+  // auto x2x2 = vec_cov[8] - x2*x2; // Extracting proton_PLAIN.x2x2centrality
+  // auto x2y2 = vec_cov[9] - x2*y2; // Extracting proton_PLAIN.x2y2centrality
+  // auto y2x2 = vec_cov[10] - y2*x2; // Extracting proton_PLAIN.y2x2centrality
+  // auto y2y2 = vec_cov[11] - y2*y2; // Extracting proton_PLAIN.y2y2centrality
+  
+
+  // M << 
+  //   //       x1    y1    x2    y2
+  // /*x1*/    x1x1, y1x1, x1x2, x1y2,
+  // /*y1*/    y1x1, y1y1, y1x2, y1y2,
+  // /*x2*/    x1x2, y1x2, x2x2, x2y2,
+  // /*y2*/    x1y2, y1y2, x2y2, y2y2
+  // ;
 
   return M;
 };
@@ -170,7 +201,9 @@ vector1d<DataContainerMatrix> MakeCorrectionMatrix(
       auto M = func( vec_double_mean, vec_double_cov );
     
       auto c = column_t{};
-      c << vec_double_mean[0], vec_double_mean[1], vec_double_mean[2], vec_double_mean[3];
+      for( auto i = size_t{}; i<vec_double_mean.size(); ++i ){
+        c(i) = vec_double_mean[i];
+      }
 
       auto [is_valid, Minv] = PseudoInverse( M, 5e-3 );
       if( std::isinf( 1.0 / sqrt(sumw) ) )
@@ -191,10 +224,10 @@ std::tuple< vector1d<Qn::DataContainerStatCalculate>, vector1d<Qn::DataContainer
 
   auto vec_mean = std::vector<Qn::DataContainerStatCalculate>{};
   auto vec_cov = std::vector<Qn::DataContainerStatCalculate>{};
-  vec_mean.reserve(4);
+  vec_mean.reserve(16);
   vec_cov.reserve(13);
 
-  for( auto h_a = size_t{1}; h_a <= 2; ++h_a ){
+  for( auto h_a = size_t{1}; h_a <= NHARM; ++h_a ){
     auto corr_name = str_vec_name+".x"+std::to_string(h_a)+"centrality"s;
     std::cout << "Extracting " << corr_name << "\n";
     calib_file->GetObject( corr_name.c_str(), tmp );
@@ -207,7 +240,7 @@ std::tuple< vector1d<Qn::DataContainerStatCalculate>, vector1d<Qn::DataContainer
     assert(tmp);
     vec_mean.emplace_back( *tmp );
 
-    for( auto h_b = h_a; h_b <= 2; ++h_b ){
+    for( auto h_b = h_a; h_b <= NHARM; ++h_b ){
       corr_name = str_vec_name+".x"+std::to_string(h_a)+"x"s+std::to_string(h_b)+"centrality"s;
       std::cout << "Extracting " << corr_name << "\n";
       calib_file->GetObject( corr_name.c_str(), tmp );
@@ -336,14 +369,6 @@ void run8_mc_proton_whitening(std::string in_file_name, std::string in_calib_fil
       for( auto i=size_t{0}; i<qvec.size(); ++i ){
         if( fabs( qvec.At(i).sumweights()) < std::numeric_limits<double>::min() )
           continue;
-        auto x1_old = qvec.At(i).x(1);
-        auto y1_old = qvec.At(i).y(1);
-    
-        auto x2_old = qvec.At(i).x(2);
-        auto y2_old = qvec.At(i).y(2);
-
-        auto x3_old = qvec.At(i).x(3);
-        auto y3_old = qvec.At(i).y(3);
 
         auto [is_valid, Minv, c] = vec_cor.at(l_idx).At(i);
         
@@ -352,29 +377,24 @@ void run8_mc_proton_whitening(std::string in_file_name, std::string in_calib_fil
           continue;
         }
 
-        if( !is_valid ){
-          new_qvec.At(i).Reset();
-          continue;
+        auto X1old =  column_t{};
+        for( auto h = size_t{0}; h < NHARM; h++ ){
+          X1old(2*h) = qvec.At(i).x(h+1);
+          X1old(2*h+1) = qvec.At(i).y(h+1);
         }
 
-        auto X1old =  column_t{};
-        X1old << x1_old, y1_old, x2_old, y2_old;
-        // x3_old, y3_old;
-        
+        // if( !is_valid ){
+        //   new_qvec.At(i).Reset();
+        //   continue;
+        // }
+
         auto X1new =  Minv * ( X1old - c );
         
-        auto x1_new = static_cast<double>(X1new(0));
-        auto y1_new = static_cast<double>(X1new(1));
-        
-        auto x2_new = static_cast<double>(X1new(2));
-        auto y2_new = static_cast<double>(X1new(3));
-
-        // auto x3_new = static_cast<double>(X1new(4));
-        // auto y3_new = static_cast<double>(X1new(5));
-
-        new_qvec.At(i).SetQ( 1, x1_new, y1_new );
-        new_qvec.At(i).SetQ( 2, x2_new, y2_new );
-        // new_qvec.At(i).SetQ( 3, x3_new, y3_new );
+        for( auto h = size_t{0}; h < NHARM; h++ ){
+          auto x_new = static_cast<double>(X1new(2*h));
+          auto y_new = static_cast<double>(X1new(2*h+1));
+          new_qvec.At(i).SetQ( h+1, x_new, y_new );
+        }
       }
 
       return new_qvec;
