@@ -167,6 +167,7 @@ void run8_mc_proton_correlate(string inputFiles="qn.root", string outputFile="co
   auto wUnity = [](const Qn::QVector &a, const Qn::QVector &b) { return 1; };
   auto wSumWu = [](const Qn::QVector &a, const Qn::QVector &b) { return a.sumweights(); };
   auto wSumWu1part = [](const Qn::QVector &a) { return a.sumweights(); };
+  auto wSumW2u1part = [](const Qn::QVector &a) { return a.sumweights()*a.sumweights(); };
   auto wSumWu3part = [](const Qn::QVector &a, const Qn::QVector &b, const Qn::QVector &c) { return a.sumweights(); };
   auto wSumWu4part = [](const Qn::QVector &a, const Qn::QVector &b, const Qn::QVector &c, const Qn::QVector &d) { return a.sumweights(); };
   auto wSumWu1Wu24part = [](const Qn::QVector &a, const Qn::QVector &b, const Qn::QVector &c, const Qn::QVector &d) { return a.sumweights()*b.sumweights(); };
@@ -187,13 +188,13 @@ void run8_mc_proton_correlate(string inputFiles="qn.root", string outputFile="co
       corrBuilder.AddCorrelationWithInternalReader(fullName, P1::y(h_a), wSumWu1part, wy, corr, corr);
       for( auto h_b = h_a; h_b<=4; h_b++ ){
         fullName = std::string{corrName}.append( ".x" ).append( std::to_string(h_a) ).append( "x" ).append( std::to_string(h_b) );
-        corrBuilder.AddCorrelationWithInternalReader(fullName, P1::xx(h_a, h_b), wSumWu1part, wy, corr, corr);
+        corrBuilder.AddCorrelationWithInternalReader(fullName, P1::xx(h_a, h_b), wSumW2u1part, wy, corr, corr);
         fullName = std::string{corrName}.append( ".y" ).append( std::to_string(h_a) ).append( "y" ).append( std::to_string(h_b) );
-        corrBuilder.AddCorrelationWithInternalReader(fullName, P1::yy(h_a, h_b), wSumWu1part, wy, corr, corr);
+        corrBuilder.AddCorrelationWithInternalReader(fullName, P1::yy(h_a, h_b), wSumW2u1part, wy, corr, corr);
         fullName = std::string{corrName}.append( ".x" ).append( std::to_string(h_a) ).append( "y" ).append( std::to_string(h_b) );
-        corrBuilder.AddCorrelationWithInternalReader(fullName, P1::xy(h_a, h_b), wSumWu1part, wy, corr, corr);
+        corrBuilder.AddCorrelationWithInternalReader(fullName, P1::xy(h_a, h_b), wSumW2u1part, wy, corr, corr);
         fullName = std::string{corrName}.append( ".y" ).append( std::to_string(h_a) ).append( "x" ).append( std::to_string(h_b) );
-        corrBuilder.AddCorrelationWithInternalReader(fullName, P1::yx(h_a, h_b), wSumWu1part, wy, corr, corr);
+        corrBuilder.AddCorrelationWithInternalReader(fullName, P1::yx(h_a, h_b), wSumW2u1part, wy, corr, corr);
       }
     }
   }
