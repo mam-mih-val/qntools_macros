@@ -13,7 +13,7 @@
 #include <tuple>
 #include <vector>
 
-constexpr size_t NHARM = 1;
+constexpr size_t NHARM = 2;
 constexpr size_t NDIM = NHARM*2;
 
 using correction_matrix_t = Eigen::Matrix<double, NDIM, NDIM>;
@@ -164,14 +164,14 @@ std::tuple<bool, correction_matrix_t> PseudoInverse( const correction_matrix_t& 
     auto s = singular_values(i);
     if( fabs(s) < l )
       continue;
-    Splus(i, i) = 1.0 / sqrt( s);
+    Splus(i, i) = sqrt(1.0 ) / sqrt( s);
     rank++;
   }
   auto is_valid = rank == NDIM;
   auto E = correction_matrix_t::Identity();
   auto Vr = V.leftCols(rank);
   auto Etilda = Vr * Vr.transpose() * E;
-  auto Mpinv = correction_matrix_t{ V * Splus * U.transpose() } * sqrt(0.5);
+  auto Mpinv = correction_matrix_t{ V * Splus * U.transpose() };
   std::cout << "l: " << l << "\nMatrix M:\n" << M << "\nMatrix U:\n" << U << "\nS: " << singular_values.transpose() << "\nMatrix V:\n" << V << "\nMatrix S:\n" << Splus << "\nInverse:\n" << Mpinv << "\nEtilda:\n" << Etilda << "\n";
   return {is_valid, Mpinv};
 }
