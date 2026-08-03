@@ -103,9 +103,10 @@ const auto whitening_mixing_matrix = [](const vector1d<double>& vec_mean, const 
         cov.push_back( vec_cov.at(i+j) );
       } i+=4;
       cov[0] -= x_a*x_b;
-      cov[1] -= x_a*y_b;
-      cov[2] -= y_a*x_b;
+      cov[1] -= y_a*x_b;
+      cov[2] -= x_a*y_b;
       cov[3] -= y_a*y_b;
+
       M( 2*h_a, 2*h_b ) = cov[0];
       M( 2*h_a+1, 2*h_b ) = cov[1];
       M( 2*h_a, 2*h_b+1 ) = cov[2];
@@ -246,14 +247,14 @@ std::tuple< vector1d<Qn::DataContainerStatCalculate>, vector1d<Qn::DataContainer
       calib_file->GetObject( corr_name.c_str(), tmp );
       assert(tmp);
       vec_cov.emplace_back( *tmp );
-      
-      corr_name = str_vec_name+".x"+std::to_string(h_a)+"y"s+std::to_string(h_b)+"centrality"s;
+
+      corr_name = str_vec_name+".y"+std::to_string(h_a)+"x"s+std::to_string(h_b)+"centrality"s;
       std::cout << "Extracting " << corr_name << "\n";
       calib_file->GetObject( corr_name.c_str(), tmp );
       assert(tmp);
       vec_cov.emplace_back( *tmp );
 
-      corr_name = str_vec_name+".y"+std::to_string(h_a)+"x"s+std::to_string(h_b)+"centrality"s;
+      corr_name = str_vec_name+".x"+std::to_string(h_a)+"y"s+std::to_string(h_b)+"centrality"s;
       std::cout << "Extracting " << corr_name << "\n";
       calib_file->GetObject( corr_name.c_str(), tmp );
       assert(tmp);
