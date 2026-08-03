@@ -13,7 +13,7 @@
 #include <tuple>
 #include <vector>
 
-constexpr size_t NHARM = 4;
+constexpr size_t NHARM = 1;
 constexpr size_t NDIM = NHARM*2;
 
 using correction_matrix_t = Eigen::Matrix<double, NDIM, NDIM>;
