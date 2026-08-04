@@ -100,12 +100,12 @@ const auto whitening_mixing_matrix = [](const vector1d<double>& vec_mean, const 
       auto y_b = vec_mean[2*h_b+1];
       auto cov = vector1d<double>{}; cov.reserve(4);
       for( auto j=size_t{0}; j<4; ++j ){
-        cov.push_back( vec_cov.at(i+j) );
+        cov.push_back( vec_cov.at(i+j) * 2 );
       } i+=4;
-      cov[0] -= x_a*x_b;
-      cov[1] -= y_a*x_b;
-      cov[2] -= x_a*y_b;
-      cov[3] -= y_a*y_b;
+      // cov[0] -= x_a*x_b;
+      // cov[1] -= y_a*x_b;
+      // cov[2] -= x_a*y_b;
+      // cov[3] -= y_a*y_b;
 
       M( 2*h_a, 2*h_b ) = cov[0];
       M( 2*h_a+1, 2*h_b ) = cov[1];
@@ -165,7 +165,8 @@ std::tuple<bool, correction_matrix_t> PseudoInverse( const correction_matrix_t& 
     auto s = singular_values(i);
     if( fabs(s) < l )
       continue;
-    Splus(i, i) = sqrt(0.5 ) / sqrt( s);
+    // Splus(i, i) = sqrt(0.5 ) / sqrt( s);
+    Splus(i, i) = 1.0 / s;
     rank++;
   }
   auto is_valid = rank == NDIM;
