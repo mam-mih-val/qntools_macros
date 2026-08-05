@@ -15,8 +15,7 @@
 #include <QnDataFrame.hpp>
 #include "correlation_helper.h"
 
-template<typename Func>
-const auto u_generator( size_t harmonic, Func component ){
+const auto u_generator( size_t harmonic, std::function< double(double) > component ){
   return [harmonic, component]( std::vector<float> vec_phi ){
     auto vec_results = std::vector<double>{};
     vec_results.reserve(vec_phi.size());
@@ -332,7 +331,7 @@ void run8_mc_proton_fill( std::string list,
     .Define( "trIsProton", tr_is_particle, {"trSimIndex", "simIsProton"} )
     .Define( "trProtonWeight", proton_weight, {"trIsProton", "trProtonEfficiency", "trHasAnyTofHit", "trDcaR", "trStsNhits", "trStsChi2", "trFhcalX", "trFhcalY"} )
 
-    .Define( "x1", u_generator(1, [](double x){ std::cos(x); }), {"trPhi"} )
+    .Define( "x1", u_generator(1, [](double x){ return std::cos(x); }), {"trPhi"} )
     // .Range( 1000 )
 
     .Filter("vtxNtracks > 2")      
