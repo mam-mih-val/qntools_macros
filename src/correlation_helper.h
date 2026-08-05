@@ -39,7 +39,7 @@ public:
       auto obj_ptr = new Qn::DataContainerStatCollect( obj );
       list.Add( obj_ptr );
     }
-    final_result_->Merge( dynamic_cast<TCollection*>(list) );
+    final_result_->Merge( dynamic_cast<TCollection*>( &list ) );
   }
  
   std::string GetActionName(){

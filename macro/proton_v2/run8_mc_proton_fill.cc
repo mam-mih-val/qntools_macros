@@ -14,7 +14,7 @@
 #include "correlation_helper.h"
 
 template<typename Func>
-const auto u_genarator( size_t harmonic, const Func& component ){
+const auto u_generator( size_t harmonic, Func component ){
   return [harmonic, &component]( std::vector<float> vec_phi ){
     auto vec_results = std::vector<double>{};
     vec_results.reserve(vec_phi.size());
@@ -26,7 +26,7 @@ const auto u_genarator( size_t harmonic, const Func& component ){
 }
 
 template<typename Func>
-const auto cov_genarator( size_t h_a, const Func& c_a, size_t h_b, const Func& c_b ){
+const auto cov_generator( size_t h_a, Func c_a, size_t h_b, Func c_b ){
   return [h_a, h_b, &c_a, &c_b]( std::vector<float> vec_phi ){
     auto vec_results = std::vector<double>{};
     vec_results.reserve(vec_phi.size());
@@ -215,8 +215,8 @@ void run8_mc_proton_fill( std::string list,
     std::vector<int> vec_efficiency, 
     std::vector<int> has_any_tof_hit,
     std::vector<float> vec_r,
-    ROOT::VecOps<int> vec_nhits,
-    ROOT::VecOps<float> vec_chi2,
+    ROOT::VecOps::RVec<int> vec_nhits,
+    ROOT::VecOps::RVec<float> vec_chi2,
     std::vector<float> vec_fhcal_x,
     std::vector<float> vec_fhcal_y
    ){
@@ -240,7 +240,7 @@ void run8_mc_proton_fill( std::string list,
       weights[i] = vec_efficiency[i];
     }
     return weights;
-  }
+  };
 
 
   std::unique_ptr<TFile> effieciency_file{TFile::Open( str_effieciency_file.c_str(), "READ" )};
@@ -331,14 +331,13 @@ void run8_mc_proton_fill( std::string list,
     .Define( "trIsProton", tr_is_particle, {"trSimIndex", "simIsProton"} )
     .Define( "trProtonWeight", proton_weight, {"trIsProton", "trProtonEfficiency", "trHasAnyTofHit", "trDcaR", "trStsNhits", "trStsChi2", "trFhcalX", "trFhcalY"} )
 
-    .Define( "x1", u_genarator(1, std::cos), {"trPhi"} )
+    .Define( "x1", u_generator(1, std::cos), {"trPhi"} )
     // .Range( 1000 )
 
     .Filter("vtxNtracks > 2")      
   ;
 
   auto sampled_d = Qn::Correlation::Resample(dd, 100);
-  auto x1_helper = (  );
   auto x1_corr = sampled_d.Book< std::vector<double>, std::vector<double>, double >( CorrelationHelper(std::vector<Qn::AxisD>{
     Qn::AxisD{ "centrality", 6, 0, 60 }
   }), {"x1", "trProtonWeight", "samples", "centrality" } );
