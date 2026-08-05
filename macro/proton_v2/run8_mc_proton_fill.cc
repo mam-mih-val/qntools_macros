@@ -346,7 +346,7 @@ void run8_mc_proton_fill( std::string list,
   }), {"x1", "trProtonWeight", "samples", "centrality", "trProtonY", "trPt" } );
 
   
-  auto file_out = std::unique_ptr<TFile, std::function<void(TFile*)> >{ TFile::Open( "corr.root", "WRITE"), [](auto f){ f->Close(); } };
+  auto file_out = std::unique_ptr<TFile, std::function<void(TFile*)> >{ TFile::Open( "corr.root", "RECREATE"), [](auto f){ f->Close(); } };
   file_out->cd();
   x1_corr->Write( "proton.x1" );
 
