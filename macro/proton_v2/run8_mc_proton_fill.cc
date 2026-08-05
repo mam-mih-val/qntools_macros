@@ -338,11 +338,17 @@ void run8_mc_proton_fill( std::string list,
   ;
 
   auto sampled_d = Qn::Correlation::Resample(dd, 100);
-  auto x1_corr = sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float >( CorrelationHelper(std::vector<Qn::AxisD>{
-    Qn::AxisD{ "centrality", 6, 0, 60 }
-  }), {"x1", "trProtonWeight", "samples", "centrality" } );
+  auto x1_corr = sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >( CorrelationHelper(std::vector<Qn::AxisD>{
+    Qn::AxisD{ "centrality", 6, 0, 60 },
+    Qn::AxisD{ "y", 6, 0.0, 1.2 },
+    Qn::AxisD{ "pT", 5, 0.0, 2.0 },
 
-  x1_corr->Print();
+  }), {"x1", "trProtonWeight", "samples", "centrality", "trProtonY", "trPt" } );
+
+  
+  auto file_out = std::unique_ptr<TFile, std::function<void(TFile*)> >{ TFile::Open( "corr.root", "WRITE"), [](auto f){ f->Close(); } };
+  file_out->cd();
+  x1_corr->Write( "proton.x1" );
 
   auto n_events_filtered = *(dd.Count());
   std::cout << "Number of filtered events: " << n_events_filtered << std::endl;
