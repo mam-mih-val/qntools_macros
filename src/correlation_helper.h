@@ -17,7 +17,10 @@ public:
   CorrelationHelper( std::vector< Qn::AxisD > vec_axes, size_t n_samples=100 ) : 
   final_result_{ new Qn::DataContainerStatCollect(vec_axes) },
   thread_results_{ std::vector<Qn::DataContainerStatCollect>{} }{
-    final_result_->SetNumberOfSamples(n_samples);
+    for( auto i=size_t{0}; i<final_result_->size(); ++i ){
+      final_result_->at(i)->operator[](i).SetNumberOfSamples(n_samples);
+    }
+
     const auto n_slots = ROOT::IsImplicitMTEnabled() ? ROOT::GetThreadPoolSize() : 1;
     thread_results_.reserve( n_slots );
     for( auto i=size_t{}; i<n_slots; ++i ){
@@ -60,8 +63,7 @@ private:
       auto val = vec_val.at(i);
       auto weight = vec_weights.at(i);
       auto coord = FormCoordinates( i, coordinates... );
-      auto lin_idx = thread_results_[slot].GetLinearIndex( coord );
-      thread_results_[slot][lin_idx].Fill( val, weight, vec_samples );
+      thread_results_[slot][coord].Fill( val, weight, vec_samples );
     }
   }
   template<typename T, typename... ColumnTypes>
