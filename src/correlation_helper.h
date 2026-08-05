@@ -63,7 +63,8 @@ private:
       auto val = vec_val.at(i);
       auto weight = vec_weights.at(i);
       auto coord = FormCoordinates( i, coordinates... );
-      thread_results_[slot][ coord ].Fill( val, weight, vec_samples );
+      auto bin = thread_results_[slot].FindBin( coord );
+      thread_results_[slot][ bin ].Fill( val, weight, vec_samples );
     }
   }
   template<typename T, typename... ColumnTypes>
