@@ -4,12 +4,16 @@
 #include <ROOT/RDataFrame.hxx>
 #include <memory>
 #include <vector>
+#include <cmath>
 #include <type_traits>
 #include <DataContainer.hpp>
 #include <Axis.hpp>
 
 class CorrelationHelper :  public ROOT::Detail::RDF::RActionImpl<CorrelationHelper>{
 public:
+   /// This type is a requirement for every helper.
+  using Result_t = Qn::DataContainerStatCalculate;
+
   CorrelationHelper( std::vector< Qn::AxisD > vec_axes ) : 
   final_result_{ new Qn::DataContainerStatCollect(vec_axes) },
   thread_results_{ std::vector<Qn::DataContainerStatCollect>{} }{
