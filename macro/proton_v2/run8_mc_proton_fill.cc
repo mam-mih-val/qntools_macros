@@ -26,7 +26,7 @@ const auto u_generator( size_t harmonic, std::function< double(double) > compone
   };
 }
 
-const auto cov_generator( size_t h_a, std::function< double(double) > c_a, size_t h_b, std::function< double(T) > c_b ){
+const auto cov_generator( size_t h_a, std::function< double(double) > c_a, size_t h_b, std::function< double(double) > c_b ){
   return [h_a, h_b, &c_a, &c_b]( std::vector<float> vec_phi ){
     auto vec_results = std::vector<double>{};
     vec_results.reserve(vec_phi.size());
