@@ -14,9 +14,10 @@ public:
    /// This type is a requirement for every helper.
   using Result_t = Qn::DataContainerStatCollect;
 
-  CorrelationHelper( std::vector< Qn::AxisD > vec_axes ) : 
+  CorrelationHelper( std::vector< Qn::AxisD > vec_axes, size_t n_samples=100 ) : 
   final_result_{ new Qn::DataContainerStatCollect(vec_axes) },
   thread_results_{ std::vector<Qn::DataContainerStatCollect>{} }{
+    final_result_.SetNumberOfSamples(n_samples);
     const auto n_slots = ROOT::IsImplicitMTEnabled() ? ROOT::GetThreadPoolSize() : 1;
     thread_results_.reserve( n_slots );
     for( auto i=size_t{}; i<n_slots; ++i ){
@@ -35,7 +36,9 @@ public:
   void InitTask(TTreeReader *, unsigned int) {}
 
   template <typename... ColumnTypes>
-  void Exec(unsigned int slot, ColumnTypes... values){ Execute(slot, values...); }
+  void Exec(unsigned int slot, ColumnTypes... values){ 
+    Execute(slot, values...); 
+  }
 
   void Finalize(){
     auto list = TList();
