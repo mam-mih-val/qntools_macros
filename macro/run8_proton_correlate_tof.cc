@@ -286,12 +286,12 @@ void run8_proton_correlate_tof(string inputFiles="qn.root", string outputFile="c
   // }
 
 
-  for ( auto &corr: arr_u1u1Q1Q1 )
-  {
-    string corrName=corr.at(0)+"."+corr.at(1)+"."+corr.at(2)+"."+corr.at(3);
-    // diagonal/non-zero
-    corrBuilder.AddCorrelationWithInternalReader(corrName+".y1y1y1y1", P4::yyyy(1, 1, 1, 1), wSumWu1Wu24part, wy, corr, corr);
-  }
+  // for ( auto &corr: arr_u1u1Q1Q1 )
+  // {
+  //   string corrName=corr.at(0)+"."+corr.at(1)+"."+corr.at(2)+"."+corr.at(3);
+  //   // diagonal/non-zero
+  //   corrBuilder.AddCorrelationWithInternalReader(corrName+".y1y1y1y1", P4::yyyy(1, 1, 1, 1), wSumWu1Wu24part, wy, corr, corr);
+  // }
 
 
   // ---------------- //
