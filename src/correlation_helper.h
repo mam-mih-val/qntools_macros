@@ -10,10 +10,9 @@
 
 class CorrelationHelper :  public ROOT::Detail::RDF::RActionImpl<CorrelationHelper>{
 public:
-  CorrelationHelper( std::vector< Qn::AxisD > vec_axes, Function action ) : 
-  final_result_{ new Qn::DataContaierStatCalculate(vec_axes) },
-  thread_results_{ std::vector<Qn::DataContainerStatCollect>{} },
-  action_(std::move(action)){
+  CorrelationHelper( std::vector< Qn::AxisD > vec_axes ) : 
+  final_result_{ new Qn::DataContainerStatCollect(vec_axes) },
+  thread_results_{ std::vector<Qn::DataContainerStatCollect>{} }{
     const auto n_slots = ROOT::IsImplicitMTEnabled() ? ROOT::GetThreadPoolSize() : 1;
     thread_results_.reserve( n_slots );
     for( auto i=size_t{}; i<n_slots; ++i ){
