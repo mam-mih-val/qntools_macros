@@ -12,7 +12,7 @@
 class CorrelationHelper :  public ROOT::Detail::RDF::RActionImpl<CorrelationHelper>{
 public:
    /// This type is a requirement for every helper.
-  using Result_t = Qn::DataContainerStatCalculate;
+  using Result_t = Qn::DataContainerStatCollect;
 
   CorrelationHelper( std::vector< Qn::AxisD > vec_axes ) : 
   final_result_{ new Qn::DataContainerStatCollect(vec_axes) },
