@@ -11,6 +11,7 @@
 #include <vector>
 
 #include <DataContainer.hpp>
+#include <QnDataFrame.hpp>
 #include "correlation_helper.h"
 
 template<typename Func>
