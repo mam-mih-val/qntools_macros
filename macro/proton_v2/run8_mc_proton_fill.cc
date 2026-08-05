@@ -212,7 +212,7 @@ void run8_mc_proton_fill( std::string list,
 
   const auto proton_weight = []( 
     std::vector<int> vec_is_proton, 
-    std::vector<int> vec_efficiency, 
+    std::vector<float> vec_efficiency, 
     std::vector<int> has_any_tof_hit,
     std::vector<float> vec_r,
     ROOT::VecOps::RVec<int> vec_nhits,
