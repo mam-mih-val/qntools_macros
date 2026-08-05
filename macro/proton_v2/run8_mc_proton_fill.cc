@@ -16,7 +16,7 @@
 #include "correlation_helper.h"
 
 const auto u_generator( size_t harmonic, std::function< double(double) > component ){
-  return [harmonic, &component]( std::vector<float> vec_phi ){
+  return [harmonic, component]( std::vector<float> vec_phi ){
     auto vec_results = std::vector<double>{};
     vec_results.reserve(vec_phi.size());
     for( auto phi : vec_phi ){
@@ -27,7 +27,7 @@ const auto u_generator( size_t harmonic, std::function< double(double) > compone
 }
 
 const auto cov_generator( size_t h_a, std::function< double(double) > c_a, size_t h_b, std::function< double(double) > c_b ){
-  return [h_a, h_b, &c_a, &c_b]( std::vector<float> vec_phi ){
+  return [h_a, h_b, c_a, c_b]( std::vector<float> vec_phi ){
     auto vec_results = std::vector<double>{};
     vec_results.reserve(vec_phi.size());
     for( auto phi : vec_phi ){
@@ -331,7 +331,7 @@ void run8_mc_proton_fill( std::string list,
     .Define( "trIsProton", tr_is_particle, {"trSimIndex", "simIsProton"} )
     .Define( "trProtonWeight", proton_weight, {"trIsProton", "trProtonEfficiency", "trHasAnyTofHit", "trDcaR", "trStsNhits", "trStsChi2", "trFhcalX", "trFhcalY"} )
 
-    .Define( "x1", u_generator(1, std::cos), {"trPhi"} )
+    .Define( "x1", u_generator(1, [](double x){ std::cos(x); }), {"trPhi"} )
     // .Range( 1000 )
 
     .Filter("vtxNtracks > 2")      
