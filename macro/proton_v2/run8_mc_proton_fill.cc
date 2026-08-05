@@ -9,13 +9,14 @@
 #include <memory>
 #include <random>
 #include <vector>
+#include <functional>
 
 #include <DataContainer.hpp>
 #include <QnDataFrame.hpp>
 #include "correlation_helper.h"
 
-template<typename Func>
-const auto u_generator( size_t harmonic, Func component ){
+template<typename T>
+const auto u_generator( size_t harmonic, std::function< double(T) > component ){
   return [harmonic, &component]( std::vector<float> vec_phi ){
     auto vec_results = std::vector<double>{};
     vec_results.reserve(vec_phi.size());
@@ -26,8 +27,8 @@ const auto u_generator( size_t harmonic, Func component ){
   };
 }
 
-template<typename Func>
-const auto cov_generator( size_t h_a, Func c_a, size_t h_b, Func c_b ){
+template<typename T>
+const auto cov_generator( size_t h_a, std::function< double(T) > c_a, size_t h_b, std::function< double(T) > c_b ){
   return [h_a, h_b, &c_a, &c_b]( std::vector<float> vec_phi ){
     auto vec_results = std::vector<double>{};
     vec_results.reserve(vec_phi.size());
