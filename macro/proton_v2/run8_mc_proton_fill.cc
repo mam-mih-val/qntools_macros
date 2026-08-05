@@ -338,7 +338,7 @@ void run8_mc_proton_fill( std::string list,
   ;
 
   auto sampled_d = Qn::Correlation::Resample(dd, 100);
-  auto x1_corr = sampled_d.Book< std::vector<double>, std::vector<double>, double >( CorrelationHelper(std::vector<Qn::AxisD>{
+  auto x1_corr = sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, double >( CorrelationHelper(std::vector<Qn::AxisD>{
     Qn::AxisD{ "centrality", 6, 0, 60 }
   }), {"x1", "trProtonWeight", "samples", "centrality" } );
 
