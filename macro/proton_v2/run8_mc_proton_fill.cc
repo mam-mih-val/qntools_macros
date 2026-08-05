@@ -15,7 +15,7 @@
 
 template<typename Func>
 const auto u_genarator( size_t harmonic, const Func& component ){
-  return [harmonic, component]( std::vector<float> vec_phi ){
+  return [harmonic, &component]( std::vector<float> vec_phi ){
     auto vec_results = std::vector<double>{};
     vec_results.reserve(vec_phi.size());
     for( auto phi : vec_phi ){
@@ -210,7 +210,7 @@ void run8_mc_proton_fill( std::string list,
     };
   };
 
-  const auto proton_weight = ( 
+  const auto proton_weight = []( 
     std::vector<int> vec_is_proton, 
     std::vector<int> vec_efficiency, 
     std::vector<int> has_any_tof_hit,
