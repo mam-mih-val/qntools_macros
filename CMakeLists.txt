@@ -47,8 +47,14 @@ target_link_libraries( correlate PRIVATE ROOT::RIO ROOT::Geom QnTools::DataFrame
 set( THIS_SRC_PATH ${CMAKE_SOURCE_DIR}/src )
 set( QNTOOLS_BASE_PATH ${QnTools_INCLUDE_DIR}/../lib/libQnToolsBase )
 set( QNTOOLS_CORR_PATH ${QnTools_INCLUDE_DIR}/../lib/libQnToolsCorrection )
+
 configure_file(src/decompose.cc.in ${CMAKE_SOURCE_DIR}/src/decompose.cc @ONLY)
 add_executable( decompose src/decompose.cc )
 set_target_properties( decompose PROPERTIES LINKER_LANGUAGE CXX)
 target_link_libraries( decompose PRIVATE ROOT::RIO ROOT::Tree ROOT::Geom ROOT::ROOTDataFrame QnTools::Base Eigen3::Eigen )
+
+configure_file(src/build_qvectors.cc.in ${CMAKE_SOURCE_DIR}/src/build_qvectors.cc @ONLY)
+add_executable( build_qvectors src/build_qvectors.cc )
+set_target_properties( build_qvectors PROPERTIES LINKER_LANGUAGE CXX)
+target_link_libraries( build_qvectors PRIVATE ROOT::RIO ROOT::Tree ROOT::Geom ROOT::ROOTDataFrame QnTools::Base )
 
