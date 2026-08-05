@@ -15,7 +15,8 @@
 #include <QnDataFrame.hpp>
 #include "correlation_helper.h"
 
-const auto u_generator( size_t harmonic, std::function< double(double) > component ){
+template<typename Func>
+const auto u_generator( size_t harmonic, Func component ){
   return [harmonic, component]( std::vector<float> vec_phi ){
     auto vec_results = std::vector<double>{};
     vec_results.reserve(vec_phi.size());
