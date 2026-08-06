@@ -1,12 +1,6 @@
 #ifndef BMN_ENV_H
 #define BMN_ENV_H
 
-const float PROTON_M = 0.938; // GeV/c2
-const float PI_POS_M = 0.134;
-const float DEUTERON_M = 1.875;  
-const float Y_CM = 1.15141;
-const float FHCAL_Z = 980; // cm
-
 const auto rapidity_generator = []( auto particle_m, auto y_cm ){
   return 
   [particle_m, y_cm]( std::vector<float> vec_pz, std::vector<float> vec_pq ){
@@ -226,7 +220,14 @@ std::vector<int> f4_modules = {
 };
 
 template<typename DataFrame>
-const auto GenerateBmnExtendedTree(const DataFrame& d, TH3* efficiency_histo){
+const auto GenerateBmnExtendedTree(DataFrame& d, TH3* efficiency_histo){
+
+  const float PROTON_M = 0.938; // GeV/c2
+  const float PI_POS_M = 0.134;
+  const float DEUTERON_M = 1.875;  
+  const float Y_CM = 1.15141;
+  const float FHCAL_Z = 980; // cm
+
   auto dd=d
     .Define("track_multiplicity", "return static_cast<double>(trMom.size());")
     .Define("centrality", centrality_function, {"track_multiplicity"} )
@@ -251,10 +252,8 @@ const auto GenerateBmnExtendedTree(const DataFrame& d, TH3* efficiency_histo){
     .Define( "trHasTof700Hit", tr_has_tof_hit, { "trBetaTof700" } )
     .Define( "trHasAnyTofHit", tr_has_any_tof_hit, { "trHasTof400Hit", "trHasTof700Hit" } )
 
-
     .Alias("trStsNhits", "stsTrackNhits")
     .Alias("trStsChi2", "stsTrackChi2Ndf")
-
 
     .Define( "simP", "std::vector<float> simP; for( auto mom : simMom ){ simP.push_back( mom.P() ); } return simP; " )
     .Define( "simPt", "std::vector<float> simPt; for( auto mom : simMom ){ simPt.push_back( mom.Pt() ); } return simPt; " )

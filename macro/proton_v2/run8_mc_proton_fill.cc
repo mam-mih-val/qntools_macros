@@ -62,6 +62,7 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
   ;
 
   auto sampled_d = Qn::Correlation::Resample(dd, 100);
+  sampled_d = sampled_d.Define( "x1", u_generator(1, [](double x){ return std::cos(x); }), {"trPhi"} );
   auto x1_corr = sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >( CorrelationHelper(std::vector<Qn::AxisD>{
     Qn::AxisD{ "centrality", 6, 0, 60 },
     Qn::AxisD{ "y", 6, 0.0, 1.2 },
