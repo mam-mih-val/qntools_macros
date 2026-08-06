@@ -27,7 +27,7 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
     Qn::AxisD{ "y", 6, 0.0, 1.2 },
     Qn::AxisD{ "pT", 5, 0.0, 2.0 },
   };
-  auto harmonics = std::vector<size_t>(10);
+  auto harmonics = std::vector<size_t>(20);
   std::iota( harmonics.begin(), harmonics.end(), 1 );
 
   std::unique_ptr<TFile> effieciency_file{TFile::Open( str_effieciency_file.c_str(), "READ" )};
@@ -52,10 +52,20 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
   auto sampled_d = Qn::Correlation::Resample(dd, 100);
 
   auto p_components_names = AddUVector(sampled_d, "proton", harmonics, "trPhi" );
+  auto p_cov_names = AddUVectorCovariance(sampled_d, "proton", harmonics, "trPhi" );
 
   auto p_components_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
+  auto p_cov_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
   p_components_ptr.reserve( p_components_names.size() );
+  p_cov_ptr.reserve( p_cov_names.size() );
+
   for( const auto& name : p_components_names ){
+    p_components_ptr.emplace_back(
+      sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >( CorrelationHelper(proton_axes), {name, "trProtonWeight", "samples", "centrality", "trProtonY", "trPt" } )
+    ); 
+  }
+
+  for( const auto& name : p_cov_names ){
     p_components_ptr.emplace_back(
       sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >( CorrelationHelper(proton_axes), {name, "trProtonWeight", "samples", "centrality", "trProtonY", "trPt" } )
     ); 
@@ -64,6 +74,7 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
   auto file_out = std::unique_ptr<TFile, std::function<void(TFile*)> >{ TFile::Open( "corr.root", "RECREATE"), [](auto f){ f->Close(); } };
   file_out->cd();
   std::for_each( p_components_ptr.begin(), p_components_ptr.end(), [i=0, &p_components_names]( auto& p ) mutable { p->Write( p_components_names.at(i).c_str() ); ++i; } );
+  std::for_each( p_cov_ptr.begin(), p_cov_ptr.end(), [i=0, &p_cov_names]( auto& p ) mutable { p->Write( p_components_names.at(i).c_str() ); ++i; } );
 
   auto n_events_filtered = *(dd.Count());
   std::cout << "Number of filtered events: " << n_events_filtered << std::endl;
