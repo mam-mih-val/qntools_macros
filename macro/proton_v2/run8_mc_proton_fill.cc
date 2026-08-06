@@ -53,7 +53,7 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
 
   auto p_components_names = AddUVector(sampled_d, "proton", harmonics, "trPhi" );
 
-  auto p_components_ptr = std::vector< ROOT::RDF::RResultPtr<< Qn::DataContainerStatCollect > >{};
+  auto p_components_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
   p_components_ptr.reserve( p_components_names.size() );
   for( const auto& name : p_components_names ){
     p_components_ptr.emplace_back(
