@@ -67,8 +67,8 @@ auto AddUVectorCovariance( DataFrame& df, const std::string& vector_name, const 
       vec_defined.push_back( xy_name );
       vec_defined.push_back( yy_name );
     }
-    return vec_defined;
   }
+  return vec_defined;
 }
 
 
