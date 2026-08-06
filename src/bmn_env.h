@@ -225,7 +225,8 @@ std::vector<int> f4_modules = {
   42,                     53
 };
 
-const auto GenerateBmnExtendedTree(const auto& d, auto efficiency_histo){
+template<typename DataFrame>
+const auto GenerateBmnExtendedTree(const DataFrame& d, TH3* efficiency_histo){
   auto dd=d
     .Define("track_multiplicity", "return static_cast<double>(trMom.size());")
     .Define("centrality", centrality_function, {"track_multiplicity"} )
@@ -265,8 +266,6 @@ const auto GenerateBmnExtendedTree(const auto& d, auto efficiency_histo){
     
     .Define( "trIsProton", tr_is_particle, {"trSimIndex", "simIsProton"} )
     .Define( "trProtonWeight", proton_weight, {"trIsProton", "trProtonEfficiency", "trHasAnyTofHit", "trDcaR", "trStsNhits", "trStsChi2", "trFhcalX", "trFhcalY"} )
-
-    .Define( "x1", u_generator(1, [](double x){ return std::cos(x); }), {"trPhi"} )
     // .Range( 1000 )
 
     .Filter("vtxNtracks > 2")
