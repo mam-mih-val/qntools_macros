@@ -66,7 +66,7 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
   }
 
   for( const auto& name : p_cov_names ){
-    p_components_ptr.emplace_back(
+    p_cov_ptr.emplace_back(
       sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >( CorrelationHelper(proton_axes), {name, "trProtonWeight", "samples", "centrality", "trProtonY", "trPt" } )
     ); 
   }
