@@ -17,9 +17,9 @@ const auto rapidity_generator = []( auto particle_m, auto y_cm ){
   };
 };
 
-const auto function_fhcal_x = 
-[FHCAL_Z]
-( ROOT::VecOps::RVec<std::vector<float>> vec_param ){
+
+const auto function_fhcal_x = []( const float FHCAL_Z ){
+  return [FHCAL_Z]( ROOT::VecOps::RVec<std::vector<float>> vec_param ){
     std::vector<float> vec_x{};
     vec_x.reserve( vec_param.size() );
     for( auto par : vec_param ){
@@ -32,9 +32,9 @@ const auto function_fhcal_x =
     }
     return vec_x;
   };
-const auto function_fhcal_y = 
-[FHCAL_Z]
-( ROOT::VecOps::RVec<vector<float>> vec_param ){
+};
+const auto function_fhcal_y = []( const float FHCAL_Z ){
+  return [FHCAL_Z]( ROOT::VecOps::RVec<vector<float>> vec_param ){
     std::vector<float> vec_y{};
     vec_y.reserve( vec_param.size() );
     for( auto par : vec_param ){
@@ -47,7 +47,7 @@ const auto function_fhcal_y =
     }
     return vec_y;
   };
-
+};
 const auto centrality_function = 
 []
 (double multiplicity){
@@ -238,8 +238,8 @@ const auto GenerateBmnExtendedTree(DataFrame& d, TH3* efficiency_histo){
     .Define( "trDcaX", " std::vector<float> vec_par; for( auto par : globalTrackParameters ){ vec_par.push_back( par.at(0) - vtxX ); } return vec_par; " )
     .Define( "trDcaY", " std::vector<float> vec_par; for( auto par : globalTrackParameters ){ vec_par.push_back( par.at(1) - vtxY ); } return vec_par; " )
     .Define( "trDcaR", dca_function, {"trDcaX", "trDcaY"} )
-    .Define( "trFhcalX", function_fhcal_x, {"trParamLast"} )
-    .Define( "trFhcalY", function_fhcal_y, {"trParamLast"} )
+    .Define( "trFhcalX", function_fhcal_x(FHCAL_Z), {"trParamLast"} )
+    .Define( "trFhcalY", function_fhcal_y(FHCAL_Z), {"trParamLast"} )
     .Define( "trChi2Ndf", " std::vector<float> vec_par; for( int i=0; i<trChi2.size(); ++i ){ vec_par.push_back( trChi2.at(i)/trNdf.at(i) ); } return vec_par; " )
     .Define( "trPx", " std::vector<float> px; for( auto mom : trMom ){ px.push_back( mom.Px() ); } return px; " )
     .Define( "trPy", " std::vector<float> py; for( auto mom : trMom ){ py.push_back( mom.Py() ); } return py; " )
