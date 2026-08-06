@@ -33,8 +33,8 @@ auto AddUVector( DataFrame& df, const std::string& vector_name, const std::vecto
   auto vec_defined = std::vector<std::string>{};
   vec_defined.reserve( harmonics.size() *2 );
   for( const auto& harm : harmonics ){
-    auto x_name = std::string{vector_name}.append(".x").append(std::to_string(harm));
-    auto y_name = std::string{vector_name}.append(".x").append(std::to_string(harm));
+    auto x_name = std::string{vector_name}.append("_x").append(std::to_string(harm));
+    auto y_name = std::string{vector_name}.append("_y").append(std::to_string(harm));
     df = df.Define( x_name, u_generator(harm, []( double phi ) { return std::cos(phi); } ), std::vector<std::string>{ phi_variable_name } );
     df = df.Define( y_name, u_generator(harm, []( double phi ) { return std::sin(phi); } ), std::vector<std::string>{ phi_variable_name } );
     vec_defined.push_back(x_name);
@@ -52,10 +52,10 @@ auto AddUVectorCovariance( DataFrame& df, const std::string& vector_name, const 
     for( auto j=size_t{i}; j < harmonics.size(); ++j  ){
       auto h_b = harmonics[j];
       
-      auto xx_name = std::string{vector_name}.append(".x").append(std::to_string(h_a)).append("x").append(std::to_string(h_b));
-      auto yx_name = std::string{vector_name}.append(".y").append(std::to_string(h_a)).append("x").append(std::to_string(h_b));
-      auto xy_name = std::string{vector_name}.append(".x").append(std::to_string(h_a)).append("y").append(std::to_string(h_b));
-      auto yy_name = std::string{vector_name}.append(".y").append(std::to_string(h_a)).append("y").append(std::to_string(h_b));
+      auto xx_name = std::string{vector_name}.append("_x").append(std::to_string(h_a)).append("x").append(std::to_string(h_b));
+      auto yx_name = std::string{vector_name}.append("_y").append(std::to_string(h_a)).append("x").append(std::to_string(h_b));
+      auto xy_name = std::string{vector_name}.append("_x").append(std::to_string(h_a)).append("y").append(std::to_string(h_b));
+      auto yy_name = std::string{vector_name}.append("_y").append(std::to_string(h_a)).append("y").append(std::to_string(h_b));
       
       df = df.Define( xx_name, cov_generator(h_a, []( double phi ) { return std::cos(phi); }, h_b, []( double phi ) { return std::cos(phi); } ), std::vector<std::string>{ phi_variable_name } );
       df = df.Define( yx_name, cov_generator(h_a, []( double phi ) { return std::sin(phi); }, h_b, []( double phi ) { return std::cos(phi); } ), std::vector<std::string>{ phi_variable_name } );
