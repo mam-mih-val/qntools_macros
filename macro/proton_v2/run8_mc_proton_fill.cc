@@ -2,6 +2,7 @@
 // Created by Misha on 3/7/2023.
 //
 
+#include <algorithm>
 #include <cassert>
 #include <cmath>
 #include <exception>
@@ -15,32 +16,19 @@
 #include <QnDataFrame.hpp>
 #include "correlation_helper.h"
 #include "bmn_env.h"
-
-const auto u_generator( size_t harmonic, std::function< double(double) > component ){
-  return [harmonic, component]( std::vector<float> vec_phi ){
-    auto vec_results = std::vector<double>{};
-    vec_results.reserve(vec_phi.size());
-    for( auto phi : vec_phi ){
-      vec_results.push_back( component( harmonic*phi ) );
-    }
-    return vec_results;
-  };
-}
-
-const auto cov_generator( size_t h_a, std::function< double(double) > c_a, size_t h_b, std::function< double(double) > c_b ){
-  return [h_a, h_b, c_a, c_b]( std::vector<float> vec_phi ){
-    auto vec_results = std::vector<double>{};
-    vec_results.reserve(vec_phi.size());
-    for( auto phi : vec_phi ){
-      vec_results.push_back( c_a( h_a*phi ) * c_b( h_b*phi )  );
-    }
-    return vec_results;
-  };
-}
+#include "vector_generators.h"
 
 void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
 
   std::cout << "starting execution" << std::endl;
+
+  auto proton_axes = std::vector<Qn::AxisD>{
+    Qn::AxisD{ "centrality", 6, 0, 60 },
+    Qn::AxisD{ "y", 6, 0.0, 1.2 },
+    Qn::AxisD{ "pT", 5, 0.0, 2.0 },
+  };
+  auto harmonics = std::vector<size_t>(10);
+  std::iota( harmonics.begin(), harmonics.end(), 1 );
 
   std::unique_ptr<TFile> effieciency_file{TFile::Open( str_effieciency_file.c_str(), "READ" )};
   TH3* efficiency_histo{nullptr};
@@ -62,18 +50,20 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
   ;
 
   auto sampled_d = Qn::Correlation::Resample(dd, 100);
-  sampled_d = sampled_d.Define( "x1", u_generator(1, [](double x){ return std::cos(x); }), {"trPhi"} );
-  auto x1_corr = sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >( CorrelationHelper(std::vector<Qn::AxisD>{
-    Qn::AxisD{ "centrality", 6, 0, 60 },
-    Qn::AxisD{ "y", 6, 0.0, 1.2 },
-    Qn::AxisD{ "pT", 5, 0.0, 2.0 },
 
-  }), {"x1", "trProtonWeight", "samples", "centrality", "trProtonY", "trPt" } );
+  auto p_components_names = AddUVector(sampled_d, "proton", harmonics, "trPhi" );
 
-  
+  auto p_components_ptr = std::vector< ROOT::RResultPtr<Qn::DataContainerStatCollect >{};
+  p_components_ptr.reserve( p_components_names.size() );
+  for( const auto& name : p_components_names ){
+    p_components_ptr.emplace_back(
+      sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >( CorrelationHelper(proton_axes), {name, "trProtonWeight", "samples", "centrality", "trProtonY", "trPt" } );
+    ); 
+  }
+
   auto file_out = std::unique_ptr<TFile, std::function<void(TFile*)> >{ TFile::Open( "corr.root", "RECREATE"), [](auto f){ f->Close(); } };
   file_out->cd();
-  x1_corr->Write( "proton.x1" );
+  std::for_each( p_components_ptr.begin(), p_components_ptr.end(), [i=0, &p_components_names]( const auto& p ) mutable { p->Write( p_components_names.at(i).c_str() ); ++i; } );
 
   auto n_events_filtered = *(dd.Count());
   std::cout << "Number of filtered events: " << n_events_filtered << std::endl;
