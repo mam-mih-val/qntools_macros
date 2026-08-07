@@ -109,17 +109,17 @@ template<typename DataFrame, typename Func>
 auto Define2PartCorrelation( DataFrame& df, Func corr_func, const std::string& first_name, const std::string& second_name, const std::vector< std::pair<size_t, size_t> >& harmonics  ) -> std::vector<std::string> {
   auto vec_res_names = std::vector<std::string>{};
   vec_res_names.reserve( 4*harmonics.size() );
-  for( auto h_pair : harmonics ){
-    auto h1 = h_pair.first();
-    auto h2 = h_pair.second();
+  for( const auto& h_pair : harmonics ){
+    auto h1 = h_pair.first;
+    auto h2 = h_pair.second;
     auto correlation_name = std::string{first_name}.append("_").append(second_name);
     auto component_names = std::vector<std::string>(4);
-    auto component_names[0] = std::string{correlation_name}.append("_x").append(std::to_string(h1)).append("x").append(std::to_string(h2));
-    auto component_names[1] = std::string{correlation_name}.append("_y").append(std::to_string(h1)).append("x").append(std::to_string(h2));
-    auto component_names[2] = std::string{correlation_name}.append("_x").append(std::to_string(h1)).append("y").append(std::to_string(h2));
-    auto component_names[3] = std::string{correlation_name}.append("_y").append(std::to_string(h1)).append("y").append(std::to_string(h2));
+    component_names[0] = std::string{correlation_name}.append("_x").append(std::to_string(h1)).append("x").append(std::to_string(h2));
+    component_names[1] = std::string{correlation_name}.append("_y").append(std::to_string(h1)).append("x").append(std::to_string(h2));
+    component_names[2] = std::string{correlation_name}.append("_x").append(std::to_string(h1)).append("y").append(std::to_string(h2));
+    component_names[3] = std::string{correlation_name}.append("_y").append(std::to_string(h1)).append("y").append(std::to_string(h2));
 
-    if constexp ( std::is_floating_point_v<typename std::decay_t<Func>::First_t> ){
+    if constexpr ( std::is_floating_point_v<typename std::decay_t<Func>::First_t> ){
       df = df.Define( component_names[0], [h1, h2]( typename std::decay_t<Func>::First_t first, typename std::decay_t<Func>::Second_t second ){ return first[h1].x*second[h2].x; } );
       df = df.Define( component_names[1], [h1, h2]( typename std::decay_t<Func>::First_t first, typename std::decay_t<Func>::Second_t second ){ return first[h1].y*second[h2].x; } );
       df = df.Define( component_names[2], [h1, h2]( typename std::decay_t<Func>::First_t first, typename std::decay_t<Func>::Second_t second ){ return first[h1].x*second[h2].y; } );

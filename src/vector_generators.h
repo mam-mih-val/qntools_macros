@@ -9,8 +9,8 @@
 
 #include <QVector.hpp>
 
-using qvector_t = std::map< size_t, Qn::Qvec >;
-using uvector_t = std::vector<std::map< size_t, Qn::Qvec >>;
+using qvector_t = std::map< size_t, Qn::QVec >;
+using uvector_t = std::vector<std::map< size_t, Qn::QVec >>;
 
 inline const auto u_generator( size_t harmonic, std::function< double(double) > component ){
   return [harmonic, component]( std::vector<float> vec_phi ){
