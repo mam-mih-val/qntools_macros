@@ -3,10 +3,16 @@
 
 #include <string>
 #include <vector>
+#include <functional>
+#include <map>
 #include <cmath>
 
+#include <QVector.hpp>
 
-const auto u_generator( size_t harmonic, std::function< double(double) > component ){
+using qvector_t = std::map< size_t, Qn::Qvec >;
+using uvector_t = std::vector<std::map< size_t, Qn::Qvec >>;
+
+inline const auto u_generator( size_t harmonic, std::function< double(double) > component ){
   return [harmonic, component]( std::vector<float> vec_phi ){
     auto vec_results = std::vector<double>{};
     vec_results.reserve(vec_phi.size());
@@ -17,7 +23,7 @@ const auto u_generator( size_t harmonic, std::function< double(double) > compone
   };
 }
 
-const auto cov_generator( size_t h_a, std::function< double(double) > c_a, size_t h_b, std::function< double(double) > c_b ){
+inline const auto cov_generator( size_t h_a, std::function< double(double) > c_a, size_t h_b, std::function< double(double) > c_b ){
   return [h_a, h_b, c_a, c_b]( std::vector<float> vec_phi ){
     auto vec_results = std::vector<double>{};
     vec_results.reserve(vec_phi.size());
@@ -28,8 +34,71 @@ const auto cov_generator( size_t h_a, std::function< double(double) > c_a, size_
   };
 }
 
+template<typename T>
+inline const auto u_vector( const std::vector<size_t>& harmonics ){
+  return [&harmonics]( T vec_phi ){
+    auto vec_results = uvector_t{};
+    vec_results.reserve(vec_phi.size());
+    for( auto phi : vec_phi ){
+      vec_results.emplace_back();
+      vec_results.back().reserve( harmonics.size() );
+      for( auto n : harmonics ){
+        vec_results.back()[n] = Qn::QVec{ cos(n*phi), sin(n*phi) };
+      }
+    }
+    return vec_results;
+  };
+}
+
+template<typename T>
+inline const auto psi_rp_vector( const std::vector<size_t>& harmonics ){
+  return [&harmonics]( T psi_rp ){
+    auto result = qvector_t;
+    result.reserve( harmonics.size() );
+    for( auto n : harmonics ){
+      result[n] = Qn::QVec{ cos(n*psi_rp), sin(n*psi_rp) };
+    }
+    return result;
+  };
+}
+
+template<typename DataFrame, typename Func>
+void DefineVector( DataFrame& df, const std::string& vec_name, const std::string& phi_name, Func defining_function ){
+  df = df.Define( vec_name, defining_function, std::vector<std::string>{phi_name} );
+}
+
+inline const auto ux_generator( const std::vector<size_t>& harmonics ){
+  return [&harmonics]( std::vector<float> vec_phi ){
+    auto vec_results = std::vector< std::vector<double> >{};
+    vec_results.reserve(vec_phi.size());
+    for( auto phi : vec_phi ){
+      vec_results.emplace_back();
+      vec_results.back().reserve( harmonics.size() );
+      for( auto h : harmonics ){
+        vec_results.back().push_back( cos( h *phi ) );
+      }
+    }
+    return vec_results;
+  };
+}
+
+inline const auto uy_generator( const std::vector<size_t>& harmonics ){
+  return [&harmonics]( std::vector<float> vec_phi ){
+    auto vec_results = std::vector< std::vector<double> >{};
+    vec_results.reserve(vec_phi.size());
+    for( auto phi : vec_phi ){
+      vec_results.emplace_back();
+      vec_results.back().reserve( harmonics.size() );
+      for( auto h : harmonics ){
+        vec_results.back().push_back( sin( h *phi ) );
+      }
+    }
+    return vec_results;
+  };
+}
+
 template<typename DataFrame>
-auto AddUVector( DataFrame& df, const std::string& vector_name, const std::vector<size_t>& harmonics, const std::string& phi_variable_name ) -> std::vector<std::string> {
+auto AddUVectorComponents( DataFrame& df, const std::string& vector_name, const std::vector<size_t>& harmonics, const std::string& phi_variable_name ) -> std::vector<std::string> {
   auto vec_defined = std::vector<std::string>{};
   vec_defined.reserve( harmonics.size() *2 );
   for( const auto& harm : harmonics ){
@@ -70,6 +139,8 @@ auto AddUVectorCovariance( DataFrame& df, const std::string& vector_name, const 
   }
   return vec_defined;
 }
+
+
 
 
 #endif // VECTOR_GENERATORS_H
