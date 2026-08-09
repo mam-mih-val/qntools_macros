@@ -183,7 +183,7 @@ private:
         j++;
       }
       auto [Minv, c] = correction_container_[coord];
-      auto Xnew = Minv( Xold - c );
+      auto Xnew = Minv*( Xold - c );
       j=0;
       result.emplace_back();
       for( auto p : old ){
