@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <bitset>
 #include <cstddef>
+#include <exception>
 #include <iostream>
 #include <functional>
 #include <iterator>
@@ -174,12 +175,11 @@ private:
       result.emplace_back();
       auto old = old_vectors.at(i);
       auto coord = FormCoordinates( i, coordinates... );
-      
-      if( coord > correction_container_.size() )
+      auto bin = correction_container_.FindBin( coord );
+      if( bin > correction_container_.size() )
         continue;
-      if( coord < 0 )
+      if( bin < 0 )
         continue;
-
       auto Xold = column_t<NHARM*2>{};
       auto j=size_t{0};
       for( auto p : old ){
@@ -189,7 +189,7 @@ private:
         Xold(2*j+1) = y;
         j++;
       }
-      auto [Minv, c] = correction_container_[coord];
+      auto [Minv, c] = correction_container_[bin];
       auto Xnew = Minv*( Xold - c );
       j=0;
       for( auto p : old ){
