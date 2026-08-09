@@ -27,8 +27,8 @@ template<size_t NDIM>
 using correction_container_t = Qn::DataContainer< std::tuple< mixing_matrix_t<NDIM>, column_t<NDIM> >, Qn::AxisD >;
 
 template<size_t NHARM>
-auto MakeWhiteningMatrixFunc() -> mixing_matrix_t<NHARM*2>{
-  return [](const std::vector<double>& vec_mean, const std::vector<double>& vec_cov){
+auto MakeWhiteningMatrixFunc() -> std::function< mixing_matrix_t<NHARM*2>(std::vector<double>, std::vector<double>) >{
+  return [](const std::vector<double>& vec_mean, const std::vector<double>& vec_cov) -> mixing_matrix_t<NHARM*2> {
     auto M = mixing_matrix_t<NHARM*2>{ mixing_matrix_t<NHARM*2>::Zero() };
     auto i = size_t {0};
     for( auto h_a = size_t{0}; h_a < NHARM; ++h_a ){
@@ -155,14 +155,14 @@ auto MakeCorrectionContainer( std::vector<Qn::DataContainerStatCalculate> vec_me
 }
 
 
-template<size_t NHAMR>
+template<size_t NHARM>
 class CorrectorBuilder{
 public:
   CorrectorBuilder(correction_container_t<NHARM*2> correction_container) :
   correction_container_{ correction_container } {}
   template<typename... Args>
   auto IssueUVectorCorrector() -> UVectorCorrector<NHARM, Args...> {
-    return UVectorCorrector<NHAMR, Args...>( correction_container_ );
+    return UVectorCorrector<NHARM, Args...>( correction_container_ );
   }
 
 private:
@@ -175,7 +175,7 @@ public:
   UVectorCorrector(correction_container_t<NHARM*2>&& correction_container) :
   correction_container_{ correction_container } {}
 
-  auto operator()( Args... args ) -> std::vector<std::map<Qn::QVec>> {
+  auto operator()( Args... args ) -> uvector_t {
     return Execute( args... );
   }
 
