@@ -5,6 +5,7 @@
 #cmakedefine QNTOOLS_BASE_PATH "@QNTOOLS_BASE_PATH@"
 #cmakedefine QNTOOLS_CORR_PATH "@QNTOOLS_CORR_PATH@"
 #cmakedefine QNTOOLS_INCLUDE_PATH "@QNTOOLS_INCLUDE_PATH@"
+#cmakedefine Eigen_INCLUDE_PATH "@Eigen_INCLUDE_PATH@"
 #cmakedefine THIS_SRC_PATH "@THIS_SRC_PATH@"
 
 #include <TROOT.h>
@@ -17,6 +18,7 @@ int main(int n_args, char** args){
     throw std::runtime_error( "No argumets provided" );
 
   gInterpreter->AddIncludePath(QNTOOLS_INCLUDE_PATH);
+  gInterpreter->AddIncludePath(Eigen_INCLUDE_PATH);
   gInterpreter->Load(QNTOOLS_BASE_PATH);
   gInterpreter->Load(QNTOOLS_CORR_PATH);
   
