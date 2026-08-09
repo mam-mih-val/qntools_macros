@@ -17,8 +17,9 @@
 #include "correlation_helper.h"
 #include "bmn_env.h"
 #include "vector_generators.h"
+#include "corrections.h"
 
-void run8_mc_proton_correlations( std::string list, std::string str_effieciency_file ){
+void run8_mc_proton_correlations( std::string list, std::string str_effieciency_file, std::string str_calib_file ){
 
   std::cout << "starting execution" << std::endl;
 
@@ -50,10 +51,17 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
 
   auto sampled_d = Qn::Correlation::Resample(dd, 100);
 
-  DefineVector(sampled_d, "proton", "trPhi", u_vector< std::vector<float> >( harmonics ) );
+  DefineVector(sampled_d, "ini_proton", "trPhi", u_vector< std::vector<float> >( harmonics ) );
   DefineVector(sampled_d, "psi_rp", "psiRP", psi_rp_vector< double >( harmonics ) );
+
+  auto calib_file = std::unique_ptr<TFile, std::function<void(TFile*)> >{ TFile::Open( str_calib_file.c_str(), "READ"), [](auto f){ f->Close(); } };
+  auto [vec_p_mean, vec_p_cov] = ReadMeanCov(calib_file, "proton");
+  auto correction_container = MakeCorrectionContainer<20>( vec_p_mean, vec_p_cov, MakeWhiteningMatrixFunc<20>() );
+  auto corr_builder = CorrectorBuilder<20>( correction_container );
+
+  sampled_d = sampled_d.Define( "proton", corr_builder.IssueUVectorCorrector<20, uvector_t, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >, { "ini_proton", "centrality", "trProtonY", "trPt" } );
   
-  auto vn_names = Define2PartCorrelation( sampled_d, CorrFunc2Part< uvector_t, qvector_t >{}, "proton", "psi_rp", std::vector{ std::pair<size_t, size_t>{1, 1} } );
+  auto vn_names = Define2PartCorrelation( sampled_d, CorrFunc2Part< uvector_t, qvector_t >{}, "proton", "psi_rp", std::vector{ std::pair<size_t, size_t>{1, 1}, std::pair<size_t, size_t>{2, 2}, std::pair<size_t, size_t>{3, 3} } );
 
   auto vn_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
   vn_ptr.reserve( vn_names.size() );
