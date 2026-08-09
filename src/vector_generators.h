@@ -42,7 +42,7 @@ inline const auto u_vector( const std::vector<size_t>& harmonics ){
     for( auto phi : vec_phi ){
       vec_results.emplace_back();
       for( auto n : harmonics ){
-        vec_results.back()[n] = Qn::QVec{ cos(n*phi), sin(n*phi) };
+        vec_results.back()[n] = Qn::QVec{ cosf(n*phi), sinf(n*phi) };
       }
     }
     return vec_results;
@@ -54,7 +54,7 @@ inline const auto psi_rp_vector( const std::vector<size_t>& harmonics ){
   return [&harmonics]( T psi_rp ){
     auto result = qvector_t{};
     for( auto n : harmonics ){
-      result[n] = Qn::QVec{ cos(n*psi_rp), sin(n*psi_rp) };
+      result[n] = Qn::QVec{ cosf(n*psi_rp), sinf(n*psi_rp) };
     }
     return result;
   };
