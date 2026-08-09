@@ -171,8 +171,15 @@ private:
     auto result = uvector_t{};
     result.reserve( old_vectors.size() );
     for( auto i=0; i<old_vectors.size(); ++i ){
+      result.emplace_back();
       auto old = old_vectors.at(i);
       auto coord = FormCoordinates( i, coordinates... );
+      
+      if( coord > correction_container_.size() )
+        continue;
+      if( coord < 0 )
+        continue;
+
       auto Xold = column_t<NHARM*2>{};
       auto j=size_t{0};
       for( auto p : old ){
@@ -185,7 +192,6 @@ private:
       auto [Minv, c] = correction_container_[coord];
       auto Xnew = Minv*( Xold - c );
       j=0;
-      result.emplace_back();
       for( auto p : old ){
         auto harm = p.first;
         auto x = Xnew(2*j);
