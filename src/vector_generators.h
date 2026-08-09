@@ -53,7 +53,7 @@ inline const auto u_vector( const std::vector<size_t>& harmonics ){
 template<typename T>
 inline const auto psi_rp_vector( const std::vector<size_t>& harmonics ){
   return [&harmonics]( T psi_rp ){
-    auto result = qvector_t;
+    auto result = qvector_t{};
     result.reserve( harmonics.size() );
     for( auto n : harmonics ){
       result[n] = Qn::QVec{ cos(n*psi_rp), sin(n*psi_rp) };
