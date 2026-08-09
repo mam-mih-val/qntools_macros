@@ -81,6 +81,7 @@ correction_matrix_t PseudoInverse( const correction_matrix_t& M, double l ){
   return Mpinv;
 }
 
+template<size_t NHARM>
 inline auto ReadMeanCov( std::string str_vec_name, TFile* calib_file ) -> std::tuple< std::vector<Qn::DataContainerStatCalculate>, std::vector<Qn::DataContainerStatCalculate> >{
   std::cout << __func__ << std::endl;
   Qn::DataContainerStatCollect* tmp{nullptr};
@@ -134,8 +135,8 @@ inline auto ReadMeanCov( std::string str_vec_name, TFile* calib_file ) -> std::t
 
 template<size_t NHARM, typename Func> 
 auto MakeCorrectionContainer( std::vector<Qn::DataContainerStatCalculate> vec_mean, std::vector<Qn::DataContainerStatCalculate> vec_cov, const Func& mixing_matrix_generator, const double l=5e-3 ) -> correction_container_t<NHARM*2> {
-  auto n_bins = vec_mean.begin().size();
-  auto axes = vec_mean.begin().GetAxes();
+  auto n_bins = vec_mean.front().size();
+  auto axes = vec_mean.front().GetAxes();
   auto correction_container = correction_container_t<NHARM*2>{ axes };
   for(auto bin=size_t{}; bin < n_bins; ++bin ){
     auto vec_means_double = std::vector<double>{};
@@ -148,7 +149,7 @@ auto MakeCorrectionContainer( std::vector<Qn::DataContainerStatCalculate> vec_me
     auto Minv = PseudoInverse(M, l);
     auto c = column_t<NHARM*2>{};
     std::for_each( vec_means_double.begin(), vec_means_double.end(), [i=size_t{}, &c](auto m) mutable { c(i) = m; ++i; } );
-    correction_container[i] = std::tie( Minv, c );
+    correction_container[bin] = std::tie( Minv, c );
   }
   return correction_container;
 }
@@ -158,7 +159,7 @@ template<size_t NHAMR>
 class CorrectorBuilder{
 public:
   CorrectorBuilder(correction_container_t<NHARM*2> correction_container) :
-  correction_container_{ std::move(correction_container) } {}
+  correction_container_{ correction_container } {}
   template<typename... Args>
   auto IssueUVectorCorrector() -> UVectorCorrector<NHARM, Args...> {
     return UVectorCorrector<NHAMR, Args...>( correction_container_ );
@@ -168,11 +169,11 @@ private:
   correction_container_t<NHARM*2> correction_container_;
 };
 
-template<size_t NHAMR, typename... Args>
+template<size_t NHARM, typename... Args>
 class UVectorCorrector{
 public:
   UVectorCorrector(correction_container_t<NHARM*2>&& correction_container) :
-  correction_container_{ std::move(correction_container) } {}
+  correction_container_{ correction_container } {}
 
   auto operator()( Args... args ) -> std::vector<std::map<Qn::QVec>> {
     return Execute( args... );

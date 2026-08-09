@@ -55,7 +55,7 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   DefineVector(sampled_d, "psi_rp", "psiRP", psi_rp_vector< double >( harmonics ) );
 
   auto calib_file = std::unique_ptr<TFile, std::function<void(TFile*)> >{ TFile::Open( str_calib_file.c_str(), "READ"), [](auto f){ f->Close(); } };
-  auto [vec_p_mean, vec_p_cov] = ReadMeanCov(calib_file, "proton");
+  auto [vec_p_mean, vec_p_cov] = ReadMeanCov<20>("proton", calib_file.get());
   auto correction_container = MakeCorrectionContainer<20>( vec_p_mean, vec_p_cov, MakeWhiteningMatrixFunc<20>() );
   auto corr_builder = CorrectorBuilder<20>( correction_container );
 
