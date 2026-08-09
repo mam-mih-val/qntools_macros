@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <bitset>
 #include <cstddef>
+#include <iostream>
 #include <functional>
 #include <iterator>
 #include <vector>
@@ -57,7 +58,7 @@ auto MakeWhiteningMatrixFunc() -> mixing_matrix_t<NHARM*2>{
   };
 }
 template<typename correction_matrix_t>
-std::tuple<bool, correction_matrix_t > PseudoInverse( const correction_matrix_t& M, double l ){
+correction_matrix_t PseudoInverse( const correction_matrix_t& M, double l ){
   auto svd = Eigen::JacobiSVD<correction_matrix_t> ( M, Eigen::ComputeThinU | Eigen::ComputeThinV );    
   auto singular_values = svd.singularValues();
   auto U = svd.matrixU();
@@ -72,13 +73,12 @@ std::tuple<bool, correction_matrix_t > PseudoInverse( const correction_matrix_t&
     Splus(i, i) = 1.0 / s;
     rank++;
   }
-  auto is_valid = rank == NDIM;
   auto E = correction_matrix_t::Identity();
   auto Vr = V.leftCols(rank);
   auto Etilda = Vr * Vr.transpose() * E;
   auto Mpinv = correction_matrix_t{ V * Splus * U.transpose() };
   std::cout << "l: " << l << "\nMatrix M:\n" << M << "\nMatrix U:\n" << U << "\nS: " << singular_values.transpose() << "\nMatrix V:\n" << V << "\nMatrix S:\n" << Splus << "\nInverse:\n" << Mpinv << "\nEtilda:\n" << Etilda << "\n";
-  return {is_valid, Mpinv};
+  return Mpinv;
 }
 
 inline auto ReadMeanCov( std::string str_vec_name, TFile* calib_file ) -> std::tuple< std::vector<Qn::DataContainerStatCalculate>, std::vector<Qn::DataContainerStatCalculate> >{
@@ -91,38 +91,38 @@ inline auto ReadMeanCov( std::string str_vec_name, TFile* calib_file ) -> std::t
   vec_cov.reserve(13);
 
   for( auto h_a = size_t{1}; h_a <= NHARM; ++h_a ){
-    auto corr_name = str_vec_name+".x"+std::to_string(h_a)+"centrality"s;
+    auto corr_name = str_vec_name+"_x"+std::to_string(h_a);
     std::cout << "Extracting " << corr_name << "\n";
     calib_file->GetObject( corr_name.c_str(), tmp );
     assert(tmp);
     vec_mean.emplace_back( *tmp );
     
-    corr_name = str_vec_name+".y"+std::to_string(h_a)+"centrality"s;
+    corr_name = str_vec_name+"_y"+std::to_string(h_a);
     std::cout << "Extracting " << corr_name << "\n";
     calib_file->GetObject( corr_name.c_str(), tmp );
     assert(tmp);
     vec_mean.emplace_back( *tmp );
 
     for( auto h_b = h_a; h_b <= NHARM; ++h_b ){
-      corr_name = str_vec_name+".x"+std::to_string(h_a)+"x"s+std::to_string(h_b)+"centrality"s;
+      corr_name = str_vec_name+"_x"+std::to_string(h_a)+"x"s+std::to_string(h_b);
       std::cout << "Extracting " << corr_name << "\n";
       calib_file->GetObject( corr_name.c_str(), tmp );
       assert(tmp);
       vec_cov.emplace_back( *tmp );
 
-      corr_name = str_vec_name+".y"+std::to_string(h_a)+"x"s+std::to_string(h_b)+"centrality"s;
+      corr_name = str_vec_name+"_y"+std::to_string(h_a)+"x"s+std::to_string(h_b);
       std::cout << "Extracting " << corr_name << "\n";
       calib_file->GetObject( corr_name.c_str(), tmp );
       assert(tmp);
       vec_cov.emplace_back( *tmp );
 
-      corr_name = str_vec_name+".x"+std::to_string(h_a)+"y"s+std::to_string(h_b)+"centrality"s;
+      corr_name = str_vec_name+"_x"+std::to_string(h_a)+"y"s+std::to_string(h_b);
       std::cout << "Extracting " << corr_name << "\n";
       calib_file->GetObject( corr_name.c_str(), tmp );
       assert(tmp);
       vec_cov.emplace_back( *tmp );
 
-      corr_name = str_vec_name+".y"+std::to_string(h_a)+"y"s+std::to_string(h_b)+"centrality"s;
+      corr_name = str_vec_name+"_y"+std::to_string(h_a)+"y"s+std::to_string(h_b);
       std::cout << "Extracting " << corr_name << "\n";
       calib_file->GetObject( corr_name.c_str(), tmp );
       assert(tmp);
