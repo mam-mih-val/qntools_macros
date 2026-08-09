@@ -225,9 +225,9 @@ class CorrectorBuilder{
 public:
   CorrectorBuilder(correction_container_t<NHARM*2> correction_container) :
   correction_container_{ correction_container } {}
-  template<typename... Args>
-  auto IssueUVectorCorrector() -> UVectorCorrector<NHARM, Args...> {
-    return UVectorCorrector<NHARM, Args...>( correction_container_ );
+  template<size_t N, typename... Args>
+  auto IssueUVectorCorrector() -> UVectorCorrector<N, Args...> {
+    return UVectorCorrector<N, Args...>( correction_container_ );
   }
 
 private:
