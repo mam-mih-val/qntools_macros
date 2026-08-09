@@ -1,14 +1,17 @@
 #ifndef CORRELATION_HELPER_H
 #define CORRELATION_HELPER_H
 
-#include <ROOT/RDataFrame.hxx>
 #include <memory>
 #include <string>
 #include <vector>
 #include <cmath>
 #include <type_traits>
+#include <functional>
 #include <DataContainer.hpp>
 #include <Axis.hpp>
+
+#include <ROOT/RDataFrame.hxx>
+
 
 class CorrelationHelper :  public ROOT::Detail::RDF::RActionImpl<CorrelationHelper>{
 public:
@@ -130,7 +133,7 @@ auto Define2PartCorrelation( DataFrame& df, Func corr_func, const std::string& f
       df = df.Define( component_names[2], [h1, h2]( typename std::decay_t<Func>::First_t first, typename std::decay_t<Func>::Second_t second ){ std::vector<double> res{}; res.reserve( first.size() ); for( auto f : first ){ res.push_back( f[h1].x * second[h2].y ); return res; } } );
       df = df.Define( component_names[3], [h1, h2]( typename std::decay_t<Func>::First_t first, typename std::decay_t<Func>::Second_t second ){ std::vector<double> res{}; res.reserve( first.size() ); for( auto f : first ){ res.push_back( f[h1].y * second[h2].y ); return res; } } );
     }
-    vec_res_names.insert( vec_res_names.back(), component_names.begin(), component_names.end() );
+    vec_res_names.insert( vec_res_names.end(), component_names.begin(), component_names.end() );
   }
   return vec_res_names;
 }
