@@ -41,7 +41,6 @@ inline const auto u_vector( const std::vector<size_t>& harmonics ){
     vec_results.reserve(vec_phi.size());
     for( auto phi : vec_phi ){
       vec_results.emplace_back();
-      vec_results.back().reserve( harmonics.size() );
       for( auto n : harmonics ){
         vec_results.back()[n] = Qn::QVec{ cos(n*phi), sin(n*phi) };
       }
@@ -54,7 +53,6 @@ template<typename T>
 inline const auto psi_rp_vector( const std::vector<size_t>& harmonics ){
   return [&harmonics]( T psi_rp ){
     auto result = qvector_t{};
-    result.reserve( harmonics.size() );
     for( auto n : harmonics ){
       result[n] = Qn::QVec{ cos(n*psi_rp), sin(n*psi_rp) };
     }
