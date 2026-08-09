@@ -59,7 +59,7 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   auto correction_container = MakeCorrectionContainer<20>( vec_p_mean, vec_p_cov, MakeWhiteningMatrixFunc<20>() );
   auto corr_builder = CorrectorBuilder<20>( correction_container );
 
-  sampled_d = sampled_d.Define( "proton", corr_builder.IssueUVectorCorrector<20, uvector_t, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >(), { "ini_proton", "centrality", "trProtonY", "trPt" } );
+  sampled_d = sampled_d.Define( "proton", corr_builder.IssueUVectorCorrector<uvector_t, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >(), { "ini_proton", "centrality", "trProtonY", "trPt" } );
   
   auto vn_names = Define2PartCorrelation( sampled_d, CorrFunc2Part< uvector_t, qvector_t >{}, "proton", "psi_rp", std::vector{ std::pair<size_t, size_t>{1, 1}, std::pair<size_t, size_t>{2, 2}, std::pair<size_t, size_t>{3, 3} } );
 
