@@ -136,7 +136,7 @@ auto Define2PartCorrelation( DataFrame& df, Func corr_func, const std::string& f
 }
 
 template<typename U, typename V>
-struct CorrFunc2Part(){
+struct CorrFunc2Part{
   using First_t = U;
   using Second_t = V;  
 };
