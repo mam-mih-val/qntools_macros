@@ -51,7 +51,7 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   auto sampled_d = Qn::Correlation::Resample(dd, 100);
 
   DefineVector(sampled_d, "proton", "trPhi", u_vector< std::vector<float> >( harmonics ) );
-  DefineVector(sampled_d, "psi_rp", "psiRP", psi_rp_vector< float >( harmonics ) );
+  DefineVector(sampled_d, "psi_rp", "psiRP", psi_rp_vector< double >( harmonics ) );
   
   auto vn_names = Define2PartCorrelation( sampled_d, CorrFunc2Part< uvector_t, qvector_t >{}, "proton", "psi_rp", std::vector{ std::pair<size_t, size_t>{1, 1} } );
 
