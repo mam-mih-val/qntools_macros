@@ -155,20 +155,6 @@ auto MakeCorrectionContainer( std::vector<Qn::DataContainerStatCalculate> vec_me
 }
 
 
-template<size_t NHARM>
-class CorrectorBuilder{
-public:
-  CorrectorBuilder(correction_container_t<NHARM*2> correction_container) :
-  correction_container_{ correction_container } {}
-  template<typename... Args>
-  auto IssueUVectorCorrector() -> UVectorCorrector<NHARM, Args...> {
-    return UVectorCorrector<NHARM, Args...>( correction_container_ );
-  }
-
-private:
-  correction_container_t<NHARM*2> correction_container_;
-};
-
 template<size_t NHARM, typename... Args>
 class UVectorCorrector{
 public:
@@ -231,6 +217,20 @@ private:
       return std::vector<double>{ static_cast<double>( coordinate.at(i) ) };
     }
   }
+  correction_container_t<NHARM*2> correction_container_;
+};
+
+template<size_t NHARM>
+class CorrectorBuilder{
+public:
+  CorrectorBuilder(correction_container_t<NHARM*2> correction_container) :
+  correction_container_{ correction_container } {}
+  template<typename... Args>
+  auto IssueUVectorCorrector() -> UVectorCorrector<NHARM, Args...> {
+    return UVectorCorrector<NHARM, Args...>( correction_container_ );
+  }
+
+private:
   correction_container_t<NHARM*2> correction_container_;
 };
 
