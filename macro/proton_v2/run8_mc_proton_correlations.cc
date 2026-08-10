@@ -98,7 +98,7 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   file_out->cd();
   std::for_each( vn_ptr.begin(), vn_ptr.end(), [i=0, &vn_names]( auto& p ) mutable { p->Write( vn_names.at(i).c_str() ); ++i; } );
   std::for_each( ini_vn_ptr.begin(), ini_vn_ptr.end(), [i=0, &ini_vn_names]( auto& p ) mutable { p->Write( ini_vn_names.at(i).c_str() ); ++i; } );
-  std::for_each( tru_vn_ptr.begin(), tru_vn_ptr.end(), [i=0, &ini_vn_names]( auto& p ) mutable { p->Write( tru_vn_names.at(i).c_str() ); ++i; } );
+  std::for_each( tru_vn_ptr.begin(), tru_vn_ptr.end(), [i=0, &tru_vn_names]( auto& p ) mutable { p->Write( tru_vn_names.at(i).c_str() ); ++i; } );
 
   auto n_events_filtered = *(dd.Count());
   std::cout << "Number of filtered events: " << n_events_filtered << std::endl;
