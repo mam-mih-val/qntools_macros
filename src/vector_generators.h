@@ -17,7 +17,7 @@ inline const auto u_generator( size_t harmonic, std::function< double(double) > 
     auto vec_results = std::vector<double>{};
     vec_results.reserve(vec_phi.size());
     for( auto phi : vec_phi ){
-      vec_results.push_back( component( harmonic*phi ) );
+      vec_results.push_back( component( phi*harmonic ) );
     }
     return vec_results;
   };
