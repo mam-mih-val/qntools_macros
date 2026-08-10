@@ -30,6 +30,10 @@ public:
     thread_results_.reserve( n_slots );
     for( auto i=size_t{}; i<n_slots; ++i ){
       thread_results_.emplace_back( *final_result_ );
+      thread_results_.back().SetWeightType( weight_type );
+      for( auto& bin : thread_results_.back()  ){
+        bin.SetNumberOfSamples(n_samples);
+      }
     }
   }
   ~CorrelationHelper() = default;
