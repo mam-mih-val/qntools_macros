@@ -51,7 +51,7 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
 
   auto sampled_d = Qn::Correlation::Resample(dd, 100);
 
-  auto p_components_names = AddUVector(sampled_d, "proton", harmonics, "trPhi" );
+  auto p_components_names = AddUVectorComponents(sampled_d, "proton", harmonics, "trPhi" );
   auto p_cov_names = AddUVectorCovariance(sampled_d, "proton", harmonics, "trPhi" );
 
   auto p_components_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
