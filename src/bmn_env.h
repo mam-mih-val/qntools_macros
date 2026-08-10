@@ -164,6 +164,7 @@ const auto proton_weight = [](
   ROOT::VecOps::RVec<float> vec_chi2,
   std::vector<float> vec_fhcal_x,
   std::vector<float> vec_fhcal_y
+  // "trIsProton", "trProtonEfficiency", "trHasAnyTofHit", "trDcaR", "trStsNhits", "trStsChi2", "trFhcalX", "trFhcalY"
   ){
   auto weights = std::vector<double>( vec_is_proton.size(), 0.0 );
   for(auto i=size_t{}; i<vec_is_proton.size(); ++i){
@@ -177,9 +178,9 @@ const auto proton_weight = [](
       continue;
     if( vec_chi2[i] > 5 )
       continue;
-    if( vec_fhcal_x[i] < -30 || vec_fhcal_x[i] > 160  )
+    if( -30 <  vec_fhcal_x[i]  && vec_fhcal_x[i] < 160  )
       continue;
-    if( vec_fhcal_y[i] < -60 || vec_fhcal_y[i] > 60  )
+    if( -60 < vec_fhcal_y[i] && vec_fhcal_y[i] < 60  )
       continue;
 
     weights[i] = vec_efficiency[i];
