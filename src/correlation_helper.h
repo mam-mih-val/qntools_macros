@@ -8,6 +8,7 @@
 #include <type_traits>
 #include <functional>
 #include <DataContainer.hpp>
+#include <StatCalculate.hpp>
 #include <Axis.hpp>
 
 #include <ROOT/RDataFrame.hxx>
@@ -18,9 +19,10 @@ public:
    /// This type is a requirement for every helper.
   using Result_t = Qn::DataContainerStatCollect;
 
-  CorrelationHelper( std::vector< Qn::AxisD > vec_axes, size_t n_samples=100 ) : 
+  CorrelationHelper( std::vector< Qn::AxisD > vec_axes, size_t n_samples=100, Qn::Stat::WeightType weight_type = Qn::Stat::WeightType::OBSERVABLE ) : 
   final_result_{ new Qn::DataContainerStatCollect(vec_axes) },
   thread_results_{ std::vector<Qn::DataContainerStatCollect>{} }{
+    final_result_->SetWeightType( weight_type );
     for( auto i=size_t{0}; i<final_result_->size(); ++i ){
       final_result_->operator[](i).SetNumberOfSamples(n_samples);
     }
