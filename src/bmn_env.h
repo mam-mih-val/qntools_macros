@@ -171,7 +171,7 @@ const auto proton_weight = [](
       continue;
     if( has_any_tof_hit[i] != 1 )
       continue;
-    if( vec_r[i] < 5.0 )
+    if( vec_r[i] > 5.0 )
       continue;
     if( vec_nhits[i] < 5 )
       continue;
