@@ -67,17 +67,18 @@ public:
   }
 
 private:
-  template <typename T, typename... ColumnTypes>
-  void Execute(unsigned int slot, T vec_val, T vec_weights, ROOT::RVec<ULong64_t> vec_samples, ColumnTypes... coordinates){
+  template <typename T, typename V, typename... ColumnTypes>
+  void Execute(unsigned int slot, T vec_val, V vec_weights, ROOT::RVec<ULong64_t> vec_samples, ColumnTypes... coordinates){
     if constexpr ( std::is_floating_point_v<T> ){
       auto coord = FormCoordinates( 0, coordinates... );
       auto bin = thread_results_[slot].FindBin( coord );
-      thread_results_[slot][ bin ].Fill( vec_val, vec_weights, vec_samples );
+      auto weight = std::static_cast<double>(V)
+      thread_results_[slot][ bin ].Fill( vec_val, weight, vec_samples );
     } 
     else {
       for( auto i=size_t{}; i<vec_val.size(); ++i ){
         auto val = vec_val.at(i);
-        auto weight = vec_weights.at(i);
+        auto weight = static_cast<double>(vec_weights.at(i));
         auto coord = FormCoordinates( i, coordinates... );
         auto bin = thread_results_[slot].FindBin( coord );
         if( bin > thread_results_[slot].size() )
