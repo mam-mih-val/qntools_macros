@@ -129,16 +129,16 @@ auto Define2PartCorrelation( DataFrame& df, Func corr_func, const std::string& f
     component_names[3] = std::string{correlation_name}.append("_y").append(std::to_string(h1)).append("y").append(std::to_string(h2));
 
     if constexpr ( std::is_same_v<qvector_t, std::decay<Func>::First_t>::value ){
-      df = df.Define( component_names[0], [h1, h2]( std::decay_t<Func>::First_t first, std::decay_t<Func>::Second_t second ){ return first[h1].x*second[h2].x; }, std::vector{first_name, second_name} );
-      df = df.Define( component_names[1], [h1, h2]( std::decay_t<Func>::First_t first, std::decay_t<Func>::Second_t second ){ return first[h1].y*second[h2].x; }, std::vector{first_name, second_name} );
-      df = df.Define( component_names[2], [h1, h2]( std::decay_t<Func>::First_t first, std::decay_t<Func>::Second_t second ){ return first[h1].x*second[h2].y; }, std::vector{first_name, second_name} );
-      df = df.Define( component_names[3], [h1, h2]( std::decay_t<Func>::First_t first, std::decay_t<Func>::Second_t second ){ return first[h1].y*second[h2].y; }, std::vector{first_name, second_name} );
+      df = df.Define( component_names[0], [h1, h2]( typename std::decay_t<Func>::First_t first, typename std::decay_t<Func>::Second_t second ){ return first[h1].x*second[h2].x; }, std::vector{first_name, second_name} );
+      df = df.Define( component_names[1], [h1, h2]( typename std::decay_t<Func>::First_t first, typename std::decay_t<Func>::Second_t second ){ return first[h1].y*second[h2].x; }, std::vector{first_name, second_name} );
+      df = df.Define( component_names[2], [h1, h2]( typename std::decay_t<Func>::First_t first, typename std::decay_t<Func>::Second_t second ){ return first[h1].x*second[h2].y; }, std::vector{first_name, second_name} );
+      df = df.Define( component_names[3], [h1, h2]( typename std::decay_t<Func>::First_t first, typename std::decay_t<Func>::Second_t second ){ return first[h1].y*second[h2].y; }, std::vector{first_name, second_name} );
     } 
     if constexpr ( std::is_same_v<uvector_t, std::decay<Func>::First_t>::value ) {
-      df = df.Define( component_names[0], [h1, h2]( std::decay_t<Func>::First_t first, std::decay_t<Func>::Second_t second ){ std::vector<double> res{}; res.reserve( first.size() ); for( auto f : first ){ res.push_back( f[h1].x * second[h2].x ); } return res; }, std::vector{first_name, second_name} );
-      df = df.Define( component_names[1], [h1, h2]( std::decay_t<Func>::First_t first, std::decay_t<Func>::Second_t second ){ std::vector<double> res{}; res.reserve( first.size() ); for( auto f : first ){ res.push_back( f[h1].y * second[h2].x ); } return res; }, std::vector{first_name, second_name} );
-      df = df.Define( component_names[2], [h1, h2]( std::decay_t<Func>::First_t first, std::decay_t<Func>::Second_t second ){ std::vector<double> res{}; res.reserve( first.size() ); for( auto f : first ){ res.push_back( f[h1].x * second[h2].y ); } return res; }, std::vector{first_name, second_name} );
-      df = df.Define( component_names[3], [h1, h2]( std::decay_t<Func>::First_t first, std::decay_t<Func>::Second_t second ){ std::vector<double> res{}; res.reserve( first.size() ); for( auto f : first ){ res.push_back( f[h1].y * second[h2].y ); } return res; }, std::vector{first_name, second_name} );
+      df = df.Define( component_names[0], [h1, h2]( typename std::decay_t<Func>::First_t first, typename std::decay_t<Func>::Second_t second ){ std::vector<double> res{}; res.reserve( first.size() ); for( auto f : first ){ res.push_back( f[h1].x * second[h2].x ); } return res; }, std::vector{first_name, second_name} );
+      df = df.Define( component_names[1], [h1, h2]( typename std::decay_t<Func>::First_t first, typename std::decay_t<Func>::Second_t second ){ std::vector<double> res{}; res.reserve( first.size() ); for( auto f : first ){ res.push_back( f[h1].y * second[h2].x ); } return res; }, std::vector{first_name, second_name} );
+      df = df.Define( component_names[2], [h1, h2]( typename std::decay_t<Func>::First_t first, typename std::decay_t<Func>::Second_t second ){ std::vector<double> res{}; res.reserve( first.size() ); for( auto f : first ){ res.push_back( f[h1].x * second[h2].y ); } return res; }, std::vector{first_name, second_name} );
+      df = df.Define( component_names[3], [h1, h2]( typename std::decay_t<Func>::First_t first, typename std::decay_t<Func>::Second_t second ){ std::vector<double> res{}; res.reserve( first.size() ); for( auto f : first ){ res.push_back( f[h1].y * second[h2].y ); } return res; }, std::vector{first_name, second_name} );
     }
     vec_res_names.insert( vec_res_names.end(), component_names.begin(), component_names.end() );
   }
