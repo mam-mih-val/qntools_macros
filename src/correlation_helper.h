@@ -30,10 +30,9 @@ public:
     thread_results_.reserve( n_slots );
     for( auto i=size_t{}; i<n_slots; ++i ){
       thread_results_.emplace_back( *final_result_ );
-      thread_results_.back()
       for( auto& bin : thread_results_.back()  ){
         bin.SetNumberOfSamples(n_samples);
-        bin..SetWeightType( weight_type );
+        bin.SetWeightType( weight_type );
       }
     }
   }
