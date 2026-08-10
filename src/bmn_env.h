@@ -178,11 +178,10 @@ const auto proton_weight = [](
       continue;
     if( vec_chi2[i] > 5 )
       continue;
-    if( -30 <  vec_fhcal_x[i]  && vec_fhcal_x[i] < 160  )
+    if( -30 <  vec_fhcal_x[i]  && vec_fhcal_x[i] < 160 &&
+        -60 < vec_fhcal_y[i] && vec_fhcal_y[i] < 60   )
       continue;
-    if( -60 < vec_fhcal_y[i] && vec_fhcal_y[i] < 60  )
-      continue;
-
+    
     weights[i] = vec_efficiency[i];
   }
   return weights;
