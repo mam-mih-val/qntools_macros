@@ -72,7 +72,7 @@ private:
     if constexpr ( std::is_floating_point_v<T> ){
       auto coord = FormCoordinates( 0, coordinates... );
       auto bin = thread_results_[slot].FindBin( coord );
-      auto weight = static_cast<double>(V)
+      auto weight = static_cast<double>(vec_weights)
       thread_results_[slot][ bin ].Fill( vec_val, weight, vec_samples );
     } 
     else {
