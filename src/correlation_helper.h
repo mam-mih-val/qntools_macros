@@ -22,17 +22,18 @@ public:
   CorrelationHelper( std::vector< Qn::AxisD > vec_axes, size_t n_samples=100, Qn::Stat::WeightType weight_type = Qn::Stat::WeightType::OBSERVABLE ) : 
   final_result_{ new Qn::DataContainerStatCollect(vec_axes) },
   thread_results_{ std::vector<Qn::DataContainerStatCollect>{} }{
-    final_result_->SetWeightType( weight_type );
     for( auto i=size_t{0}; i<final_result_->size(); ++i ){
       final_result_->operator[](i).SetNumberOfSamples(n_samples);
+      final_result_->operator[](i).SetWeightType( weight_type );
     }
     const auto n_slots = ROOT::IsImplicitMTEnabled() ? ROOT::GetThreadPoolSize() : 1;
     thread_results_.reserve( n_slots );
     for( auto i=size_t{}; i<n_slots; ++i ){
       thread_results_.emplace_back( *final_result_ );
-      thread_results_.back().SetWeightType( weight_type );
+      thread_results_.back()
       for( auto& bin : thread_results_.back()  ){
         bin.SetNumberOfSamples(n_samples);
+        bin..SetWeightType( weight_type );
       }
     }
   }
