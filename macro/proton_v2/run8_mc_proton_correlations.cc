@@ -28,7 +28,8 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
     Qn::AxisD{ "y", 6, 0.0, 1.2 },
     Qn::AxisD{ "pT", 5, 0.0, 2.0 },
   };
-  auto harmonics = std::vector<size_t>(20);
+  constexpr size_t NHARM = 4;
+  auto harmonics = std::vector<size_t>(NHARM);
   std::iota( harmonics.begin(), harmonics.end(), 1 );
 
   std::unique_ptr<TFile> effieciency_file{TFile::Open( str_effieciency_file.c_str(), "READ" )};
@@ -55,16 +56,20 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   DefineVector(sampled_d, "psi_rp", "psiRP", psi_rp_vector< double >( harmonics ) );
 
   auto calib_file = std::unique_ptr<TFile, std::function<void(TFile*)> >{ TFile::Open( str_calib_file.c_str(), "READ"), [](auto f){ f->Close(); } };
-  auto [vec_p_mean, vec_p_cov] = ReadMeanCov<20>("proton", calib_file.get());
-  auto correction_container = MakeCorrectionContainer<20>( vec_p_mean, vec_p_cov, MakeWhiteningMatrixFunc<20>() );
-  auto corr_builder = CorrectorBuilder<20>( correction_container );
+  auto [vec_p_mean, vec_p_cov] = ReadMeanCov<NHARM>("proton", calib_file.get());
+  auto correction_container = MakeCorrectionContainer<NHARM>( vec_p_mean, vec_p_cov, MakeWhiteningMatrixFunc<NHARM>() );
+  auto corr_builder = CorrectorBuilder<NHARM>( correction_container );
 
   sampled_d = sampled_d.Define( "proton", corr_builder.IssueUVectorCorrector<uvector_t, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >(), { "ini_proton", "centrality", "trProtonY", "trPt" } );
   
   auto vn_names = Define2PartCorrelation( sampled_d, CorrFunc2Part< uvector_t, qvector_t >{}, "proton", "psi_rp", std::vector{ std::pair<size_t, size_t>{1, 1}, std::pair<size_t, size_t>{2, 2}, std::pair<size_t, size_t>{3, 3} } );
+  auto ini_vn_names = Define2PartCorrelation( sampled_d, CorrFunc2Part< uvector_t, qvector_t >{}, "ini_proton", "psi_rp", std::vector{ std::pair<size_t, size_t>{1, 1}, std::pair<size_t, size_t>{2, 2}, std::pair<size_t, size_t>{3, 3} } );
 
   auto vn_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
   vn_ptr.reserve( vn_names.size() );
+
+  auto ini_vn_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
+  ini_vn_ptr.reserve( ini_vn_names.size() );
 
   for( const auto& name : vn_names ){
     vn_ptr.emplace_back(
@@ -72,9 +77,16 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
     ); 
   }
 
+  for( const auto& name : ini_vn_names ){
+    ini_vn_ptr.emplace_back(
+      sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >( CorrelationHelper(proton_axes), {name, "trProtonWeight", "samples", "centrality", "trProtonY", "trPt" } )
+    ); 
+  }
+
   auto file_out = std::unique_ptr<TFile, std::function<void(TFile*)> >{ TFile::Open( "corr.root", "RECREATE"), [](auto f){ f->Close(); } };
   file_out->cd();
   std::for_each( vn_ptr.begin(), vn_ptr.end(), [i=0, &vn_names]( auto& p ) mutable { p->Write( vn_names.at(i).c_str() ); ++i; } );
+  std::for_each( ini_vn_ptr.begin(), ini_vn_ptr.end(), [i=0, &ini_vn_names]( auto& p ) mutable { p->Write( ini_vn_names.at(i).c_str() ); ++i; } );
 
   auto n_events_filtered = *(dd.Count());
   std::cout << "Number of filtered events: " << n_events_filtered << std::endl;
