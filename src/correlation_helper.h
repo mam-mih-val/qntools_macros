@@ -12,6 +12,7 @@
 #include <Axis.hpp>
 
 #include <ROOT/RDataFrame.hxx>
+#include "vector_generators.h"
 
 
 class CorrelationHelper :  public ROOT::Detail::RDF::RActionImpl<CorrelationHelper>{
