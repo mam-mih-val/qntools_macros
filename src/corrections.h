@@ -58,6 +58,44 @@ auto MakeWhiteningMatrixFunc() -> std::function< mixing_matrix_t<NHARM*2>(std::v
     return M;
   };
 }
+
+template<size_t NHARM>
+auto MakePCAMatrixFunc() -> std::function< mixing_matrix_t<NHARM*2>(std::vector<double>, std::vector<double>) >{
+  return [](const std::vector<double>& vec_mean, const std::vector<double>& vec_cov) -> mixing_matrix_t<NHARM*2> {
+    auto M = mixing_matrix_t<NHARM*2>{ mixing_matrix_t<NHARM*2>::Zero() };
+    auto i = size_t {0};
+    for( auto h_a = size_t{0}; h_a < NHARM; ++h_a ){
+      auto x_a = vec_mean[2*h_a];
+      auto y_a = vec_mean[2*h_a+1];
+      for( auto h_b = h_a; h_b < NHARM; ++h_b ){
+        auto x_b = vec_mean[2*h_b];
+        auto y_b = vec_mean[2*h_b+1];
+        auto cov = std::vector<double>{}; 
+        cov.reserve(4);
+        for( auto j=size_t{0}; j<4; ++j ){
+          cov.push_back( vec_cov.at(i+j) );
+        } i+=4;
+
+        cov[0] -= x_a*x_b;
+        cov[1] -= y_a*x_b;
+        cov[2] -= x_a*y_b;
+        cov[3] -= y_a*y_b;
+
+        M( 2*h_a, 2*h_b ) = cov[0];
+        M( 2*h_a+1, 2*h_b ) = cov[1];
+        M( 2*h_a, 2*h_b+1 ) = cov[2];
+        M( 2*h_a+1, 2*h_b+1 ) = cov[3];
+
+        M( 2*h_b, 2*h_a ) = cov[0];
+        M( 2*h_b, 2*h_a+1 ) = cov[1];
+        M( 2*h_b+1, 2*h_a ) = cov[2];
+        M( 2*h_b+1, 2*h_a+1 ) = cov[3];
+      }
+    }
+    return M;
+  };
+}
+
 template<typename correction_matrix_t>
 correction_matrix_t PseudoInverse( const correction_matrix_t& M, double l ){
   auto svd = Eigen::JacobiSVD<correction_matrix_t> ( M, Eigen::ComputeThinU | Eigen::ComputeThinV );    
@@ -70,8 +108,8 @@ correction_matrix_t PseudoInverse( const correction_matrix_t& M, double l ){
     auto s = singular_values(i);
     if( fabs(s) < l )
       continue;
-    // Splus(i, i) = sqrt(0.5 ) / sqrt( s);
-    Splus(i, i) = 1.0 / s;
+    Splus(i, i) = sqrt(0.5 ) / sqrt( s);
+    // Splus(i, i) = 1.0 / s;
     rank++;
   }
   auto E = correction_matrix_t::Identity();
