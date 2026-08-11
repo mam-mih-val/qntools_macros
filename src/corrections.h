@@ -28,18 +28,13 @@ template<size_t NDIM>
 using correction_container_t = Qn::DataContainer< std::tuple< mixing_matrix_t<NDIM>, column_t<NDIM> >, Qn::AxisD >;
 
 template<size_t NHARM>
-auto MakeWhiteningMatrixFunc() -> std::function< mixing_matrix_t<NHARM*2+1>(std::vector<double>, std::vector<double>) >{
+auto MakeWhiteningMatrixFunc() -> std::function< mixing_matrix_t<NHARM*2>(std::vector<double>, std::vector<double>) >{
   return [](const std::vector<double>& vec_mean, const std::vector<double>& vec_cov) -> mixing_matrix_t<NHARM*2> {
-    auto M = mixing_matrix_t<NHARM*2+1>{ mixing_matrix_t<NHARM*2>::Zero() };
+    auto M = mixing_matrix_t<NHARM*2>{ mixing_matrix_t<NHARM*2>::Zero() };
     auto i = size_t {0};
-    M( 0, 0 ) = 1.0;
     for( auto h_a = size_t{0}; h_a < NHARM; ++h_a ){
       auto x_a = vec_mean[2*h_a];
       auto y_a = vec_mean[2*h_a+1];
-      M( 0, 2*h_a+1 ) = x_a;
-      M( 0, 2*h_a+2 ) = y_a;
-      M( 2*h_a+1, 0 ) = x_a;
-      M( 2*h_a+2, 0 ) = y_a;
       for( auto h_b = h_a; h_b < NHARM; ++h_b ){
         auto x_b = vec_mean[2*h_b];
         auto y_b = vec_mean[2*h_b+1];
@@ -49,15 +44,15 @@ auto MakeWhiteningMatrixFunc() -> std::function< mixing_matrix_t<NHARM*2+1>(std:
           cov.push_back( vec_cov.at(i+j) * 2 );
         } i+=4;
 
-        M( 2*h_a+1, 2*h_b+1 ) = cov[0];
-        M( 2*h_a+2, 2*h_b+1 ) = cov[1];
-        M( 2*h_a+1, 2*h_b+2 ) = cov[2];
-        M( 2*h_a+2, 2*h_b+2 ) = cov[3];
+        M( 2*h_a, 2*h_b ) = cov[0];
+        M( 2*h_a+1, 2*h_b ) = cov[1];
+        M( 2*h_a, 2*h_b+1 ) = cov[2];
+        M( 2*h_a+1, 2*h_b+1 ) = cov[3];
 
-        M( 2*h_b+1, 2*h_a+1 ) = cov[0];
-        M( 2*h_b+1, 2*h_a+2 ) = cov[1];
-        M( 2*h_b+2, 2*h_a+1 ) = cov[2];
-        M( 2*h_b+2, 2*h_a+2 ) = cov[3];
+        M( 2*h_b, 2*h_a ) = cov[0];
+        M( 2*h_b, 2*h_a+1 ) = cov[1];
+        M( 2*h_b+1, 2*h_a ) = cov[2];
+        M( 2*h_b+1, 2*h_a+1 ) = cov[3];
       }
     }
     return M;
@@ -259,7 +254,7 @@ template<size_t NHARM, typename Func>
 auto MakeCorrectionContainer( std::vector<Qn::DataContainerStatCalculate> vec_mean, std::vector<Qn::DataContainerStatCalculate> vec_cov, const Func& mixing_matrix_generator, const double l=5e-3 ) -> correction_container_t<NHARM*2> {
   auto n_bins = vec_mean.front().size();
   auto axes = vec_mean.front().GetAxes();
-  auto correction_container = correction_container_t<NHARM*2+1>{ axes };
+  auto correction_container = correction_container_t<NHARM*2>{ axes };
   for(auto bin=size_t{}; bin < n_bins; ++bin ){
     auto vec_means_double = std::vector<double>{};
     vec_means_double.reserve( vec_mean.size() );
@@ -280,7 +275,7 @@ auto MakeCorrectionContainer( std::vector<Qn::DataContainerStatCalculate> vec_me
 template<size_t NHARM, typename... Args>
 class UVectorCorrector{
 public:
-  UVectorCorrector(correction_container_t<NHARM*2+1> correction_container) :
+  UVectorCorrector(correction_container_t<NHARM*2> correction_container) :
   correction_container_{ correction_container } {}
 
   auto operator()( Args... args ) -> uvector_t {
@@ -301,9 +296,8 @@ private:
         continue;
       if( bin < 0 )
         continue;
-      auto Xold = column_t<NHARM*2+1>{};
-      Xold(0) = 1.0;
-      auto j=size_t{1};
+      auto Xold = column_t<NHARM*2>{};
+      auto j=size_t{0};
       for( auto p : old ){
         auto x = p.second.x;
         auto y = p.second.y;
@@ -313,7 +307,7 @@ private:
       }
       auto [Minv, c] = correction_container_[bin];
       auto Xnew = Minv*( Xold - c );
-      j=1;
+      j=0;
       for( auto p : old ){
         auto harm = p.first;
         auto x = Xnew(2*j);
@@ -345,7 +339,7 @@ private:
       return std::vector<double>{ static_cast<double>( coordinate.at(i) ) };
     }
   }
-  correction_container_t<NHARM*2+1> correction_container_;
+  correction_container_t<NHARM*2> correction_container_;
 };
 
 template<size_t NHARM>
