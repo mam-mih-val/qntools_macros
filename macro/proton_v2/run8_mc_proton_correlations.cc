@@ -66,8 +66,8 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   auto vn_names = Define2PartCorrelation( sampled_d, CorrFunc2Part< uvector_t, qvector_t >{}, "proton", "psi_rp", std::vector{ std::pair<size_t, size_t>{1, 1}, std::pair<size_t, size_t>{2, 2} } );
   auto ini_vn_names = Define2PartCorrelation( sampled_d, CorrFunc2Part< uvector_t, qvector_t >{}, "ini_proton", "psi_rp", std::vector{ std::pair<size_t, size_t>{1, 1}, std::pair<size_t, size_t>{2, 2} } );
   
-  auto mean_names = DefineVectorMeans( sampled_d, CorrFunc1Part< uvector_t>{}, "proton" harmonics );
-  auto cov_names = DefineVectorCovariance( sampled_d, CorrFunc1Part< uvector_t>{}, "proton" harmonics );
+  auto mean_names = DefineVectorMeans( sampled_d, CorrFunc1Part< uvector_t>{}, "proton", harmonics );
+  auto cov_names = DefineVectorCovariance( sampled_d, CorrFunc1Part< uvector_t>{}, "proton", harmonics );
 
   auto vn_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
   vn_ptr.reserve( vn_names.size() );
