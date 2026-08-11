@@ -27,7 +27,7 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
     Qn::AxisD{ "y", 6, 0.0, 1.2 },
     Qn::AxisD{ "pT", 5, 0.0, 2.0 },
   };
-  auto harmonics = std::vector<size_t>(25);
+  auto harmonics = std::vector<size_t>(50);
   std::iota( harmonics.begin(), harmonics.end(), 1 );
 
   std::unique_ptr<TFile> effieciency_file{TFile::Open( str_effieciency_file.c_str(), "READ" )};
