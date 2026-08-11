@@ -105,9 +105,9 @@ auto MakeDecompositionMatrixFunc() -> std::function< mixing_matrix_t<NHARM*2>(st
 }
 
 template<>
-auto MakeDecompositionMatrixFunc<3>() -> std::function< mixing_matrix_t<NHARM*2>(std::vector<double>, std::vector<double>) >{
+auto MakeDecompositionMatrixFunc<3>() -> std::function< mixing_matrix_t<6>(std::vector<double>, std::vector<double>) >{
   return [](const std::vector<double>& vec_mean, const std::vector<double>& vec_cov) -> mixing_matrix_t<NHARM*2> {
-    auto M = mixing_matrix_t<NHARM*2>{ mixing_matrix_t<NHARM*2>::Zero() };
+    auto M = mixing_matrix_t<6>{ mixing_matrix_t<6>::Zero() };
 
     auto c1 = vec_mean[0];
     auto s1 = vec_mean[1];
