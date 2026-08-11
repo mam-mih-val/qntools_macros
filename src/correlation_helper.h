@@ -214,7 +214,7 @@ auto DefineVectorMeans( DataFrame& df, Func corr_func, const std::string& first_
   return vec_res_names;
 }
 
-template<typename U, typename V>
+template<typename U>
 struct CorrFunc1Part{
   using First_t = U;
 };
