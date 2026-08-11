@@ -195,8 +195,8 @@ correction_matrix_t PseudoInverse( const correction_matrix_t& M, double l ){
   auto Vr = V.leftCols(rank);
   auto Mpinv = correction_matrix_t{ V * Splus * U.transpose() };
   auto Etilda = M * Mpinv;
-  if( rank < M.cols() )
-    Mpinv(0, 0) = std::nan("");
+  // if( rank < M.cols() )
+  //   Mpinv(0, 0) = std::nan("");
   std::cout << "l: " << l << "\nMatrix M:\n" << M << "\nMatrix U:\n" << U << "\nS: " << singular_values.transpose() << "\nMatrix V:\n" << V << "\nMatrix S:\n" << Splus << "\nInverse:\n" << Mpinv << "\nEtilda:\n" << Etilda << "\n";
   return Mpinv;
 }
