@@ -194,7 +194,7 @@ auto DefineVectorMeans( DataFrame& df, Func corr_func, const std::string& first_
   for( auto i=size_t{0}; i<harmonics.size(); ++i ){
     auto h1 = harmonics.at(i);
     
-    auto component_names = std::vector<std::string>(4);
+    auto component_names = std::vector<std::string>(2);
     component_names[0] = std::string{first_name}.append("_x").append(std::to_string(h1));
     component_names[1] = std::string{first_name}.append("_y").append(std::to_string(h1));
 
