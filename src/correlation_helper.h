@@ -153,4 +153,70 @@ struct CorrFunc2Part{
   using Second_t = U;
 };
 
+template<typename DataFrame, typename Func>
+auto DefineVectorCovariance( DataFrame& df, Func corr_func, const std::string& first_name, const std::vector<size_t>& harmonics  ) -> std::vector<std::string> {
+  auto vec_res_names = std::vector<std::string>{};
+  vec_res_names.reserve( 4*harmonics.size() );
+  for( auto i=size_t{0}; i<harmonics.size(); ++i ){
+    auto h1 = harmonics.at(i);
+    for( auto j=i; j<harmonics.size(); ++j ){
+      auto h2 = harmonics.at(j);
+      auto component_names = std::vector<std::string>(4);
+      component_names[0] = std::string{first_name}.append("_x").append(std::to_string(h1)).append("x").append(std::to_string(h2));
+      component_names[1] = std::string{first_name}.append("_y").append(std::to_string(h1)).append("x").append(std::to_string(h2));
+      component_names[2] = std::string{first_name}.append("_x").append(std::to_string(h1)).append("y").append(std::to_string(h2));
+      component_names[3] = std::string{first_name}.append("_y").append(std::to_string(h1)).append("y").append(std::to_string(h2));
+
+      if constexpr ( std::is_same_v<qvector_t, typename Func::First_t> ){
+        df = df.Define( component_names[0], [h1, h2]( qvector_t first ){ return first[h1].x*first[h2].x; }, std::vector{first_name} );
+        df = df.Define( component_names[1], [h1, h2]( qvector_t first ){ return first[h1].y*first[h2].x; }, std::vector{first_name} );
+        df = df.Define( component_names[2], [h1, h2]( qvector_t first ){ return first[h1].x*first[h2].y; }, std::vector{first_name} );
+        df = df.Define( component_names[3], [h1, h2]( qvector_t first ){ return first[h1].y*first[h2].y; }, std::vector{first_name} );
+      } 
+      if constexpr ( std::is_same_v<uvector_t, typename Func::First_t> ) {
+        df = df.Define( component_names[0], [h1, h2]( uvector_t first ){ std::vector<double> res{}; res.reserve( first.size() ); for( auto f : first ){ res.push_back( f[h1].x * f[h2].x ); } return res; }, std::vector{first_name} );
+        df = df.Define( component_names[1], [h1, h2]( uvector_t first ){ std::vector<double> res{}; res.reserve( first.size() ); for( auto f : first ){ res.push_back( f[h1].y * f[h2].x ); } return res; }, std::vector{first_name} );
+        df = df.Define( component_names[2], [h1, h2]( uvector_t first ){ std::vector<double> res{}; res.reserve( first.size() ); for( auto f : first ){ res.push_back( f[h1].x * f[h2].y ); } return res; }, std::vector{first_name} );
+        df = df.Define( component_names[3], [h1, h2]( uvector_t first ){ std::vector<double> res{}; res.reserve( first.size() ); for( auto f : first ){ res.push_back( f[h1].y * f[h2].y ); } return res; }, std::vector{first_name} );
+      }
+  
+      vec_res_names.insert( vec_res_names.end(), component_names.begin(), component_names.end() );
+    }
+  }
+  
+  return vec_res_names;
+}
+
+template<typename DataFrame, typename Func>
+auto DefineVectorMeans( DataFrame& df, Func corr_func, const std::string& first_name, const std::vector<size_t>& harmonics  ) -> std::vector<std::string> {
+  auto vec_res_names = std::vector<std::string>{};
+  vec_res_names.reserve( 2*harmonics.size() );
+  for( auto i=size_t{0}; i<harmonics.size(); ++i ){
+    auto h1 = harmonics.at(i);
+    
+    auto component_names = std::vector<std::string>(4);
+    component_names[0] = std::string{first_name}.append("_x").append(std::to_string(h1));
+    component_names[1] = std::string{first_name}.append("_y").append(std::to_string(h1));
+
+    if constexpr ( std::is_same_v<qvector_t, typename Func::First_t> ){
+      df = df.Define( component_names[0], [h1]( qvector_t first ){ return first[h1].x; }, std::vector{first_name} );
+      df = df.Define( component_names[1], [h1]( qvector_t first ){ return first[h1].y; }, std::vector{first_name} );
+    } 
+    if constexpr ( std::is_same_v<uvector_t, typename Func::First_t> ) {
+      df = df.Define( component_names[0], [h1]( uvector_t first ){ std::vector<double> res{}; res.reserve( first.size() ); for( auto f : first ){ res.push_back( f[h1].x ); } return res; }, std::vector{first_name} );
+      df = df.Define( component_names[1], [h1]( uvector_t first ){ std::vector<double> res{}; res.reserve( first.size() ); for( auto f : first ){ res.push_back( f[h1].y ); } return res; }, std::vector{first_name} );
+    }
+
+    vec_res_names.insert( vec_res_names.end(), component_names.begin(), component_names.end() );
+    
+  }
+  
+  return vec_res_names;
+}
+
+template<typename U, typename V>
+struct CorrFunc1Part{
+  using First_t = U;
+};
+
 #endif // CORRELATION_HELPER_H

@@ -187,8 +187,8 @@ correction_matrix_t PseudoInverse( const correction_matrix_t& M, double l ){
     auto s = singular_values(i);
     if( fabs(s) < l )
       continue;
-    // Splus(i, i) = sqrt(0.5 ) / sqrt( s);
-    Splus(i, i) = 1.0 / s;
+    Splus(i, i) = sqrt(0.5 ) / sqrt( s);
+    // Splus(i, i) = 1.0 / s;
     rank++;
   }
   auto E = correction_matrix_t::Identity();

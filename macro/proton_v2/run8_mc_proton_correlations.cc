@@ -28,7 +28,7 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
     Qn::AxisD{ "y", 6, 0.0, 1.2 },
     Qn::AxisD{ "pT", 5, 0.0, 2.0 },
   };
-  constexpr size_t NHARM = 10;
+  constexpr size_t NHARM = 5;
   auto harmonics = std::vector<size_t>(NHARM);
   std::iota( harmonics.begin(), harmonics.end(), 1 );
 
@@ -58,20 +58,28 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
 
   auto calib_file = std::unique_ptr<TFile, std::function<void(TFile*)> >{ TFile::Open( str_calib_file.c_str(), "READ"), [](auto f){ f->Close(); } };
   auto [vec_p_mean, vec_p_cov] = ReadMeanCov<NHARM>("proton", calib_file.get());
-  auto correction_container = MakeCorrectionContainer<NHARM>( vec_p_mean, vec_p_cov, MakeWhiteningMatrixFunc<NHARM>() );
+  auto correction_container = MakeCorrectionContainer<NHARM>( vec_p_mean, vec_p_cov, MakePCAMatrixFunc<NHARM>() );
   auto corr_builder = CorrectorBuilder<NHARM>( correction_container );
 
   sampled_d = sampled_d.Define( "proton", corr_builder.IssueUVectorCorrector<uvector_t, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >(), { "ini_proton", "centrality", "trProtonY", "trPt" } );
   
   auto vn_names = Define2PartCorrelation( sampled_d, CorrFunc2Part< uvector_t, qvector_t >{}, "proton", "psi_rp", std::vector{ std::pair<size_t, size_t>{1, 1}, std::pair<size_t, size_t>{2, 2} } );
   auto ini_vn_names = Define2PartCorrelation( sampled_d, CorrFunc2Part< uvector_t, qvector_t >{}, "ini_proton", "psi_rp", std::vector{ std::pair<size_t, size_t>{1, 1}, std::pair<size_t, size_t>{2, 2} } );
-  // auto tru_vn_names = Define2PartCorrelation( sampled_d, CorrFunc2Part< uvector_t, qvector_t >{}, "tru_proton", "psi_rp", std::vector{ std::pair<size_t, size_t>{1, 1}, std::pair<size_t, size_t>{2, 2}, std::pair<size_t, size_t>{3, 3} } );
+  
+  auto mean_names = DefineVectorMeans( sampled_d, CorrFunc1Part< uvector_t>{}, "proton" harmonics );
+  auto cov_names = DefineVectorCovariance( sampled_d, CorrFunc1Part< uvector_t>{}, "proton" harmonics );
 
   auto vn_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
   vn_ptr.reserve( vn_names.size() );
 
   auto ini_vn_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
   ini_vn_ptr.reserve( ini_vn_names.size() );
+
+  auto mean_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
+  mean_ptr.reserve( mean_names.size() );
+
+  auto cov_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
+  cov_ptr.reserve( cov_names.size() );
 
   // auto tru_vn_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
   // tru_vn_ptr.reserve( tru_vn_names.size() );
@@ -88,6 +96,18 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
     ); 
   }
 
+  for( const auto& name : mean_names ){
+    mean_ptr.emplace_back(
+      sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >( CorrelationHelper(proton_axes), {name, "trProtonWeight", "samples", "centrality", "trProtonY", "trPt" } )
+    ); 
+  }
+
+  for( const auto& name : cov_names ){
+    cov_ptr.emplace_back(
+      sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >( CorrelationHelper(proton_axes), {name, "trProtonWeight", "samples", "centrality", "trProtonY", "trPt" } )
+    ); 
+  }
+
   // for( const auto& name : tru_vn_names ){
   //   tru_vn_ptr.emplace_back(
   //     sampled_d.Book< std::vector<double>, std::vector<int>,  ROOT::VecOps::RVec<ULong64_t>, float, ROOT::VecOps::RVec<float>, std::vector<float> >( CorrelationHelper(proton_axes), {name, "simIsProton", "samples", "centrality", "simProtonY", "simPt" } )
@@ -98,6 +118,8 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   file_out->cd();
   std::for_each( vn_ptr.begin(), vn_ptr.end(), [i=0, &vn_names]( auto& p ) mutable { p->Write( vn_names.at(i).c_str() ); ++i; } );
   std::for_each( ini_vn_ptr.begin(), ini_vn_ptr.end(), [i=0, &ini_vn_names]( auto& p ) mutable { p->Write( ini_vn_names.at(i).c_str() ); ++i; } );
+  std::for_each( mean_ptr.begin(), mean_ptr.end(), [i=0, &mean_names]( auto& p ) mutable { p->Write( mean_names.at(i).c_str() ); ++i; } );
+  std::for_each( cov_ptr.begin(), cov_ptr.end(), [i=0, &cov_names]( auto& p ) mutable { p->Write( cov_names.at(i).c_str() ); ++i; } );
   // std::for_each( tru_vn_ptr.begin(), tru_vn_ptr.end(), [i=0, &tru_vn_names]( auto& p ) mutable { p->Write( tru_vn_names.at(i).c_str() ); ++i; } );
 
   auto n_events_filtered = *(dd.Count());
