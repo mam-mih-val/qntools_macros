@@ -97,6 +97,44 @@ auto MakePCAMatrixFunc() -> std::function< mixing_matrix_t<NHARM*2>(std::vector<
 }
 
 template<size_t NHARM>
+auto MakeDecompositionMatrixFunc() -> std::function< mixing_matrix_t<NHARM*2>(std::vector<double>, std::vector<double>) >{
+  return [](const std::vector<double>& vec_mean, const std::vector<double>& vec_cov) -> mixing_matrix_t<NHARM*2> {
+    auto M = mixing_matrix_t<NHARM*2>{ mixing_matrix_t<NHARM*2>::Zero() };
+    return M;
+  };
+}
+
+template<>
+auto MakeDecompositionMatrixFunc<3>() -> std::function< mixing_matrix_t<NHARM*2>(std::vector<double>, std::vector<double>) >{
+  return [](const std::vector<double>& vec_mean, const std::vector<double>& vec_cov) -> mixing_matrix_t<NHARM*2> {
+    auto M = mixing_matrix_t<NHARM*2>{ mixing_matrix_t<NHARM*2>::Zero() };
+
+    auto c1 = vec_mean[0];
+    auto s1 = vec_mean[1];
+    auto c2 = vec_mean[2];
+    auto s2 = vec_mean[3];
+    auto c3 = vec_mean[4];
+    auto s3 = vec_mean[5];
+    auto c4 = vec_mean[6];
+    auto s4 = vec_mean[7];
+    auto c5 = vec_mean[8];
+    auto s5 = vec_mean[9];
+    auto c6 = vec_mean[10];
+    auto s6 = vec_mean[11];
+
+    M << 
+      1+c2,    s2,   c3+c1,  s3+s1, c4+c2, s4+s2,
+      s2,    1-c2,   s3-s1,  c1-c3, s4-s2, c2-c4,
+      c3+c1, s3-s1,  1+c4,      s4, c5+c1, s5+s1,
+      s3+s1, c1-c3,    s4,    1-c4, s5-s1, c1-c5,
+      c4+c2, s4-s2,  c5+c1,  s5-s1,  1+c6,    s6,
+      s4+s2, c2-c4,  s5+s1,  c1-c5,    s6,  1-c6
+    ;
+    return M;
+  };
+}
+
+template<size_t NHARM>
 auto MakeTwRescMatrixFunc() -> std::function< mixing_matrix_t<NHARM*2>(std::vector<double>, std::vector<double>) >{
   return [](const std::vector<double>& vec_mean, const std::vector<double>& vec_cov) -> mixing_matrix_t<NHARM*2> {
     auto M = mixing_matrix_t<NHARM*2>{ mixing_matrix_t<NHARM*2>::Zero() };
@@ -120,16 +158,16 @@ auto MakeTwRescMatrixFunc() -> std::function< mixing_matrix_t<NHARM*2>(std::vect
 
         if( h_a != h_b )
           continue;
-        
+
         M( 2*h_a, 2*h_b ) = cov[0];
         M( 2*h_a+1, 2*h_b ) = cov[1];
         M( 2*h_a, 2*h_b+1 ) = cov[2];
         M( 2*h_a+1, 2*h_b+1 ) = cov[3];
 
-        M( 2*h_b, 2*h_a ) = cov[0];
-        M( 2*h_b, 2*h_a+1 ) = cov[1];
-        M( 2*h_b+1, 2*h_a ) = cov[2];
-        M( 2*h_b+1, 2*h_a+1 ) = cov[3];
+        // M( 2*h_b, 2*h_a ) = cov[0];
+        // M( 2*h_b, 2*h_a+1 ) = cov[1];
+        // M( 2*h_b+1, 2*h_a ) = cov[2];
+        // M( 2*h_b+1, 2*h_a+1 ) = cov[3];
       }
     }
     return M;

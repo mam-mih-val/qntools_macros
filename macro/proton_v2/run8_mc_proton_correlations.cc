@@ -57,8 +57,8 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   DefineVector(sampled_d, "psi_rp", "psiRP", psi_rp_vector< double >( harmonics ) );
 
   auto calib_file = std::unique_ptr<TFile, std::function<void(TFile*)> >{ TFile::Open( str_calib_file.c_str(), "READ"), [](auto f){ f->Close(); } };
-  auto [vec_p_mean, vec_p_cov] = ReadMeanCov<NHARM>("proton", calib_file.get());
-  auto correction_container = MakeCorrectionContainer<NHARM>( vec_p_mean, vec_p_cov, MakeTwRescMatrixFunc<NHARM>() );
+  auto [vec_p_mean, vec_p_cov] = ReadMeanCov<6>("proton", calib_file.get());
+  auto correction_container = MakeCorrectionContainer<NHARM>( vec_p_mean, vec_p_cov, MakeDecompositionMatrixFunc<NHARM>() );
   auto corr_builder = CorrectorBuilder<NHARM>( correction_container );
 
   sampled_d = sampled_d.Define( "proton", corr_builder.IssueUVectorCorrector<uvector_t, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >(), { "ini_proton", "centrality", "trProtonY", "trPt" } );
