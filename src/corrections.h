@@ -188,7 +188,6 @@ correction_matrix_t PseudoInverse( const correction_matrix_t& M, double l ){
   auto Ur = U.leftCols(rank);
   auto norm = Ur * Ur.transpose();
   auto E = correction_matrix_t{ correction_matrix_t::Zero() };
-  std::cout << norm.transpose() << "\n";
   for( auto i=size_t{0}; i<norm.cols(); ++i ){
     E(i, i) = 1.0 / sqrt(norm(i, i));
   }
