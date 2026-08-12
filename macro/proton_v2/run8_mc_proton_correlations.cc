@@ -102,7 +102,7 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
       vec_corrected[i] = weights[i];
     }
     return vec_corrected;
-  }, {"trProtonWeights", "centrality", "trProtonY", "trPt"} );
+  }, {"trProtonWeight", "centrality", "trProtonY", "trPt"} );
 
   for( const auto& name : vn_names ){
     vn_ptr.emplace_back(
