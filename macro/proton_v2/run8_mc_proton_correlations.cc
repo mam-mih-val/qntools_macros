@@ -85,7 +85,7 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   // auto tru_vn_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
   // tru_vn_ptr.reserve( tru_vn_names.size() );
 
-  sampled_d.Define( "is_corrected", [correction_container]( std::vector<double> weights,  float centrality, ROOT::VecOps::RVec<float> vec_y, ROOT::VecOps::RVec<float> vec_pT ){
+  sampled_d = sampled_d.Define( "is_corrected", [correction_container]( std::vector<double> weights,  float centrality, ROOT::VecOps::RVec<float> vec_y, ROOT::VecOps::RVec<float> vec_pT ){
     auto vec_corrected = std::vector<double>( weights.size(), 0 );
     for( auto i=size_t{}; i<weights.size(); ++i ){
       auto pT = vec_pT[i];
