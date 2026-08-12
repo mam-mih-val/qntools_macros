@@ -189,7 +189,7 @@ correction_matrix_t PseudoInverse( const correction_matrix_t& M, double l ){
   auto norm = Ur * Ur.transpose();
   auto E = correction_matrix_t{ correction_matrix_t::Zero() };
   for( auto i=size_t{0}; i<norm.cols(); ++i ){
-    E(i, i) = 1.0 / sqrt(norm(i, i));
+    E(i, i) = 1.0 / norm(i, i);
   }
   auto Mpinv = correction_matrix_t{ E * V * Splus * U.transpose() };
   std::cout << "l: " << l << "\nMatrix M:\n" << M << "\nMatrix U:\n" << Ur << "\nS: " << singular_values.transpose() << "\nMatrix S:\n" << Splus << "\nInverse:\n" << Mpinv << "\nE:\n" << E << "\nNorm:\n" << norm;
