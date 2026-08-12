@@ -164,11 +164,6 @@ auto MakeTwRescMatrixFunc() -> std::function< mixing_matrix_t<NHARM*2>(std::vect
         M( 2*h_a+1, 2*h_b ) = cov[1];
         M( 2*h_a, 2*h_b+1 ) = cov[2];
         M( 2*h_a+1, 2*h_b+1 ) = cov[3];
-
-        // M( 2*h_b, 2*h_a ) = cov[0];
-        // M( 2*h_b, 2*h_a+1 ) = cov[1];
-        // M( 2*h_b+1, 2*h_a ) = cov[2];
-        // M( 2*h_b+1, 2*h_a+1 ) = cov[3];
       }
     }
     return M;
@@ -188,15 +183,14 @@ correction_matrix_t PseudoInverse( const correction_matrix_t& M, double l ){
     if( fabs(s) < l )
       continue;
     Splus(i, i) = sqrt(0.5 ) / sqrt( s);
-    // Splus(i, i) = 1.0 / s;
     rank++;
   }
   auto E = correction_matrix_t::Identity();
   auto Vr = V.leftCols(rank);
   auto Mpinv = correction_matrix_t{ V * Splus * U.transpose() };
   auto Etilda = M * Mpinv;
-  // if( rank < M.cols() )
-  //   Mpinv(0, 0) = std::nan("");
+  if( rank < M.cols() )
+    Mpinv(0, 0) = std::nan("");
   std::cout << "l: " << l << "\nMatrix M:\n" << M << "\nMatrix U:\n" << U << "\nS: " << singular_values.transpose() << "\nMatrix V:\n" << V << "\nMatrix S:\n" << Splus << "\nInverse:\n" << Mpinv << "\nEtilda:\n" << Etilda << "\n";
   return Mpinv;
 }

@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cmath>
+#include <cstddef>
 #include <exception>
 #include <limits>
 #include <memory>
@@ -84,9 +85,28 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   // auto tru_vn_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
   // tru_vn_ptr.reserve( tru_vn_names.size() );
 
+  sampled_d.Define( "is_corrected", [correction_container]( std::vector<double> weights,  float centrality, ROOT::VecOps::RVec<float> vec_y, ROOT::VecOps::RVec<float> vec_pT ){
+    auto vec_corrected = std::vector<double>( weights.size(), 0 );
+    for( auto i=size_t{}; i<weights.size(); ++i ){
+      auto pT = vec_pT[i];
+      auto y = vec_y[i];
+      auto coord = std::vector<double>{ centrality, y, pT };
+      auto bin = correction_container_.FindBin( coord );
+      if( bin > correction_container_.size() )
+        continue;
+      if( bin < 0 )
+        continue;
+      auto [Mpinv, c] = correction_container[];
+      if( std::isnan(Mpinv(0,0)) )
+        continue;
+      vec_corrected = weights[i];
+    }
+    return vec_corrected;
+  }, {"trProtonWeights", "centrality", "trProtonY", "trPt"} );
+
   for( const auto& name : vn_names ){
     vn_ptr.emplace_back(
-      sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >( CorrelationHelper(proton_axes), {name, "trProtonWeight", "samples", "centrality", "trProtonY", "trPt" } )
+      sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >( CorrelationHelper(proton_axes), {name, "is_corrected", "samples", "centrality", "trProtonY", "trPt" } )
     ); 
   }
 
@@ -98,13 +118,13 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
 
   for( const auto& name : mean_names ){
     mean_ptr.emplace_back(
-      sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >( CorrelationHelper(proton_axes), {name, "trProtonWeight", "samples", "centrality", "trProtonY", "trPt" } )
+      sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >( CorrelationHelper(proton_axes), {name, "is_corrected", "samples", "centrality", "trProtonY", "trPt" } )
     ); 
   }
 
   for( const auto& name : cov_names ){
     cov_ptr.emplace_back(
-      sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >( CorrelationHelper(proton_axes), {name, "trProtonWeight", "samples", "centrality", "trProtonY", "trPt" } )
+      sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >( CorrelationHelper(proton_axes), {name, "is_corrected", "samples", "centrality", "trProtonY", "trPt" } )
     ); 
   }
 
