@@ -99,7 +99,7 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
       auto [Mpinv, c] = correction_container[bin];
       if( std::isnan(Mpinv(0,0)) )
         continue;
-      vec_corrected = weights[i];
+      vec_corrected[i] = weights[i];
     }
     return vec_corrected;
   }, {"trProtonWeights", "centrality", "trProtonY", "trPt"} );
