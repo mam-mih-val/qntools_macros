@@ -316,6 +316,7 @@ void run8_proton_correct_nonflow( std::string list,
           .Filter("vtxChi2/vtxNdf > 0.1")
           .Filter("fabs(vtxX)<1.0")
           .Filter("fabs(vtxY)<1.0")
+          .Range(10)
           .Filter("fabs(vtxZ)<0.5")
   ; // at least one filter is mandatory!!!
 
