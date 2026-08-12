@@ -185,13 +185,16 @@ correction_matrix_t PseudoInverse( const correction_matrix_t& M, double l ){
     Splus(i, i) = sqrt(0.5 ) / sqrt( s);
     rank++;
   }
-  auto E = correction_matrix_t::Identity();
-  auto Vr = V.leftCols(rank);
-  auto Mpinv = correction_matrix_t{ V * Splus * U.transpose() };
-  auto Etilda = M * Mpinv;
+  auto Ur = U.leftCols(rank);
+  auto norm = Ur * Ur.transpose();
+  auto E = correction_matrix_t::Zero();
+  for( auto i=size_t{0}; i<norm.size(); ++i ){
+    E(i, i) = 1 / sqrt(norm(i));
+  }
+  auto Mpinv = correction_matrix_t{ E * V * Splus * U.transpose() };
   if( rank < M.cols() )
     Mpinv(0, 0) = std::nan("");
-  std::cout << "l: " << l << "\nMatrix M:\n" << M << "\nMatrix U:\n" << U << "\nS: " << singular_values.transpose() << "\nMatrix V:\n" << V.inverse() << "\nMatrix S:\n" << Splus << "\nInverse:\n" << Mpinv << "\nEtilda:\n" << Etilda << "\n";
+  std::cout << "l: " << l << "\nMatrix M:\n" << M << "\nMatrix U:\n" << Ur << "\nS: " << singular_values.transpose() << "\nMatrix S:\n" << Splus << "\nInverse:\n" << Mpinv << "\nE:\n" << E << "\n";
   return Mpinv;
 }
 
