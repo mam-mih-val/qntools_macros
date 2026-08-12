@@ -91,12 +91,12 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
       auto pT = vec_pT[i];
       auto y = vec_y[i];
       auto coord = std::vector<double>{ centrality, y, pT };
-      auto bin = correction_container_.FindBin( coord );
-      if( bin > correction_container_.size() )
+      auto bin = correction_container.FindBin( coord );
+      if( bin > correction_container.size() )
         continue;
       if( bin < 0 )
         continue;
-      auto [Mpinv, c] = correction_container[];
+      auto [Mpinv, c] = correction_container[bin];
       if( std::isnan(Mpinv(0,0)) )
         continue;
       vec_corrected = weights[i];
