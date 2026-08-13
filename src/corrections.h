@@ -192,12 +192,8 @@ correction_matrix_t PseudoInverse( const correction_matrix_t& M, double l ){
     for( auto j=size_t{0}; j<Ur.cols(); ++i ){
       if( fabs(Ur(i, j)) < 0.001 )
         continue;
-      Ur1(i, j) = static_cast<double>(r) / Ur(i, j);
+      Ur1(i, j) = static_cast<double>(rank) / Ur(i, j);
     }
-  }
-  auto E = correction_matrix_t{ correction_matrix_t::Zero() };
-  for( auto i=size_t{0}; i<norm.cols(); ++i ){
-    E(i, i) = 1.0 / norm(i, i);
   }
   auto Mpinv = correction_matrix_t{ Ur1 * Splus * U.transpose() };
   std::cout << "l: " << l << "\nMatrix M:\n" << M << "\nMatrix U:\n" << Ur << "\nS: " << singular_values.transpose() << "\nMatrix S:\n" << Splus << "\nInverse:\n" << Mpinv << "\nE:\n" << Ur1 << "\n\n";
