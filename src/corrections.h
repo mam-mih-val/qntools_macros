@@ -189,7 +189,7 @@ correction_matrix_t PseudoInverse( const correction_matrix_t& M, double l ){
   auto Ur = U.leftCols(rank);
   auto Ur1 = correction_matrix_t{ correction_matrix_t::Zero() };
   for( auto i=size_t{0}; i<Ur.rows(); i++ ){
-    for( auto j=size_t{0}; j<Ur.cols(); ++i ){
+    for( auto j=size_t{0}; j<Ur.cols(); ++j ){
       if( fabs(Ur(i, j)) < 0.001 )
         continue;
       Ur1(i, j) = static_cast<double>(rank) / Ur(i, j);
