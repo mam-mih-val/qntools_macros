@@ -193,11 +193,14 @@ correction_matrix_t PseudoInverse( const correction_matrix_t& M, double l ){
     for( auto j=size_t{0}; j<Ur.cols(); ++j ){
       row_sum += Ur(i, j);
     }
-    if(row_sum < 1e-2)
-      continue;
-    Ur1(i, i) = 1.0 / row_sum;
+    for( auto j=size_t{0}; j<Ur.cols(); ++j ){
+      if( fabs(row_sum) < 1e-2)
+        continue;
+      Ur1(i, j) = 1.0 / row_sum;
+    }
+    
   }
-  auto Mpinv = correction_matrix_t{ Ur1 * Splus * U.transpose() };
+  auto Mpinv = correction_matrix_t{ U * Ur1 * Splus * U.transpose() };
   std::cout << "l: " << l << "\nMatrix M:\n" << M << "\nMatrix U:\n" << Ur << "\nS: " << singular_values.transpose() << "\nMatrix S:\n" << Splus << "\nInverse:\n" << Mpinv << "\nE:\n" << Ur1 << "\n\n";
   return Mpinv;
 }
