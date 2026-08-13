@@ -189,11 +189,13 @@ correction_matrix_t PseudoInverse( const correction_matrix_t& M, double l ){
   auto Ur = U.leftCols(rank);
   auto Ur1 = correction_matrix_t{ correction_matrix_t::Zero() };
   for( auto i=size_t{0}; i<Ur.rows(); i++ ){
+    auto row_sum = double{};
     for( auto j=size_t{0}; j<Ur.cols(); ++j ){
-      if( fabs(Ur(i, j)) < 0.001 )
-        continue;
-      Ur1(i, j) = 1.0 / ( Ur(i, j) * rank );
+      row_sum += Ur(i, j);
     }
+    if(row_sum < 1e-2)
+      continue;
+    Ur1(i, i) = 1.0 / row_sum;
   }
   auto Mpinv = correction_matrix_t{ Ur1 * Splus * U.transpose() };
   std::cout << "l: " << l << "\nMatrix M:\n" << M << "\nMatrix U:\n" << Ur << "\nS: " << singular_values.transpose() << "\nMatrix S:\n" << Splus << "\nInverse:\n" << Mpinv << "\nE:\n" << Ur1 << "\n\n";
