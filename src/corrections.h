@@ -182,8 +182,8 @@ correction_matrix_t PseudoInverse( const correction_matrix_t& M, double l ){
     auto s = singular_values(i);
     if( fabs(s) < l )
       continue;
-    // Splus(i, i) = sqrt(0.5 ) / sqrt( s);
-    Splus(i, i) = 1 / s;
+    Splus(i, i) = sqrt(0.5 ) / sqrt( s);
+    // Splus(i, i) = 1 / s;
     rank++;
   }
   auto Ur = U.leftCols(rank);
