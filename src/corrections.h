@@ -192,7 +192,7 @@ correction_matrix_t PseudoInverse( const correction_matrix_t& M, double l ){
     for( auto j=size_t{0}; j<Ur.cols(); ++j ){
       if( fabs(Ur(i, j)) < 0.001 )
         continue;
-      Ur1(i, j) = static_cast<double>(rank) / Ur(i, j);
+      Ur1(i, j) = 1.0 / ( Ur(i, j) * rank );
     }
   }
   auto Mpinv = correction_matrix_t{ Ur1 * Splus * U.transpose() };
