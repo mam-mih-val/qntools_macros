@@ -195,7 +195,7 @@ correction_matrix_t PseudoInverse( const correction_matrix_t& M, double l ){
       Ur(i) = 0.;
   }
   auto UrUrT = Ur*Ur.transpose();
-  auto Ur1 = correction_matrix_t{ correction_matrix_t::Zero };
+  auto Ur1 = correction_matrix_t{ correction_matrix_t::Zero() };
   for( auto i=size_t{0}; i<Ur.rows(); i++ ){
     if( fabs(UrUrT(i, i)) < l )
       continue;
