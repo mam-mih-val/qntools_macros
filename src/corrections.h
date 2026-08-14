@@ -183,7 +183,7 @@ correction_matrix_t PseudoInverse( const correction_matrix_t& M, double l ){
     auto s = singular_values(i);
     if( sqrt(fabs(s) / 0.5 ) < l )
       continue;
-    Splus(i, i) = sqrt(0.5 ) / sqrt(s);
+    Splus(i, i) = sqrt(0.5 / s);
     rank++;
     sv_sum += sqrt( s );
   }
