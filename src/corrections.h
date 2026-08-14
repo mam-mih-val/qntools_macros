@@ -198,7 +198,7 @@ correction_matrix_t PseudoInverse( const correction_matrix_t& M, double l ){
     if( fabs(UrUrT(i, i)) < l )
       continue;
     for( auto j=size_t{0}; j<Ur.cols(); j++ ){
-      Ur1(i, j) = Ur(i, j) / UrUrT(i, i);
+      Ur1(i, j) = Ur(i, j) / sqrt( UrUrT(i, i) );
     }
   }
   auto Mpinv = correction_matrix_t{ Ur1 * Splus * U.transpose() };
