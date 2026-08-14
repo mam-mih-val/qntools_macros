@@ -188,14 +188,15 @@ correction_matrix_t PseudoInverse( const correction_matrix_t& M, double l ){
     sv_sum += sqrt( s );
   }
   auto Ur = U.leftCols(rank);
+  auto UrUrT = Ur*Ur.transpose();
   auto Ur1 = correction_matrix_t{ correction_matrix_t::Zero() };
   for( auto r = size_t{0}; r < Ur.rows(); r++ ){
     auto nz = double{0};
-    for( auto c = size_t{0}; c < Ur.columns(); c++ ){
+    for( auto c = size_t{0}; c < Ur.cols(); c++ ){
       if( fabs( Ur(r, c) ) < l ) continue;
       nz += 1;
     }
-    for( auto c = size_t{0}; c < Ur.columns(); c++ ){
+    for( auto c = size_t{0}; c < Ur.cols(); c++ ){
       if( fabs( Ur(r, c) ) < l ) continue;
       if( nz < 1e-2 ) continue;
       Ur1(r, c) = 1.0 / ( Ur(r, c) * nz );
