@@ -202,7 +202,7 @@ correction_matrix_t PseudoInverse( const correction_matrix_t& M, double l ){
     }
   }
   auto Mpinv = correction_matrix_t{ Ur1 * Splus * U.transpose() };
-  std::cout << "l: " << l << "\nMatrix M:\n" << M << "\nMatrix U:\n" << Ur << "\nS: " << singular_values.transpose() << "\nMatrix S:\n" << Splus << "\nInverse:\n" << Mpinv << "\nE:\n" << Ur1 << "\n\n";
+  std::cout << "l: " << l << "\nMatrix M:\n" << M << "\nMatrix U:\n" << Ur << "\nS: " << singular_values.transpose() << "\nMatrix S:\n" << Splus << "\nInverse:\n" << Mpinv << "\nE:\n" << Ur1 << "\nUrUr^T\n" << UrUrT << "\n\n";
   return Mpinv;
 }
 
