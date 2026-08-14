@@ -181,7 +181,7 @@ correction_matrix_t PseudoInverse( const correction_matrix_t& M, double l ){
   auto rank = size_t{0};
   for (auto i = size_t{0}; i < singular_values.size(); ++i) {
     auto s = singular_values(i);
-    if( fabs(s) < l )
+    if( sqrt(fabs(s) / 0.5 ) < l )
       continue;
     Splus(i, i) = sqrt(0.5 ) / sqrt(s);
     rank++;
@@ -198,7 +198,7 @@ correction_matrix_t PseudoInverse( const correction_matrix_t& M, double l ){
     if( fabs(UrUrT(i, i)) < l )
       continue;
     for( auto j=size_t{0}; j<Ur.cols(); j++ ){
-      Ur1(i, j) = Ur(i, j) / sqrt( UrUrT(i, i) );
+      Ur1(i, j) = Ur(i, j) / UrUrT(i, i);
     }
   }
   auto Mpinv = correction_matrix_t{ Ur1 * Splus * U.transpose() };
