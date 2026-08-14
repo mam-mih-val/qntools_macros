@@ -181,24 +181,24 @@ correction_matrix_t PseudoInverse( const correction_matrix_t& M, double l ){
   auto rank = size_t{0};
   for (auto i = size_t{0}; i < singular_values.size(); ++i) {
     auto s = singular_values(i);
-    if( sqrt(fabs(s) / 0.5 ) < l )
+    if( sqrt(s / 0.5 ) < l )
       continue;
-    Splus(i, i) = sqrt(0.5 / s);
+    Splus(i, i) = sqrt(0.5 / s );
     rank++;
     sv_sum += sqrt( s );
   }
   auto Ur = U.leftCols(rank);
-  for( auto i=size_t{0}; i<Ur.rows()*Ur.cols(); i++ ){
-    if( fabs( Ur(i) ) < l )
-      Ur(i) = 0.;
-  }
-  auto UrUrT = Ur*Ur.transpose();
   auto Ur1 = correction_matrix_t{ correction_matrix_t::Zero() };
-  for( auto i=size_t{0}; i<Ur.rows(); i++ ){
-    if( fabs(UrUrT(i, i)) < l )
-      continue;
-    for( auto j=size_t{0}; j<Ur.cols(); j++ ){
-      Ur1(i, j) = Ur(i, j) / UrUrT(i, i);
+  for( auto r = size_t{0}; r < Ur.rows(); r++ ){
+    auto nz = double{0};
+    for( auto c = size_t{0}; c < Ur.columns(); c++ ){
+      if( fabs( Ur(r, c) ) < l ) continue;
+      nz += 1;
+    }
+    for( auto c = size_t{0}; c < Ur.columns(); c++ ){
+      if( fabs( Ur(r, c) ) < l ) continue;
+      if( nz < 1e-2 ) continue;
+      Ur1(r, c) = 1.0 / ( Ur(r, c) * nz );
     }
   }
   auto Mpinv = correction_matrix_t{ Ur1 * Splus * U.transpose() };
