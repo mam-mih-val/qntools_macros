@@ -174,6 +174,7 @@ template<typename correction_matrix_t>
 correction_matrix_t PseudoInverse( const correction_matrix_t& M, double l ){
   auto svd = Eigen::JacobiSVD<correction_matrix_t> ( M, Eigen::ComputeThinU | Eigen::ComputeThinV );    
   auto singular_values = svd.singularValues();
+  auto sv_sum = double{0.0};
   auto U = svd.matrixU();
   auto V = svd.matrixV();
   auto Splus = correction_matrix_t{ correction_matrix_t::Zero() };
@@ -182,21 +183,23 @@ correction_matrix_t PseudoInverse( const correction_matrix_t& M, double l ){
     auto s = singular_values(i);
     if( fabs(s) < l )
       continue;
-    Splus(i, i) = sqrt(0.5 ) / sqrt( s);
-    // Splus(i, i) = 1 / s;
     rank++;
+    sv_sum += sqrt( s );
+  }
+  for (auto i = size_t{0}; i < rank; ++i) {
+    Splus(i, i) = sqrt(0.5 ) / sv_sum;
   }
   auto Ur = U.leftCols(rank);
   auto Ur1 = correction_matrix_t{ correction_matrix_t::Zero() };
   for( auto i=size_t{0}; i<Ur.rows(); i++ ){
     auto row_sum = double{};
     for( auto j=size_t{0}; j<Ur.cols(); ++j ){
-      row_sum += Ur(i, j);
+      row_sum += Ur(i, j) * Ur(i, j);
     }
     for( auto j=size_t{0}; j<Ur.cols(); ++j ){
       if( fabs(row_sum) < 1e-2)
         continue;
-      Ur1(i, j) = 1.0 / row_sum;
+      Ur1(i, j) = Ur(i, j) / row_sum;
     }
     
   }
