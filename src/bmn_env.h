@@ -201,6 +201,76 @@ const auto proton_weight = [](
   return weights;
 };
 
+const auto tpos_weight = []( 
+  std::vector<float>       vec_eta, 
+  ROOT::VecOps::RVec<float> vec_pT, 
+  std::vector<float> vec_pq,
+  std::vector<float> vec_r,
+  ROOT::VecOps::RVec<int> vec_nhits,
+  ROOT::VecOps::RVec<float> vec_chi2,
+  std::vector<float> vec_fhcal_x,
+  std::vector<float> vec_fhcal_y
+  ){
+  auto weights = std::vector<double>( vec_eta.size(), 0.0 );
+  for(auto i=size_t{}; i<vec_eta.size(); ++i){
+    if( vec_eta[i] < 2.0 )
+      continue;
+    if( vec_eta[i] > 3.0 )
+      continue;
+    if( vec_pT[i] < 0.2 )
+      continue;
+    if( vec_pq[i] < 0.0 )
+      continue;
+    if( vec_r[i] > 5.0 )
+      continue;
+    if( vec_nhits[i] < 5 )
+      continue;
+    if( vec_chi2[i] > 5 )
+      continue;
+    if( -30 <  vec_fhcal_x[i]  && vec_fhcal_x[i] < 160 &&
+        -60 < vec_fhcal_y[i] && vec_fhcal_y[i] < 60   )
+      continue;
+    
+    weights[i] = 1.0;
+  }
+  return weights;
+};
+
+const auto tneg_weight = []( 
+  std::vector<float>       vec_eta, 
+  ROOT::VecOps::RVec<float> vec_pT, 
+  std::vector<float> vec_pq,
+  std::vector<float> vec_r,
+  ROOT::VecOps::RVec<int> vec_nhits,
+  ROOT::VecOps::RVec<float> vec_chi2,
+  std::vector<float> vec_fhcal_x,
+  std::vector<float> vec_fhcal_y
+  ){
+  auto weights = std::vector<double>( vec_eta.size(), 0.0 );
+  for(auto i=size_t{}; i<vec_eta.size(); ++i){
+    if( vec_eta[i] < 1.5 )
+      continue;
+    if( vec_eta[i] > 4.0 )
+      continue;
+    if( vec_pT[i] < 0.2 )
+      continue;
+    if( vec_pq[i] > 0.0 )
+      continue;
+    if( vec_r[i] > 5.0 )
+      continue;
+    if( vec_nhits[i] < 5 )
+      continue;
+    if( vec_chi2[i] > 5 )
+      continue;
+    if( -30 <  vec_fhcal_x[i]  && vec_fhcal_x[i] < 160 &&
+        -60 < vec_fhcal_y[i] && vec_fhcal_y[i] < 60   )
+      continue;
+    
+    weights[i] = 1.0;
+  }
+  return weights;
+};
+
 std::vector<int> f1_modules = {
   6,  7,  8,
   11, 12, 13,
@@ -257,7 +327,8 @@ const auto GenerateBmnExtendedTree(DataFrame& d, TH3* efficiency_histo){
     .Define( "trChi2Ndf", " std::vector<float> vec_par; for( int i=0; i<trChi2.size(); ++i ){ vec_par.push_back( trChi2.at(i)/trNdf.at(i) ); } return vec_par; " )
     .Define( "trPx", " std::vector<float> px; for( auto mom : trMom ){ px.push_back( mom.Px() ); } return px; " )
     .Define( "trPy", " std::vector<float> py; for( auto mom : trMom ){ py.push_back( mom.Py() ); } return py; " )
-    .Define("trPhi","std::vector<float> phi;for(auto& mom : trMom) phi.push_back( mom.phi() ); return phi;")
+    .Define( "trPhi","std::vector<float> phi;for(auto& mom : trMom) phi.push_back( mom.phi() ); return phi;")
+    .Define( "trEta","std::vector<float> eta;for(auto& mom : trMom) eta.push_back( mom.Eta() ); return eta;")
     .Define( "pz", " std::vector<float> pz; for( auto mom : trMom ){ pz.push_back( mom.Pz() ); } return pz; " )
     .Define( "pq", " std::vector<float> pq; for( int i=0; i<trMom.size(); i++ ){ pq.push_back( trMom.at(i).P() / trCharge.at(i) ); } return pq;" )
     .Define( "trProtonY", rapidity_generator(PROTON_M, Y_CM), {"pz", "pq"} )
@@ -279,6 +350,8 @@ const auto GenerateBmnExtendedTree(DataFrame& d, TH3* efficiency_histo){
     
     .Define( "trIsProton", tr_is_particle, {"trSimIndex", "simIsProton"} )
     .Define( "trProtonWeight", proton_weight, {"trIsProton", "trProtonEfficiency", "trHasAnyTofHit", "trDcaR", "trStsNhits", "trStsChi2", "trFhcalX", "trFhcalY"} )
+    .Define( "trTposW", tpos_weight, {"trEta", "trPt", "pq", "trDcaR", "trStsNhits", "trStsChi2", "trFhcalX", "trFhcalY"} )
+    .Define( "trTnegW", tneg_weight, {"trEta", "trPt", "pq", "trDcaR", "trStsNhits", "trStsChi2", "trFhcalX", "trFhcalY"} )
     .Define( "One", "return static_cast<double>(1.0)" )
     // .Range( 1000 )
 
