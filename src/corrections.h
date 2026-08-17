@@ -29,6 +29,89 @@ template<size_t NDIM>
 using correction_container_t = Qn::DataContainer< std::tuple< mixing_matrix_t<NDIM>, column_t<NDIM> >, Qn::AxisD >;
 
 template<size_t NHARM>
+class PrincipalComponents{
+public:
+  using correction_matrix_t = Eigen::Matrix<double, NHARM*2, NHARM*2>;
+
+  PrincipalComponents() = default;
+  ~PrincipalComponents() = default;
+  
+  static auto MixingMatrix() -> std::function< correction_matrix_t( std::vector<double>, std::vector<double> ) > {
+    return [](const std::vector<double>& vec_mean, const std::vector<double>& vec_cov) -> correction_matrix_t {
+      auto M = correction_matrix_t{ correction_matrix_t::Zero() };
+      auto i = size_t {0};
+      for( auto h_a = size_t{0}; h_a < NHARM; ++h_a ){
+        auto x_a = vec_mean[2*h_a];
+        auto y_a = vec_mean[2*h_a+1];
+        for( auto h_b = h_a; h_b < NHARM; ++h_b ){
+          auto x_b = vec_mean[2*h_b];
+          auto y_b = vec_mean[2*h_b+1];
+          auto cov = std::vector<double>{}; 
+          cov.reserve(4);
+          for( auto j=size_t{0}; j<4; ++j ){
+            cov.push_back( vec_cov.at(i+j) );
+          } i+=4;
+
+          cov[0] -= x_a*x_b;
+          cov[1] -= y_a*x_b;
+          cov[2] -= x_a*y_b;
+          cov[3] -= y_a*y_b;
+
+          M( 2*h_a, 2*h_b ) = cov[0];
+          M( 2*h_a+1, 2*h_b ) = cov[1];
+          M( 2*h_a, 2*h_b+1 ) = cov[2];
+          M( 2*h_a+1, 2*h_b+1 ) = cov[3];
+
+          M( 2*h_b, 2*h_a ) = cov[0];
+          M( 2*h_b, 2*h_a+1 ) = cov[1];
+          M( 2*h_b+1, 2*h_a ) = cov[2];
+          M( 2*h_b+1, 2*h_a+1 ) = cov[3];
+        }
+      }
+      return M;
+    };
+  }
+
+  static auto PseudoInverse() -> std::function< correction_matrix_t( correction_matrix_t, double ) > {
+    return [](const correction_matrix_t& M, double l){
+      auto svd = Eigen::JacobiSVD<correction_matrix_t> ( M, Eigen::ComputeThinU | Eigen::ComputeThinV );    
+      auto singular_values = svd.singularValues();
+      auto sv_sum = double{0.0};
+      auto U = svd.matrixU();
+      auto V = svd.matrixV();
+      auto Splus = correction_matrix_t{ correction_matrix_t::Zero() };
+      auto rank = size_t{0};
+      for (auto i = size_t{0}; i < singular_values.size(); ++i) {
+        auto s = singular_values(i);
+        if( sqrt(s / 0.5 ) < l )
+          continue;
+        Splus(i, i) = sqrt(0.5 / s );
+        rank++;
+        sv_sum += sqrt( s );
+      }
+      auto Ur = U.leftCols(rank);
+      auto UrUrT = Ur*Ur.transpose();
+      auto Ur1 = correction_matrix_t{ correction_matrix_t::Zero() };
+      for( auto r = size_t{0}; r < Ur.rows(); r++ ){
+        auto nz = double{0};
+        for( auto c = size_t{0}; c < Ur.cols(); c++ ){
+          if( fabs( Ur(r, c) ) < l ) continue;
+          nz += 1;
+        }
+        for( auto c = size_t{0}; c < Ur.cols(); c++ ){
+          if( fabs( Ur(r, c) ) < l ) continue;
+          if( nz < 1e-2 ) continue;
+          Ur1(r, c) = 1.0 / ( Ur(r, c) * nz );
+        }
+      }
+      auto Mpinv = correction_matrix_t{ Ur1 * Splus * U.transpose() };
+      std::cout << "l: " << l << "\nMatrix M:\n" << M << "\nMatrix U:\n" << Ur << "\nS: " << singular_values.transpose() << "\nMatrix S:\n" << Splus << "\nInverse:\n" << Mpinv << "\nE:\n" << Ur1 << "\nUrUr^T\n" << UrUrT << "\n\n";
+      return Mpinv;
+    };
+  }
+};
+
+template<size_t NHARM>
 auto MakeWhiteningMatrixFunc() -> std::function< mixing_matrix_t<NHARM*2>(std::vector<double>, std::vector<double>) >{
   return [](const std::vector<double>& vec_mean, const std::vector<double>& vec_cov) -> mixing_matrix_t<NHARM*2> {
     auto M = mixing_matrix_t<NHARM*2>{ mixing_matrix_t<NHARM*2>::Zero() };
@@ -171,40 +254,42 @@ auto MakeTwRescMatrixFunc() -> std::function< mixing_matrix_t<NHARM*2>(std::vect
 }
 
 template<typename correction_matrix_t>
-correction_matrix_t PseudoInverse( const correction_matrix_t& M, double l ){
-  auto svd = Eigen::JacobiSVD<correction_matrix_t> ( M, Eigen::ComputeThinU | Eigen::ComputeThinV );    
-  auto singular_values = svd.singularValues();
-  auto sv_sum = double{0.0};
-  auto U = svd.matrixU();
-  auto V = svd.matrixV();
-  auto Splus = correction_matrix_t{ correction_matrix_t::Zero() };
-  auto rank = size_t{0};
-  for (auto i = size_t{0}; i < singular_values.size(); ++i) {
-    auto s = singular_values(i);
-    if( sqrt(s / 0.5 ) < l )
-      continue;
-    Splus(i, i) = sqrt(0.5 / s );
-    rank++;
-    sv_sum += sqrt( s );
-  }
-  auto Ur = U.leftCols(rank);
-  auto UrUrT = Ur*Ur.transpose();
-  auto Ur1 = correction_matrix_t{ correction_matrix_t::Zero() };
-  for( auto r = size_t{0}; r < Ur.rows(); r++ ){
-    auto nz = double{0};
-    for( auto c = size_t{0}; c < Ur.cols(); c++ ){
-      if( fabs( Ur(r, c) ) < l ) continue;
-      nz += 1;
+correction_matrix_t MakePseudoInverseSqrt(){
+  return [](const correction_matrix_t& M, double l){
+    auto svd = Eigen::JacobiSVD<correction_matrix_t> ( M, Eigen::ComputeThinU | Eigen::ComputeThinV );    
+    auto singular_values = svd.singularValues();
+    auto sv_sum = double{0.0};
+    auto U = svd.matrixU();
+    auto V = svd.matrixV();
+    auto Splus = correction_matrix_t{ correction_matrix_t::Zero() };
+    auto rank = size_t{0};
+    for (auto i = size_t{0}; i < singular_values.size(); ++i) {
+      auto s = singular_values(i);
+      if( sqrt(s / 0.5 ) < l )
+        continue;
+      Splus(i, i) = sqrt(0.5 / s );
+      rank++;
+      sv_sum += sqrt( s );
     }
-    for( auto c = size_t{0}; c < Ur.cols(); c++ ){
-      if( fabs( Ur(r, c) ) < l ) continue;
-      if( nz < 1e-2 ) continue;
-      Ur1(r, c) = 1.0 / ( Ur(r, c) * nz );
+    auto Ur = U.leftCols(rank);
+    auto UrUrT = Ur*Ur.transpose();
+    auto Ur1 = correction_matrix_t{ correction_matrix_t::Zero() };
+    for( auto r = size_t{0}; r < Ur.rows(); r++ ){
+      auto nz = double{0};
+      for( auto c = size_t{0}; c < Ur.cols(); c++ ){
+        if( fabs( Ur(r, c) ) < l ) continue;
+        nz += 1;
+      }
+      for( auto c = size_t{0}; c < Ur.cols(); c++ ){
+        if( fabs( Ur(r, c) ) < l ) continue;
+        if( nz < 1e-2 ) continue;
+        Ur1(r, c) = 1.0 / ( Ur(r, c) * nz );
+      }
     }
+    auto Mpinv = correction_matrix_t{ Ur1 * Splus * U.transpose() };
+    std::cout << "l: " << l << "\nMatrix M:\n" << M << "\nMatrix U:\n" << Ur << "\nS: " << singular_values.transpose() << "\nMatrix S:\n" << Splus << "\nInverse:\n" << Mpinv << "\nE:\n" << Ur1 << "\nUrUr^T\n" << UrUrT << "\n\n";
+    return Mpinv;
   }
-  auto Mpinv = correction_matrix_t{ Ur1 * Splus * U.transpose() };
-  std::cout << "l: " << l << "\nMatrix M:\n" << M << "\nMatrix U:\n" << Ur << "\nS: " << singular_values.transpose() << "\nMatrix S:\n" << Splus << "\nInverse:\n" << Mpinv << "\nE:\n" << Ur1 << "\nUrUr^T\n" << UrUrT << "\n\n";
-  return Mpinv;
 }
 
 template<size_t NHARM>
@@ -259,11 +344,13 @@ inline auto ReadMeanCov( std::string str_vec_name, TFile* calib_file ) -> std::t
   return {vec_mean, vec_cov};
 }
 
-template<size_t NHARM, typename Func> 
-auto MakeCorrectionContainer( std::vector<Qn::DataContainerStatCalculate> vec_mean, std::vector<Qn::DataContainerStatCalculate> vec_cov, const Func& mixing_matrix_generator, const double l=5e-3 ) -> correction_container_t<NHARM*2> {
+template<size_t NHARM, typename CorrectionFunc> 
+auto MakeCorrectionContainer( std::vector<Qn::DataContainerStatCalculate> vec_mean, std::vector<Qn::DataContainerStatCalculate> vec_cov, const CorrectionFunc& correction_func, const double l=5e-3 ) -> correction_container_t<NHARM*2> {
   auto n_bins = vec_mean.front().size();
   auto axes = vec_mean.front().GetAxes();
   auto correction_container = correction_container_t<NHARM*2>{ axes };
+  auto mixing_matrix_function = CorrectionFunc::MixingMatrix();
+  auto pseudo_inverse_function = CorrectionFunc::PseudoInverse();
   for(auto bin=size_t{}; bin < n_bins; ++bin ){
     auto vec_means_double = std::vector<double>{};
     vec_means_double.reserve( vec_mean.size() );
@@ -271,8 +358,8 @@ auto MakeCorrectionContainer( std::vector<Qn::DataContainerStatCalculate> vec_me
     auto vec_cov_double = std::vector<double>{};
     vec_cov_double.reserve( vec_cov.size() );
     std::for_each( vec_cov.begin(), vec_cov.end(), [bin, &vec_cov_double](const auto& c) mutable { vec_cov_double.push_back( c[bin].Mean() ); } );
-    auto M = mixing_matrix_generator( vec_means_double, vec_cov_double );
-    auto Minv = PseudoInverse(M, l);
+    auto M = mixing_matrix_function( vec_means_double, vec_cov_double );
+    auto Minv = pseudo_inverse_function(M, l);
     auto c = column_t<NHARM*2>{};
     std::for_each( vec_means_double.begin(), vec_means_double.end(), [i=size_t{}, &c](auto m) mutable { c(i) = m; ++i; } );
     correction_container[bin] = std::tie( Minv, c );
