@@ -112,6 +112,72 @@ public:
 };
 
 template<size_t NHARM>
+class TwistRescale{
+public:
+  using correction_matrix_t = Eigen::Matrix<double, NHARM*2, NHARM*2>;
+
+  TwistRescale() = default;
+  ~TwistRescale() = default;
+  
+  static auto MixingMatrix() -> std::function< correction_matrix_t( std::vector<double>, std::vector<double> ) > {
+    return [](const std::vector<double>& vec_mean, const std::vector<double>& vec_cov) -> correction_matrix_t {
+      auto M = correction_matrix_t{ correction_matrix_t::Zero() };
+      auto i = size_t {0};
+      for( auto h_a = size_t{0}; h_a < NHARM; ++h_a ){
+        auto x_a = vec_mean[2*h_a];
+        auto y_a = vec_mean[2*h_a+1];
+
+        for( auto h_b = h_a; h_b < NHARM; ++h_b ){
+          auto x_b = vec_mean[2*h_b];
+          auto y_b = vec_mean[2*h_b+1];
+          auto cov = std::vector<double>{}; 
+          cov.reserve(4);
+          for( auto j=size_t{0}; j<4; ++j ){
+            cov.push_back( vec_cov.at(i+j) );
+          } i+=4;
+
+          cov[0] *= 2;
+          cov[1] *= 2;
+          cov[2] *= 2;
+          cov[3] *= 2;
+
+          if( h_a != h_b )
+            continue;
+
+          M( 2*h_a, 2*h_b ) = cov[0];
+          M( 2*h_a+1, 2*h_b ) = cov[1];
+          M( 2*h_a, 2*h_b+1 ) = cov[2];
+          M( 2*h_a+1, 2*h_b+1 ) = cov[3];
+        }
+      }
+      return M;
+    };
+  }
+
+  static auto PseudoInverse() -> std::function< correction_matrix_t( correction_matrix_t, double ) > {
+    return [](const correction_matrix_t& M, double l){
+      auto svd = Eigen::JacobiSVD<correction_matrix_t> ( M, Eigen::ComputeThinU | Eigen::ComputeThinV );    
+      auto singular_values = svd.singularValues();
+      auto U = svd.matrixU();
+      auto V = svd.matrixV();
+      auto Splus = correction_matrix_t{ correction_matrix_t::Zero() };
+      auto rank = size_t{0};
+      for (auto i = size_t{0}; i < singular_values.size(); ++i) {
+        auto s = singular_values(i);
+        if( s < l )
+          continue;
+        Splus(i, i) = 1.0 / s ;
+        rank++;
+      }
+      auto Ur = U.leftCols(rank);
+      auto Mpinv = correction_matrix_t{ U * Splus * U.transpose() };
+      std::cout << "l: " << l << "\nMatrix M:\n" << M << "\nMatrix U:\n" << Ur << "\nS: " << singular_values.transpose() << "\nMatrix S:\n" << Splus << "\nInverse:\n" << Mpinv << "\n\n";
+      return Mpinv;
+    };
+  }
+};
+
+template<size_t NHARM>
 auto MakeWhiteningMatrixFunc() -> std::function< mixing_matrix_t<NHARM*2>(std::vector<double>, std::vector<double>) >{
   return [](const std::vector<double>& vec_mean, const std::vector<double>& vec_cov) -> mixing_matrix_t<NHARM*2> {
     auto M = mixing_matrix_t<NHARM*2>{ mixing_matrix_t<NHARM*2>::Zero() };
