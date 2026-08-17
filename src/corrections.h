@@ -455,7 +455,7 @@ private:
         return result;
     auto Xold = column_t<NHARM*2>{};
     auto j=size_t{0};
-    for( auto p : old ){
+    for( auto p : old_vectors ){
       auto x = p.second.x;
       auto y = p.second.y;
       Xold(2*j) = x;
@@ -465,7 +465,7 @@ private:
     auto [Minv, c] = correction_container_[bin];
     auto Xnew = Minv*( Xold - c );
     j=0;
-    for( auto p : old ){
+    for( auto p : old_vectors ){
       auto harm = p.first;
       auto x = Xnew(2*j);
       auto y = Xnew(2*j+1);
@@ -575,11 +575,13 @@ class CorrectorBuilder{
 public:
   CorrectorBuilder(correction_container_t<NHARM*2> correction_container) :
   correction_container_{ correction_container } {}
+  
   template<typename... Args>
   auto IssueUVectorCorrector() -> UVectorCorrector<NHARM, Args...> {
     return UVectorCorrector<NHARM, Args...>( correction_container_ );
   }
 
+  template<typename... Args>
   auto IssueQVectorCorrector() -> QVectorCorrector<NHARM, Args...> {
     return QVectorCorrector<NHARM, Args...>( correction_container_ );
   }
