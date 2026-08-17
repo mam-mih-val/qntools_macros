@@ -95,13 +95,13 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
   auto p_components_names = AddUVectorComponents(sampled_d, "proton", harmonics, "trPhi" );
   auto p_cov_names = AddUVectorCovariance(sampled_d, "proton", harmonics, "trPhi" );
 
-  auto f1_means_str = DefineVectorMeans( sampled_d, "F1", CorrFunc1Part<qvector_t>{}, harmonics );
-  auto f2_means_str = DefineVectorMeans( sampled_d, "F2", CorrFunc1Part<qvector_t>{}, harmonics );
-  auto f3_means_str = DefineVectorMeans( sampled_d, "F3", CorrFunc1Part<qvector_t>{}, harmonics );
+  auto f1_means_str = DefineVectorMeans( sampled_d, CorrFunc1Part<qvector_t>{}, "F1", harmonics );
+  auto f2_means_str = DefineVectorMeans( sampled_d, CorrFunc1Part<qvector_t>{}, "F2", harmonics );
+  auto f3_means_str = DefineVectorMeans( sampled_d, CorrFunc1Part<qvector_t>{}, "F3", harmonics );
 
-  auto f1_cov_str = DefineVectorCovariance( sampled_d, "F1", CorrFunc1Part<qvector_t>{}, harmonics );
-  auto f2_cov_str = DefineVectorCovariance( sampled_d, "F2", CorrFunc1Part<qvector_t>{}, harmonics );
-  auto f3_cov_str = DefineVectorCovariance( sampled_d, "F3", CorrFunc1Part<qvector_t>{}, harmonics );
+  auto f1_cov_str = DefineVectorCovariance( sampled_d, CorrFunc1Part<qvector_t>{}, "F1", harmonics );
+  auto f2_cov_str = DefineVectorCovariance( sampled_d, CorrFunc1Part<qvector_t>{}, "F2", harmonics );
+  auto f3_cov_str = DefineVectorCovariance( sampled_d, CorrFunc1Part<qvector_t>{}, "F3", harmonics );
 
   auto p_components_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
   p_components_ptr.reserve( p_components_names.size() );
