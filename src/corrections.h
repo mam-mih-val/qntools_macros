@@ -447,7 +447,7 @@ private:
   template<typename... Coord_t>
   auto Execute( qvector_t old_vectors, Coord_t... coordinates ) -> uvector_t{
     auto result = qvector_t{};
-    auto coord = FormCoordinates( i, coordinates... );
+    auto coord = FormCoordinates( 0, coordinates... );
     auto bin = correction_container_.FindBin( coord );
     if( bin > correction_container_.size() )
         return result;
