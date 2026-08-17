@@ -433,6 +433,70 @@ auto MakeCorrectionContainer( std::vector<Qn::DataContainerStatCalculate> vec_me
   return correction_container;
 }
 
+template<size_t NHARM, typename... Args>
+class QVectorCorrector{
+public:
+  QVectorCorrector(correction_container_t<NHARM*2> correction_container) :
+  correction_container_{ correction_container } {}
+
+  auto operator()( Args... args ) -> uvector_t {
+    return Execute( args... );
+  }
+
+private:
+  template<typename... Coord_t>
+  auto Execute( qvector_t old_vectors, Coord_t... coordinates ) -> uvector_t{
+    auto result = qvector_t{};
+    auto coord = FormCoordinates( i, coordinates... );
+    auto bin = correction_container_.FindBin( coord );
+    if( bin > correction_container_.size() )
+        return result;
+      if( bin < 0 )
+        return result;
+    auto Xold = column_t<NHARM*2>{};
+    auto j=size_t{0};
+    for( auto p : old ){
+      auto x = p.second.x;
+      auto y = p.second.y;
+      Xold(2*j) = x;
+      Xold(2*j+1) = y;
+      j++;
+    }
+    auto [Minv, c] = correction_container_[bin];
+    auto Xnew = Minv*( Xold - c );
+    j=0;
+    for( auto p : old ){
+      auto harm = p.first;
+      auto x = Xnew(2*j);
+      auto y = Xnew(2*j+1);
+      result[harm] = Qn::QVec{ static_cast<float>(x), static_cast<float>(y) };
+      j++;
+    }
+    return result;
+  }
+  template<typename T, typename... ColumnTypes>
+  std::vector<double> FormCoordinates( size_t i, T first, ColumnTypes... rest ){
+    auto vec_coordinates = std::vector<double>{};
+    if constexpr ( std::is_floating_point_v<T> ){
+      vec_coordinates.push_back(static_cast<double>( first ) );
+    } else {
+      vec_coordinates.push_back(static_cast<double>( first.at(i) ) );
+    }
+    auto vec_rest_coord = FormCoordinates( i, rest... );
+    vec_coordinates.insert( vec_coordinates.end(), vec_rest_coord.begin(), vec_rest_coord.end() );
+    return vec_coordinates;
+  }
+  template<typename T, typename... ColumnTypes>
+  std::vector<double> FormCoordinates( size_t i, T coordinate ){
+    if constexpr ( std::is_floating_point_v<T> ){
+      return std::vector<double>{ static_cast<double>( coordinate ) };
+    }
+    else{
+      return std::vector<double>{ static_cast<double>( coordinate.at(i) ) };
+    }
+  }
+  correction_container_t<NHARM*2> correction_container_;
+};
 
 template<size_t NHARM, typename... Args>
 class UVectorCorrector{
