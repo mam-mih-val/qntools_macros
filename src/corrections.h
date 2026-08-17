@@ -127,8 +127,8 @@ public:
         auto x_a = vec_mean[2*h_a];
         auto y_a = vec_mean[2*h_a+1];
 
-        auto x_2a = vec_mean[4*h_a];
-        auto y_2a = vec_mean[4*h_a+1];
+        auto x_2a = vec_mean[4*h_a+2];
+        auto y_2a = vec_mean[4*h_a+3];
 
         M( 2*h_a, 2*h_a ) = 1.0 + x_2a;
         M( 2*h_a+1, 2*h_a ) = y_2a;
