@@ -277,7 +277,7 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   file_out->cd();
   
   std::for_each( p_psi_ptr.begin(), p_psi_ptr.end(), [i=0, &p_psi_names]( auto& p ) mutable { p->Write( p_psi_names.at(i).c_str() ); ++i; } );
-  std::for_each( ini_p_psi_ptr.begin(), p_psi_ptr.end(), [i=0, &ini_p_psi_names]( auto& p ) mutable { p->Write( ini_p_psi_names.at(i).c_str() ); ++i; } );
+  std::for_each( ini_p_psi_ptr.begin(), ini_p_psi_ptr.end(), [i=0, &ini_p_psi_names]( auto& p ) mutable { p->Write( ini_p_psi_names.at(i).c_str() ); ++i; } );
   std::for_each( p_f1_ptr.begin(), p_f1_ptr.end(), [i=0, &p_f1_names]( auto& p ) mutable { p->Write( p_f1_names.at(i).c_str() ); ++i; } );
   std::for_each( p_f2_ptr.begin(), p_f2_ptr.end(), [i=0, &p_f2_names]( auto& p ) mutable { p->Write( p_f2_names.at(i).c_str() ); ++i; } );
   std::for_each( p_f3_ptr.begin(), p_f3_ptr.end(), [i=0, &p_f3_names]( auto& p ) mutable { p->Write( p_f3_names.at(i).c_str() ); ++i; } );
