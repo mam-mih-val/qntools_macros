@@ -106,27 +106,27 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   auto p_corr_builder = CorrectorBuilder<NHARM>( p_correction_container );
   sampled_d = sampled_d.Define( "proton", p_corr_builder.IssueUVectorCorrector<uvector_t, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >(), { "ini_proton", "centrality", "trProtonY", "trPt" } );
 
-  auto [vec_f1_mean, vec_f1_cov] = ReadMeanCov<NHARM>("F1", calib_file.get());
+  auto [vec_f1_mean, vec_f1_cov] = ReadMeanCov<NHARM*2>("F1", calib_file.get());
   auto f1_correction_container = MakeCorrectionContainer<NHARM>( vec_f1_mean, vec_f1_cov, TwistRescale<NHARM>{}, 5e-2 );
   auto f1_corr_builder = CorrectorBuilder<NHARM>( f1_correction_container );
   sampled_d = sampled_d.Define( "F1", f1_corr_builder.IssueQVectorCorrector<qvector_t, float>(), { "ini_F1", "centrality" } );
 
-  auto [vec_f2_mean, vec_f2_cov] = ReadMeanCov<NHARM>("F2", calib_file.get());
+  auto [vec_f2_mean, vec_f2_cov] = ReadMeanCov<NHARM*2>("F2", calib_file.get());
   auto f2_correction_container = MakeCorrectionContainer<NHARM>( vec_f2_mean, vec_f2_cov, TwistRescale<NHARM>{}, 5e-2 );
   auto f2_corr_builder = CorrectorBuilder<NHARM>( f2_correction_container );
   sampled_d = sampled_d.Define( "F2", f2_corr_builder.IssueQVectorCorrector<qvector_t, float>(), { "ini_F2", "centrality" } );
 
-  auto [vec_f3_mean, vec_f3_cov] = ReadMeanCov<NHARM>("F3", calib_file.get());
+  auto [vec_f3_mean, vec_f3_cov] = ReadMeanCov<NHARM*2>("F3", calib_file.get());
   auto f3_correction_container = MakeCorrectionContainer<NHARM>( vec_f3_mean, vec_f3_cov, TwistRescale<NHARM>{}, 5e-2 );
   auto f3_corr_builder = CorrectorBuilder<NHARM>( f3_correction_container );
   sampled_d = sampled_d.Define( "F3", f3_corr_builder.IssueQVectorCorrector<qvector_t, float>(), { "ini_F3", "centrality" } );
 
-  auto [vec_tp_mean, vec_tp_cov] = ReadMeanCov<NHARM>("Tpos", calib_file.get());
+  auto [vec_tp_mean, vec_tp_cov] = ReadMeanCov<NHARM*2>("Tpos", calib_file.get());
   auto tp_correction_container = MakeCorrectionContainer<NHARM>( vec_tp_mean, vec_tp_cov, TwistRescale<NHARM>{}, 5e-2 );
   auto tp_corr_builder = CorrectorBuilder<NHARM>( tp_correction_container );
   sampled_d = sampled_d.Define( "Tpos", tp_corr_builder.IssueQVectorCorrector<qvector_t, float>(), { "ini_Tpos", "centrality" } );
 
-  auto [vec_tn_mean, vec_tn_cov] = ReadMeanCov<NHARM>("Tneg", calib_file.get());
+  auto [vec_tn_mean, vec_tn_cov] = ReadMeanCov<NHARM*2>("Tneg", calib_file.get());
   auto tn_correction_container = MakeCorrectionContainer<NHARM>( vec_tn_mean, vec_tn_cov, TwistRescale<NHARM>{}, 5e-2 );
   auto tn_corr_builder = CorrectorBuilder<NHARM>( tn_correction_container );
   sampled_d = sampled_d.Define( "Tneg", tn_corr_builder.IssueQVectorCorrector<qvector_t, float>(), { "ini_Tneg", "centrality" } );

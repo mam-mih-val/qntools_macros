@@ -127,28 +127,13 @@ public:
         auto x_a = vec_mean[2*h_a];
         auto y_a = vec_mean[2*h_a+1];
 
-        for( auto h_b = h_a; h_b < NHARM; ++h_b ){
-          auto x_b = vec_mean[2*h_b];
-          auto y_b = vec_mean[2*h_b+1];
-          auto cov = std::vector<double>{}; 
-          cov.reserve(4);
-          for( auto j=size_t{0}; j<4; ++j ){
-            cov.push_back( vec_cov.at(i+j) );
-          } i+=4;
+        auto x_2a = vec_mean[4*h_a];
+        auto y_2a = vec_mean[4*h_a+1];
 
-          cov[0] *= 2;
-          cov[1] *= 2;
-          cov[2] *= 2;
-          cov[3] *= 2;
-
-          if( h_a != h_b )
-            continue;
-
-          M( 2*h_a, 2*h_b ) = cov[0];
-          M( 2*h_a+1, 2*h_b ) = cov[1];
-          M( 2*h_a, 2*h_b+1 ) = cov[2];
-          M( 2*h_a+1, 2*h_b+1 ) = cov[3];
-        }
+        M( 2*h_a, 2*h_a ) = 1.0 + x_2a;
+        M( 2*h_a+1, 2*h_a ) = y_2a;
+        M( 2*h_a, 2*h_a+1 ) = y_2a;
+        M( 2*h_a+1, 2*h_a+1 ) = 1.0 - x_2a;
       }
       return M;
     };
@@ -166,7 +151,7 @@ public:
         auto s = singular_values(i);
         if( s < l )
           continue;
-        Splus(i, i) = 1.0 / s ;
+        Splus(i, i) = 1.0 / s;
         rank++;
       }
       auto Ur = U.leftCols(rank);
