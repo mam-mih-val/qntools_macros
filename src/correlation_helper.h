@@ -168,10 +168,10 @@ auto DefineVectorCovariance( DataFrame& df, Func corr_func, const std::string& f
       component_names[3] = std::string{first_name}.append("_y").append(std::to_string(h1)).append("y").append(std::to_string(h2));
 
       if constexpr ( std::is_same_v<qvector_t, typename Func::First_t> ){
-        df = df.Define( component_names[0], [h1, h2]( qvector_t first ){ return first[h1].x*first[h2].x; }, std::vector{first_name} );
-        df = df.Define( component_names[1], [h1, h2]( qvector_t first ){ return first[h1].y*first[h2].x; }, std::vector{first_name} );
-        df = df.Define( component_names[2], [h1, h2]( qvector_t first ){ return first[h1].x*first[h2].y; }, std::vector{first_name} );
-        df = df.Define( component_names[3], [h1, h2]( qvector_t first ){ return first[h1].y*first[h2].y; }, std::vector{first_name} );
+        df = df.Define( component_names[0], [h1, h2]( qvector_t first ){ return static_cast<double>(first[h1].x*first[h2].x); }, std::vector{first_name} );
+        df = df.Define( component_names[1], [h1, h2]( qvector_t first ){ return static_cast<double>(first[h1].y*first[h2].x); }, std::vector{first_name} );
+        df = df.Define( component_names[2], [h1, h2]( qvector_t first ){ return static_cast<double>(first[h1].x*first[h2].y); }, std::vector{first_name} );
+        df = df.Define( component_names[3], [h1, h2]( qvector_t first ){ return static_cast<double>(first[h1].y*first[h2].y); }, std::vector{first_name} );
       } 
       if constexpr ( std::is_same_v<uvector_t, typename Func::First_t> ) {
         df = df.Define( component_names[0], [h1, h2]( uvector_t first ){ std::vector<double> res{}; res.reserve( first.size() ); for( auto f : first ){ res.push_back( f[h1].x * f[h2].x ); } return res; }, std::vector{first_name} );
@@ -199,8 +199,8 @@ auto DefineVectorMeans( DataFrame& df, Func corr_func, const std::string& first_
     component_names[1] = std::string{first_name}.append("_y").append(std::to_string(h1));
 
     if constexpr ( std::is_same_v<qvector_t, typename Func::First_t> ){
-      df = df.Define( component_names[0], [h1]( qvector_t first ){ return first[h1].x; }, std::vector{first_name} );
-      df = df.Define( component_names[1], [h1]( qvector_t first ){ return first[h1].y; }, std::vector{first_name} );
+      df = df.Define( component_names[0], [h1]( qvector_t first ){ return static_cast<double>(first[h1].x); }, std::vector{first_name} );
+      df = df.Define( component_names[1], [h1]( qvector_t first ){ return static_cast<double>(first[h1].y); }, std::vector{first_name} );
     } 
     if constexpr ( std::is_same_v<uvector_t, typename Func::First_t> ) {
       df = df.Define( component_names[0], [h1]( uvector_t first ){ std::vector<double> res{}; res.reserve( first.size() ); for( auto f : first ){ res.push_back( f[h1].x ); } return res; }, std::vector{first_name} );
