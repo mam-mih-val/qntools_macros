@@ -137,38 +137,38 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
 
   for( const auto& name : f1_means_str ){
     f1_means_ptr.emplace_back(
-      sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "One", "samples", "centrality" } )
+      sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes, 100, Qn::Stat::WeightType::REFERENCE), std::vector<std::string>{name, "One", "samples", "centrality" } )
     ); 
   }
 
   for( const auto& name : f2_means_str ){
     f2_means_ptr.emplace_back(
-      sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "One", "samples", "centrality" } )
+      sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes, 100, Qn::Stat::WeightType::REFERENCE), std::vector<std::string>{name, "One", "samples", "centrality" } )
     ); 
   }
 
   for( const auto& name : f3_means_str ){
     f3_means_ptr.emplace_back(
-      sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "One", "samples", "centrality" } )
+      sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes, 100, Qn::Stat::WeightType::REFERENCE), std::vector<std::string>{name, "One", "samples", "centrality" } )
     ); 
   }
 
 
   for( const auto& name : f1_cov_str ){
     f1_cov_ptr.emplace_back(
-      sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "One", "samples", "centrality" } )
+      sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes, 100, Qn::Stat::WeightType::REFERENCE), std::vector<std::string>{name, "One", "samples", "centrality" } )
     ); 
   }
 
   for( const auto& name : f2_cov_str ){
     f2_cov_ptr.emplace_back(
-      sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "One", "samples", "centrality" } )
+      sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes, 100, Qn::Stat::WeightType::REFERENCE), std::vector<std::string>{name, "One", "samples", "centrality" } )
     ); 
   }
 
   for( const auto& name : f3_cov_str ){
     f3_cov_ptr.emplace_back(
-      sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "One", "samples", "centrality" } )
+      sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes, 100, Qn::Stat::WeightType::REFERENCE), std::vector<std::string>{name, "One", "samples", "centrality" } )
     ); 
   }
 
