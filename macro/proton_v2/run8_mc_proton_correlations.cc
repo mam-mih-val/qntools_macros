@@ -132,6 +132,7 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   sampled_d = sampled_d.Define( "Tneg", tn_corr_builder.IssueQVectorCorrector<qvector_t, float>(), { "ini_Tneg", "centrality" } );
   
   auto p_psi_names = Define2PartCorrelation( sampled_d, CorrFunc2Part< uvector_t, qvector_t >{}, "proton", "psi_rp", std::vector{ std::pair<size_t, size_t>{1, 1}, std::pair<size_t, size_t>{2, 2} } );
+  auto tru_p_psi_names = Define2PartCorrelation( sampled_d, CorrFunc2Part< uvector_t, qvector_t >{}, "tru_proton", "psi_rp", std::vector{ std::pair<size_t, size_t>{1, 1}, std::pair<size_t, size_t>{2, 2} } );
   auto ini_p_psi_names = Define2PartCorrelation( sampled_d, CorrFunc2Part< uvector_t, qvector_t >{}, "ini_proton", "psi_rp", std::vector{ std::pair<size_t, size_t>{1, 1}, std::pair<size_t, size_t>{2, 2} } );
   auto p_f1_names = Define2PartCorrelation( sampled_d, CorrFunc2Part< uvector_t, qvector_t >{}, "proton", "F1", std::vector{ std::pair<size_t, size_t>{1, 1}, std::pair<size_t, size_t>{2, 2} } );
   auto p_f2_names = Define2PartCorrelation( sampled_d, CorrFunc2Part< uvector_t, qvector_t >{}, "proton", "F2", std::vector{ std::pair<size_t, size_t>{1, 1}, std::pair<size_t, size_t>{2, 2} } );
@@ -141,6 +142,10 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   auto f2_f3_names = Define2PartCorrelation( sampled_d, CorrFunc2Part< qvector_t, qvector_t >{}, "F2", "F3", std::vector{ std::pair<size_t, size_t>{1, 1} } );
   auto f1_f3_names = Define2PartCorrelation( sampled_d, CorrFunc2Part< qvector_t, qvector_t >{}, "F1", "F3", std::vector{ std::pair<size_t, size_t>{1, 1} } );
   
+  auto f1_psi_names = Define2PartCorrelation( sampled_d, CorrFunc2Part< qvector_t, qvector_t >{}, "F1", "psi_rp", std::vector{ std::pair<size_t, size_t>{1, 1} } );
+  auto f2_psi_names = Define2PartCorrelation( sampled_d, CorrFunc2Part< qvector_t, qvector_t >{}, "F2", "psi_rp", std::vector{ std::pair<size_t, size_t>{1, 1} } );
+  auto f3_psi_names = Define2PartCorrelation( sampled_d, CorrFunc2Part< qvector_t, qvector_t >{}, "F3", "psi_rp", std::vector{ std::pair<size_t, size_t>{1, 1} } );
+
   auto f1_tp_names = Define2PartCorrelation( sampled_d, CorrFunc2Part< qvector_t, qvector_t >{}, "F1", "Tpos", std::vector{ std::pair<size_t, size_t>{1, 1} } );
   auto f1_tn_names = Define2PartCorrelation( sampled_d, CorrFunc2Part< qvector_t, qvector_t >{}, "F1", "Tneg", std::vector{ std::pair<size_t, size_t>{1, 1} } );
 
@@ -152,6 +157,7 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
 
   auto p_psi_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
   auto ini_p_psi_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
+  auto tru_p_psi_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
   auto p_f1_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
   auto p_f2_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
   auto p_f3_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
@@ -160,6 +166,10 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   auto f1_f3_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
   auto f2_f3_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
   
+  auto f1_psi_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
+  auto f2_psi_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
+  auto f3_psi_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
+
   auto f1_tp_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
   auto f1_tn_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
 
@@ -200,6 +210,12 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
     ); 
   }
 
+  for( const auto& name : tru_p_psi_names ){
+    tru_p_psi_ptr.emplace_back(
+      sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >( CorrelationHelper(proton_axes), {name, "simIsProton", "samples", "centrality", "simProtonY", "simPt" } )
+    ); 
+  }
+
   for( const auto& name : p_f1_names ){
     p_f1_ptr.emplace_back(
       sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >( CorrelationHelper(proton_axes), {name, "is_corrected", "samples", "centrality", "trProtonY", "trPt" } )
@@ -232,6 +248,24 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
 
   for( const auto& name : f2_f3_names ){
     f2_f3_ptr.emplace_back(
+      sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes, 100, Qn::Stat::WeightType::REFERENCE), {name, "One", "samples", "centrality" } )
+    ); 
+  }
+
+  for( const auto& name : f1_psi_names ){
+    f1_psi_ptr.emplace_back(
+      sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes, 100, Qn::Stat::WeightType::REFERENCE), {name, "One", "samples", "centrality" } )
+    ); 
+  }
+
+  for( const auto& name : f2_psi_names ){
+    f2_psi_ptr.emplace_back(
+      sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes, 100, Qn::Stat::WeightType::REFERENCE), {name, "One", "samples", "centrality" } )
+    ); 
+  }
+
+  for( const auto& name : f3_psi_names ){
+    f3_psi_ptr.emplace_back(
       sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes, 100, Qn::Stat::WeightType::REFERENCE), {name, "One", "samples", "centrality" } )
     ); 
   }
@@ -278,6 +312,7 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   
   std::for_each( p_psi_ptr.begin(), p_psi_ptr.end(), [i=0, &p_psi_names]( auto& p ) mutable { p->Write( p_psi_names.at(i).c_str() ); ++i; } );
   std::for_each( ini_p_psi_ptr.begin(), ini_p_psi_ptr.end(), [i=0, &ini_p_psi_names]( auto& p ) mutable { p->Write( ini_p_psi_names.at(i).c_str() ); ++i; } );
+  std::for_each( tru_p_psi_ptr.begin(), tru_p_psi_ptr.end(), [i=0, &tru_p_psi_names]( auto& p ) mutable { p->Write( tru_p_psi_names.at(i).c_str() ); ++i; } );
   std::for_each( p_f1_ptr.begin(), p_f1_ptr.end(), [i=0, &p_f1_names]( auto& p ) mutable { p->Write( p_f1_names.at(i).c_str() ); ++i; } );
   std::for_each( p_f2_ptr.begin(), p_f2_ptr.end(), [i=0, &p_f2_names]( auto& p ) mutable { p->Write( p_f2_names.at(i).c_str() ); ++i; } );
   std::for_each( p_f3_ptr.begin(), p_f3_ptr.end(), [i=0, &p_f3_names]( auto& p ) mutable { p->Write( p_f3_names.at(i).c_str() ); ++i; } );
@@ -285,6 +320,10 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   std::for_each( f1_f2_ptr.begin(), f1_f2_ptr.end(), [i=0, &f1_f2_names]( auto& p ) mutable { p->Write( f1_f2_names.at(i).c_str() ); ++i; } );
   std::for_each( f1_f3_ptr.begin(), f1_f3_ptr.end(), [i=0, &f1_f3_names]( auto& p ) mutable { p->Write( f1_f3_names.at(i).c_str() ); ++i; } );
   std::for_each( f2_f3_ptr.begin(), f2_f3_ptr.end(), [i=0, &f2_f3_names]( auto& p ) mutable { p->Write( f2_f3_names.at(i).c_str() ); ++i; } );
+
+  std::for_each( f1_psi_ptr.begin(), f1_psi_ptr.end(), [i=0, &f1_psi_names]( auto& p ) mutable { p->Write( f1_psi_names.at(i).c_str() ); ++i; } );
+  std::for_each( f2_psi_ptr.begin(), f2_psi_ptr.end(), [i=0, &f2_psi_names]( auto& p ) mutable { p->Write( f2_psi_names.at(i).c_str() ); ++i; } );
+  std::for_each( f3_psi_ptr.begin(), f3_psi_ptr.end(), [i=0, &f3_psi_names]( auto& p ) mutable { p->Write( f3_psi_names.at(i).c_str() ); ++i; } );
   
   std::for_each( f1_tp_ptr.begin(), f1_tp_ptr.end(), [i=0, &f1_tp_names]( auto& p ) mutable { p->Write( f1_tp_names.at(i).c_str() ); ++i; } );
   std::for_each( f1_tn_ptr.begin(), f1_tn_ptr.end(), [i=0, &f1_tn_names]( auto& p ) mutable { p->Write( f1_tn_names.at(i).c_str() ); ++i; } );
