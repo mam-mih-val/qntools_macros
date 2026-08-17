@@ -169,18 +169,18 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   auto f3_tp_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
   auto f3_tn_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
 
-  sampled_d = sampled_d.Define( "is_corrected", [correction_container]( std::vector<double> weights,  float centrality, ROOT::VecOps::RVec<float> vec_y, ROOT::VecOps::RVec<float> vec_pT ){
+  sampled_d = sampled_d.Define( "is_corrected", [&p_correction_container]( std::vector<double> weights,  float centrality, ROOT::VecOps::RVec<float> vec_y, ROOT::VecOps::RVec<float> vec_pT ){
     auto vec_corrected = std::vector<double>( weights.size(), 0 );
     for( auto i=size_t{}; i<weights.size(); ++i ){
       auto pT = vec_pT[i];
       auto y = vec_y[i];
       auto coord = std::vector<double>{ centrality, y, pT };
-      auto bin = correction_container.FindBin( coord );
-      if( bin > correction_container.size() )
+      auto bin = p_correction_container.FindBin( coord );
+      if( bin > p_correction_container.size() )
         continue;
       if( bin < 0 )
         continue;
-      auto [Mpinv, c] = correction_container[bin];
+      auto [Mpinv, c] = p_correction_container[bin];
       if( std::isnan(Mpinv(0,0)) )
         continue;
       vec_corrected[i] = weights[i];
