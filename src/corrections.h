@@ -439,13 +439,13 @@ public:
   QVectorCorrector(correction_container_t<NHARM*2> correction_container) :
   correction_container_{ correction_container } {}
 
-  auto operator()( Args... args ) -> uvector_t {
+  auto operator()( Args... args ) -> qvector_t {
     return Execute( args... );
   }
 
 private:
   template<typename... Coord_t>
-  auto Execute( qvector_t old_vectors, Coord_t... coordinates ) -> uvector_t{
+  auto Execute( qvector_t old_vectors, Coord_t... coordinates ) -> qvector_t{
     auto result = qvector_t{};
     auto coord = FormCoordinates( 0, coordinates... );
     auto bin = correction_container_.FindBin( coord );
@@ -578,6 +578,10 @@ public:
   template<typename... Args>
   auto IssueUVectorCorrector() -> UVectorCorrector<NHARM, Args...> {
     return UVectorCorrector<NHARM, Args...>( correction_container_ );
+  }
+
+  auto IssueQVectorCorrector() -> QVectorCorrector<NHARM, Args...> {
+    return QVectorCorrector<NHARM, Args...>( correction_container_ );
   }
 
 private:
