@@ -212,7 +212,7 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
 
   for( const auto& name : tru_p_psi_names ){
     tru_p_psi_ptr.emplace_back(
-      sampled_d.Book< std::vector<double>, std::vector<init>,  ROOT::VecOps::RVec<ULong64_t>, float, ROOT::VecOps::RVec<float>, std::vector<float> >( CorrelationHelper(proton_axes), {name, "simIsProton", "samples", "centrality", "simProtonY", "simPt" } )
+      sampled_d.Book< std::vector<double>, std::vector<int>,  ROOT::VecOps::RVec<ULong64_t>, float, ROOT::VecOps::RVec<float>, std::vector<float> >( CorrelationHelper(proton_axes), {name, "simIsProton", "samples", "centrality", "simProtonY", "simPt" } )
     ); 
   }
 
