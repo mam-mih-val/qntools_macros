@@ -1,6 +1,7 @@
 #ifndef VECTOR_GENERATORS_H
 #define VECTOR_GENERATORS_H
 
+#include <limits>
 #include <string>
 #include <vector>
 #include <functional>
@@ -49,6 +50,30 @@ inline const auto u_vector( const std::vector<size_t>& harmonics ){
   };
 }
 
+template<typename phi_vec_t, typename w_vec_t>
+inline const auto q_vector( const std::vector<size_t>& harmonics ){
+  return [&harmonics]( phi_vec_t vec_phi, w_vec_t vec_weights ){
+    auto qvec = qvector_t{};
+    auto sum_w = double{};
+    for( auto i=size_t{0}; i<vec_phi.size(); ++i ){
+      auto phi = vec_phi[i];
+      auto w = vec_weights[i];
+      sum_w += w;
+      for( auto n : harmonics ){
+        qvec[n].x += w * cos( n * phi );
+        qvec[n].y += w * sin( n * phi );
+      }
+    }
+    if( fabs(sum_w) < std::numeric_limits<double>::epsilon() )
+      return qvec;
+    for( auto harm : harmonics ){
+      qvec[harm].x /= sum_w;
+      qvec[harm].y /= sum_w;
+    }    
+    return qvec;
+  };
+}
+
 template<typename T>
 inline const auto psi_rp_vector( const std::vector<size_t>& harmonics ){
   return [&harmonics]( T psi_rp ){
@@ -61,8 +86,8 @@ inline const auto psi_rp_vector( const std::vector<size_t>& harmonics ){
 }
 
 template<typename DataFrame, typename Func>
-void DefineVector( DataFrame& df, const std::string& vec_name, const std::string& phi_name, Func defining_function ){
-  df = df.Define( vec_name, defining_function, std::vector<std::string>{phi_name} );
+void DefineVector( DataFrame& df, const std::string& vec_name, Func defining_function, std::vector<std::string> vec_fields ){
+  df = df.Define( vec_name, defining_function, vec_fields );
 }
 
 inline const auto ux_generator( const std::vector<size_t>& harmonics ){

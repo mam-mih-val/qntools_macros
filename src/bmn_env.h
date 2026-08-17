@@ -1,6 +1,7 @@
 #ifndef BMN_ENV_H
 #define BMN_ENV_H
 
+#include <algorithm>
 const auto rapidity_generator = []( auto particle_m, auto y_cm ){
   return 
   [particle_m, y_cm]( std::vector<float> vec_pz, std::vector<float> vec_pq ){
@@ -155,6 +156,19 @@ const auto weight_generator = []( auto efficiency_map ){
   };
 };
 
+const auto fhcal_weight_generator = []( auto layout ){
+  return [&layout]( ROOT::VecOps::RVec<int> vec_mod_id, ROOT::VecOps::RVec<float> vec_mod_energy ){
+    auto vec_weights = std::vector<double>( vec_mod_energy.size(), 0. );
+    for( auto i=size_t{0}; i<vec_mod_id.size(); ++i ){
+      auto mod_id = vec_mod_id[i];
+      if( std::find( layout.begin(), layout.end(), mod_id ) == layout.end() )
+        continue;
+      vec_weights[i] = vec_mod_energy[i];
+    }
+    return vec_weights;
+  };
+};
+
 const auto proton_weight = []( 
   std::vector<int> vec_is_proton, 
   std::vector<float> vec_efficiency, 
@@ -265,6 +279,7 @@ const auto GenerateBmnExtendedTree(DataFrame& d, TH3* efficiency_histo){
     
     .Define( "trIsProton", tr_is_particle, {"trSimIndex", "simIsProton"} )
     .Define( "trProtonWeight", proton_weight, {"trIsProton", "trProtonEfficiency", "trHasAnyTofHit", "trDcaR", "trStsNhits", "trStsChi2", "trFhcalX", "trFhcalY"} )
+    .Define( "One", "return static_cast<double>(1.0)" )
     // .Range( 1000 )
 
     .Filter("vtxNtracks > 2")
