@@ -156,7 +156,7 @@ const auto weight_generator = []( auto efficiency_map ){
   };
 };
 
-const auto fhcal_weight_generator = []( auto layout ){
+const auto fhcal_weight_generator = []( const auto& layout ){
   return [&layout]( ROOT::VecOps::RVec<int> vec_mod_id, ROOT::VecOps::RVec<float> vec_mod_energy ){
     auto vec_weights = std::vector<double>( vec_mod_energy.size(), 0. );
     for( auto i=size_t{0}; i<vec_mod_id.size(); ++i ){
