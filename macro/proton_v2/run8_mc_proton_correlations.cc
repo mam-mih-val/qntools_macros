@@ -131,7 +131,7 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   // auto tn_corr_builder = CorrectorBuilder<NHARM>( tn_correction_container );
   // sampled_d = sampled_d.Define( "Tneg", tn_corr_builder.IssueQVectorCorrector<qvector_t, float>(), { "ini_Tneg", "centrality" } );
   
-  // auto p_psi_names = Define2PartCorrelation( sampled_d, CorrFunc2Part< uvector_t, qvector_t >{}, "proton", "psi_rp", std::vector{ std::pair<size_t, size_t>{1, 1}, std::pair<size_t, size_t>{2, 2} } );
+  auto p_psi_names = Define2PartCorrelation( sampled_d, CorrFunc2Part< uvector_t, qvector_t >{}, "proton", "psi_rp", std::vector{ std::pair<size_t, size_t>{1, 1}, std::pair<size_t, size_t>{2, 2} } );
   // auto tru_p_psi_names = Define2PartCorrelation( sampled_d, CorrFunc2Part< uvector_t, qvector_t >{}, "tru_proton", "psi_rp", std::vector{ std::pair<size_t, size_t>{1, 1}, std::pair<size_t, size_t>{2, 2} } );
   // auto ini_p_psi_names = Define2PartCorrelation( sampled_d, CorrFunc2Part< uvector_t, qvector_t >{}, "ini_proton", "psi_rp", std::vector{ std::pair<size_t, size_t>{1, 1}, std::pair<size_t, size_t>{2, 2} } );
   // auto p_f1_names = Define2PartCorrelation( sampled_d, CorrFunc2Part< uvector_t, qvector_t >{}, "proton", "F1", std::vector{ std::pair<size_t, size_t>{1, 1}, std::pair<size_t, size_t>{2, 2} } );
@@ -156,7 +156,7 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   // auto f3_tn_names = Define2PartCorrelation( sampled_d, CorrFunc2Part< qvector_t, qvector_t >{}, "F3", "Tneg", std::vector{ std::pair<size_t, size_t>{1, 1} } );
 
   auto p_psi_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
-  auto ini_p_psi_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
+  // auto ini_p_psi_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
   // auto tru_p_psi_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
   // auto p_f1_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
   // auto p_f2_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
@@ -204,11 +204,11 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
     ); 
   }
 
-  for( const auto& name : ini_p_psi_names ){
-    ini_p_psi_ptr.emplace_back(
-      sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >( CorrelationHelper(proton_axes), {name, "is_corrected", "samples", "centrality", "trProtonY", "trPt" } )
-    ); 
-  }
+  // for( const auto& name : ini_p_psi_names ){
+  //   ini_p_psi_ptr.emplace_back(
+  //     sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >( CorrelationHelper(proton_axes), {name, "is_corrected", "samples", "centrality", "trProtonY", "trPt" } )
+  //   ); 
+  // }
 
   // for( const auto& name : tru_p_psi_names ){
   //   tru_p_psi_ptr.emplace_back(
