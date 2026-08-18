@@ -83,25 +83,32 @@ public:
       auto rank = size_t{0};
       for (auto i = size_t{0}; i < singular_values.size(); ++i) {
         auto s = singular_values(i);
-        if( sqrt(s / 0.5 ) < l )
+        if( s / 0.5  < l )
           continue;
-        Splus(i, i) = sqrt(0.5 / s );
+        // Splus(i, i) = sqrt(0.5 / s );
+        Splus(i, i) = 0.5 / s;
         rank++;
         sv_sum += sqrt( s );
       }
       auto Ur = U.leftCols(rank);
       auto UrUrT = Ur*Ur.transpose();
       auto Ur1 = correction_matrix_t{ correction_matrix_t::Zero() };
+      // for( auto r = size_t{0}; r < Ur.rows(); r++ ){
+      //   auto nz = double{0};
+      //   for( auto c = size_t{0}; c < Ur.cols(); c++ ){
+      //     if( fabs( Ur(r, c) ) < l ) continue;
+      //     nz += 1;
+      //   }
+      //   for( auto c = size_t{0}; c < Ur.cols(); c++ ){
+      //     if( fabs( Ur(r, c) ) < l ) continue;
+      //     if( nz < 1e-2 ) continue;
+      //     Ur1(r, c) = 1.0 / ( Ur(r, c) * nz );
+      //   }
+      // }
       for( auto r = size_t{0}; r < Ur.rows(); r++ ){
-        auto nz = double{0};
         for( auto c = size_t{0}; c < Ur.cols(); c++ ){
           if( fabs( Ur(r, c) ) < l ) continue;
-          nz += 1;
-        }
-        for( auto c = size_t{0}; c < Ur.cols(); c++ ){
-          if( fabs( Ur(r, c) ) < l ) continue;
-          if( nz < 1e-2 ) continue;
-          Ur1(r, c) = 1.0 / ( Ur(r, c) * nz );
+          Ur1(c, r) = Ur(c, r) / UrUrT(r, r);
         }
       }
       auto Mpinv = correction_matrix_t{ Ur1 * Splus * U.transpose() };
