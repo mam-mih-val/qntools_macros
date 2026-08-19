@@ -96,7 +96,7 @@ public:
         for( auto c = size_t{0}; c < Ur.cols(); c++ ){
           if( fabs( Ur(r, c) ) > l ) 
             continue;
-          Ur(c, r) = 0.0;
+          Ur(r, c) = 0.0;
         }
       }
       auto UrUrT = Ur*Ur.transpose();
@@ -116,7 +116,7 @@ public:
         for( auto c = size_t{0}; c < Ur.cols(); c++ ){
           if( fabs( UrUrT(r, r) ) < l ) 
             continue;
-          Ur1(c, r) = Ur(c, r) / UrUrT(r, r);
+          Ur1(r, c) = Ur(r, c) / UrUrT(r, r);
         }
       }
       auto Mpinv = correction_matrix_t{ Ur1 * Splus * U.transpose() };
