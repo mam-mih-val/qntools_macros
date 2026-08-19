@@ -92,13 +92,6 @@ public:
       }
       auto Ur = U.leftCols(rank);
       auto Ur1 = correction_matrix_t{ correction_matrix_t::Zero() };
-      for( auto r = size_t{0}; r < Ur.rows(); r++ ){
-        for( auto c = size_t{0}; c < Ur.cols(); c++ ){
-          if( fabs( Ur(r, c) ) > l ) 
-            continue;
-          Ur(r, c) = 0.0;
-        }
-      }
       auto UrUrT = Ur*Ur.transpose();
       // for( auto r = size_t{0}; r < Ur.rows(); r++ ){
       //   auto nz = double{0};
