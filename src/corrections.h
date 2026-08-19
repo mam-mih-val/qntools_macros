@@ -91,8 +91,15 @@ public:
         sv_sum += sqrt( s );
       }
       auto Ur = U.leftCols(rank);
-      auto UrUrT = Ur*Ur.transpose();
       auto Ur1 = correction_matrix_t{ correction_matrix_t::Zero() };
+      for( auto r = size_t{0}; r < Ur.rows(); r++ ){
+        for( auto c = size_t{0}; c < Ur.cols(); c++ ){
+          if( fabs( Ur(r, c) ) > l ) 
+            continue;
+          Ur(c, r) = 0.0;
+        }
+      }
+      auto UrUrT = Ur*Ur.transpose();
       // for( auto r = size_t{0}; r < Ur.rows(); r++ ){
       //   auto nz = double{0};
       //   for( auto c = size_t{0}; c < Ur.cols(); c++ ){
@@ -107,7 +114,8 @@ public:
       // }
       for( auto r = size_t{0}; r < Ur.rows(); r++ ){
         for( auto c = size_t{0}; c < Ur.cols(); c++ ){
-          if( fabs( Ur(r, c) ) < l ) continue;
+          if( fabs( UrUrT(r, r) ) < l ) 
+            continue;
           Ur1(c, r) = Ur(c, r) / UrUrT(r, r);
         }
       }
