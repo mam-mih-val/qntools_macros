@@ -88,9 +88,9 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
   sampled_d = sampled_d.Define( "F2w", fhcal_weight_generator(f2_mod), { "fhcalModId", "fhcalModE" } );
   sampled_d = sampled_d.Define( "F3w", fhcal_weight_generator(f3_mod), { "fhcalModId", "fhcalModE" } );
 
-  DefineVector( sampled_d, "F1", q_vector< ROOT::VecOps::RVec<float>, std::vector<double> >(harmonics), std::vector<std::string>{"fhcalModPhi", "F1w"} );
-  DefineVector( sampled_d, "F2", q_vector< ROOT::VecOps::RVec<float>, std::vector<double> >(harmonics), std::vector<std::string>{"fhcalModPhi", "F2w"} );
-  DefineVector( sampled_d, "F3", q_vector< ROOT::VecOps::RVec<float>, std::vector<double> >(harmonics), std::vector<std::string>{"fhcalModPhi", "F3w"} );
+  // DefineVector( sampled_d, "F1", q_vector< ROOT::VecOps::RVec<float>, std::vector<double> >(harmonics), std::vector<std::string>{"fhcalModPhi", "F1w"} );
+  // DefineVector( sampled_d, "F2", q_vector< ROOT::VecOps::RVec<float>, std::vector<double> >(harmonics), std::vector<std::string>{"fhcalModPhi", "F2w"} );
+  // DefineVector( sampled_d, "F3", q_vector< ROOT::VecOps::RVec<float>, std::vector<double> >(harmonics), std::vector<std::string>{"fhcalModPhi", "F3w"} );
   
   DefineVector( sampled_d, "Tpos", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"trPhi", "trTposW"} );
   DefineVector( sampled_d, "Tneg", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"trPhi", "trTnegW"} );
@@ -98,17 +98,17 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
   auto p_components_names = AddUVectorComponents(sampled_d, "proton", harmonics, "trPhi" );
   auto p_cov_names = AddUVectorCovariance(sampled_d, "proton", harmonics, "trPhi" );
 
-  auto f1_means_str = DefineVectorMeans( sampled_d, CorrFunc1Part<qvector_t>{}, "F1", harmonics );
-  auto f2_means_str = DefineVectorMeans( sampled_d, CorrFunc1Part<qvector_t>{}, "F2", harmonics );
-  auto f3_means_str = DefineVectorMeans( sampled_d, CorrFunc1Part<qvector_t>{}, "F3", harmonics );
-  auto tp_means_str = DefineVectorMeans( sampled_d, CorrFunc1Part<qvector_t>{}, "Tpos", harmonics );
-  auto tn_means_str = DefineVectorMeans( sampled_d, CorrFunc1Part<qvector_t>{}, "Tneg", harmonics );
+  auto f1_means_str = AddUVectorComponents( sampled_d, "F1", harmonics, "fhcalModPhi" );
+  auto f2_means_str = AddUVectorComponents( sampled_d, "F2", harmonics, "fhcalModPhi" );
+  auto f3_means_str = AddUVectorComponents( sampled_d, "F3", harmonics, "fhcalModPhi" );
+  auto tp_means_str = AddUVectorComponents( sampled_d, "Tpos", harmonics, "trPhi" );
+  auto tn_means_str = AddUVectorComponents( sampled_d, "Tneg", harmonics, "trPhi" );
 
-  auto f1_cov_str = DefineVectorCovariance( sampled_d, CorrFunc1Part<qvector_t>{}, "F1", harmonics );
-  auto f2_cov_str = DefineVectorCovariance( sampled_d, CorrFunc1Part<qvector_t>{}, "F2", harmonics );
-  auto f3_cov_str = DefineVectorCovariance( sampled_d, CorrFunc1Part<qvector_t>{}, "F3", harmonics );
-  auto tp_cov_str = DefineVectorCovariance( sampled_d, CorrFunc1Part<qvector_t>{}, "Tpos", harmonics );
-  auto tn_cov_str = DefineVectorCovariance( sampled_d, CorrFunc1Part<qvector_t>{}, "Tneg", harmonics );
+  auto f1_cov_str = AddUVectorCovariance( sampled_d, CorrFunc1Part<qvector_t>{}, "F1", "fhcalModPhi" );
+  auto f2_cov_str = AddUVectorCovariance( sampled_d, CorrFunc1Part<qvector_t>{}, "F2", "fhcalModPhi" );
+  auto f3_cov_str = AddUVectorCovariance( sampled_d, CorrFunc1Part<qvector_t>{}, "F3", "fhcalModPhi" );
+  auto tp_cov_str = AddUVectorCovariance( sampled_d, CorrFunc1Part<qvector_t>{}, "Tpos", "trPhi" );
+  auto tn_cov_str = AddUVectorCovariance( sampled_d, CorrFunc1Part<qvector_t>{}, "Tneg", "trPhi" );
 
   auto p_components_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
   p_components_ptr.reserve( p_components_names.size() );
@@ -154,62 +154,62 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
 
   for( const auto& name : f1_means_str ){
     f1_means_ptr.emplace_back(
-      sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes, 100, Qn::Stat::WeightType::REFERENCE), std::vector<std::string>{name, "One", "samples", "centrality" } )
+      sampled_d.Book< ROOT::VecOps::RVec<float>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "F1w", "samples", "centrality" } )
     ); 
   }
 
   for( const auto& name : f2_means_str ){
     f2_means_ptr.emplace_back(
-      sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes, 100, Qn::Stat::WeightType::REFERENCE), std::vector<std::string>{name, "One", "samples", "centrality" } )
+      sampled_d.Book< ROOT::VecOps::RVec<float>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "F2w", "samples", "centrality" } )
     ); 
   }
 
   for( const auto& name : f3_means_str ){
     f3_means_ptr.emplace_back(
-      sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes, 100, Qn::Stat::WeightType::REFERENCE), std::vector<std::string>{name, "One", "samples", "centrality" } )
+      sampled_d.Book< ROOT::VecOps::RVec<float>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "F3w", "samples", "centrality" } )
     ); 
   }
 
   for( const auto& name : tp_means_str ){
     tp_means_ptr.emplace_back(
-      sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes, 100, Qn::Stat::WeightType::REFERENCE), std::vector<std::string>{name, "One", "samples", "centrality" } )
+      sampled_d.Book< std::vector<float>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "trTposW", "samples", "centrality" } )
     ); 
   }
 
   for( const auto& name : tn_means_str ){
     tn_means_ptr.emplace_back(
-      sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes, 100, Qn::Stat::WeightType::REFERENCE), std::vector<std::string>{name, "One", "samples", "centrality" } )
+      sampled_d.Book< std::vector<float>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "trTnegW", "samples", "centrality" } )
     ); 
   }
 
 
   for( const auto& name : f1_cov_str ){
     f1_cov_ptr.emplace_back(
-      sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes, 100, Qn::Stat::WeightType::REFERENCE), std::vector<std::string>{name, "One", "samples", "centrality" } )
+      sampled_d.Book< ROOT::VecOps::RVec<float>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "F1w", "samples", "centrality" } )
     ); 
   }
 
   for( const auto& name : f2_cov_str ){
     f2_cov_ptr.emplace_back(
-      sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes, 100, Qn::Stat::WeightType::REFERENCE), std::vector<std::string>{name, "One", "samples", "centrality" } )
+      sampled_d.Book< ROOT::VecOps::RVec<float>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "F2w", "samples", "centrality" } )
     ); 
   }
 
   for( const auto& name : f3_cov_str ){
     f3_cov_ptr.emplace_back(
-      sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes, 100, Qn::Stat::WeightType::REFERENCE), std::vector<std::string>{name, "One", "samples", "centrality" } )
+      sampled_d.Book< ROOT::VecOps::RVec<float>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "F2w", "samples", "centrality" } )
     ); 
   }
 
   for( const auto& name : tp_cov_str ){
     tp_cov_ptr.emplace_back(
-      sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes, 100, Qn::Stat::WeightType::REFERENCE), std::vector<std::string>{name, "One", "samples", "centrality" } )
+      sampled_d.Book< std::vector<float>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "trTposW", "samples", "centrality" } )
     ); 
   }
 
   for( const auto& name : tn_cov_str ){
     tn_cov_ptr.emplace_back(
-      sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes, 100, Qn::Stat::WeightType::REFERENCE), std::vector<std::string>{name, "One", "samples", "centrality" } )
+      sampled_d.Book< std::vector<float>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "trTnegW", "samples", "centrality" } )
     ); 
   }
 
