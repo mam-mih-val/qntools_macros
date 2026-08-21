@@ -92,8 +92,8 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
   // DefineVector( sampled_d, "F2", q_vector< ROOT::VecOps::RVec<float>, std::vector<double> >(harmonics), std::vector<std::string>{"fhcalModPhi", "F2w"} );
   // DefineVector( sampled_d, "F3", q_vector< ROOT::VecOps::RVec<float>, std::vector<double> >(harmonics), std::vector<std::string>{"fhcalModPhi", "F3w"} );
   
-  DefineVector( sampled_d, "Tpos", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"trPhi", "trTposW"} );
-  DefineVector( sampled_d, "Tneg", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"trPhi", "trTnegW"} );
+  // DefineVector( sampled_d, "Tpos", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"trPhi", "trTposW"} );
+  // DefineVector( sampled_d, "Tneg", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"trPhi", "trTnegW"} );
 
   auto p_components_names = AddUVectorComponents(sampled_d, "proton", harmonics, "trPhi" );
   auto p_cov_names = AddUVectorCovariance(sampled_d, "proton", harmonics, "trPhi" );
@@ -104,11 +104,11 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
   auto tp_means_str = AddUVectorComponents( sampled_d, "Tpos", harmonics, "trPhi" );
   auto tn_means_str = AddUVectorComponents( sampled_d, "Tneg", harmonics, "trPhi" );
 
-  auto f1_cov_str = AddUVectorCovariance( sampled_d, CorrFunc1Part<qvector_t>{}, "F1", "fhcalModPhi" );
-  auto f2_cov_str = AddUVectorCovariance( sampled_d, CorrFunc1Part<qvector_t>{}, "F2", "fhcalModPhi" );
-  auto f3_cov_str = AddUVectorCovariance( sampled_d, CorrFunc1Part<qvector_t>{}, "F3", "fhcalModPhi" );
-  auto tp_cov_str = AddUVectorCovariance( sampled_d, CorrFunc1Part<qvector_t>{}, "Tpos", "trPhi" );
-  auto tn_cov_str = AddUVectorCovariance( sampled_d, CorrFunc1Part<qvector_t>{}, "Tneg", "trPhi" );
+  auto f1_cov_str = AddUVectorCovariance( sampled_d, "F1", harmonics, "fhcalModPhi" );
+  auto f2_cov_str = AddUVectorCovariance( sampled_d, "F2", harmonics, "fhcalModPhi" );
+  auto f3_cov_str = AddUVectorCovariance( sampled_d, "F3", harmonics, "fhcalModPhi" );
+  auto tp_cov_str = AddUVectorCovariance( sampled_d, "Tpos", harmonics, "trPhi" );
+  auto tn_cov_str = AddUVectorCovariance( sampled_d, "Tneg", harmonics, "trPhi" );
 
   auto p_components_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
   p_components_ptr.reserve( p_components_names.size() );
