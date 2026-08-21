@@ -154,62 +154,62 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
 
   for( const auto& name : f1_means_str ){
     f1_means_ptr.emplace_back(
-      sampled_d.Book< ROOT::VecOps::RVec<float>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "F1w", "samples", "centrality" } )
+      sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "F1w", "samples", "centrality" } )
     ); 
   }
 
   for( const auto& name : f2_means_str ){
     f2_means_ptr.emplace_back(
-      sampled_d.Book< ROOT::VecOps::RVec<float>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "F2w", "samples", "centrality" } )
+      sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "F2w", "samples", "centrality" } )
     ); 
   }
 
   for( const auto& name : f3_means_str ){
     f3_means_ptr.emplace_back(
-      sampled_d.Book< ROOT::VecOps::RVec<float>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "F3w", "samples", "centrality" } )
+      sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "F3w", "samples", "centrality" } )
     ); 
   }
 
   for( const auto& name : tp_means_str ){
     tp_means_ptr.emplace_back(
-      sampled_d.Book< std::vector<float>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "trTposW", "samples", "centrality" } )
+      sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "trTposW", "samples", "centrality" } )
     ); 
   }
 
   for( const auto& name : tn_means_str ){
     tn_means_ptr.emplace_back(
-      sampled_d.Book< std::vector<float>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "trTnegW", "samples", "centrality" } )
+      sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "trTnegW", "samples", "centrality" } )
     ); 
   }
 
 
   for( const auto& name : f1_cov_str ){
     f1_cov_ptr.emplace_back(
-      sampled_d.Book< ROOT::VecOps::RVec<float>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "F1w", "samples", "centrality" } )
+      sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "F1w", "samples", "centrality" } )
     ); 
   }
 
   for( const auto& name : f2_cov_str ){
     f2_cov_ptr.emplace_back(
-      sampled_d.Book< ROOT::VecOps::RVec<float>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "F2w", "samples", "centrality" } )
+      sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "F2w", "samples", "centrality" } )
     ); 
   }
 
   for( const auto& name : f3_cov_str ){
     f3_cov_ptr.emplace_back(
-      sampled_d.Book< ROOT::VecOps::RVec<float>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "F2w", "samples", "centrality" } )
+      sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "F2w", "samples", "centrality" } )
     ); 
   }
 
   for( const auto& name : tp_cov_str ){
     tp_cov_ptr.emplace_back(
-      sampled_d.Book< std::vector<float>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "trTposW", "samples", "centrality" } )
+      sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "trTposW", "samples", "centrality" } )
     ); 
   }
 
   for( const auto& name : tn_cov_str ){
     tn_cov_ptr.emplace_back(
-      sampled_d.Book< std::vector<float>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "trTnegW", "samples", "centrality" } )
+      sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "trTnegW", "samples", "centrality" } )
     ); 
   }
 
