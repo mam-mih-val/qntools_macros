@@ -20,7 +20,7 @@
 #include "vector_generators.h"
 #include "corrections.h"
 
-void run8_sim_correlations( std::string list ){
+void run8_sim_correlations( std::string list, std::string str_effieciency_file ){
 
   std::cout << "starting execution" << std::endl;
 

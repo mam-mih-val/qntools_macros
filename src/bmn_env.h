@@ -2,6 +2,7 @@
 #define BMN_ENV_H
 
 #include <algorithm>
+#include <vector>
 const auto rapidity_generator = []( auto particle_m, auto y_cm ){
   return 
   [particle_m, y_cm]( std::vector<float> vec_pz, std::vector<float> vec_pq ){
@@ -271,6 +272,22 @@ const auto tneg_weight = [](
   return weights;
 };
 
+const auto sim_f_weight = []( double eta1, double eta2 ){
+  [eta1, eta2]( std::vector<float> vec_eta, std::vector<float> vec_ekin ){
+    auto vec_weights = std::vector<double>( vec_eta.size(), 0 );
+    for( auto i=size_t{0}; i<vec_eta.size(); ++i ){
+      auto eta = vec_eta[i];
+      if( eta < eta1 )
+        continue;
+      if( eta > eta2 )
+        continue;
+
+      vec_weights[i] = static_cast<double>(vec_ekin[i]);
+    }
+    return vec_weights;
+  }
+}
+
 std::vector<int> f1_modules = {
   6,  7,  8,
   11, 12, 13,
@@ -343,7 +360,12 @@ const auto GenerateBmnExtendedTree(DataFrame& d, TH3* efficiency_histo){
     .Define( "simP", "std::vector<float> simP; for( auto mom : simMom ){ simP.push_back( mom.P() ); } return simP; " )
     .Define( "simPt", "std::vector<float> simPt; for( auto mom : simMom ){ simPt.push_back( mom.Pt() ); } return simPt; " )
     .Define( "simPz", "std::vector<float> simPz; for( auto mom : simMom ){ simPz.push_back( mom.Pz() ); } return simPz; " )
+    .Define( "simEta", "std::vector<float> simEta; for( auto mom : simMom ){ simEta.push_back( mom.Eta() ); } return simEta; " )
+    .Define( "simEkin", "std::vector<float> simEkin; for( auto mom : simMom ){ simEkin.push_back( mom.E() - mom.M() ); } return simEkin; " ) 
     .Define( "simPhi", "std::vector<float> simPhi; for( auto mom : simMom ){ simPhi.push_back( mom.Phi() ); } return simPhi; " )
+    .Define( "simF1w", sim_f_weight(4.4, 5.5), {"simEta", "simEkin"} )
+    .Define( "simF2w", sim_f_weight(3.9, 4.4), {"simEta", "simEkin"} )
+    .Define( "simF2w", sim_f_weight(3.1, 3.9), {"simEta", "simEkin"} )
           
     .Define( "simIsProton", is_sim_particle(2212), {"simPdg", "simMotherId"} )
     .Define( "simProtonY", rapidity_generator(PROTON_M, Y_CM), {"simPz", "simP"} )
