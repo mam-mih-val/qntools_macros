@@ -365,7 +365,7 @@ const auto GenerateBmnExtendedTree(DataFrame& d, TH3* efficiency_histo){
     .Define( "simPhi", "std::vector<float> simPhi; for( auto mom : simMom ){ simPhi.push_back( mom.Phi() ); } return simPhi; " )
     .Define( "simF1w", sim_f_weight(4.4, 5.5), {"simEta", "simEkin"} )
     .Define( "simF2w", sim_f_weight(3.9, 4.4), {"simEta", "simEkin"} )
-    .Define( "simF2w", sim_f_weight(3.1, 3.9), {"simEta", "simEkin"} )
+    .Define( "simF3w", sim_f_weight(3.1, 3.9), {"simEta", "simEkin"} )
           
     .Define( "simIsProton", is_sim_particle(2212), {"simPdg", "simMotherId"} )
     .Define( "simProtonY", rapidity_generator(PROTON_M, Y_CM), {"simPz", "simP"} )
