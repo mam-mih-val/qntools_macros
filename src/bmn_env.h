@@ -273,7 +273,7 @@ const auto tneg_weight = [](
 };
 
 const auto sim_f_weight = []( double eta1, double eta2 ){
-  [eta1, eta2]( std::vector<float> vec_eta, std::vector<float> vec_ekin ){
+  return [eta1, eta2]( std::vector<float> vec_eta, std::vector<float> vec_ekin ){
     auto vec_weights = std::vector<double>( vec_eta.size(), 0 );
     for( auto i=size_t{0}; i<vec_eta.size(); ++i ){
       auto eta = vec_eta[i];
@@ -285,8 +285,8 @@ const auto sim_f_weight = []( double eta1, double eta2 ){
       vec_weights[i] = static_cast<double>(vec_ekin[i]);
     }
     return vec_weights;
-  }
-}
+  };
+};
 
 std::vector<int> f1_modules = {
   6,  7,  8,
