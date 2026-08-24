@@ -88,7 +88,7 @@ void run8_sim_correlations( std::string list, std::string str_effieciency_file )
 
   for( const auto& name : p_psi_names ){
     p_psi_ptr.emplace_back(
-      sampled_d.Book< std::vector<double>, std::vector<int>,  ROOT::VecOps::RVec<ULong64_t>, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >( CorrelationHelper(proton_axes), {name, "simIsProton", "samples", "centrality", "simProtonY", "simPt" } )
+      sampled_d.Book< std::vector<double>, std::vector<int>,  ROOT::VecOps::RVec<ULong64_t>, float, ROOT::VecOps::RVec<float>, std::vector<float> >( CorrelationHelper(proton_axes), {name, "simIsProton", "samples", "centrality", "simProtonY", "simPt" } )
     ); 
   }
 
