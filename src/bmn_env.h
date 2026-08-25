@@ -177,6 +177,7 @@ const auto proton_weight = [](
   std::vector<float> vec_r,
   ROOT::VecOps::RVec<int> vec_nhits,
   ROOT::VecOps::RVec<float> vec_chi2,
+  std::vector<float> vec_eta,
   std::vector<float> vec_fhcal_x,
   std::vector<float> vec_fhcal_y
   // "trIsProton", "trProtonEfficiency", "trHasAnyTofHit", "trDcaR", "trStsNhits", "trStsChi2", "trFhcalX", "trFhcalY"
@@ -192,6 +193,8 @@ const auto proton_weight = [](
     if( vec_nhits[i] < 5 )
       continue;
     if( vec_chi2[i] > 5 )
+      continue;
+    if( vec_eta[i] > 3.0 )
       continue;
     if( -30 <  vec_fhcal_x[i]  && vec_fhcal_x[i] < 160 &&
         -60 < vec_fhcal_y[i] && vec_fhcal_y[i] < 60   )
@@ -371,7 +374,7 @@ const auto GenerateBmnExtendedTree(DataFrame& d, TH3* efficiency_histo){
     .Define( "simProtonY", rapidity_generator(PROTON_M, Y_CM), {"simPz", "simP"} )
     
     .Define( "trIsProton", tr_is_particle, {"trSimIndex", "simIsProton"} )
-    .Define( "trProtonWeight", proton_weight, {"trIsProton", "trProtonEfficiency", "trHasAnyTofHit", "trDcaR", "trStsNhits", "trStsChi2", "trFhcalX", "trFhcalY"} )
+    .Define( "trProtonWeight", proton_weight, {"trIsProton", "trProtonEfficiency", "trHasAnyTofHit", "trDcaR", "trStsNhits", "trStsChi2", "trEta", "trFhcalX", "trFhcalY"} )
     .Define( "trTposW", tpos_weight, {"trEta", "trPt", "pq", "trDcaR", "trStsNhits", "trStsChi2", "trFhcalX", "trFhcalY"} )
     .Define( "trTnegW", tneg_weight, {"trEta", "trPt", "pq", "trDcaR", "trStsNhits", "trStsChi2", "trFhcalX", "trFhcalY"} )
     .Define( "One", "return static_cast<double>(1.0)" )
