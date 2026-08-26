@@ -34,7 +34,7 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
     Qn::AxisD{ "centrality", 6, 0, 60 },
   };
 
-  constexpr size_t NHARM = 5;
+  constexpr size_t NHARM = 2;
   const auto l = double{5e-2};
   auto harmonics = std::vector<size_t>(NHARM);
   std::iota( harmonics.begin(), harmonics.end(), 1 );
