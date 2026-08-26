@@ -60,7 +60,7 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
   std::for_each( f2_mod.begin(), f2_mod.end(), [](auto& m){ m += 1; } );
   std::for_each( f3_mod.begin(), f3_mod.end(), [](auto& m){ m += 1; } );
 
-  auto harmonics = std::vector<size_t>(5);
+  auto harmonics = std::vector<size_t>(2);
   std::iota( harmonics.begin(), harmonics.end(), 1 );
 
   std::unique_ptr<TFile> effieciency_file{TFile::Open( str_effieciency_file.c_str(), "READ" )};
