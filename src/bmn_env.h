@@ -69,8 +69,6 @@ const auto centrality_function =
     return centrality;
 };
 
-
-  
 const auto dca_function = [](std::vector<float> vec_x, std::vector<float> vec_y){
   std::vector<float> vec_r{};
   vec_r.reserve(vec_x.size());
@@ -194,7 +192,7 @@ const auto proton_weight = [](
       continue;
     if( vec_chi2[i] > 5 )
       continue;
-    if( vec_eta[i] > 3.5 )
+    if( vec_eta[i] > 3.0 )
       continue;
     if( -30 <  vec_fhcal_x[i]  && vec_fhcal_x[i] < 160 &&
         -60 < vec_fhcal_y[i] && vec_fhcal_y[i] < 60   )
@@ -276,13 +274,16 @@ const auto tneg_weight = [](
 };
 
 const auto sim_f_weight = []( double eta1, double eta2 ){
-  return [eta1, eta2]( std::vector<float> vec_eta, std::vector<float> vec_ekin ){
+  return [eta1, eta2]( std::vector<float> vec_eta, std::vector<float> vec_ekin, ROOT::VecOps::RVec<int> vec_m_id ){
     auto vec_weights = std::vector<double>( vec_eta.size(), 0 );
     for( auto i=size_t{0}; i<vec_eta.size(); ++i ){
       auto eta = vec_eta[i];
+      auto m_id = vec_m_id[i];
       if( eta < eta1 )
         continue;
       if( eta > eta2 )
+        continue;
+      if( m_id != -1 )
         continue;
 
       vec_weights[i] = static_cast<double>(vec_ekin[i]);
@@ -366,10 +367,10 @@ const auto GenerateBmnExtendedTree(DataFrame& d, TH3* efficiency_histo){
     .Define( "simEta", "std::vector<float> simEta; for( auto mom : simMom ){ simEta.push_back( mom.Eta() ); } return simEta; " )
     .Define( "simEkin", "std::vector<float> simEkin; for( auto mom : simMom ){ simEkin.push_back( mom.E() - mom.M() ); } return simEkin; " ) 
     .Define( "simPhi", "std::vector<float> simPhi; for( auto mom : simMom ){ simPhi.push_back( mom.Phi() ); } return simPhi; " )
-    .Define( "simF1w", sim_f_weight(4.4, 5.5), {"simEta", "simEkin"} )
-    .Define( "simF2w", sim_f_weight(3.9, 4.4), {"simEta", "simEkin"} )
-    .Define( "simF3w", sim_f_weight(3.1, 3.9), {"simEta", "simEkin"} )
-          
+    .Define( "simF1w", sim_f_weight(4.4, 5.5), {"simEta", "simEkin", "simMotherId"} )
+    .Define( "simF2w", sim_f_weight(3.9, 4.4), {"simEta", "simEkin", "simMotherId"} )
+    .Define( "simF3w", sim_f_weight(3.1, 3.9), {"simEta", "simEkin", "simMotherId"} )
+
     .Define( "simIsProton", is_sim_particle(2212), {"simPdg", "simMotherId"} )
     .Define( "simProtonY", rapidity_generator(PROTON_M, Y_CM), {"simPz", "simP"} )
     
