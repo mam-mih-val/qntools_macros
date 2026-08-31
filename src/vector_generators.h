@@ -13,7 +13,7 @@
 using qvector_t = std::map< size_t, Qn::QVec >;
 using uvector_t = std::vector<std::map< size_t, Qn::QVec >>;
 
-inline const auto u_generator( size_t harmonic, std::function< double(double) > component ){
+const auto u_generator( size_t harmonic, std::function< double(double) > component ){
   return [harmonic, component]( std::vector<float> vec_phi ){
     auto vec_results = std::vector<double>{};
     vec_results.reserve(vec_phi.size());
@@ -24,7 +24,7 @@ inline const auto u_generator( size_t harmonic, std::function< double(double) > 
   };
 }
 
-inline const auto cov_generator( size_t h_a, std::function< double(double) > c_a, size_t h_b, std::function< double(double) > c_b ){
+const auto cov_generator( size_t h_a, std::function< double(double) > c_a, size_t h_b, std::function< double(double) > c_b ){
   return [h_a, h_b, c_a, c_b]( std::vector<float> vec_phi ){
     auto vec_results = std::vector<double>{};
     vec_results.reserve(vec_phi.size());
@@ -88,6 +88,73 @@ inline const auto psi_rp_vector( const std::vector<size_t>& harmonics ){
 template<typename DataFrame, typename Func>
 void DefineVector( DataFrame& df, const std::string& vec_name, Func defining_function, std::vector<std::string> vec_fields ){
   df = df.Define( vec_name, defining_function, vec_fields );
+}
+
+template<typename... Args>
+class QnToolsLikeWeightsFunc{
+public:
+  QnToolsLikeWeightsFunc(std::vector<Qn::AxisD> track_axes) : track_axes_(std::move(track_axes)) {}
+  std::vector<double> operator()( Args... args ){
+    weights_in_bins_ = Qn::DataContainerStatCollect{ track_axes_ };
+    return Execute(args...);
+  }
+private:
+  template<typename T, typename V, typename... LastArgs>
+  std::vector<double> Execute(T vec_weights, V samples, LastArgs... args){
+    for( auto i=0; i<vec_weights.size(); ++i ){
+      auto coord = FormCoordinates( i, args... );
+      auto w = vec_weights[i];
+      auto bin = weights_in_bins_.FindBin( coord );
+      if( bin > weights_in_bins_.size() )
+        continue;
+      if( bin < 0 )
+        continue;
+      weights_in_bins_[bin].Fill( 1, w, samples );
+    }
+    auto result_weights = std::vector<double>( vec_weights.size(), 0. );
+    for( auto i=0; i<vec_weights.size(); ++i ){
+      auto coord = FormCoordinates( i, args... );
+      auto w = vec_weights[i];
+      auto bin = weights_in_bins_.FindBin( coord );
+      if( bin > weights_in_bins_.size() )
+        continue;
+      if( bin < 0 )
+        continue;
+      auto bin_weights = weights_in_bins_[bin].GetStatistics().SumWeights();
+      if( bin_weights < 1e-3 )
+        continue;
+      result_weights[i] = w / bin_weights;
+    }
+    return result_weights;
+  }
+  template<typename T, typename... ColumnTypes>
+  std::vector<double> FormCoordinates( size_t i, T first, ColumnTypes... rest ){
+    auto vec_coordinates = std::vector<double>{};
+    if constexpr ( std::is_floating_point_v<T> ){
+      vec_coordinates.push_back(static_cast<double>( first ) );
+    } else {
+      vec_coordinates.push_back(static_cast<double>( first.at(i) ) );
+    }
+    auto vec_rest_coord = FormCoordinates( i, rest... );
+    vec_coordinates.insert( vec_coordinates.end(), vec_rest_coord.begin(), vec_rest_coord.end() );
+    return vec_coordinates;
+  }
+  template<typename T, typename... ColumnTypes>
+  std::vector<double> FormCoordinates( size_t i, T coordinate ){
+    if constexpr ( std::is_floating_point_v<T> ){
+      return std::vector<double>{ static_cast<double>( coordinate ) };
+    }
+    else{
+      return std::vector<double>{ static_cast<double>( coordinate.at(i) ) };
+    }
+  }
+  Qn::DataContainerStatCollect weights_in_bins_{};
+  std::vector<Qn::AxisD> track_axes_{};
+};
+
+template<typename DataFrame, typename Func>
+void DefineQnToolsLikeWeights( DataFrame& df, std::string name, Func function, std::vector<std::string> fields ){
+  df = df.Define( name, function, fields );
 }
 
 inline const auto ux_generator( const std::vector<size_t>& harmonics ){

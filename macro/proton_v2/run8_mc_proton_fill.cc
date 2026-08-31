@@ -60,7 +60,7 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
   std::for_each( f2_mod.begin(), f2_mod.end(), [](auto& m){ m += 1; } );
   std::for_each( f3_mod.begin(), f3_mod.end(), [](auto& m){ m += 1; } );
 
-  auto harmonics = std::vector<size_t>( 25 );
+  auto harmonics = std::vector<size_t>( 5 );
   std::iota( harmonics.begin(), harmonics.end(), 1 );
 
   std::unique_ptr<TFile> effieciency_file{TFile::Open( str_effieciency_file.c_str(), "READ" )};
@@ -87,6 +87,13 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
   sampled_d = sampled_d.Define( "F1w", fhcal_weight_generator(f1_mod), { "fhcalModId", "fhcalModE" } );
   sampled_d = sampled_d.Define( "F2w", fhcal_weight_generator(f2_mod), { "fhcalModId", "fhcalModE" } );
   sampled_d = sampled_d.Define( "F3w", fhcal_weight_generator(f3_mod), { "fhcalModId", "fhcalModE" } );
+
+  DefineQnToolsLikeWeights(sampled_d, "proton_qntools_like", QnToolsLikeWeightsFunc<std::vector<double>, ROOT::VecOps::RVec<ULong64_t>, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> > {
+    Qn::AxisD{ "y", 12, 0.0, 1.2 },
+    Qn::AxisD{ "pT", 10, 0.0, 2.0 },
+  } , std::vector<std::string>{
+    "trProtonWeight", "samples", "trProtonY", "trPt"
+  });
 
   // DefineVector( sampled_d, "F1", q_vector< ROOT::VecOps::RVec<float>, std::vector<double> >(harmonics), std::vector<std::string>{"fhcalModPhi", "F1w"} );
   // DefineVector( sampled_d, "F2", q_vector< ROOT::VecOps::RVec<float>, std::vector<double> >(harmonics), std::vector<std::string>{"fhcalModPhi", "F2w"} );
@@ -142,13 +149,13 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
 
   for( const auto& name : p_components_names ){
     p_components_ptr.emplace_back(
-      sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >( CorrelationHelper(proton_axes), std::vector<std::string>{name, "trProtonWeight", "samples", "centrality", "trProtonY", "trPt" } )
+      sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >( CorrelationHelper(proton_axes), std::vector<std::string>{name, "proton_qntools_like", "samples", "centrality", "trProtonY", "trPt" } )
     ); 
   }
 
   for( const auto& name : p_cov_names ){
     p_cov_ptr.emplace_back(
-      sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >( CorrelationHelper(proton_axes), std::vector<std::string>{name, "trProtonWeight", "samples", "centrality", "trProtonY", "trPt" } )
+      sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >( CorrelationHelper(proton_axes), std::vector<std::string>{name, "proton_qntools_like", "samples", "centrality", "trProtonY", "trPt" } )
     ); 
   }
 
