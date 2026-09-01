@@ -351,7 +351,7 @@ const auto GenerateBmnExtendedTree(DataFrame& d, TH2* efficiency_histo){
     .Define( "pz", " std::vector<float> pz; for( auto mom : trMom ){ pz.push_back( mom.Pz() ); } return pz; " )
     .Define( "pq", " std::vector<float> pq; for( int i=0; i<trMom.size(); i++ ){ pq.push_back( trMom.at(i).P() / trCharge.at(i) ); } return pq;" )
     .Define( "trProtonY", rapidity_generator(PROTON_M, Y_CM), {"pz", "pq"} )
-    .Define( "trProtonEfficiency", weight_generator(efficiency_histo), {"trPx", "trPy", "pz"} )
+    .Define( "trProtonEfficiency", weight_generator(efficiency_histo), {"pq", "trEta"} )
     .Define( "trHasTof400Hit", tr_has_tof_hit, { "trBetaTof400" } )
     .Define( "trHasTof700Hit", tr_has_tof_hit, { "trBetaTof700" } )
     .Define( "trHasAnyTofHit", tr_has_any_tof_hit, { "trHasTof400Hit", "trHasTof700Hit" } )
