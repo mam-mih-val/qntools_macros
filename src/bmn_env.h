@@ -131,21 +131,19 @@ const auto tr_has_any_tof_hit = []( std::vector<int> vec_is_400, std::vector<int
 };
 
 const auto weight_generator = []( auto efficiency_map ){
-  return [efficiency_map](std::vector<float> vec_px, std::vector<float> vec_py, std::vector<float> vec_pz){
+  return [efficiency_map](std::vector<float> vec_p, std::vector<float> vec_eta){
     if( !efficiency_map ){
-        return std::vector<float>(vec_px.size(), 1);
+        return std::vector<float>(vec_p.size(), 1);
       }
-    auto vec_weight = std::vector<float>( vec_px.size(), 0.0 );
-    for( int i=0; i<vec_px.size(); ++i ){
-      auto px = vec_px[i];
-      auto py = vec_py[i];
-      auto pz = vec_pz[i];
+    auto vec_weight = std::vector<float>( vec_p.size(), 0.0 );
+    for( int i=0; i<vec_p.size(); ++i ){
+      auto p = vec_p[i];
+      auto eta = vec_eta[i];
 
-      auto px_bin = efficiency_map->GetXaxis()->FindBin( px );
-      auto py_bin = efficiency_map->GetYaxis()->FindBin( py );
-      auto pz_bin = efficiency_map->GetZaxis()->FindBin( pz );
+      auto eta_bin = efficiency_map->GetXaxis()->FindBin( eta );
+      auto p_bin = efficiency_map->GetYaxis()->FindBin( p );
       
-      auto efficiency = efficiency_map->GetBinContent( px_bin, py_bin, pz_bin );
+      auto efficiency = efficiency_map->GetBinContent( eta_bin, p_bin );
       if( efficiency < 1e-2 )
         continue;
       auto weight = 1.0 / efficiency;
@@ -325,7 +323,7 @@ std::vector<int> f4_modules = {
 };
 
 template<typename DataFrame>
-const auto GenerateBmnExtendedTree(DataFrame& d, TH3* efficiency_histo){
+const auto GenerateBmnExtendedTree(DataFrame& d, TH2* efficiency_histo){
 
   const float PROTON_M = 0.938; // GeV/c2
   const float PI_POS_M = 0.134;

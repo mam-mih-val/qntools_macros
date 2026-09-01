@@ -64,9 +64,9 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
   std::iota( harmonics.begin(), harmonics.end(), 1 );
 
   std::unique_ptr<TFile> effieciency_file{TFile::Open( str_effieciency_file.c_str(), "READ" )};
-  TH3* efficiency_histo{nullptr};
+  TH2* efficiency_histo{nullptr};
   
-  effieciency_file->GetObject("h3_efficiency_2212_good", efficiency_histo);
+  effieciency_file->GetObject("h2_efficiency_2212_good", efficiency_histo);
   if( !efficiency_histo )
     std::cerr << "Warning: No efficiency for both tof was found in file " << str_effieciency_file << "\n";
 
