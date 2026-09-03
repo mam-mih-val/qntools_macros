@@ -103,7 +103,7 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
 
   auto calib_file = std::unique_ptr<TFile, std::function<void(TFile*)> >{ TFile::Open( str_calib_file.c_str(), "READ"), [](auto f){ f->Close(); } };
   auto [vec_p_mean, vec_p_cov] = ReadMeanCov<2*NHARM>("proton", calib_file.get());
-  auto p_correction_container = MakeCorrectionContainer<NHARM>( vec_p_mean, vec_p_cov, TwistRescale<NHARM>{}, l );
+  auto p_correction_container = MakeCorrectionContainer<NHARM>( vec_p_mean, vec_p_cov, PrincipalComponents<NHARM>{}, l );
   auto p_corr_builder = CorrectorBuilder<NHARM>( p_correction_container );
   sampled_d = sampled_d.Define( "proton", p_corr_builder.IssueUVectorCorrector<uvector_t, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >(), { "ini_proton", "centrality", "trProtonY", "trPt" } );
 
