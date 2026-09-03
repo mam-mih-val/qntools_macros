@@ -131,7 +131,7 @@ const auto tr_has_any_tof_hit = []( std::vector<int> vec_is_400, std::vector<int
 };
 
 const auto weight_generator = []( auto efficiency_map ){
-  return [efficiency_map](std::vector<float> vec_p, std::vector<float> vec_eta){
+  return [efficiency_map](std::vector<float> vec_p, std::vector<float> vec_eta, std::vector<float> vec_phi){
     if( !efficiency_map ){
         return std::vector<float>(vec_p.size(), 1);
       }
@@ -139,11 +139,13 @@ const auto weight_generator = []( auto efficiency_map ){
     for( int i=0; i<vec_p.size(); ++i ){
       auto p = vec_p[i];
       auto eta = vec_eta[i];
+      auto phi = vec_phi[i];
 
       auto eta_bin = efficiency_map->GetXaxis()->FindBin( eta );
       auto p_bin = efficiency_map->GetYaxis()->FindBin( p );
+      auto phi_bin = efficiency_map->GetZaxis()->FindBin( phi );
       
-      auto efficiency = efficiency_map->GetBinContent( eta_bin, p_bin );
+      auto efficiency = efficiency_map->GetBinContent( eta_bin, p_bin, phi_bin );
       if( efficiency < 1e-2 )
         continue;
       auto weight = 1.0 / efficiency;
@@ -323,7 +325,7 @@ std::vector<int> f4_modules = {
 };
 
 template<typename DataFrame>
-const auto GenerateBmnExtendedTree(DataFrame& d, TH2* efficiency_histo){
+const auto GenerateBmnExtendedTree(DataFrame& d, TH3* efficiency_histo){
 
   const float PROTON_M = 0.938; // GeV/c2
   const float PI_POS_M = 0.134;
@@ -351,7 +353,7 @@ const auto GenerateBmnExtendedTree(DataFrame& d, TH2* efficiency_histo){
     .Define( "pz", " std::vector<float> pz; for( auto mom : trMom ){ pz.push_back( mom.Pz() ); } return pz; " )
     .Define( "pq", " std::vector<float> pq; for( int i=0; i<trMom.size(); i++ ){ pq.push_back( trMom.at(i).P() / trCharge.at(i) ); } return pq;" )
     .Define( "trProtonY", rapidity_generator(PROTON_M, Y_CM), {"pz", "pq"} )
-    .Define( "trProtonEfficiency", weight_generator(efficiency_histo), {"pq", "trEta"} )
+    .Define( "trProtonEfficiency", weight_generator(efficiency_histo), {"pq", "trEta", "trPhi"} )
     .Define( "trHasTof400Hit", tr_has_tof_hit, { "trBetaTof400" } )
     .Define( "trHasTof700Hit", tr_has_tof_hit, { "trBetaTof700" } )
     .Define( "trHasAnyTofHit", tr_has_any_tof_hit, { "trHasTof400Hit", "trHasTof700Hit" } )
