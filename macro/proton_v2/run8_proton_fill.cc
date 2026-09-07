@@ -18,7 +18,7 @@
 #include "bmn_env.h"
 #include "vector_generators.h"
 
-void run8_mc_proton_fill( std::string list, 
+void run8_mc_proton_fill( std::string file_list, 
                           std::string str_run_id_efficiency_file,
                           std::string str_effieciency_file,
                           std::string centrality_calib_file,
@@ -71,14 +71,14 @@ void run8_mc_proton_fill( std::string list,
     Qn::AxisD{ "centrality", 6, 0, 60 },
   };
 
-  std::vector<int> f1_modules = {
+  std::vector<int> f1_mod = {
     6,  7,  8,
     11, 12, 13,
     16,     17,
     20, 21, 22, 
     25, 26, 27
   };
-  std::vector<int> f2_modules = {
+  std::vector<int> f2_mod = {
     0,  1,  2,  3,  4,
     5,              9,
     10,             14,
@@ -87,7 +87,7 @@ void run8_mc_proton_fill( std::string list,
     24,             28,
     29, 30, 31, 32, 33,
   };
-  std::vector<int> f3_modules = {
+  std::vector<int> f3_mod = {
     35,                 44,
     37,                 46, 
     39,                 48, 
@@ -95,7 +95,7 @@ void run8_mc_proton_fill( std::string list,
     43,                 52
   };
 
-  std::vector<int> f4_modules = {
+  std::vector<int> f4_mod = {
     34,                     45,
     36,                     47, 
     38,                     49, 
@@ -113,7 +113,7 @@ void run8_mc_proton_fill( std::string list,
   TStopwatch timer;
   timer.Start();
   std::string treename = "t";
-  TFileCollection collection( "collection", "", list.c_str() );
+  TFileCollection collection( "collection", "", file_list.c_str() );
   auto* chain = new TChain( treename.c_str() );
   chain->AddFileInfoList( collection.GetList() );
   ROOT::RDataFrame d( *chain );
@@ -134,7 +134,7 @@ void run8_mc_proton_fill( std::string list,
   auto f1_means_str = AddUVectorComponents( sampled_d, "F1", harmonics, "fhcalModPhi" );
   auto f2_means_str = AddUVectorComponents( sampled_d, "F2", harmonics, "fhcalModPhi" );
   auto f3_means_str = AddUVectorComponents( sampled_d, "F3", harmonics, "fhcalModPhi" );
-  auto f3_means_str = AddUVectorComponents( sampled_d, "F4", harmonics, "fhcalModPhi" );
+  auto f4_means_str = AddUVectorComponents( sampled_d, "F4", harmonics, "fhcalModPhi" );
   auto tp_means_str = AddUVectorComponents( sampled_d, "Tpos", harmonics, "trPhi" );
   auto tn_means_str = AddUVectorComponents( sampled_d, "Tneg", harmonics, "trPhi" );
 
