@@ -555,7 +555,7 @@ const auto GenerateBmnExtendedTreeData(DataFrame& d, const DataCalibration& cali
     .Define( "ref_multiplicity", ref_mult_generator( calibration.g1_FitRunIdFactor ), {"track_multiplicity","runId"} )
     .Define("stsNdigits","return stsDigits.size()" )
     .Define("centrality", centrality_function, {"ref_multiplicity"} )
-    .Define("fhcalModPhi","ROOT::VecOps::RVec<float> phi; for(auto& pos:fhcalModPos) phi.push_back(pos.phi()); return phi;")
+    .Define("fhcalModPhi","std::vector<float> phi; for(auto& pos:fhcalModPos) phi.push_back(pos.phi()); return phi;")
     .Define("fhcalModX","ROOT::VecOps::RVec<float> x; for(auto& pos:fhcalModPos) x.push_back(pos.x()); return x;")
     .Define("fhcalModY","ROOT::VecOps::RVec<float> y; for(auto& pos:fhcalModPos) y.push_back(pos.y()); return y;")
     .Define("trPt","ROOT::VecOps::RVec<float> pt; for(auto& mom:trMom) pt.push_back(mom.pt()); return pt;")
