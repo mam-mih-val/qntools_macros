@@ -64,7 +64,7 @@ void run8_mc_proton_fill( std::string file_list,
   auto effieciency_file = std::unique_ptr<TFile>{TFile::Open( str_effieciency_file.c_str(), "READ" )};
   effieciency_file->GetObject("h3_efficiency_2212_good", calibration.efficiency_histo);
 
-  if( !efficiency_histo )
+  if( !calibration.efficiency_histo )
     std::cerr << "Warning: No efficiency for both tof was found in file " << str_effieciency_file << "\n";
 
   auto qvector_axes = std::vector<Qn::AxisD>{
