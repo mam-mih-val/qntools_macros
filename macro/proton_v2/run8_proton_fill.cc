@@ -18,7 +18,7 @@
 #include "bmn_env.h"
 #include "vector_generators.h"
 
-void run8_mc_proton_fill( std::string file_list, 
+void run8_proton_fill( std::string file_list, 
                           std::string str_run_id_efficiency_file,
                           std::string str_effieciency_file,
                           std::string centrality_calib_file,
