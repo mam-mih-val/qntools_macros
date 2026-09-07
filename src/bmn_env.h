@@ -125,7 +125,7 @@ const auto n_sigma_particle_function =
 []
 ( std::vector<float> n_sigma_400, 
   std::vector<float> n_sigma_700 ){
-    std::vector<int> vec_n_simga{};
+    std::vector<float> vec_n_simga{};
     vec_n_simga.reserve( n_sigma_400.size() );
     for( int i=0; i<n_sigma_400.size(); ++i ){ 
       vec_n_simga.push_back( std::min( n_sigma_400.at(i), n_sigma_700.at(i) ) ); }
@@ -268,7 +268,7 @@ const auto proton_weight = [](
 };
 
 const auto proton_weight_data = []( 
-  std::vector<int> vec_is_proton, 
+  std::vector<float> vec_n_sigma_proton, 
   std::vector<float> vec_efficiency, 
   std::vector<float> vec_r,
   ROOT::VecOps::RVec<int> vec_nhits,
@@ -278,9 +278,9 @@ const auto proton_weight_data = [](
   std::vector<float> vec_fhcal_y
   // "trIsProton", "trProtonEfficiency", "trDcaR", "trStsNhits", "trStsChi2", "trFhcalX", "trFhcalY"
   ){
-  auto weights = std::vector<double>( vec_is_proton.size(), 0.0 );
-  for(auto i=size_t{}; i<vec_is_proton.size(); ++i){
-    if( vec_is_proton[i] != 1 )
+  auto weights = std::vector<double>( vec_n_sigma_proton.size(), 0.0 );
+  for(auto i=size_t{}; i<vec_n_sigma_proton.size(); ++i){
+    if( vec_n_sigma_proton[i] > 3.0 )
       continue;
     if( vec_r[i] > 5.0 )
       continue;
@@ -580,12 +580,12 @@ const auto GenerateBmnExtendedTreeData(DataFrame& d, const DataCalibration& cali
     .Define( "trProtonEfficiency", weight_generator(calibration.efficiency_histo), {"pq", "trEta", "trPhi"} )
     // .Define( "trProtonEfficiencyTof400", weight_generator(efficiency_tof400), {"trProtonY", "trPt"} )
     // .Define( "trProtonEfficiencyTof700", weight_generator(efficiency_tof700), {"trProtonY", "trPt"} )
-    .Define( "trProtonEffEff", "std::vector<float> weights{}; for( auto i=size_t{0}; i<trWeight.size(); ++i ){ weights.push_back( trWeight[i]*trProtonEfficiency[i] ); } return weights;" )
-    .Define( "trProtonWeight", proton_weight, {"trIsProton", "trProtonEffEff", "trHasAnyTofHit", "trDcaR", "trStsNhits", "trStsChi2", "trEta", "trFhcalX", "trFhcalY"} )
-    .Define( "trTposW", tpos_weight, {"trEta", "trPt", "pq", "trDcaR", "trStsNhits", "trStsChi2", "trFhcalX", "trFhcalY"} )
-    .Define( "trTnegW", tneg_weight, {"trEta", "trPt", "pq", "trDcaR", "trStsNhits", "trStsChi2", "trFhcalX", "trFhcalY"} )
     .Alias("trStsNhits", "stsTrackNhits")
     .Alias("trStsChi2", "stsTrackChi2Ndf")
+    .Define( "trProtonEffEff", "std::vector<float> weights{}; for( auto i=size_t{0}; i<trWeight.size(); ++i ){ weights.push_back( trWeight[i]*trProtonEfficiency[i] ); } return weights;" )
+    .Define( "trProtonWeight", proton_weight_data, {"trNsigmaProton", "trProtonEffEff", "trDcaR", "trStsNhits", "trStsChi2", "trEta", "trFhcalX", "trFhcalY"} )
+    .Define( "trTposW", tpos_weight, {"trEta", "trPt", "pq", "trDcaR", "trStsNhits", "trStsChi2", "trFhcalX", "trFhcalY"} )
+    .Define( "trTnegW", tneg_weight, {"trEta", "trPt", "pq", "trDcaR", "trStsNhits", "trStsChi2", "trFhcalX", "trFhcalY"} )
     .Filter([&calibration]( UInt_t run_id ){ 
       if( std::find( calibration.selected_runs.begin(), calibration.selected_runs.end(), run_id) == calibration.selected_runs.end() )
         return false;
