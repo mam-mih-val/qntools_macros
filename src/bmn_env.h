@@ -551,7 +551,7 @@ const auto GenerateBmnExtendedTreeData(DataFrame& d, const DataCalibration& cali
     .Alias("trStsChi2", "stsTrackChi2Ndf")
     .Define("trEta","ROOT::VecOps::RVec<float> eta; for(auto& mom : trMom) eta.push_back(mom.eta()); return eta;")
     .Define("trPhi","ROOT::VecOps::RVec<float> phi;for(auto& mom : trMom) phi.push_back(mom.phi()); return phi;")
-    .Filter([&calibration.selected_runs, &calibration.rejected_runs]( UInt_t run_id ){ 
+    .Filter([&calibration]( UInt_t run_id ){ 
       if( std::find( calibration.selected_runs.begin(), calibration.selected_runs.end(), run_id) == calibration.selected_runs.end() )
         return false;
       if( std::find( calibration.rejected_runs.begin(), calibration.rejected_runs.end(), run_id) != calibration.rejected_runs.end() )
