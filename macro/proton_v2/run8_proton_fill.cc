@@ -29,8 +29,14 @@ void run8_proton_fill( std::string file_list,
 
   auto proton_axes = std::vector<Qn::AxisD>{
     Qn::AxisD{ "centrality", 6, 0, 60 },
+    Qn::AxisD{ "runId", 12, 7100, 8300 },
     Qn::AxisD{ "y", 12, 0.0, 1.2 },
     Qn::AxisD{ "pT", 10, 0.0, 2.0 },
+  };
+
+  auto qvector_axes = std::vector<Qn::AxisD>{
+    Qn::AxisD{ "centrality", 6, 0, 60 },
+    Qn::AxisD{ "runId", 12, 7100, 8300 },
   };
 
   auto calibration = DataCalibration{};
@@ -67,10 +73,6 @@ void run8_proton_fill( std::string file_list,
   if( !calibration.efficiency_histo )
     std::cerr << "Warning: No efficiency for both tof was found in file " << str_effieciency_file << "\n";
 
-  auto qvector_axes = std::vector<Qn::AxisD>{
-    Qn::AxisD{ "centrality", 6, 0, 60 },
-  };
-
   std::vector<int> f1_mod = {
     6,  7,  8,
     11, 12, 13,
@@ -106,6 +108,7 @@ void run8_proton_fill( std::string file_list,
   // std::for_each( f1_mod.begin(), f1_mod.end(), [](auto& m){ m += 1; } );
   // std::for_each( f2_mod.begin(), f2_mod.end(), [](auto& m){ m += 1; } );
   // std::for_each( f3_mod.begin(), f3_mod.end(), [](auto& m){ m += 1; } );
+  // std::for_each( f4_mod.begin(), f4_mod.end(), [](auto& m){ m += 1; } );
 
   auto harmonics = std::vector<size_t>( 5 );
   std::iota( harmonics.begin(), harmonics.end(), 1 );
@@ -120,7 +123,6 @@ void run8_proton_fill( std::string file_list,
   std::cout << "Preparing the RDF" << std::endl;
   
   auto dd = GenerateBmnExtendedTreeData(d, calibration);
-
   auto sampled_d = Qn::Correlation::Resample(dd, 100);
 
   sampled_d = sampled_d.Define( "F1w", fhcal_weight_generator(f1_mod), { "fhcalModId", "fhcalModE" } );
