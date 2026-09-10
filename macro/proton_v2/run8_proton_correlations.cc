@@ -25,7 +25,8 @@ void run8_proton_correlations( std::string file_list,
                                std::string str_effieciency_file,
                                std::string centrality_calib_file,
                                std::string str_pid_tof400_file,
-                               std::string str_pid_tof700_file  ){
+                               std::string str_pid_tof700_file,
+                               std::string str_calib_file ){
 
   std::cout << "starting execution" << std::endl;
 
