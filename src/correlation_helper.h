@@ -289,7 +289,7 @@ private:
     }
 
     counter_++;
-    Exec( last... );
+    Exec( result, last... );
   }
   template< typename First, typename Res>
   auto Exec( RetType& result, First first ) -> void {
