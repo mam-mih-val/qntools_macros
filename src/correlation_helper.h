@@ -1,6 +1,7 @@
 #ifndef CORRELATION_HELPER_H
 #define CORRELATION_HELPER_H
 
+#include <cassert>
 #include <cstddef>
 #include <iterator>
 #include <memory>
@@ -313,20 +314,21 @@ public:
   using First_t = First;
   CorrelationDecorator( std::vector<std::string> vector_names, std::vector<size_t> harmonics ) : 
     vector_names_(std::move(vector_names)), 
-    harmonics_(std::move(harmonics)) {}
+    harmonics_(std::move(harmonics)) {
+      assert(std::size(vector_names_) == std::size(harmonics_))
+    }
   template<typename DF>
   auto operator()( DF& df ) const -> std::vector<std::string> {
     auto general_correlation_name = std::string{};
     std::for_each( vector_names_.begin(), vector_names_.end(), [&general_correlation_name]( const auto& name ) mutable { general_correlation_name.append(name).append("_"); } );
-    general_correlation_name.pop_back();
     auto vec_components = std::vector< std::vector< std::function<float(Qn::QVec)> > >{ std::vector< std::function<float(Qn::QVec)> >{} };
     auto vec_corr_names = std::vector< std::string >{ general_correlation_name };
     for( size_t i=0; i<vector_names_.size(); ++i ){
       auto upd_vec_corr_names = std::vector<std::string>{};
       auto upd_vec_components = std::vector< std::vector< std::function<float(Qn::QVec)> > >{};
       for( auto j=0; j < vec_corr_names.size(); ++j ){
-        upd_vec_corr_names.push_back( vec_corr_names[j]+"_x"+std::to_string(harmonics_[i]) );
-        upd_vec_corr_names.push_back( vec_corr_names[j]+"_y"+std::to_string(harmonics_[i]) );
+        upd_vec_corr_names.push_back( vec_corr_names[j]+"x"+std::to_string(harmonics_[i]) );
+        upd_vec_corr_names.push_back( vec_corr_names[j]+"y"+std::to_string(harmonics_[i]) );
 
         auto curr_component_layout = vec_components.at(j);
         curr_component_layout.push_back( MakeComponent(x{}) );
@@ -393,7 +395,7 @@ public:
 
   auto DumpCorrelations( TFile* file_out ){
     file_out->cd();
-    std::for_each( result_ptrs_.begin(), result_ptrs_.end(), [this, i=0]( auto& p ) mutable { p->Write( result_names_[i].c_str() ); } );
+    std::for_each( result_ptrs_.begin(), result_ptrs_.end(), [this, i=0]( auto& p ) mutable { p->Write( result_names_[i].c_str() ); ++i; } );
   }
 
 private:
