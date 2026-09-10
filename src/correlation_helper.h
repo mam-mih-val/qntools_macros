@@ -278,9 +278,6 @@ private:
           }
         }
       }
-      for( auto i = 0; i<first.size(); ++i ){
-        result.push_back( components_[counter_]( first[i][ harmonics_[counter_] ] ) );
-      }
     }
 
     counter_++;
@@ -305,9 +302,6 @@ private:
             result[i] *= components_[counter_]( first[i][ harmonics_[counter_] ] );
           }
         }
-      }
-      for( auto i = 0; i<first.size(); ++i ){
-        result.push_back( components_[counter_]( first[i][ harmonics_[counter_] ] ) );
       }
     }
   }
