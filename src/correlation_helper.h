@@ -2,6 +2,7 @@
 #define CORRELATION_HELPER_H
 
 #include <cstddef>
+#include <iterator>
 #include <memory>
 #include <string>
 #include <vector>
@@ -248,20 +249,35 @@ public:
     harmonics_( std::move(harmonics) ), components_( std::move(components) ) {}
   auto operator()( Args... args ) -> RetType {
     counter_=0;
-    return Exec(args...);
+    auto result = RetType{};
+    if constexpr ( std::is_floating_point_v<RetType> ) result = 1;
+    Exec(result, args...);
+    return result;
   }
 private:
   std::vector<size_t> harmonics_{0};
   std::vector< std::function< float(Qn::QVec) > > components_{0};
   size_t counter_{0};
   template< typename First, typename... Last >
-  auto Exec( First first, Last... last ) -> RetType {
-    auto result = RetType{};
+  auto Exec( RetType& result, First first, Last... last ) -> void {
     if constexpr( std::is_floating_point_v<RetType> ){
       result = components_[counter_](first[ harmonics_[counter_] ]);
-      counter_++;
-      result *= Exec( last... );
     } else {
+      if constexpr ( std::is_same_v<First, qvector_t> ){
+        for( auto i=0; i<first.size(); ++i ){
+          result[i] *= components_[counter_]( first[ harmonics_[counter_] ] );
+        }
+      } else if constexpr( std::is_same_v<First, uvector_t> ){
+        if( std::empty( result ) ){
+          for( auto i=0; i<first.size(); ++i ){
+            result.push_back( components_[counter_]( first[i][ harmonics_[counter_] ] ) );
+          }
+        } else {
+          for( auto i=0; i<first.size(); ++i ){
+            result[i] *= components_[counter_]( first[i][ harmonics_[counter_] ] );
+          }
+        }
+      }
       for( auto i = 0; i<first.size(); ++i ){
         result.push_back( components_[counter_]( first[i][ harmonics_[counter_] ] ) );
       }
@@ -272,19 +288,38 @@ private:
       }
     }
 
-    return result;
+    counter_++;
+    Exec( last... );
   }
-  template< typename First>
-  auto Exec( First first ) -> RetType {
-    auto result = RetType{};
+  template< typename First, typename Res>
+  auto Exec( RetType& result, First first ) -> void {
     if constexpr( std::is_floating_point_v<RetType> ){
       result = components_[counter_](first[ harmonics_[counter_] ]);
     } else {
+      if constexpr ( std::is_same_v<First, qvector_t> ){
+        for( auto i=0; i<first.size(); ++i ){
+          result[i] *= components_[counter_]( first[ harmonics_[counter_] ] );
+        }
+      } else if constexpr( std::is_same_v<First, uvector_t> ){
+        if( std::empty( result ) ){
+          for( auto i=0; i<first.size(); ++i ){
+            result.push_back( components_[counter_]( first[i][ harmonics_[counter_] ] ) );
+          }
+        } else {
+          for( auto i=0; i<first.size(); ++i ){
+            result[i] *= components_[counter_]( first[i][ harmonics_[counter_] ] );
+          }
+        }
+      }
       for( auto i = 0; i<first.size(); ++i ){
         result.push_back( components_[counter_]( first[i][ harmonics_[counter_] ] ) );
       }
+      counter_++;
+      auto rest_result = Exec( last... );
+      for( auto i = 0; i<first.size(); ++i ){
+        result[i] *= rest_result[i];
+      }
     }
-    return result;
   }
 };
 
