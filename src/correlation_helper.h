@@ -360,11 +360,11 @@ public:
       vec_columns.insert( vec_columns.end(), axes.begin(), axes.end() );
       if constexpr ( std::is_same_v<qvector_t, typename Decorator_t::First_t>  ) {
         result_ptrs_.emplace_back(
-          dataframe_.Book< double, Weight_t, ROOT::RVec<ULong64_t>, Axes_t...>( CorrelationHelper( axes.axes, n_samples_, correlation_weight_type ), vec_columns )
+          dataframe_.template Book< double, Weight_t, ROOT::RVec<ULong64_t>, Axes_t...>( CorrelationHelper( axes.axes, n_samples_, correlation_weight_type ), vec_columns )
         );
       } else {
         result_ptrs_.emplace_back(
-          dataframe_.Book< std::vector<double>, Weight_t, ROOT::RVec<ULong64_t>, Axes_t...>( CorrelationHelper( axes.axes, n_samples_, correlation_weight_type ), vec_columns )
+          dataframe_.template Book< std::vector<double>, Weight_t, ROOT::RVec<ULong64_t>, Axes_t...>( CorrelationHelper( axes.axes, n_samples_, correlation_weight_type ), vec_columns )
         );
       }
     }
