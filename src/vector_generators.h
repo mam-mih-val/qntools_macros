@@ -121,7 +121,7 @@ private:
       if( bin < 0 )
         continue;
       auto bin_weights = weights_in_bins_[bin].GetStatistics().SumWeights();
-      if( bin_weights < 1e-3 )
+      if( fabs(bin_weights) < 1e-3 )
         continue;
       result_weights[i] = w / bin_weights;
     }
