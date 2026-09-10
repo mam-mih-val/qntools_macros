@@ -234,7 +234,7 @@ struct x{
 
 struct y{
   float operator()(Qn::QVec vec) const {
-    return vec.x;
+    return vec.y;
   }
 };
 
