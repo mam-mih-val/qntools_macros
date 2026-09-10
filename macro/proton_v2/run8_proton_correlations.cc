@@ -215,6 +215,9 @@ void run8_proton_correlations( std::string file_list,
     .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"Tneg", "F4"}, {1, 1} }, qvector_weight, qvector_axes)
     
   ;
+
+  auto file_out = std::unique_ptr<TFile, std::function<void(TFile*)> >{ TFile::Open( "corr.root", "RECREATE"), [](auto f){ f->Close(); } };
+  handler.DumpCorrelations( file_out.get() );
   
   auto n_events_filtered = *(dd.Count());
   std::cout << "Number of filtered events: " << n_events_filtered << std::endl;
