@@ -248,7 +248,7 @@ public:
     harmonics_( std::move(harmonics) ), components_( std::move(components) ) {}
   auto operator()( Args... args ) -> RetType {
     counter_=0;
-    Exec(args...);
+    return Exec(args...);
   }
 private:
   std::vector<size_t> harmonics_{0};
