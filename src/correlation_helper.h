@@ -238,7 +238,7 @@ struct y{
 
 template<typename T>
 auto MakeComponent( T component ){
-  return [component](Qn::QVec vec){ return component(vec); }
+  return [component](Qn::QVec vec){ return component(vec); };
 }
 
 template<typename First, typename... Args>
@@ -249,7 +249,7 @@ public:
     vector_names_(std::move(vector_names)), 
     harmonics_(std::move(harmonics)) {}
   template<typename DF>
-  static auto operator()( DF& df ) const -> std::vector<std::string> {
+  auto operator()( DF& df ) const -> std::vector<std::string> {
     auto general_correlation_name = std::string{};
     std::for_each( vector_names_.begin(), vector_names_.end(), [&general_correlation_name]( const auto& name ) mutable { general_correlation_name.append(name).append("_"); } );
     general_correlation_name.pop_back();
