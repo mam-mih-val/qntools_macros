@@ -310,9 +310,11 @@ public:
         upd_vec_corr_names.push_back( vec_corr_names[j]+"_y"+std::to_string(harmonics_[i]) );
 
         auto curr_component_layout = vec_components.at(j);
-        upd_vec_components.emplace_back( curr_component_layout.push_back( MakeComponent(x{}) ) );
+        curr_component_layout.push_back( MakeComponent(x{}) );
+        upd_vec_components.emplace_back( curr_component_layout );
         curr_component_layout = vec_components.at(j);
-        upd_vec_components.emplace_back( curr_component_layout.push_back( MakeComponent(y{}) ) );
+        curr_component_layout.push_back( MakeComponent(y{}) );
+        upd_vec_components.emplace_back( curr_component_layout );
       }
       vec_corr_names = std::move(upd_vec_corr_names);
       vec_components = std::move(upd_vec_components);
