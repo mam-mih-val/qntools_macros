@@ -18,12 +18,12 @@
 #include "bmn_env.h"
 #include "vector_generators.h"
 
-void run8_proton_fill( std::string file_list, 
-                          std::string str_run_id_efficiency_file,
-                          std::string str_effieciency_file,
-                          std::string centrality_calib_file,
-                          std::string str_pid_tof400_file,
-                          std::string str_pid_tof700_file ){
+void run8_proton_fill(std::string file_list, 
+                      std::string str_run_id_efficiency_file,
+                      std::string str_effieciency_file,
+                      std::string centrality_calib_file,
+                      std::string str_pid_tof400_file,
+                      std::string str_pid_tof700_file ){
 
   std::cout << "starting execution" << std::endl;
 
@@ -105,10 +105,10 @@ void run8_proton_fill( std::string file_list,
     42,                     53
   };
 
-  // std::for_each( f1_mod.begin(), f1_mod.end(), [](auto& m){ m += 1; } );
-  // std::for_each( f2_mod.begin(), f2_mod.end(), [](auto& m){ m += 1; } );
-  // std::for_each( f3_mod.begin(), f3_mod.end(), [](auto& m){ m += 1; } );
-  // std::for_each( f4_mod.begin(), f4_mod.end(), [](auto& m){ m += 1; } );
+  std::for_each( f1_mod.begin(), f1_mod.end(), [](auto& m){ m += 1; } );
+  std::for_each( f2_mod.begin(), f2_mod.end(), [](auto& m){ m += 1; } );
+  std::for_each( f3_mod.begin(), f3_mod.end(), [](auto& m){ m += 1; } );
+  std::for_each( f4_mod.begin(), f4_mod.end(), [](auto& m){ m += 1; } );
 
   auto harmonics = std::vector<size_t>( 5 );
   std::iota( harmonics.begin(), harmonics.end(), 1 );
