@@ -352,19 +352,19 @@ class CorrelationHandler{
 public:
   CorrelationHandler(DF& df, size_t n_samples=100) : dataframe_(df), n_samples_(n_samples) {}
   
-  template<typename Decorator_t, typename Weight_t typename... Axes_t>
+  template<typename Decorator_t, typename Weight_t, typename... Axes_t>
   auto AddCorrelation( const Decorator_t& decorator, const Weight<Weight_t>& weight, const CorrelationAxes<Axes_t...>& axes, Qn::Stat::WeightType correlation_weight_type = Qn::Stat::WeightType::OBSERVABLE ) -> CorrelationHandler& {
-    auto vec_corr_names = decorator( df );
+    auto vec_corr_names = decorator( dataframe_ );
     for( const auto& name : vec_corr_names ){
       auto vec_columns = std::vector< std::string > { name, weight.weight_column, "samples" };
       vec_columns.insert( vec_columns.end(), axes.begin(), axes.end() );
       if constexpr ( std::is_same_v<qvector_t, typename Decorator_t::First_t>  ) {
         result_ptrs_.emplace_back(
-          dataframe_.Book< double, Weight_t, ROOT::RVec<ULong64_t>, Axes_t >( CorrelationHelper( axes.axes, n_samples_, correlation_weight_type ), vec_columns )
+          dataframe_.Book< double, Weight_t, ROOT::RVec<ULong64_t>, Axes_t...>( CorrelationHelper( axes.axes, n_samples_, correlation_weight_type ), vec_columns )
         );
       } else {
         result_ptrs_.emplace_back(
-          dataframe_.Book< std::vector<double>, Weight_t, ROOT::RVec<ULong64_t>, Axes_t >( CorrelationHelper( axes.axes, n_samples_, correlation_weight_type ), vec_columns )
+          dataframe_.Book< std::vector<double>, Weight_t, ROOT::RVec<ULong64_t>, Axes_t...>( CorrelationHelper( axes.axes, n_samples_, correlation_weight_type ), vec_columns )
         );
       }
     }
