@@ -108,7 +108,7 @@ void run8_proton_correlations( std::string file_list,
   TStopwatch timer;
   timer.Start();
   std::string treename = "t";
-  TFileCollection collection( "collection", "", list.c_str() );
+  TFileCollection collection( "collection", "", file_list.c_str() );
   auto* chain = new TChain( treename.c_str() );
   chain->AddFileInfoList( collection.GetList() );
   ROOT::RDataFrame d( *chain );
