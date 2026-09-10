@@ -1,6 +1,7 @@
 #ifndef CORRELATION_HELPER_H
 #define CORRELATION_HELPER_H
 
+#include <cstddef>
 #include <memory>
 #include <string>
 #include <vector>
@@ -223,4 +224,164 @@ struct CorrFunc1Part{
   using First_t = U;
 };
 
-#endif // CORRELATION_HELPER_H
+struct x{
+  float operator()(Qn::QVec& vec){
+    return vec.x;
+  }
+};
+
+struct y{
+  float operator()(Qn::QVec& vec){
+    return vec.x;
+  }
+};
+
+template<typename T>
+auto MakeComponent( T component ){
+  return [component](Qn::QVec vec){ return component(vec); }
+}
+
+template<typename First, typename... Args>
+class CorrelationDecorator{
+public:
+  using First_t = First;
+  CorrelationDecorator( std::vector<std::string> vector_names, std::vector<size_t> harmonics ) : 
+    vector_names_(std::move(vector_names)), 
+    harmonics_(std::move(harmonics)) {}
+  template<typename DF>
+  static auto operator()( DF& df ) const -> std::vector<std::string> {
+    auto general_correlation_name = std::string{};
+    std::for_each( vector_names_.begin(), vector_names_.end(), [&general_correlation_name]( const auto& name ) mutable { general_correlation_name.append(name).append("_"); } );
+    general_correlation_name.pop_back();
+    auto vec_components = std::vector< std::vector< std::function<float(Qn::QVec)> > >{ std::vector< std::function<float(Qn::QVec)> >{} };
+    auto vec_corr_names = std::vector< std::string >{ general_correlation_name };
+    for( size_t i=0; i<vector_names_.size(); ++i ){
+      auto upd_vec_corr_names = std::vector<std::string>{};
+      auto upd_vec_components = std::vector< std::vector< std::function<float(Qn::QVec)> > >{};
+      for( auto j=0; j < vec_corr_names.size(); ++j ){
+        upd_vec_corr_names.push_back( vec_corr_names[j]+"_x"+std::to_string(harmonics_[i]) );
+        upd_vec_corr_names.push_back( vec_corr_names[j]+"_y"+std::to_string(harmonics_[i]) );
+
+        auto curr_component_layout = vec_components.at(j);
+        upd_vec_components.push_back( curr_component_layout.push_back( MakeComponent(x{}) ) );
+        curr_component_layout = vec_components.at(j);
+        upd_vec_components.push_back( curr_component_layout.push_back( MakeComponent(y{}) ) );
+      }
+      vec_corr_names = std::move(upd_vec_corr_names);
+      vec_components = std::move(upd_vec_components);
+    }
+
+    if constexpr( std::is_same_v<qvector_t, First> ){
+      for( auto i=size_t{0}; i<vec_corr_names.size() ++i; ){
+        df = df.Define( vec_corr_names[i], Correlator<double, First, Args...>{ harmonics_, vec_components[i] }, vector_names_ );
+      }
+    } else {
+      for( auto i=size_t{0}; i<vec_corr_names.size() ++i; ){
+        df = df.Define( vec_corr_names[i], Correlator< std::vector<double>, First, Args...>{ harmonics_, vec_components[i] }, vector_names_ );
+      }
+    }
+    return vec_corr_names;
+  }
+private:
+  std::vector<std::string> vector_names_{};
+  std::vector<size_t> harmonics_{};
+};
+
+template<typename RetType, typename... Args>
+class Correlator{
+public:
+  Correlator( std::vector<size_t> harmonics, std::vector< std::function< float(Qn::QVec) > > components ) : 
+    harmonics_( std::move(harmonics) ), components_( std::move(components_) ) {}
+  auto operator()( Args... args ) -> RetType {
+    counter_=0;
+    Exec(args...);
+  }
+private:
+  std::vector<size_t> harmonics_{0};
+  std::vector< std::function< float(Qn::QVec) > > components_{0};
+  size_t counter_{0};
+  template< typename First, typename... Last >
+  auto Exec( First first, Last... last ) -> RetType {
+    auto result = RetType{};
+    if constexpr( std::is_floating_point_v<RetType> ){
+      result = components[counter_](first[ harmonics_[counter_] ]);
+      counter_++;
+      result *= Exec( last... );
+    } else {
+      for( auto i = 0; i<first.size(); ++i ){
+        result.push_back( components[counter_]( first[i][ harmonics_[counter_] ] ) );
+      }
+      counter_++;
+      auto rest_result = Exec( last... );
+      for( auto i = 0; i<first.size(); ++i ){
+        result[i] *= rest_result;
+      }
+    }
+
+    return result;
+  }
+  template< typename First>
+  auto Exec( First first ) -> RetType {
+    auto result = RetType{};
+    if constexpr( std::is_floating_point_v<RetType> ){
+      result = components[counter_](first[ harmonics_[counter_] ]);
+    } else {
+      for( auto i = 0; i<first.size(); ++i ){
+        result.push_back( components[counter_]( first[i][ harmonics_[counter_] ] ) );
+      }
+    }
+    return result;
+  }
+};
+
+
+template<typename... Column_t>
+struct CorrelationAxes{
+  std::vector<std::string> axes_columns{};
+  std::vector<Qn::AxisD> axes{};
+}
+
+template<typename Column_t>
+struct Weight{
+  std::string weight_column{};
+}
+
+template<typename DF>
+class CorrelationHandler{
+public:
+  CorrelationHandler(DF& df, size_t n_samples=100) : dataframe_(df), n_samples_(n_samples) {}
+  
+  template<typename Decorator_t, typename Weight_t typename... Axes_t>
+  auto AddCorrelation( const Decorator_t& decorator, const Weight<Weight_t>& weight, const CorrelationAxes<Axes_t...>& axes, Qn::Stat::WeightType correlation_weight_type = Qn::Stat::WeightType::OBSERVABLE ) -> CorrelationHandler& {
+    auto vec_corr_names = decorator( df );
+    for( const auto& name : vec_corr_names ){
+      auto vec_columns = std::vector< std::string > { name, weight.weight_column, "samples" };
+      vec_columns.insert( vec_columns.end(), axes.begin(), axes.end() );
+      if constexpr ( std::is_same_v<qvector_t, typename Decorator_t::First_t>  ) {
+        result_ptrs_.emplace_back(
+          dataframe_.Book< double, Weight_t, ROOT::RVec<ULong64_t>, Axes_t >( CorrelationHelper( axes.axes, n_samples_, correlation_weight_type ), vec_columns )
+        );
+      } else {
+        result_ptrs_.emplace_back(
+          dataframe_.Book< std::vector<double>, Weight_t, ROOT::RVec<ULong64_t>, Axes_t >( CorrelationHelper( axes.axes, n_samples_, correlation_weight_type ), vec_columns )
+        );
+      }
+    }
+    result_names_.insert( result_names_.end(), vec_corr_names.begin(), vec_corr_names.end() );
+    return *this;
+  }
+
+  auto DumpCorrelations( TFile* file_out ){
+    file_out->cd();
+    std::for_each( result_ptrs_.begin(), result_ptrs_.end(), [this, i=0]( const auto& p ) mutable { p->Write( result_names_[i] ); } );
+  }
+
+private:
+  DF& dataframe_;
+  size_t n_samples_{};
+  std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > > result_ptrs_{};
+  std::vector< std::string > result_names_{};
+
+};
+
+#endif // CORRELATION_HELPER_H  
