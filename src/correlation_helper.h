@@ -225,13 +225,13 @@ struct CorrFunc1Part{
 };
 
 struct x{
-  float operator()(Qn::QVec vec){
+  float operator()(Qn::QVec vec) const {
     return vec.x;
   }
 };
 
 struct y{
-  float operator()(Qn::QVec vec){
+  float operator()(Qn::QVec vec) const {
     return vec.x;
   }
 };
@@ -258,12 +258,12 @@ private:
   auto Exec( First first, Last... last ) -> RetType {
     auto result = RetType{};
     if constexpr( std::is_floating_point_v<RetType> ){
-      result = components[counter_](first[ harmonics_[counter_] ]);
+      result = components_[counter_](first[ harmonics_[counter_] ]);
       counter_++;
       result *= Exec( last... );
     } else {
       for( auto i = 0; i<first.size(); ++i ){
-        result.push_back( components[counter_]( first[i][ harmonics_[counter_] ] ) );
+        result.push_back( components_[counter_]( first[i][ harmonics_[counter_] ] ) );
       }
       counter_++;
       auto rest_result = Exec( last... );
@@ -278,10 +278,10 @@ private:
   auto Exec( First first ) -> RetType {
     auto result = RetType{};
     if constexpr( std::is_floating_point_v<RetType> ){
-      result = components[counter_](first[ harmonics_[counter_] ]);
+      result = components_[counter_](first[ harmonics_[counter_] ]);
     } else {
       for( auto i = 0; i<first.size(); ++i ){
-        result.push_back( components[counter_]( first[i][ harmonics_[counter_] ] ) );
+        result.push_back( components_[counter_]( first[i][ harmonics_[counter_] ] ) );
       }
     }
     return result;
