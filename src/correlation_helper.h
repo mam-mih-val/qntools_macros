@@ -315,7 +315,7 @@ public:
   CorrelationDecorator( std::vector<std::string> vector_names, std::vector<size_t> harmonics ) : 
     vector_names_(std::move(vector_names)), 
     harmonics_(std::move(harmonics)) {
-      assert(std::size(vector_names_) == std::size(harmonics_))
+      assert(std::size(vector_names_) == std::size(harmonics_));
     }
   template<typename DF>
   auto operator()( DF& df ) const -> std::vector<std::string> {
