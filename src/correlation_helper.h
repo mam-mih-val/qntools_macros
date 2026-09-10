@@ -225,13 +225,13 @@ struct CorrFunc1Part{
 };
 
 struct x{
-  float operator()(Qn::QVec& vec){
+  float operator()(Qn::QVec vec){
     return vec.x;
   }
 };
 
 struct y{
-  float operator()(Qn::QVec& vec){
+  float operator()(Qn::QVec vec){
     return vec.x;
   }
 };
