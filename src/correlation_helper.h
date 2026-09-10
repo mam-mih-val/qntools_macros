@@ -281,11 +281,6 @@ private:
       for( auto i = 0; i<first.size(); ++i ){
         result.push_back( components_[counter_]( first[i][ harmonics_[counter_] ] ) );
       }
-      counter_++;
-      auto rest_result = Exec( last... );
-      for( auto i = 0; i<first.size(); ++i ){
-        result[i] *= rest_result[i];
-      }
     }
 
     counter_++;
