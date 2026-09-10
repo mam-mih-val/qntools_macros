@@ -393,7 +393,7 @@ public:
 
   auto DumpCorrelations( TFile* file_out ){
     file_out->cd();
-    std::for_each( result_ptrs_.begin(), result_ptrs_.end(), [this, i=0]( auto& p ) mutable { p->Write( result_names_[i] ); } );
+    std::for_each( result_ptrs_.begin(), result_ptrs_.end(), [this, i=0]( auto& p ) mutable { p->Write( result_names_[i].c_str() ); } );
   }
 
 private:
