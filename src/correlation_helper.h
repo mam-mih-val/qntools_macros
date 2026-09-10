@@ -245,7 +245,7 @@ template<typename RetType, typename... Args>
 class Correlator{
 public:
   Correlator( std::vector<size_t> harmonics, std::vector< std::function< float(Qn::QVec) > > components ) : 
-    harmonics_( std::move(harmonics) ), components_( std::move(components_) ) {}
+    harmonics_( std::move(harmonics) ), components_( std::move(components) ) {}
   auto operator()( Args... args ) -> RetType {
     counter_=0;
     Exec(args...);
@@ -268,7 +268,7 @@ private:
       counter_++;
       auto rest_result = Exec( last... );
       for( auto i = 0; i<first.size(); ++i ){
-        result[i] *= rest_result;
+        result[i] *= rest_result[i];
       }
     }
 
@@ -357,7 +357,7 @@ public:
     auto vec_corr_names = decorator( dataframe_ );
     for( const auto& name : vec_corr_names ){
       auto vec_columns = std::vector< std::string > { name, weight.weight_column, "samples" };
-      vec_columns.insert( vec_columns.end(), axes.begin(), axes.end() );
+      vec_columns.insert( vec_columns.end(), axes.axes_columns.begin(), axes.axes_columns.end() );
       if constexpr ( std::is_same_v<qvector_t, typename Decorator_t::First_t>  ) {
         result_ptrs_.emplace_back(
           dataframe_.template Book< double, Weight_t, ROOT::RVec<ULong64_t>, Axes_t...>( CorrelationHelper( axes.axes, n_samples_, correlation_weight_type ), vec_columns )
