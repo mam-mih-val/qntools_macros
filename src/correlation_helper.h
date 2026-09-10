@@ -283,7 +283,7 @@ private:
     counter_++;
     Exec( result, last... );
   }
-  template< typename First, typename Res>
+  template< typename First >
   auto Exec( RetType& result, First first ) -> void {
     if constexpr( std::is_floating_point_v<RetType> ){
       result = components_[counter_](first[ harmonics_[counter_] ]);
