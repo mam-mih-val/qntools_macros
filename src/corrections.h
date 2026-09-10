@@ -470,7 +470,7 @@ private:
   template<typename T, typename... ColumnTypes>
   std::vector<double> FormCoordinates( size_t i, T first, ColumnTypes... rest ){
     auto vec_coordinates = std::vector<double>{};
-    if constexpr ( std::is_floating_point_v<T> ){
+    if constexpr ( std::is_floating_point_v<T> || std::is_integral_v<T> ){
       vec_coordinates.push_back(static_cast<double>( first ) );
     } else {
       vec_coordinates.push_back(static_cast<double>( first.at(i) ) );
@@ -481,7 +481,7 @@ private:
   }
   template<typename T, typename... ColumnTypes>
   std::vector<double> FormCoordinates( size_t i, T coordinate ){
-    if constexpr ( std::is_floating_point_v<T> ){
+    if constexpr ( std::is_floating_point_v<T> || std::is_integral_v<T> ){
       return std::vector<double>{ static_cast<double>( coordinate ) };
     }
     else{
