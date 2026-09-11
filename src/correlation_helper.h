@@ -281,7 +281,7 @@ private:
       result[i] *= components_[counter_]( first[i][ harmonics_[counter_] ] );
     }
     counter_++;
-    Exec( last... );
+    Exec( result, last... );
   }
   auto Exec( RetType& result, uvector_t first) -> void {
     for( auto i=0; i<first.size(); ++i ){
@@ -299,7 +299,7 @@ private:
       }
     }
     counter_++;
-    Exec( last... );
+    Exec( result, last... );
   }
   auto Exec( RetType& result, qvector_t first ) -> void {
     if constexpr( std::is_floating_point_v<RetType> ){
