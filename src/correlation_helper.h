@@ -251,7 +251,7 @@ public:
   auto operator()( Args... args ) -> RetType {
     counter_=0;
     auto result = RetType{};
-    if constexpr ( std::is_floating_point_v<RetType> ) result = 1;
+    InitResult(result, args...);
     Exec(result, args...);
     return result;
   }
@@ -260,49 +260,53 @@ private:
   std::vector< std::function< float(Qn::QVec) > > components_{0};
   size_t counter_{0};
   template< typename First, typename... Last >
-  auto Exec( RetType& result, First first, Last... last ) -> void {
+  auto InitResult( RetType& result, First first, Last... last ){
     if constexpr( std::is_floating_point_v<RetType> ){
-      result = components_[counter_](first[ harmonics_[counter_] ]);
+      result = static_cast<RetType>(1);
     } else {
-      if constexpr ( std::is_same_v<First, qvector_t> ){
-        for( auto i=0; i<first.size(); ++i ){
-          result[i] *= components_[counter_]( first[ harmonics_[counter_] ] );
-        }
-      } else if constexpr( std::is_same_v<First, uvector_t> ){
-        if( std::empty( result ) ){
-          for( auto i=0; i<first.size(); ++i ){
-            result.push_back( components_[counter_]( first[i][ harmonics_[counter_] ] ) );
-          }
-        } else {
-          for( auto i=0; i<first.size(); ++i ){
-            result[i] *= components_[counter_]( first[i][ harmonics_[counter_] ] );
-          }
-        }
-      }
+      result = RetType( first.size(), 1 );
     }
-
-    counter_++;
-    Exec( result, last... );
   }
   template< typename First >
-  auto Exec( RetType& result, First first ) -> void {
+  auto InitResult( RetType& result, First first ){
     if constexpr( std::is_floating_point_v<RetType> ){
-      result = components_[counter_](first[ harmonics_[counter_] ]);
+      result = static_cast<RetType>(1);
     } else {
-      if constexpr ( std::is_same_v<First, qvector_t> ){
-        for( auto i=0; i<first.size(); ++i ){
-          result[i] *= components_[counter_]( first[ harmonics_[counter_] ] );
-        }
-      } else if constexpr( std::is_same_v<First, uvector_t> ){
-        if( std::empty( result ) ){
-          for( auto i=0; i<first.size(); ++i ){
-            result.push_back( components_[counter_]( first[i][ harmonics_[counter_] ] ) );
-          }
-        } else {
-          for( auto i=0; i<first.size(); ++i ){
-            result[i] *= components_[counter_]( first[i][ harmonics_[counter_] ] );
-          }
-        }
+      result = RetType( first.size(), 1 );
+    }
+  }
+  template<typename... Last>
+  auto Exec( RetType& result, uvector_t first, Last... last ) -> void {
+    for( auto i=0; i<first.size(); ++i ){
+      result[i] *= components_[counter_]( first[i][ harmonics_[counter_] ] );
+    }
+    counter_++;
+    Exec( last... );
+  }
+  auto Exec( RetType& result, uvector_t first) -> void {
+    for( auto i=0; i<first.size(); ++i ){
+      result[i] *= components_[counter_]( first[i][ harmonics_[counter_] ] );
+    }
+  }
+
+  template<typename... Last>
+  auto Exec( RetType& result, qvector_t first, Last... last ) -> void {
+    if constexpr( std::is_floating_point_v<RetType> ){
+      result *= components_[counter_]( first[ harmonics_[counter_] ]);
+    } else {
+      for( auto i=0; i<first.size(); ++i ){
+        result[i] *= components_[counter_]( first[ harmonics_[counter_] ] );
+      }
+    }
+    counter_++;
+    Exec( last... );
+  }
+  auto Exec( RetType& result, qvector_t first ) -> void {
+    if constexpr( std::is_floating_point_v<RetType> ){
+      result *= components_[counter_]( first[ harmonics_[counter_] ]);
+    } else{
+      for( auto i= 0; i < first.size(); ++i ){
+        result[i] *= components_[counter_]( first[ harmonics_[counter_] ] );
       }
     }
   }
