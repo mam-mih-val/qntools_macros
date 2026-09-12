@@ -294,7 +294,7 @@ private:
     if constexpr( std::is_floating_point_v<RetType> ){
       result *= components_[counter_]( first[ harmonics_[counter_] ]);
     } else {
-      for( auto i=0; i<first.size(); ++i ){
+      for( auto i=0; i < result.size(); ++i ){
         result[i] *= components_[counter_]( first[ harmonics_[counter_] ] );
       }
     }
@@ -305,7 +305,7 @@ private:
     if constexpr( std::is_floating_point_v<RetType> ){
       result *= components_[counter_]( first[ harmonics_[counter_] ]);
     } else{
-      for( auto i= 0; i < first.size(); ++i ){
+      for( auto i= 0; i < result.size(); ++i ){
         result[i] *= components_[counter_]( first[ harmonics_[counter_] ] );
       }
     }
