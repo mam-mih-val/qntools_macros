@@ -290,6 +290,10 @@ void run8_proton_fill(std::string file_list,
   std::for_each( tn_means_ptr.begin(), tn_means_ptr.end(), [i=0, &tn_means_str]( auto& p ) mutable { p->Write( tn_means_str.at(i).c_str() ); ++i; } );
   std::for_each( tn_cov_ptr.begin(), tn_cov_ptr.end(), [i=0, &tn_cov_str]( auto& p ) mutable { p->Write( tn_cov_str.at(i).c_str() ); ++i; } );
 
-  auto n_events_filtered = *(dd.Count());
-  std::cout << "Number of filtered events: " << n_events_filtered << std::endl;
+  auto n_events_filtered = static_cast<double>(*(sampled_d.Count())) / 1E+3;
+  auto end = std::chrono::steady_clock::now();
+  auto elapsed_s = std::chrono::duration_cast<std::chrono::seconds>(end - begin).count();
+  auto speed = n_events_filtered / elapsed_s * 3600;
+  std::cout << "Elapsed time: " << elapsed_s << " sec" << std::endl;
+  std::cout << "Processing speed: " << std::setprecision(3) << speed << " kev/h" << std::endl;
 }
