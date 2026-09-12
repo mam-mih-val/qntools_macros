@@ -12,6 +12,7 @@
 #include <random>
 #include <vector>
 #include <functional>
+#include <chrono>
 
 #include <DataContainer.hpp>
 #include <QnDataFrame.hpp>
@@ -190,6 +191,8 @@ void run8_proton_correlations( std::string file_list,
   auto proton_weight = Weight<std::vector<double>>{ "trProtonWeight" };
   auto qvector_weight = Weight<double>{ "One" };
 
+  auto begin = std::chrono::steady_clock::now();
+
   auto handler = CorrelationHandler{ sampled_d, 100 };
   handler
     .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{"proton", "F1"}, {1, 1} }, proton_weight, proton_axes)
@@ -238,6 +241,10 @@ void run8_proton_correlations( std::string file_list,
   auto file_out = std::unique_ptr<TFile, std::function<void(TFile*)> >{ TFile::Open( "corr.root", "RECREATE"), [](auto f){ f->Close(); } };
   handler.DumpCorrelations( file_out.get() );
   
-  auto n_events_filtered = *(dd.Count());
-  std::cout << "Number of filtered events: " << n_events_filtered << std::endl;
+  auto n_events_filtered = static_cast<double>(*(sampled_d.Count())) / 1E+3;
+  auto end = std::chrono::steady_clock::now();
+  auto elapsed_m = std::chrono::duration_cast<std::chrono::minutes>(end - begin).count();
+  std::cout << "Elapsed time: " << elapsed_m << " min" << std::endl;
+  std::cout << "It is " << ( n_events_filtered > 0 ? n_events_filtered / elapsed_m : 0.0 ) << " kev/min" << std::endl;
+  
 }
