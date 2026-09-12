@@ -245,7 +245,7 @@ void run8_proton_correlations( std::string file_list,
   auto end = std::chrono::steady_clock::now();
   auto elapsed_s = std::chrono::duration_cast<std::chrono::seconds>(end - begin).count();
   auto speed = n_events_filtered / elapsed_s * 3600;
-  std::cout << "Elapsed time: " << elapsed_m << " min" << std::endl;
-  std::cout << "It is " << std::setprecision(3) << speed << " kev/h" << std::endl;
+  std::cout << "Elapsed time: " << elapsed_s << " sec" << std::endl;
+  std::cout << "Processing speed: " << std::setprecision(3) << speed << " kev/h" << std::endl;
 
 }
