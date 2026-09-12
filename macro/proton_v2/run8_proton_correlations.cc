@@ -102,9 +102,10 @@ void run8_proton_correlations( std::string file_list,
     42,                     53
   };
 
-  // std::for_each( f1_mod.begin(), f1_mod.end(), [](auto& m){ m += 1; } );
-  // std::for_each( f2_mod.begin(), f2_mod.end(), [](auto& m){ m += 1; } );
-  // std::for_each( f3_mod.begin(), f3_mod.end(), [](auto& m){ m += 1; } );
+  std::for_each( f1_mod.begin(), f1_mod.end(), [](auto& m){ m += 1; } );
+  std::for_each( f2_mod.begin(), f2_mod.end(), [](auto& m){ m += 1; } );
+  std::for_each( f3_mod.begin(), f3_mod.end(), [](auto& m){ m += 1; } );
+  std::for_each( f4_mod.begin(), f4_mod.end(), [](auto& m){ m += 1; } );
 
   TStopwatch timer;
   timer.Start();
