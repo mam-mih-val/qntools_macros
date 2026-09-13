@@ -11,6 +11,7 @@
 #include <random>
 #include <vector>
 #include <functional>
+#include <chrono>
 
 #include <DataContainer.hpp>
 #include <QnDataFrame.hpp>
@@ -267,6 +268,8 @@ void run8_proton_fill(std::string file_list,
     ); 
   }
 
+  auto start = std::chrono::steady_clock::now();
+
   auto file_out = std::unique_ptr<TFile, std::function<void(TFile*)> >{ TFile::Open( "corr.root", "RECREATE"), [](auto f){ f->Close(); } };
   file_out->cd();
   std::for_each( p_components_ptr.begin(), p_components_ptr.end(), [i=0, &p_components_names]( auto& p ) mutable { p->Write( p_components_names.at(i).c_str() ); ++i; } );
@@ -291,8 +294,8 @@ void run8_proton_fill(std::string file_list,
   std::for_each( tn_cov_ptr.begin(), tn_cov_ptr.end(), [i=0, &tn_cov_str]( auto& p ) mutable { p->Write( tn_cov_str.at(i).c_str() ); ++i; } );
 
   auto n_events_filtered = static_cast<double>(*(sampled_d.Count())) / 1E+3;
-  auto end = std::chrono::steady_clock::now();
-  auto elapsed_s = std::chrono::duration_cast<std::chrono::seconds>(end - begin).count();
+  auto finish = std::chrono::steady_clock::now();
+  auto elapsed_s = std::chrono::duration_cast<std::chrono::seconds>(finish - start).count();
   auto speed = n_events_filtered / elapsed_s * 3600;
   std::cout << "Elapsed time: " << elapsed_s << " sec" << std::endl;
   std::cout << "Processing speed: " << std::setprecision(3) << speed << " kev/h" << std::endl;
