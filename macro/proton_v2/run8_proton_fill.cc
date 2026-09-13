@@ -31,8 +31,8 @@ void run8_proton_fill(std::string file_list,
   auto proton_axes = std::vector<Qn::AxisD>{
     Qn::AxisD{ "centrality", 6, 0, 60 },
     Qn::AxisD{ "runId", 12, 7100, 8300 },
-    Qn::AxisD{ "y", 12, 0.0, 1.2 },
-    Qn::AxisD{ "pT", 10, 0.0, 2.0 },
+    Qn::AxisD{ "y", 6, 0.0, 1.2 },
+    Qn::AxisD{ "pT", 5, 0.0, 2.0 },
   };
 
   auto qvector_axes = std::vector<Qn::AxisD>{
