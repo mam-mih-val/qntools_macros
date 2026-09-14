@@ -207,9 +207,9 @@ const auto weight_generator = []( auto efficiency_map ){
 
       auto eta_bin = efficiency_map->GetXaxis()->FindBin( eta );
       auto p_bin = efficiency_map->GetYaxis()->FindBin( p );
-      auto phi_bin = efficiency_map->GetZaxis()->FindBin( phi );
+      // auto phi_bin = efficiency_map->GetZaxis()->FindBin( phi );
       
-      auto efficiency = efficiency_map->GetBinContent( eta_bin, p_bin, phi_bin );
+      auto efficiency = efficiency_map->GetBinContent( eta_bin, p_bin );
       if( efficiency < 1e-2 )
         continue;
       auto weight = 1.0 / efficiency;
@@ -520,7 +520,7 @@ const auto GenerateBmnExtendedTreeMC(DataFrame& d, TH3* efficiency_histo){
 
 struct DataCalibration{
   THn* efficiency_eta_pT_phi_run_id{nullptr}; 
-  TH3* efficiency_histo{nullptr};
+  TH2* efficiency_histo{nullptr};
   TF1* f1_2212_m_400{nullptr};
   TF1* f1_2212_s_400{nullptr};
   TF1* f1_2212_m_700{nullptr};
