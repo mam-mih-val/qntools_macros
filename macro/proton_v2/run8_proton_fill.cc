@@ -69,7 +69,7 @@ void run8_proton_fill(std::string file_list,
 	file_run_id_eff->GetObject("hn_efficiency", calibration.efficiency_eta_pT_phi_run_id);
 
   auto effieciency_file = std::unique_ptr<TFile>{TFile::Open( str_effieciency_file.c_str(), "READ" )};
-  effieciency_file->GetObject("h3_efficiency_2212_good", calibration.efficiency_histo);
+  effieciency_file->GetObject("h2_efficiency_2212_good", calibration.efficiency_histo);
 
   if( !calibration.efficiency_histo )
     std::cerr << "Warning: No efficiency for both tof was found in file " << str_effieciency_file << "\n";
