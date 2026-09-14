@@ -198,15 +198,15 @@ void run8_proton_correlations( std::string file_list,
 
   auto handler = CorrelationHandler{ sampled_d, 100 };
   handler
-    // .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{"proton", "F1"}, {1, 1} }, proton_weight, proton_axes)
-    // .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{"proton", "F2"}, {1, 1} }, proton_weight, proton_axes)
-    // .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{"proton", "F3"}, {1, 1} }, proton_weight, proton_axes)
-    // .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{"proton", "F4"}, {1, 1} }, proton_weight, proton_axes)
+    .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{"proton", "F1"}, {2, 1} }, proton_weight, proton_axes)
+    .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{"proton", "F2"}, {2, 1} }, proton_weight, proton_axes)
+    .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{"proton", "F3"}, {2, 1} }, proton_weight, proton_axes)
+    .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{"proton", "F4"}, {2, 1} }, proton_weight, proton_axes)
 
-    // .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{"ini_proton", "F1"}, {1, 1} }, proton_weight, proton_axes)
-    // .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{"ini_proton", "F2"}, {1, 1} }, proton_weight, proton_axes)
-    // .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{"ini_proton", "F3"}, {1, 1} }, proton_weight, proton_axes)
-    // .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{"ini_proton", "F4"}, {1, 1} }, proton_weight, proton_axes)
+    .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{"ini_proton", "F1"}, {2, 1} }, proton_weight, proton_axes)
+    .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{"ini_proton", "F2"}, {2, 1} }, proton_weight, proton_axes)
+    .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{"ini_proton", "F3"}, {2, 1} }, proton_weight, proton_axes)
+    .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{"ini_proton", "F4"}, {2, 1} }, proton_weight, proton_axes)
 
     .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"proton", "F1", "F2"}, {2, 1, 1} }, proton_weight, proton_axes)
     .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"proton", "F1", "F3"}, {2, 1, 1} }, proton_weight, proton_axes)
@@ -228,6 +228,16 @@ void run8_proton_correlations( std::string file_list,
     .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"F2", "F3"}, {1, 1} }, qvector_weight, qvector_axes)
     .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"F2", "F4"}, {1, 1} }, qvector_weight, qvector_axes)
     .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"F3", "F4"}, {1, 1} }, qvector_weight, qvector_axes)
+
+    .AddCorrelation( CorrelationDecorator<uvector_t>{ std::vector<std::string>{"proton"}, {1} }, proton_weight, proton_axes)
+    .AddCorrelation( CorrelationDecorator<uvector_t>{ std::vector<std::string>{"proton"}, {2} }, proton_weight, proton_axes)
+    .AddCorrelation( CorrelationDecorator<uvector_t>{ std::vector<std::string>{"ini_proton"}, {1} }, proton_weight, proton_axes)
+    .AddCorrelation( CorrelationDecorator<uvector_t>{ std::vector<std::string>{"ini_proton"}, {2} }, proton_weight, proton_axes)
+    
+    .AddCorrelation( CorrelationDecorator<qvector_t>{ std::vector<std::string>{"F1"}, {1} }, qvector_weight, qvector_axes)
+    .AddCorrelation( CorrelationDecorator<qvector_t>{ std::vector<std::string>{"F2"}, {1} }, qvector_weight, qvector_axes)
+    .AddCorrelation( CorrelationDecorator<qvector_t>{ std::vector<std::string>{"F3"}, {1} }, qvector_weight, qvector_axes)
+    .AddCorrelation( CorrelationDecorator<qvector_t>{ std::vector<std::string>{"F4"}, {1} }, qvector_weight, qvector_axes)
     
     // .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"Tpos", "F1"}, {1, 1} }, qvector_weight, qvector_axes)
     // .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"Tpos", "F2"}, {1, 1} }, qvector_weight, qvector_axes)
