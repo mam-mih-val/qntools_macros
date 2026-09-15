@@ -29,6 +29,79 @@ template<size_t NDIM>
 using correction_container_t = Qn::DataContainer< std::tuple< mixing_matrix_t<NDIM>, column_t<NDIM> >, Qn::AxisD >;
 
 template<size_t NHARM>
+class InverseCovariance{
+public:
+  using correction_matrix_t = Eigen::Matrix<double, NHARM*2, NHARM*2>;
+
+  InverseCovariance() = default;
+  ~InverseCovariance() = default;
+  
+  static auto MixingMatrix() -> std::function< correction_matrix_t( std::vector<double>, std::vector<double> ) > {
+    return [](const std::vector<double>& vec_mean, const std::vector<double>& vec_cov) -> correction_matrix_t {
+      auto M = correction_matrix_t{ correction_matrix_t::Zero() };
+      auto i = size_t {0};
+      for( auto h_a = size_t{0}; h_a < NHARM; ++h_a ){
+        auto x_a = vec_mean[2*h_a];
+        auto y_a = vec_mean[2*h_a+1];
+        for( auto h_b = h_a; h_b < NHARM; ++h_b ){
+          auto x_b = vec_mean[2*h_b];
+          auto y_b = vec_mean[2*h_b+1];
+          auto cov = std::vector<double>{}; 
+          cov.reserve(4);
+          for( auto j=size_t{0}; j<4; ++j ){
+            cov.push_back( vec_cov.at(i+j) );
+          } i+=4;
+
+          if( h_a != h_b )
+            continue;
+
+          cov[0] -= x_a*x_b;
+          cov[3] -= y_a*y_b;
+
+          M( 2*h_a, 2*h_b ) = cov[0];
+          M( 2*h_a+1, 2*h_b+1 ) = cov[3];
+        }
+      }
+      return M;
+    };
+  }
+
+  static auto PseudoInverse() -> std::function< correction_matrix_t( correction_matrix_t, double ) > {
+    return [](const correction_matrix_t& M, double l){
+      auto svd = Eigen::JacobiSVD<correction_matrix_t> ( M, Eigen::ComputeThinU | Eigen::ComputeThinV );    
+      auto singular_values = svd.singularValues();
+      auto sv_sum = double{0.0};
+      auto U = svd.matrixU();
+      auto V = svd.matrixV();
+      auto Splus = correction_matrix_t{ correction_matrix_t::Zero() };
+      auto rank = size_t{0};
+      for (auto i = size_t{0}; i < singular_values.size(); ++i) {
+        auto s = singular_values(i);
+        if( s / 0.5  < l )
+          continue;
+        Splus(i, i) = 0.5 / s;
+        rank++;
+        sv_sum += sqrt( s );
+      }
+      auto Ur = U.leftCols(rank);
+      auto Ur1 = correction_matrix_t{ correction_matrix_t::Zero() };
+      auto UrUrT = Ur*Ur.transpose();
+      for( auto r = size_t{0}; r < Ur.rows(); r++ ){
+        for( auto c = size_t{0}; c < Ur.cols(); c++ ){
+          if( fabs( UrUrT(r, r) ) < l ) 
+            continue;
+          Ur1(r, c) = Ur(r, c) / UrUrT(r, r);
+        }
+      }
+      auto Mpinv = correction_matrix_t{ Ur1 * Splus * U.transpose() };
+      std::cout << "l: " << l << "\nMatrix M:\n" << M << "\nMatrix U:\n" << Ur << "\nS: " << singular_values.transpose() << "\nMatrix S:\n" << Splus << "\nInverse:\n" << Mpinv << "\nE:\n" << Ur1 << "\nUrUr^T\n" << UrUrT << "\n\n";
+      return Mpinv;
+    };
+  }
+};
+
+
+template<size_t NHARM>
 class PrincipalComponents{
 public:
   using correction_matrix_t = Eigen::Matrix<double, NHARM*2, NHARM*2>;
@@ -85,7 +158,6 @@ public:
         auto s = singular_values(i);
         if( s / 0.5  < l )
           continue;
-        // Splus(i, i) = sqrt(0.5 / s );
         Splus(i, i) = 0.5 / s;
         rank++;
         sv_sum += sqrt( s );
@@ -93,18 +165,6 @@ public:
       auto Ur = U.leftCols(rank);
       auto Ur1 = correction_matrix_t{ correction_matrix_t::Zero() };
       auto UrUrT = Ur*Ur.transpose();
-      // for( auto r = size_t{0}; r < Ur.rows(); r++ ){
-      //   auto nz = double{0};
-      //   for( auto c = size_t{0}; c < Ur.cols(); c++ ){
-      //     if( fabs( Ur(r, c) ) < l ) continue;
-      //     nz += 1;
-      //   }
-      //   for( auto c = size_t{0}; c < Ur.cols(); c++ ){
-      //     if( fabs( Ur(r, c) ) < l ) continue;
-      //     if( nz < 1e-2 ) continue;
-      //     Ur1(r, c) = 1.0 / ( Ur(r, c) * nz );
-      //   }
-      // }
       for( auto r = size_t{0}; r < Ur.rows(); r++ ){
         for( auto c = size_t{0}; c < Ur.cols(); c++ ){
           if( fabs( UrUrT(r, r) ) < l ) 
@@ -171,185 +231,26 @@ public:
 };
 
 template<size_t NHARM>
-auto MakeWhiteningMatrixFunc() -> std::function< mixing_matrix_t<NHARM*2>(std::vector<double>, std::vector<double>) >{
-  return [](const std::vector<double>& vec_mean, const std::vector<double>& vec_cov) -> mixing_matrix_t<NHARM*2> {
-    auto M = mixing_matrix_t<NHARM*2>{ mixing_matrix_t<NHARM*2>::Zero() };
-    auto i = size_t {0};
-    for( auto h_a = size_t{0}; h_a < NHARM; ++h_a ){
-      auto x_a = vec_mean[2*h_a];
-      auto y_a = vec_mean[2*h_a+1];
-      for( auto h_b = h_a; h_b < NHARM; ++h_b ){
-        auto x_b = vec_mean[2*h_b];
-        auto y_b = vec_mean[2*h_b+1];
-        auto cov = std::vector<double>{}; 
-        cov.reserve(4);
-        for( auto j=size_t{0}; j<4; ++j ){
-          cov.push_back( vec_cov.at(i+j) * 2 );
-        } i+=4;
+class Recenter{
+public:
+  using correction_matrix_t = Eigen::Matrix<double, NHARM*2, NHARM*2>;
 
-        M( 2*h_a, 2*h_b ) = cov[0];
-        M( 2*h_a+1, 2*h_b ) = cov[1];
-        M( 2*h_a, 2*h_b+1 ) = cov[2];
-        M( 2*h_a+1, 2*h_b+1 ) = cov[3];
+  Recenter() = default;
+  ~Recenter() = default;
+  
+  static auto MixingMatrix() -> std::function< correction_matrix_t( std::vector<double>, std::vector<double> ) > {
+    return [](const std::vector<double>& vec_mean, const std::vector<double>& vec_cov) -> correction_matrix_t {
+      auto M = correction_matrix_t{ correction_matrix_t::Identity() };
+      return M;
+    };
+  }
 
-        M( 2*h_b, 2*h_a ) = cov[0];
-        M( 2*h_b, 2*h_a+1 ) = cov[1];
-        M( 2*h_b+1, 2*h_a ) = cov[2];
-        M( 2*h_b+1, 2*h_a+1 ) = cov[3];
-      }
-    }
-    return M;
-  };
-}
-
-template<size_t NHARM>
-auto MakePCAMatrixFunc() -> std::function< mixing_matrix_t<NHARM*2>(std::vector<double>, std::vector<double>) >{
-  return [](const std::vector<double>& vec_mean, const std::vector<double>& vec_cov) -> mixing_matrix_t<NHARM*2> {
-    auto M = mixing_matrix_t<NHARM*2>{ mixing_matrix_t<NHARM*2>::Zero() };
-    auto i = size_t {0};
-    for( auto h_a = size_t{0}; h_a < NHARM; ++h_a ){
-      auto x_a = vec_mean[2*h_a];
-      auto y_a = vec_mean[2*h_a+1];
-      for( auto h_b = h_a; h_b < NHARM; ++h_b ){
-        auto x_b = vec_mean[2*h_b];
-        auto y_b = vec_mean[2*h_b+1];
-        auto cov = std::vector<double>{}; 
-        cov.reserve(4);
-        for( auto j=size_t{0}; j<4; ++j ){
-          cov.push_back( vec_cov.at(i+j) );
-        } i+=4;
-
-        cov[0] -= x_a*x_b;
-        cov[1] -= y_a*x_b;
-        cov[2] -= x_a*y_b;
-        cov[3] -= y_a*y_b;
-
-        M( 2*h_a, 2*h_b ) = cov[0];
-        M( 2*h_a+1, 2*h_b ) = cov[1];
-        M( 2*h_a, 2*h_b+1 ) = cov[2];
-        M( 2*h_a+1, 2*h_b+1 ) = cov[3];
-
-        M( 2*h_b, 2*h_a ) = cov[0];
-        M( 2*h_b, 2*h_a+1 ) = cov[1];
-        M( 2*h_b+1, 2*h_a ) = cov[2];
-        M( 2*h_b+1, 2*h_a+1 ) = cov[3];
-      }
-    }
-    return M;
-  };
-}
-
-template<size_t NHARM>
-auto MakeDecompositionMatrixFunc() -> std::function< mixing_matrix_t<NHARM*2>(std::vector<double>, std::vector<double>) >{
-  return [](const std::vector<double>& vec_mean, const std::vector<double>& vec_cov) -> mixing_matrix_t<NHARM*2> {
-    auto M = mixing_matrix_t<NHARM*2>{ mixing_matrix_t<NHARM*2>::Zero() };
-    return M;
-  };
-}
-
-template<>
-auto MakeDecompositionMatrixFunc<3>() -> std::function< mixing_matrix_t<6>(std::vector<double>, std::vector<double>) >{
-  return [](const std::vector<double>& vec_mean, const std::vector<double>& vec_cov) -> mixing_matrix_t<6> {
-    auto M = mixing_matrix_t<6>{ mixing_matrix_t<6>::Zero() };
-
-    auto c1 = vec_mean[0];
-    auto s1 = vec_mean[1];
-    auto c2 = vec_mean[2];
-    auto s2 = vec_mean[3];
-    auto c3 = vec_mean[4];
-    auto s3 = vec_mean[5];
-    auto c4 = vec_mean[6];
-    auto s4 = vec_mean[7];
-    auto c5 = vec_mean[8];
-    auto s5 = vec_mean[9];
-    auto c6 = vec_mean[10];
-    auto s6 = vec_mean[11];
-
-    M << 
-      1+c2,    s2,   c3+c1,  s3+s1, c4+c2, s4+s2,
-      s2,    1-c2,   s3-s1,  c1-c3, s4-s2, c2-c4,
-      c3+c1, s3-s1,  1+c4,      s4, c5+c1, s5+s1,
-      s3+s1, c1-c3,    s4,    1-c4, s5-s1, c1-c5,
-      c4+c2, s4-s2,  c5+c1,  s5-s1,  1+c6,    s6,
-      s4+s2, c2-c4,  s5+s1,  c1-c5,    s6,  1-c6
-    ;
-    return M;
-  };
-}
-
-template<size_t NHARM>
-auto MakeTwRescMatrixFunc() -> std::function< mixing_matrix_t<NHARM*2>(std::vector<double>, std::vector<double>) >{
-  return [](const std::vector<double>& vec_mean, const std::vector<double>& vec_cov) -> mixing_matrix_t<NHARM*2> {
-    auto M = mixing_matrix_t<NHARM*2>{ mixing_matrix_t<NHARM*2>::Zero() };
-    auto i = size_t {0};
-    for( auto h_a = size_t{0}; h_a < NHARM; ++h_a ){
-      auto x_a = vec_mean[2*h_a];
-      auto y_a = vec_mean[2*h_a+1];
-      for( auto h_b = h_a; h_b < NHARM; ++h_b ){
-        auto x_b = vec_mean[2*h_b];
-        auto y_b = vec_mean[2*h_b+1];
-        auto cov = std::vector<double>{}; 
-        cov.reserve(4);
-        for( auto j=size_t{0}; j<4; ++j ){
-          cov.push_back( vec_cov.at(i+j) );
-        } i+=4;
-
-        cov[0] -= x_a*x_b;
-        cov[1] -= y_a*x_b;
-        cov[2] -= x_a*y_b;
-        cov[3] -= y_a*y_b;
-
-        if( h_a != h_b )
-          continue;
-
-        M( 2*h_a, 2*h_b ) = cov[0];
-        M( 2*h_a+1, 2*h_b ) = cov[1];
-        M( 2*h_a, 2*h_b+1 ) = cov[2];
-        M( 2*h_a+1, 2*h_b+1 ) = cov[3];
-      }
-    }
-    return M;
-  };
-}
-
-template<typename correction_matrix_t>
-correction_matrix_t MakePseudoInverseSqrt(){
-  return [](const correction_matrix_t& M, double l){
-    auto svd = Eigen::JacobiSVD<correction_matrix_t> ( M, Eigen::ComputeThinU | Eigen::ComputeThinV );    
-    auto singular_values = svd.singularValues();
-    auto sv_sum = double{0.0};
-    auto U = svd.matrixU();
-    auto V = svd.matrixV();
-    auto Splus = correction_matrix_t{ correction_matrix_t::Zero() };
-    auto rank = size_t{0};
-    for (auto i = size_t{0}; i < singular_values.size(); ++i) {
-      auto s = singular_values(i);
-      if( sqrt(s / 0.5 ) < l )
-        continue;
-      Splus(i, i) = sqrt(0.5 / s );
-      rank++;
-      sv_sum += sqrt( s );
-    }
-    auto Ur = U.leftCols(rank);
-    auto UrUrT = Ur*Ur.transpose();
-    auto Ur1 = correction_matrix_t{ correction_matrix_t::Zero() };
-    for( auto r = size_t{0}; r < Ur.rows(); r++ ){
-      auto nz = double{0};
-      for( auto c = size_t{0}; c < Ur.cols(); c++ ){
-        if( fabs( Ur(r, c) ) < l ) continue;
-        nz += 1;
-      }
-      for( auto c = size_t{0}; c < Ur.cols(); c++ ){
-        if( fabs( Ur(r, c) ) < l ) continue;
-        if( nz < 1e-2 ) continue;
-        Ur1(r, c) = 1.0 / ( Ur(r, c) * nz );
-      }
-    }
-    auto Mpinv = correction_matrix_t{ Ur1 * Splus * U.transpose() };
-    std::cout << "l: " << l << "\nMatrix M:\n" << M << "\nMatrix U:\n" << Ur << "\nS: " << singular_values.transpose() << "\nMatrix S:\n" << Splus << "\nInverse:\n" << Mpinv << "\nE:\n" << Ur1 << "\nUrUr^T\n" << UrUrT << "\n\n";
-    return Mpinv;
-  };
-}
+  static auto PseudoInverse() -> std::function< correction_matrix_t( correction_matrix_t, double ) > {
+    return [](const correction_matrix_t& M, double l){
+      return M;
+    };
+  }
+};
 
 template<size_t NHARM>
 inline auto ReadMeanCov( std::string str_vec_name, TFile* calib_file ) -> std::tuple< std::vector<Qn::DataContainerStatCalculate>, std::vector<Qn::DataContainerStatCalculate> >{
