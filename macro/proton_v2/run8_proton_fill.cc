@@ -30,7 +30,7 @@ void run8_proton_fill(std::string file_list,
 
   auto proton_axes = std::vector<Qn::AxisD>{
     Qn::AxisD{ "centrality", 6, 0, 60 },
-    Qn::AxisD{ "runId", 12, 7100, 8300 },
+    Qn::AxisD{ "runId", 4, 7100, 8300 },
     Qn::AxisD{ "y", 6, 0.0, 1.2 },
     Qn::AxisD{ "pT", 5, 0.0, 2.0 },
   };
@@ -111,8 +111,11 @@ void run8_proton_fill(std::string file_list,
   std::for_each( f3_mod.begin(), f3_mod.end(), [](auto& m){ m += 1; } );
   std::for_each( f4_mod.begin(), f4_mod.end(), [](auto& m){ m += 1; } );
 
-  auto harmonics = std::vector<size_t>( 2 );
+  auto harmonics = std::vector<size_t>( 4 );
   std::iota( harmonics.begin(), harmonics.end(), 1 );
+
+  auto qvector_harmonics = std::vector<size_t>( 2 );
+  std::iota( qvector_harmonics.begin(), qvector_harmonics.end(), 1 );
 
   TStopwatch timer;
   timer.Start();
@@ -131,30 +134,30 @@ void run8_proton_fill(std::string file_list,
   sampled_d = sampled_d.Define( "F3w", fhcal_weight_generator(f3_mod), { "fhcalModId", "fhcalModE" } );
   sampled_d = sampled_d.Define( "F4w", fhcal_weight_generator(f4_mod), { "fhcalModId", "fhcalModE" } );
 
-  DefineVector( sampled_d, "F1", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"fhcalModPhi", "F1w"} );
-  DefineVector( sampled_d, "F2", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"fhcalModPhi", "F2w"} );
-  DefineVector( sampled_d, "F3", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"fhcalModPhi", "F3w"} );
-  DefineVector( sampled_d, "F4", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"fhcalModPhi", "F4w"} );
+  DefineVector( sampled_d, "F1", q_vector< std::vector<float>, std::vector<double> >(qvector_harmonics), std::vector<std::string>{"fhcalModPhi", "F1w"} );
+  DefineVector( sampled_d, "F2", q_vector< std::vector<float>, std::vector<double> >(qvector_harmonics), std::vector<std::string>{"fhcalModPhi", "F2w"} );
+  DefineVector( sampled_d, "F3", q_vector< std::vector<float>, std::vector<double> >(qvector_harmonics), std::vector<std::string>{"fhcalModPhi", "F3w"} );
+  DefineVector( sampled_d, "F4", q_vector< std::vector<float>, std::vector<double> >(qvector_harmonics), std::vector<std::string>{"fhcalModPhi", "F4w"} );
   
-  DefineVector( sampled_d, "Tpos", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"trPhi", "trTposW"} );
-  DefineVector( sampled_d, "Tneg", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"trPhi", "trTnegW"} );
+  DefineVector( sampled_d, "Tpos", q_vector< std::vector<float>, std::vector<double> >(qvector_harmonics), std::vector<std::string>{"trPhi", "trTposW"} );
+  DefineVector( sampled_d, "Tneg", q_vector< std::vector<float>, std::vector<double> >(qvector_harmonics), std::vector<std::string>{"trPhi", "trTnegW"} );
 
   auto p_components_names = AddUVectorComponents(sampled_d, "proton", harmonics, "trPhi" );
   auto p_cov_names = AddUVectorCovariance(sampled_d, "proton", harmonics, "trPhi" );
 
-  auto f1_means_str = DefineVectorMeans( sampled_d, CorrFunc1Part<qvector_t>{}, "F1", harmonics );
-  auto f2_means_str = DefineVectorMeans( sampled_d, CorrFunc1Part<qvector_t>{}, "F2", harmonics );
-  auto f3_means_str = DefineVectorMeans( sampled_d, CorrFunc1Part<qvector_t>{}, "F3", harmonics );
-  auto f4_means_str = DefineVectorMeans( sampled_d, CorrFunc1Part<qvector_t>{}, "F4", harmonics );
-  auto tp_means_str = DefineVectorMeans( sampled_d, CorrFunc1Part<qvector_t>{}, "Tpos", harmonics );
-  auto tn_means_str = DefineVectorMeans( sampled_d, CorrFunc1Part<qvector_t>{}, "Tneg", harmonics );
+  auto f1_means_str = DefineVectorMeans( sampled_d, CorrFunc1Part<qvector_t>{}, "F1", qvector_harmonics );
+  auto f2_means_str = DefineVectorMeans( sampled_d, CorrFunc1Part<qvector_t>{}, "F2", qvector_harmonics );
+  auto f3_means_str = DefineVectorMeans( sampled_d, CorrFunc1Part<qvector_t>{}, "F3", qvector_harmonics );
+  auto f4_means_str = DefineVectorMeans( sampled_d, CorrFunc1Part<qvector_t>{}, "F4", qvector_harmonics );
+  auto tp_means_str = DefineVectorMeans( sampled_d, CorrFunc1Part<qvector_t>{}, "Tpos", qvector_harmonics );
+  auto tn_means_str = DefineVectorMeans( sampled_d, CorrFunc1Part<qvector_t>{}, "Tneg", qvector_harmonics );
 
-  auto f1_cov_str = DefineVectorCovariance( sampled_d, CorrFunc1Part<qvector_t>{}, "F1", harmonics );
-  auto f2_cov_str = DefineVectorCovariance( sampled_d, CorrFunc1Part<qvector_t>{}, "F2", harmonics );
-  auto f3_cov_str = DefineVectorCovariance( sampled_d, CorrFunc1Part<qvector_t>{}, "F3", harmonics );
-  auto f4_cov_str = DefineVectorCovariance( sampled_d, CorrFunc1Part<qvector_t>{}, "F4", harmonics );
-  auto tp_cov_str = DefineVectorCovariance( sampled_d, CorrFunc1Part<qvector_t>{}, "Tpos", harmonics );
-  auto tn_cov_str = DefineVectorCovariance( sampled_d, CorrFunc1Part<qvector_t>{}, "Tneg", harmonics );
+  auto f1_cov_str = DefineVectorCovariance( sampled_d, CorrFunc1Part<qvector_t>{}, "F1", qvector_harmonics );
+  auto f2_cov_str = DefineVectorCovariance( sampled_d, CorrFunc1Part<qvector_t>{}, "F2", qvector_harmonics );
+  auto f3_cov_str = DefineVectorCovariance( sampled_d, CorrFunc1Part<qvector_t>{}, "F3", qvector_harmonics );
+  auto f4_cov_str = DefineVectorCovariance( sampled_d, CorrFunc1Part<qvector_t>{}, "F4", qvector_harmonics );
+  auto tp_cov_str = DefineVectorCovariance( sampled_d, CorrFunc1Part<qvector_t>{}, "Tpos", qvector_harmonics );
+  auto tn_cov_str = DefineVectorCovariance( sampled_d, CorrFunc1Part<qvector_t>{}, "Tneg", qvector_harmonics );
 
   auto p_components_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
   p_components_ptr.reserve( p_components_names.size() );
