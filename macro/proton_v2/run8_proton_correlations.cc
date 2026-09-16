@@ -31,7 +31,7 @@ void run8_proton_correlations( std::string file_list,
 
   std::cout << "starting execution" << std::endl;
 
-  constexpr size_t NHARM = 2;
+  constexpr size_t NHARM = 4;
   const auto l = double{5e-3};
   auto harmonics = std::vector<size_t>(NHARM);
   auto harmonics_q = std::vector<size_t>(1);
@@ -142,17 +142,17 @@ void run8_proton_correlations( std::string file_list,
   auto p_pca_builder = CorrectorBuilder<4>( p_pca_container );
   sampled_d = sampled_d.Define( "pca_proton", p_pca_builder.IssueUVectorCorrector<uvector_t, float, UInt_t, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >(), { "ini_proton", "centrality", "runId", "trProtonY", "trPt" } );
 
-  auto p_twr_container = MakeCorrectionContainer<NHARM>( vec_p_mean, vec_p_cov, TwistRescale<NHARM>{}, 5e-2 );
-  auto p_twr_builder = CorrectorBuilder<NHARM>( p_twr_container );
-  sampled_d = sampled_d.Define( "twr_proton", p_twr_builder.IssueUVectorCorrector<uvector_t, float, UInt_t, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >(), { "ini_proton", "centrality", "runId", "trProtonY", "trPt" } );
+  // auto p_twr_container = MakeCorrectionContainer<NHARM>( vec_p_mean, vec_p_cov, TwistRescale<NHARM>{}, 5e-2 );
+  // auto p_twr_builder = CorrectorBuilder<NHARM>( p_twr_container );
+  // sampled_d = sampled_d.Define( "twr_proton", p_twr_builder.IssueUVectorCorrector<uvector_t, float, UInt_t, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >(), { "ini_proton", "centrality", "runId", "trProtonY", "trPt" } );
 
-  auto p_cov_container = MakeCorrectionContainer<NHARM>( vec_p_mean, vec_p_cov, InverseCovariance<NHARM>{}, 5e-2 );
-  auto p_cov_builder = CorrectorBuilder<NHARM>( p_cov_container );
-  sampled_d = sampled_d.Define( "cov_proton", p_cov_builder.IssueUVectorCorrector<uvector_t, float, UInt_t, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >(), { "ini_proton", "centrality", "runId", "trProtonY", "trPt" } );
+  // auto p_cov_container = MakeCorrectionContainer<NHARM>( vec_p_mean, vec_p_cov, InverseCovariance<NHARM>{}, 5e-2 );
+  // auto p_cov_builder = CorrectorBuilder<NHARM>( p_cov_container );
+  // sampled_d = sampled_d.Define( "cov_proton", p_cov_builder.IssueUVectorCorrector<uvector_t, float, UInt_t, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >(), { "ini_proton", "centrality", "runId", "trProtonY", "trPt" } );
 
-  auto p_rec_container = MakeCorrectionContainer<NHARM>( vec_p_mean, vec_p_cov, Recenter<NHARM>{}, 5e-2 );
-  auto p_rec_builder = CorrectorBuilder<NHARM>( p_rec_container );
-  sampled_d = sampled_d.Define( "rec_proton", p_rec_builder.IssueUVectorCorrector<uvector_t, float, UInt_t, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >(), { "ini_proton", "centrality", "runId", "trProtonY", "trPt" } );
+  // auto p_rec_container = MakeCorrectionContainer<NHARM>( vec_p_mean, vec_p_cov, Recenter<NHARM>{}, 5e-2 );
+  // auto p_rec_builder = CorrectorBuilder<NHARM>( p_rec_container );
+  // sampled_d = sampled_d.Define( "rec_proton", p_rec_builder.IssueUVectorCorrector<uvector_t, float, UInt_t, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >(), { "ini_proton", "centrality", "runId", "trProtonY", "trPt" } );
 
   auto [vec_f1_mean, vec_f1_cov] = ReadMeanCov<NHARM>("F1", calib_file.get());
   auto f1_correction_container = MakeCorrectionContainer<1>( vec_f1_mean, vec_f1_cov, TwistRescale<1>{}, l );
@@ -224,17 +224,17 @@ void run8_proton_correlations( std::string file_list,
     .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"pca_proton", "F1", "F4"}, {2, 1, 1} }, proton_weight, proton_axes)
     .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"pca_proton", "F2", "F4"}, {2, 1, 1} }, proton_weight, proton_axes)
 
-    .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"twr_proton", "F1", "F3"}, {2, 1, 1} }, proton_weight, proton_axes)
-    .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"twr_proton", "F1", "F4"}, {2, 1, 1} }, proton_weight, proton_axes)
-    .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"twr_proton", "F2", "F4"}, {2, 1, 1} }, proton_weight, proton_axes)
+    // .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"twr_proton", "F1", "F3"}, {2, 1, 1} }, proton_weight, proton_axes)
+    // .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"twr_proton", "F1", "F4"}, {2, 1, 1} }, proton_weight, proton_axes)
+    // .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"twr_proton", "F2", "F4"}, {2, 1, 1} }, proton_weight, proton_axes)
 
-    .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"cov_proton", "F1", "F3"}, {2, 1, 1} }, proton_weight, proton_axes)
-    .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"cov_proton", "F1", "F4"}, {2, 1, 1} }, proton_weight, proton_axes)
-    .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"cov_proton", "F2", "F4"}, {2, 1, 1} }, proton_weight, proton_axes)
+    // .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"cov_proton", "F1", "F3"}, {2, 1, 1} }, proton_weight, proton_axes)
+    // .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"cov_proton", "F1", "F4"}, {2, 1, 1} }, proton_weight, proton_axes)
+    // .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"cov_proton", "F2", "F4"}, {2, 1, 1} }, proton_weight, proton_axes)
 
-    .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"rec_proton", "F1", "F3"}, {2, 1, 1} }, proton_weight, proton_axes)
-    .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"rec_proton", "F1", "F4"}, {2, 1, 1} }, proton_weight, proton_axes)
-    .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"rec_proton", "F2", "F4"}, {2, 1, 1} }, proton_weight, proton_axes)
+    // .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"rec_proton", "F1", "F3"}, {2, 1, 1} }, proton_weight, proton_axes)
+    // .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"rec_proton", "F1", "F4"}, {2, 1, 1} }, proton_weight, proton_axes)
+    // .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"rec_proton", "F2", "F4"}, {2, 1, 1} }, proton_weight, proton_axes)
 
     .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"F1", "F2"}, {1, 1} }, qvector_weight, qvector_axes)
     .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"F1", "F3"}, {1, 1} }, qvector_weight, qvector_axes)
@@ -253,15 +253,15 @@ void run8_proton_correlations( std::string file_list,
     // .AddCorrelation( CorrelationDecorator<qvector_t>{ std::vector<std::string>{"F3"}, {1} }, qvector_weight, qvector_axes)
     // .AddCorrelation( CorrelationDecorator<qvector_t>{ std::vector<std::string>{"F4"}, {1} }, qvector_weight, qvector_axes)
     
-    .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"Tpos", "F1"}, {1, 1} }, qvector_weight, qvector_axes)
-    .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"Tpos", "F2"}, {1, 1} }, qvector_weight, qvector_axes)
-    .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"Tpos", "F3"}, {1, 1} }, qvector_weight, qvector_axes)
-    .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"Tpos", "F4"}, {1, 1} }, qvector_weight, qvector_axes)
+    // .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"Tpos", "F1"}, {1, 1} }, qvector_weight, qvector_axes)
+    // .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"Tpos", "F2"}, {1, 1} }, qvector_weight, qvector_axes)
+    // .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"Tpos", "F3"}, {1, 1} }, qvector_weight, qvector_axes)
+    // .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"Tpos", "F4"}, {1, 1} }, qvector_weight, qvector_axes)
     
-    .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"Tneg", "F1"}, {1, 1} }, qvector_weight, qvector_axes)
-    .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"Tneg", "F2"}, {1, 1} }, qvector_weight, qvector_axes)
-    .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"Tneg", "F3"}, {1, 1} }, qvector_weight, qvector_axes)
-    .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"Tneg", "F4"}, {1, 1} }, qvector_weight, qvector_axes)
+    // .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"Tneg", "F1"}, {1, 1} }, qvector_weight, qvector_axes)
+    // .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"Tneg", "F2"}, {1, 1} }, qvector_weight, qvector_axes)
+    // .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"Tneg", "F3"}, {1, 1} }, qvector_weight, qvector_axes)
+    // .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"Tneg", "F4"}, {1, 1} }, qvector_weight, qvector_axes)
     
   ;
 
