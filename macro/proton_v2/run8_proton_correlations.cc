@@ -137,7 +137,7 @@ void run8_proton_correlations( std::string file_list,
   DefineVector(sampled_d, "ini_proton", u_vector< std::vector<float> >( harmonics ), std::vector<std::string>{"trPhi"s} );
 
   auto calib_file = std::unique_ptr<TFile, std::function<void(TFile*)> >{ TFile::Open( str_calib_file.c_str(), "READ"), [](auto f){ f->Close(); } };
-  auto [vec_p_mean, vec_p_cov] = ReadMeanCov<NHARM*2>("proton", calib_file.get());
+  auto [vec_p_mean, vec_p_cov] = ReadMeanCov<4>("proton", calib_file.get());
   auto p_pca_container = MakeCorrectionContainer<4>( vec_p_mean, vec_p_cov, PrincipalComponents<4>{}, 5e-2 );
   auto p_pca_builder = CorrectorBuilder<4>( p_pca_container );
   sampled_d = sampled_d.Define( "pca_proton", p_pca_builder.IssueUVectorCorrector<uvector_t, float, UInt_t, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >(), { "ini_proton", "centrality", "runId", "trProtonY", "trPt" } );
