@@ -212,7 +212,7 @@ void run8_proton_correlations( std::string file_list,
 
   auto begin = std::chrono::steady_clock::now();
 
-  auto handler = CorrelationHandler{ sampled_d, 100 };
+  auto handler = CorrelationHandler{ sampled_d, 500 };
   handler
     // .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{"proton", "F1"}, {2, 1} }, proton_weight, proton_axes)
     // .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{"proton", "F2"}, {2, 1} }, proton_weight, proton_axes)
