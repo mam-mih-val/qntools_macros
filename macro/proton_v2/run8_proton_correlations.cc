@@ -31,7 +31,7 @@ void run8_proton_correlations( std::string file_list,
 
   std::cout << "starting execution" << std::endl;
 
-  constexpr size_t NHARM = 8;
+  constexpr size_t NHARM = 4;
   constexpr size_t Q_NHARM = 1;
 
   const auto l = double{5e-3};
