@@ -33,8 +33,8 @@ void run8_proton_fill(std::string file_list,
     Qn::AxisD{ "runId", 4, 7100, 8300 },
     // Qn::AxisD{ "y", 6, 0.0, 1.2 },
     // Qn::AxisD{ "pT", 5, 0.0, 2.0 },
-    Qn::AxisD{ "y", std::vector<double>{ 0, 0.35, 0.55, 0.7, 0.9, 1.05, 1.2 } },
-    Qn::AxisD{ "pT", std::vector<double>{ 0, 0.3, 0.45, 0.6, 0.8, 2.5 } },
+    Qn::AxisD{ "y", std::vector<double>{ 0, 0.2, 0.4, 0.5, 0.6, 0.7, 0.75, 0.85, 0.9, 1, 1.1, 1.2 } },
+    Qn::AxisD{ "pT", std::vector<double>{ 0, 0.25, 0.3, 0.4, 0.45, 0.55, 0.6, 0.7, 0.8, 1.05, 2.0 } },
   };
 
   auto qvector_axes = std::vector<Qn::AxisD>{
