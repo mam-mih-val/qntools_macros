@@ -146,14 +146,11 @@ const auto dca_function = [](std::vector<float> vec_x, std::vector<float> vec_y)
 };
 
 const auto is_sim_particle = []( int pdg_code ) {
-  return [pdg_code]( ROOT::VecOps::RVec<int> vec_pdg, ROOT::VecOps::RVec<int> vec_mother_id ){
+  return [pdg_code]( ROOT::VecOps::RVec<int> vec_pdg ){
     auto vec_is = std::vector<int>( vec_pdg.size(), 0 );
     for( auto i=size_t{0}; i < vec_pdg.size(); ++i ){
       auto pdg = vec_pdg[i];
-      auto m_id = vec_mother_id[i];
       if( pdg != pdg_code )
-        continue;
-      if( m_id != -1 )
         continue;
       vec_is[i] = 1;
     }
@@ -195,21 +192,21 @@ const auto tr_has_any_tof_hit = []( std::vector<int> vec_is_400, std::vector<int
 };
 
 const auto weight_generator = []( auto efficiency_map ){
-  return [efficiency_map](std::vector<float> vec_p, std::vector<float> vec_eta, std::vector<float> vec_phi){
+  return [efficiency_map](ROOT::VecOps::RVec<float> vec_pT, ROOT::VecOps::RVec<float> vec_y, std::vector<float> vec_phi){
     if( !efficiency_map ){
-        return std::vector<float>(vec_p.size(), 1);
-      }
-    auto vec_weight = std::vector<float>( vec_p.size(), 0.0 );
+      return std::vector<float>(vec_pT.size(), 1);
+    }
+    auto vec_weight = std::vector<float>( vec_pT.size(), 0.0 );
     for( int i=0; i<vec_p.size(); ++i ){
-      auto p = vec_p[i];
-      auto eta = vec_eta[i];
+      auto pT = vec_pT[i];
+      auto y = vec_y[i];
       auto phi = vec_phi[i];
 
-      auto eta_bin = efficiency_map->GetXaxis()->FindBin( eta );
-      auto p_bin = efficiency_map->GetYaxis()->FindBin( p );
+      auto y_bin = efficiency_map->GetXaxis()->FindBin( y );
+      auto pT_bin = efficiency_map->GetYaxis()->FindBin( pT );
       // auto phi_bin = efficiency_map->GetZaxis()->FindBin( phi );
       
-      auto efficiency = efficiency_map->GetBinContent( eta_bin, p_bin );
+      auto efficiency = efficiency_map->GetBinContent( y_bin, pT_bin );
       if( efficiency < 1e-2 )
         continue;
       auto weight = 1.0 / efficiency;
@@ -250,18 +247,13 @@ const auto proton_weight = [](
       continue;
     if( has_any_tof_hit[i] != 1 )
       continue;
-    if( vec_r[i] > 5.0 )
-      continue;
-    if( vec_nhits[i] < 5 )
-      continue;
-    if( vec_chi2[i] > 5 )
+    if( vec_r[i] > 3.0 )
       continue;
     // if( vec_eta[i] > 3.0 )
     //   continue;
-    // if( -30 <  vec_fhcal_x[i]  && vec_fhcal_x[i] < 160 &&
-    //     -60 < vec_fhcal_y[i] && vec_fhcal_y[i] < 60   )
-    //   continue;
-    
+    if( -30 <  vec_fhcal_x[i]  && vec_fhcal_x[i] < 160 &&
+        -60 < vec_fhcal_y[i] && vec_fhcal_y[i] < 60   )
+      continue;
     weights[i] = vec_efficiency[i];
   }
   return weights;
@@ -485,7 +477,7 @@ const auto GenerateBmnExtendedTreeMC(DataFrame& d, TH3* efficiency_histo){
     .Define( "pz", " std::vector<float> pz; for( auto mom : trMom ){ pz.push_back( mom.Pz() ); } return pz; " )
     .Define( "pq", " std::vector<float> pq; for( int i=0; i<trMom.size(); i++ ){ pq.push_back( trMom.at(i).P() / trCharge.at(i) ); } return pq;" )
     .Define( "trProtonY", rapidity_generator(PROTON_M, Y_CM), {"pz", "pq"} )
-    .Define( "trProtonEfficiency", weight_generator(efficiency_histo), {"pq", "trEta", "trPhi"} )
+    .Define( "trProtonEfficiency", weight_generator(efficiency_histo), {"trPt", "trProtonY", "trPhi"} )
     .Define( "trHasTof400Hit", tr_has_tof_hit, { "trBetaTof400" } )
     .Define( "trHasTof700Hit", tr_has_tof_hit, { "trBetaTof700" } )
     .Define( "trHasAnyTofHit", tr_has_any_tof_hit, { "trHasTof400Hit", "trHasTof700Hit" } )
@@ -503,7 +495,7 @@ const auto GenerateBmnExtendedTreeMC(DataFrame& d, TH3* efficiency_histo){
     .Define( "simF2w", sim_f_weight(3.9, 4.4), {"simEta", "simEkin", "simMotherId"} )
     .Define( "simF3w", sim_f_weight(3.1, 3.9), {"simEta", "simEkin", "simMotherId"} )
 
-    .Define( "simIsProton", is_sim_particle(2212), {"simPdg", "simMotherId"} )
+    .Define( "simIsProton", is_sim_particle(2212), { "simPdg" } )
     .Define( "simProtonY", rapidity_generator(PROTON_M, Y_CM), {"simPz", "simP"} )
     
     .Define( "trIsProton", tr_is_particle, {"trSimIndex", "simIsProton"} )
