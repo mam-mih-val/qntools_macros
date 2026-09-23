@@ -197,7 +197,7 @@ const auto weight_generator = []( auto efficiency_map ){
       return std::vector<float>(vec_pT.size(), 1);
     }
     auto vec_weight = std::vector<float>( vec_pT.size(), 0.0 );
-    for( int i=0; i<vec_p.size(); ++i ){
+    for( int i=0; i<vec_pT.size(); ++i ){
       auto pT = vec_pT[i];
       auto y = vec_y[i];
       auto phi = vec_phi[i];
