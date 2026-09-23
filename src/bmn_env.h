@@ -449,7 +449,7 @@ std::vector<int> f4_modules = {
 };
 
 template<typename DataFrame>
-const auto GenerateBmnExtendedTreeMC(DataFrame& d, TH3* efficiency_histo){
+const auto GenerateBmnExtendedTreeMC(DataFrame& d, TH2* efficiency_histo){
 
   const float PROTON_M = 0.938; // GeV/c2
   const float PI_POS_M = 0.134;
