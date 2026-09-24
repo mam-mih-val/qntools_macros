@@ -69,7 +69,7 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
   std::for_each( f3_mod.begin(), f3_mod.end(), [](auto& m){ m += 1; } );
   std::for_each( f4_mod.begin(), f4_mod.end(), [](auto& m){ m += 1; } );
 
-  auto harmonics = std::vector<size_t>( 8 );
+  auto harmonics = std::vector<size_t>( 16 );
   std::iota( harmonics.begin(), harmonics.end(), 1 );
 
   auto qvector_harmonics = std::vector<size_t>( 2 );
