@@ -24,16 +24,6 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
 
   std::cout << "starting execution" << std::endl;
 
-  auto proton_axes = std::vector<Qn::AxisD>{
-    Qn::AxisD{ "centrality", 6, 0, 60 },
-    Qn::AxisD{ "y", std::vector<double>{ 0, 0.2, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2 } },
-    Qn::AxisD{ "pT", std::vector<double>{ 0, 0.2, 0.4, 0.5, 0.6, 0.8, 1.0, 1.5, 2.0 } },
-  };
-  
-  auto qvector_axes = std::vector<Qn::AxisD>{
-    Qn::AxisD{ "centrality", 6, 0, 60 },
-  };
-
   constexpr size_t NHARM = 2;
   constexpr size_t Q_NHARM = 1;
 
@@ -81,7 +71,7 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   std::for_each( f4_mod.begin(), f4_mod.end(), [](auto& m){ m += 1; } );
 
   std::unique_ptr<TFile> effieciency_file{TFile::Open( str_effieciency_file.c_str(), "READ" )};
-  TH3* efficiency_histo{nullptr};
+  TH2* efficiency_histo{nullptr};
   
   effieciency_file->GetObject("h2_efficiency_2212_good", efficiency_histo);
   if( !efficiency_histo )
@@ -130,12 +120,12 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   sampled_d = sampled_d.Define( "F2", f2_corr_builder.IssueQVectorCorrector<qvector_t, float>(), { "ini_F2", "centrality" } );
 
   auto [vec_f3_mean, vec_f3_cov] = ReadMeanCov<2*Q_NHARM>("F3", calib_file.get());
-  auto f3_correction_container = MakeCorrectionContainer<Q_NHARM`>( vec_f3_mean, vec_f3_cov, TwistRescale<Q_NHARM>{}, l );
+  auto f3_correction_container = MakeCorrectionContainer<Q_NHARM>( vec_f3_mean, vec_f3_cov, TwistRescale<Q_NHARM>{}, l );
   auto f3_corr_builder = CorrectorBuilder<Q_NHARM>( f3_correction_container );
   sampled_d = sampled_d.Define( "F3", f3_corr_builder.IssueQVectorCorrector<qvector_t, float>(), { "ini_F3", "centrality" } );
 
   auto [vec_f4_mean, vec_f4_cov] = ReadMeanCov<2*Q_NHARM>("F4", calib_file.get());
-  auto f4_correction_container = MakeCorrectionContainer<Q_NHARM`>( vec_f4_mean, vec_f4_cov, TwistRescale<Q_NHARM>{}, l );
+  auto f4_correction_container = MakeCorrectionContainer<Q_NHARM>( vec_f4_mean, vec_f4_cov, TwistRescale<Q_NHARM>{}, l );
   auto f4_corr_builder = CorrectorBuilder<Q_NHARM>( f4_correction_container );
   sampled_d = sampled_d.Define( "F4", f4_corr_builder.IssueQVectorCorrector<qvector_t, float>(), { "ini_F4", "centrality" } );
 
