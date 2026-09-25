@@ -521,8 +521,8 @@ const auto GenerateBmnExtendedTreeMC(DataFrame& d, TH2* efficiency_histo){
     .Define( "simProtonY", rapidity_generator(PROTON_M, Y_CM), {"simPz", "simP"} )
     
     .Define( "trIsProton", tr_is_particle, {"trSimIndex", "simIsProton"} )
-    .Define( "trSimPt", tr_sim_val(tr_sim_val_types<ROOT::VecOps::RVec<float>, tr_sim_val_types<ROOT::VecOps::RVec<float> >{}), {"trSimIndex", "simPt"} )
-    .Define( "trSimProtonY", tr_sim_val(tr_sim_val_types<ROOT::VecOps::RVec<float>, tr_sim_val_types<ROOT::VecOps::RVec<float> >{}), {"trSimIndex", "simProtonY"} )
+    .Define( "trSimPt", tr_sim_val(tr_sim_val_types<ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >{}), {"trSimIndex", "simPt"} )
+    .Define( "trSimProtonY", tr_sim_val(tr_sim_val_types<ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >{}), {"trSimIndex", "simProtonY"} )
     .Define( "trSimPhi", tr_sim_val(tr_sim_val_types<std::vector<float>, std::vector<float> >{}), {"trSimIndex", "simPhi"} )
     .Define( "trProtonWeight", proton_weight, {"trIsProton", "trProtonEfficiency", "trHasAnyTofHit", "trDcaR", "trStsNhits", "trStsChi2", "trEta", "trFhcalX", "trFhcalY"} )
     .Define( "trTposW", tpos_weight, {"trEta", "trPt", "pq", "trDcaR", "trStsNhits", "trStsChi2", "trFhcalX", "trFhcalY"} )
