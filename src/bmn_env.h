@@ -419,13 +419,13 @@ auto charge_function = []( std::vector<float> vec_pq, ROOT::VecOps::RVec<float> 
 template<typename In, typename Out>
 struct tr_sim_val_types{
   using InCol_t = In;
-  using OutCol_t = out;
+  using OutCol_t = Out;
 };
 
 template<typename Types>
-auto tr_sim_val(Types types) -> std::function< typename types::OutCol_t( ROOT::VecOps::RVec<int>, typename types::InCol_t ) >{
-  return []( ROOT::VecOps::RVec<int> vec_sim_idx, typename types::InCol_t vec_sim_val ){
-  auto vec_val = typename types::OutCol_t( vec_sim_idx.size(), -999. );
+auto tr_sim_val(Types types) -> std::function< typename Types::OutCol_t( ROOT::VecOps::RVec<int>, typename Types::InCol_t ) >{
+  return []( ROOT::VecOps::RVec<int> vec_sim_idx, typename Types::InCol_t vec_sim_val ){
+  auto vec_val = typename Types::OutCol_t( vec_sim_idx.size(), -999. );
   for( auto i=size_t{}; i<vec_sim_idx.size(); ++i ){
     if( vec_sim_idx[i] > vec_sim_val.size() )
       continue;
