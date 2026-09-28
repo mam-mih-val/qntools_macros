@@ -204,9 +204,9 @@ const auto weight_generator = []( auto efficiency_map ){
 
       auto y_bin = efficiency_map->GetXaxis()->FindBin( y );
       auto pT_bin = efficiency_map->GetYaxis()->FindBin( pT );
-      // auto phi_bin = efficiency_map->GetZaxis()->FindBin( phi );
+      auto phi_bin = efficiency_map->GetZaxis()->FindBin( phi );
       
-      auto efficiency = efficiency_map->GetBinContent( y_bin, pT_bin );
+      auto efficiency = efficiency_map->GetBinContent( y_bin, pT_bin, phi_bin );
       if( efficiency < 1e-2 )
         continue;
       auto weight = 1.0 / efficiency;
@@ -470,7 +470,7 @@ std::vector<int> f4_modules = {
 };
 
 template<typename DataFrame>
-const auto GenerateBmnExtendedTreeMC(DataFrame& d, TH2* efficiency_histo){
+const auto GenerateBmnExtendedTreeMC(DataFrame& d, TH3* efficiency_histo){
 
   const float PROTON_M = 0.938; // GeV/c2
   const float PI_POS_M = 0.134;
