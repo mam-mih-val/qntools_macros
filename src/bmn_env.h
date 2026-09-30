@@ -536,9 +536,18 @@ const auto GenerateBmnExtendedTreeMC(DataFrame& d, TH2* efficiency_histo){
     .Define( "trHasTof700Hit", tr_has_tof_hit, { "trBetaTof700" } )
     .Define( "trHasAnyTofHit", tr_has_any_tof_hit, { "trHasTof400Hit", "trHasTof700Hit" } )
 
-    .Define( "trPxCorr", correct_component( 0.999891, 0.00483011, -0.0139281 ), {"trPx", "trPy", "pz"} )
-    .Define( "trPyCorr", correct_component( -0.00478819, 0.999984, 0.00304214 ), {"trPx", "trPy", "pz"} )
-    .Define( "trPzCorr", correct_component( 0.0139426, -0.00297512, 0.999898 ), {"trPx", "trPy", "pz"} )
+    .Define( "simPxCorr", correct_component( 0.997203, -0.0738832, -0.0112676 ), {"simPx", "simPy", "simPz"} )
+    .Define( "simPyCorr", correct_component( 0.0738782, 0.997267, -0.000857844 ), {"simPx", "simPy", "simPz"} )
+    .Define( "simPzCorr", correct_component( 0.0113002, 2.30163e-05, 0.999936 ), {"simPx", "simPy", "simPz"} )
+
+    // .Define( "trPxCorr", correct_component( 0.999891, 0.00483011, -0.0139281 ), {"trPx", "trPy", "pz"} )
+    // .Define( "trPyCorr", correct_component( -0.00478819, 0.999984, 0.00304214 ), {"trPx", "trPy", "pz"} )
+    // .Define( "trPzCorr", correct_component( 0.0139426, -0.00297512, 0.999898 ), {"trPx", "trPy", "pz"} )
+
+    .Define( "trPxCorr", correct_component( 0.997203, -0.0738832, -0.0112676 ), {"trPx", "trPy", "pz"} )
+    .Define( "trPyCorr", correct_component( 0.0738782, 0.997267, -0.000857844 ), {"trPx", "trPy", "pz"} )
+    .Define( "trPzCorr", correct_component( 0.0113002, 2.30163e-05, 0.999936 ), {"trPx", "trPy", "pz"} )
+    
     .Define( "trPhiCorr", phi, {"trPxCorr", "trPyCorr"} )
     .Define( "trPtCorr", pT, {"trPxCorr", "trPyCorr"} )
     .Define( "trProtonYCorr", rapidity_generator(PROTON_M, Y_CM), {"trPzCorr", "pq"} )
@@ -554,6 +563,7 @@ const auto GenerateBmnExtendedTreeMC(DataFrame& d, TH2* efficiency_histo){
 
     .Define( "simPt", "ROOT::VecOps::RVec<float> simPt; for( auto mom : simMom ){ simPt.push_back( mom.Pt() ); } return simPt; " )
     .Define( "simPhi", "ROOT::VecOps::RVec<float> simPhi; for( auto mom : simMom ){ simPhi.push_back( mom.Phi() ); } return simPhi; " )
+    
     // .Define( "simF1w", sim_f_weight(4.4, 5.5), {"simEta", "simEkin", "simMotherId"} )
     // .Define( "simF2w", sim_f_weight(3.9, 4.4), {"simEta", "simEkin", "simMotherId"} )
     // .Define( "simF3w", sim_f_weight(3.1, 3.9), {"simEta", "simEkin", "simMotherId"} )
