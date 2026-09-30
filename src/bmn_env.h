@@ -461,7 +461,7 @@ auto phi = []( std::vector<float> vec_px, std::vector<float> vec_py ){
 };
 
 auto pT = []( std::vector<float> vec_px, std::vector<float> vec_py ){
-  auto vec_pT = std::vector<float>(vec_px.size(), 0.f );  
+  auto vec_pT = ROOT::VecOps::RVec<float>(vec_px.size(), 0.f );  
   for( auto i=size_t{}; i<vec_px.size(); ++i ){
     auto px = vec_px[i];
     auto py = vec_py[i];
