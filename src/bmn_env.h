@@ -437,6 +437,39 @@ auto tr_sim_val(Types types) -> std::function< typename Types::OutCol_t( ROOT::V
   };
 }
 
+auto correct_component = []( float u1, float u2, float u3 ){
+  return [u1, u2, u3]( std::vector<float> vec_px, std::vector<float> vec_py, std::vector<float> vec_pz ){
+    auto vec_p_corr = std::vector<float>( vec_px.size(), 0.f );
+    for( auto i=size_t{0}; i<vec_px.size(); ++i ){
+      auto px = vec_px[i];
+      auto py = vec_py[i];
+      auto pz = vec_pz[i];
+      vec_p_corr[i] = px*u1 + py*u2 + pz*u3;
+    }
+    return vec_p_corr;
+  };
+};
+
+auto phi = []( std::vector<float> vec_px, std::vector<float> vec_py ){
+  auto vec_phi = std::vector<float>(vec_px.size(), 0.f ); 
+  for( auto i=size_t{}; i<vec_px.size(); ++i ){
+    auto px = vec_px[i];
+    auto py = vec_py[i];
+    vec_phi[i] = atan2(py, px);
+  }
+  return vec_phi;
+};
+
+auto pT = []( std::vector<float> vec_px, std::vector<float> vec_py ){
+  auto vec_pT = std::vector<float>(vec_px.size(), 0.f );  
+  for( auto i=size_t{}; i<vec_px.size(); ++i ){
+    auto px = vec_px[i];
+    auto py = vec_py[i];
+    vec_pT[i] = sqrt( px*px + py*py );
+  }
+  return vec_pT;
+};
+
 std::vector<int> f1_modules = {
   6,  7,  8,
   11, 12, 13,
@@ -502,6 +535,14 @@ const auto GenerateBmnExtendedTreeMC(DataFrame& d, TH2* efficiency_histo){
     .Define( "trHasTof400Hit", tr_has_tof_hit, { "trBetaTof400" } )
     .Define( "trHasTof700Hit", tr_has_tof_hit, { "trBetaTof700" } )
     .Define( "trHasAnyTofHit", tr_has_any_tof_hit, { "trHasTof400Hit", "trHasTof700Hit" } )
+
+    .Define( "trPxCorr", correct_component( 0.999891, 0.00483011, -0.0139281 ), {"trPx", "trPy", "pz"} )
+    .Define( "trPyCorr", correct_component( -0.00478819, 0.999984, 0.00304214 ), {"trPx", "trPy", "pz"} )
+    .Define( "trPzCorr", correct_component( 0.0139426, -0.00297512, 0.999898 ), {"trPx", "trPy", "pz"} )
+    .Define( "trPhiCorr", phi, {"trPxCorr", "trPyCorr"} )
+    .Define( "trPtCorr", pT, {"trPxCorr", "trPyCorr"} )
+    .Define( "trProtonYCorr", rapidity_generator(PROTON_M, Y_CM), {"trPzCorr", "pq"} )
+
 
     .Alias("trStsNhits", "stsTrackNhits")
     .Alias("trStsChi2", "stsTrackChi2Ndf")
