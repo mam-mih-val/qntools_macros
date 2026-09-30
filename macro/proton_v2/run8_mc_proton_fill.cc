@@ -108,8 +108,8 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
   DefineVector( sampled_d, "Tpos", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"trPhi", "trTposW"} );
   DefineVector( sampled_d, "Tneg", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"trPhi", "trTnegW"} );
 
-  auto p_components_names = AddUVectorComponents(sampled_d, "proton", harmonics, "trPhi" );
-  auto p_cov_names = AddUVectorCovariance(sampled_d, "proton", harmonics, "trPhi" );
+  auto p_components_names = AddUVectorComponents(sampled_d, "proton", harmonics, "trPhiCorr" );
+  auto p_cov_names = AddUVectorCovariance(sampled_d, "proton", harmonics, "trPhiCorr" );
 
   auto f1_means_str = DefineVectorMeans( sampled_d, CorrFunc1Part<qvector_t>{}, "F1", qvector_harmonics );
   auto f2_means_str = DefineVectorMeans( sampled_d, CorrFunc1Part<qvector_t>{}, "F2", qvector_harmonics );
@@ -162,13 +162,13 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
 
   for( const auto& name : p_components_names ){
     p_components_ptr.emplace_back(
-      sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >( CorrelationHelper(proton_axes), std::vector<std::string>{name, "trProtonWeight", "samples", "centrality", "trProtonY", "trPt" } )
+      sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >( CorrelationHelper(proton_axes), std::vector<std::string>{name, "trProtonWeight", "samples", "centrality", "trProtonYCorr", "trPtCorr" } )
     ); 
   }
 
   for( const auto& name : p_cov_names ){
     p_cov_ptr.emplace_back(
-      sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >( CorrelationHelper(proton_axes), std::vector<std::string>{name, "trProtonWeight", "samples", "centrality", "trProtonY", "trPt" } )
+      sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >( CorrelationHelper(proton_axes), std::vector<std::string>{name, "trProtonWeight", "samples", "centrality", "trProtonYCorr", "trPtCorr" } )
     ); 
   }
 
