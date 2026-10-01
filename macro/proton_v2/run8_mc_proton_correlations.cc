@@ -101,6 +101,7 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   // DefineVector( sampled_d, "ini_Tneg", q_vector< std::vector<float>, std::vector<double> >(harmonics_q), std::vector<std::string>{"trPhi", "trTnegW"} );
 
   DefineVector(sampled_d, "ini_proton", u_vector< std::vector<float> >( harmonics ), std::vector<std::string>{"trPhi"s} );
+  DefineVector(sampled_d, "tru_proton", u_vector< std::vector<float> >( harmonics ), std::vector<std::string>{"simPhi"s} );
   DefineVector(sampled_d, "psi_rp", psi_rp_vector< double >( harmonics ), std::vector<std::string>{"psiRP"s} );
 
   auto calib_file = std::unique_ptr<TFile, std::function<void(TFile*)> >{ TFile::Open( str_calib_file.c_str(), "READ"), [](auto f){ f->Close(); } };
@@ -158,6 +159,15 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
     }
   };
 
+  auto tru_proton_axes = CorrelationAxes<float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float>>{
+    .axes_columns={ "centrality", "simProtonY", "simPt" },
+    .axes=std::vector<Qn::AxisD>{
+      Qn::AxisD{ "centrality", 6, 0, 60 },
+      Qn::AxisD{ "y", std::vector<double>{ 0, 0.2, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2 } },
+      Qn::AxisD{ "pT", std::vector<double>{ 0, 0.2, 0.4, 0.5, 0.6, 0.8, 1.0, 1.5, 2.0 } },
+    }
+  };
+
   auto qvector_axes = CorrelationAxes<float>{
     .axes_columns={ "centrality" },
     .axes=std::vector<Qn::AxisD>{
@@ -166,6 +176,7 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   };
 
   auto proton_weight = Weight<std::vector<double>>{ "trProtonWeight" };
+  auto tru_proton_weight = Weight<std::vector<double>>{ "simIsPrimProton" };
   auto qvector_weight = Weight<double>{ "One" };
 
   auto begin = std::chrono::steady_clock::now();
@@ -183,6 +194,9 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
 
     .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{"ini_proton", "psi_rp"}, {1, 1} }, proton_weight, proton_axes)
     .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{"ini_proton", "psi_rp"}, {2, 2} }, proton_weight, proton_axes)
+
+    .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{"tru_proton", "psi_rp"}, {1, 1} }, tru_proton_weight, tru_proton_axes)
+    .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{"tru_proton", "psi_rp"}, {2, 2} }, tru_proton_weight, tru_proton_axes)
     
     // .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"proton", "F1", "F3"}, {2, 1, 1} }, proton_weight, proton_axes)
     // .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"proton", "F1", "F4"}, {2, 1, 1} }, proton_weight, proton_axes)

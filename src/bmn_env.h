@@ -158,6 +158,22 @@ const auto is_sim_particle = []( int pdg_code ) {
   };
 };
 
+const auto is_sim_prim_particle = []( int pdg_code ) {
+  return [pdg_code]( ROOT::VecOps::RVec<int> vec_pdg, ROOT::VecOps::RVec<int> vec_m_id ){
+    auto vec_is = std::vector<double>( vec_pdg.size(), 0 );
+    for( auto i=size_t{0}; i < vec_pdg.size(); ++i ){
+      auto pdg = vec_pdg[i];
+      auto m_id = vec_m_id[i];
+      if( pdg != pdg_code )
+        continue;
+      if( m_id != -1 )
+        continue;
+      vec_is[i] = 1;
+    }
+    return vec_is;
+  };
+};
+
 const auto tr_is_particle = []( ROOT::VecOps::RVec<int> vec_sim_idx, std::vector<int> vec_is_sim_particle ){
   auto vec_is = std::vector<int>( vec_sim_idx.size(), 0 );
   for( auto i=size_t{0}; i<vec_sim_idx.size(); ++i ){
@@ -572,19 +588,20 @@ const auto GenerateBmnExtendedTreeMC(DataFrame& d, TH2* efficiency_histo){
     .Define( "simEkin", "std::vector<float> simEkin; for( auto mom : simMom ){ simEkin.push_back( mom.E() - mom.M() ); } return simEkin; " ) 
 
     .Define( "simPt", "ROOT::VecOps::RVec<float> simPt; for( auto mom : simMom ){ simPt.push_back( mom.Pt() ); } return simPt; " )
-    .Define( "simPhi", "ROOT::VecOps::RVec<float> simPhi; for( auto mom : simMom ){ simPhi.push_back( mom.Phi() ); } return simPhi; " )
+    .Define( "simPhi", "std::vector<float> simPhi; for( auto mom : simMom ){ simPhi.push_back( mom.Phi() ); } return simPhi; " )
     
     // .Define( "simF1w", sim_f_weight(4.4, 5.5), {"simEta", "simEkin", "simMotherId"} )
     // .Define( "simF2w", sim_f_weight(3.9, 4.4), {"simEta", "simEkin", "simMotherId"} )
     // .Define( "simF3w", sim_f_weight(3.1, 3.9), {"simEta", "simEkin", "simMotherId"} )
 
     .Define( "simIsProton", is_sim_particle(2212), { "simPdg" } )
+    .Define( "simIsPrimProton", is_sim_prim_particle(2212), { "simPdg", "simMotherId" } )
     .Define( "simProtonY", rapidity_generator(PROTON_M, Y_CM), {"simPz", "simP"} )
     
     .Define( "trIsProton", tr_is_particle, {"trSimIndex", "simIsProton"} )
-    .Define( "trSimPt", tr_sim_val(tr_sim_val_types<ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >{}), {"trSimIndex", "simPt"} )
-    .Define( "trSimProtonY", tr_sim_val(tr_sim_val_types<ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >{}), {"trSimIndex", "simProtonY"} )
-    .Define( "trSimPhi", tr_sim_val(tr_sim_val_types<ROOT::VecOps::RVec<float>, std::vector<float> >{}), {"trSimIndex", "simPhi"} )
+    // .Define( "trSimPt", tr_sim_val(tr_sim_val_types<ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >{}), {"trSimIndex", "simPt"} )
+    // .Define( "trSimProtonY", tr_sim_val(tr_sim_val_types<ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >{}), {"trSimIndex", "simProtonY"} )
+    // .Define( "trSimPhi", tr_sim_val(tr_sim_val_types<ROOT::VecOps::RVec<float>, std::vector<float> >{}), {"trSimIndex", "simPhi"} )
     .Define( "trProtonWeight", proton_weight, {"trIsProton", "trProtonEfficiency", "trHasAnyTofHit", "trDcaR", "trStsNhits", "trStsChi2", "trEta", "trFhcalX", "trFhcalY"} )
     .Define( "trTposW", tpos_weight, {"trEta", "trPt", "pq", "trDcaR", "trStsNhits", "trStsChi2", "trFhcalX", "trFhcalY"} )
     .Define( "trTnegW", tneg_weight, {"trEta", "trPt", "pq", "trDcaR", "trStsNhits", "trStsChi2", "trFhcalX", "trFhcalY"} )
