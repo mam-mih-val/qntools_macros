@@ -109,13 +109,11 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   auto p_pca_builder = CorrectorBuilder<NHARM>( p_pca_container );
   sampled_d = sampled_d.Define( "pca_proton", p_pca_builder.IssueUVectorCorrector<uvector_t, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >(), { "ini_proton", "centrality", "trProtonY", "trPt" } );
 
-  auto calib_file = std::unique_ptr<TFile, std::function<void(TFile*)> >{ TFile::Open( str_calib_file.c_str(), "READ"), [](auto f){ f->Close(); } };
   auto [vec_twr_mean, vec_twr_cov] = ReadMeanCov<2*NHARM>("proton", calib_file.get());
   auto p_twr_container = MakeCorrectionContainer<NHARM>( vec_twr_mean, vec_twr_cov, TwistRescale<NHARM>{}, 5e-2 );
   auto p_twr_builder = CorrectorBuilder<NHARM>( p_twr_container );
   sampled_d = sampled_d.Define( "twr_proton", p_twr_builder.IssueUVectorCorrector<uvector_t, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >(), { "ini_proton", "centrality", "trProtonY", "trPt" } );
 
-  auto calib_file = std::unique_ptr<TFile, std::function<void(TFile*)> >{ TFile::Open( str_calib_file.c_str(), "READ"), [](auto f){ f->Close(); } };
   auto [vec_rec_mean, vec_rec_cov] = ReadMeanCov<2*NHARM>("proton", calib_file.get());
   auto p_rec_container = MakeCorrectionContainer<NHARM>( vec_rec_mean, vec_rec_cov, Recenter<NHARM>{}, 5e-2 );
   auto p_rec_builder = CorrectorBuilder<NHARM>( p_rec_container );
