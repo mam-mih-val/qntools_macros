@@ -583,12 +583,18 @@ const auto GenerateBmnExtendedTreeMC(DataFrame& d, TH2* efficiency_histo){
     .Alias("trStsChi2", "stsTrackChi2Ndf")
 
     .Define( "simP", "std::vector<float> simP; for( auto mom : simMom ){ simP.push_back( mom.P() ); } return simP; " )
-    .Define( "simPz", "std::vector<float> simPz; for( auto mom : simMom ){ simPz.push_back( mom.Pz() ); } return simPz; " )
+    .Define( "simPx", "std::vector<float> simPx; for( auto mom : simMom ){ simPx.push_back( mom.Px() ); } return simPx;" )
+    .Define( "simPy", "std::vector<float> simPy; for( auto mom : simMom ){ simPx.push_back( mom.Py() ); } return simPy;" )
+    .Define( "simPz", "std::vector<float> simPz; for( auto mom : simMom ){ simPz.push_back( mom.Pz() ); } return simPz;" )
     .Define( "simEta", "std::vector<float> simEta; for( auto mom : simMom ){ simEta.push_back( mom.Eta() ); } return simEta; " )
     .Define( "simEkin", "std::vector<float> simEkin; for( auto mom : simMom ){ simEkin.push_back( mom.E() - mom.M() ); } return simEkin; " ) 
 
-    .Define( "simPt", "ROOT::VecOps::RVec<float> simPt; for( auto mom : simMom ){ simPt.push_back( mom.Pt() ); } return simPt; " )
-    .Define( "simPhi", "std::vector<float> simPhi; for( auto mom : simMom ){ simPhi.push_back( mom.Phi() ); } return simPhi; " )
+    .Define( "simPxCorr", correct_component( 0.984688, -0.17397, -0.0111238 ), {"simPx", "simPy", "simPz"} )
+    .Define( "simPyCorr", correct_component( 0.173959, 0.984751, -0.00198855 ), {"simPx", "simPy", "simPz"} )
+    .Define( "simPzCorr", correct_component( 0.0113002, 2.3012e-05, 0.999936 ), {"simPx", "simPy", "simPz"} )
+
+    // .Define( "simPt", "ROOT::VecOps::RVec<float> simPt; for( auto mom : simMom ){ simPt.push_back( mom.Pt() ); } return simPt; " )
+    // .Define( "simPhi", "std::vector<float> simPhi; for( auto mom : simMom ){ simPhi.push_back( mom.Phi() ); } return simPhi; " )
     
     // .Define( "simF1w", sim_f_weight(4.4, 5.5), {"simEta", "simEkin", "simMotherId"} )
     // .Define( "simF2w", sim_f_weight(3.9, 4.4), {"simEta", "simEkin", "simMotherId"} )
@@ -596,8 +602,12 @@ const auto GenerateBmnExtendedTreeMC(DataFrame& d, TH2* efficiency_histo){
 
     .Define( "simIsProton", is_sim_particle(2212), { "simPdg" } )
     .Define( "simIsPrimProton", is_sim_prim_particle(2212), { "simPdg", "simMotherId" } )
-    .Define( "simProtonY", rapidity_generator(PROTON_M, Y_CM), {"simPz", "simP"} )
+    // .Define( "simProtonY", rapidity_generator(PROTON_M, Y_CM), {"simPz", "simP"} )
     
+    .Define( "simPhi", phi, {"simPxCorr", "simPyCorr"} )
+    .Define( "simPt", pT, {"simPxCorr", "simPyCorr"} )
+    .Define( "simProtonY", rapidity_generator(PROTON_M, Y_CM), {"simPzCorr", "simP"} )
+
     .Define( "trIsProton", tr_is_particle, {"trSimIndex", "simIsProton"} )
     // .Define( "trSimPt", tr_sim_val(tr_sim_val_types<ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >{}), {"trSimIndex", "simPt"} )
     // .Define( "trSimProtonY", tr_sim_val(tr_sim_val_types<ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >{}), {"trSimIndex", "simProtonY"} )
