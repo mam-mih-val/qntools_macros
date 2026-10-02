@@ -584,7 +584,7 @@ const auto GenerateBmnExtendedTreeMC(DataFrame& d, TH2* efficiency_histo){
 
     .Define( "simP", "std::vector<float> simP; for( auto mom : simMom ){ simP.push_back( mom.P() ); } return simP; " )
     .Define( "simPx", "std::vector<float> simPx; for( auto mom : simMom ){ simPx.push_back( mom.Px() ); } return simPx;" )
-    .Define( "simPy", "std::vector<float> simPy; for( auto mom : simMom ){ simPx.push_back( mom.Py() ); } return simPy;" )
+    .Define( "simPy", "std::vector<float> simPy; for( auto mom : simMom ){ simPy.push_back( mom.Py() ); } return simPy;" )
     .Define( "simPz", "std::vector<float> simPz; for( auto mom : simMom ){ simPz.push_back( mom.Pz() ); } return simPz;" )
     .Define( "simEta", "std::vector<float> simEta; for( auto mom : simMom ){ simEta.push_back( mom.Eta() ); } return simEta; " )
     .Define( "simEkin", "std::vector<float> simEkin; for( auto mom : simMom ){ simEkin.push_back( mom.E() - mom.M() ); } return simEkin; " ) 
