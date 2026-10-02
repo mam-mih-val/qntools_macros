@@ -66,6 +66,7 @@ void run8_proton_correct( std::string list,
   []( TGraphErrors* g1_calib ){
     return [g1_calib](double _vtx, UInt_t _runId){return _vtx - g1_calib->Eval( static_cast<double>(_runId) ); };
   };
+  
   auto ref_mult_generator =
   []( TGraphErrors* g1_calib ){
     return [g1_calib](unsigned long _mult, UInt_t _runId){ return (_mult * g1_calib->Eval( static_cast<double>(_runId) )); };
