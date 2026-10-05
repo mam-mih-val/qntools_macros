@@ -270,7 +270,8 @@ const auto proton_weight = [](
     if( -30 <  vec_fhcal_x[i]  && vec_fhcal_x[i] < 160 &&
         -60 < vec_fhcal_y[i] && vec_fhcal_y[i] < 60   )
       continue;
-    weights[i] = vec_efficiency[i];
+    // weights[i] = vec_efficiency[i];
+    weights[i] = 1.;
   }
   return weights;
 };
