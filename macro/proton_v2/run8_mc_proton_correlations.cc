@@ -105,9 +105,9 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   DefineVector(sampled_d, "psi_rp", psi_rp_vector< double >( harmonics ), std::vector<std::string>{"psiRP"s} );
 
   auto calib_file = std::unique_ptr<TFile, std::function<void(TFile*)> >{ TFile::Open( str_calib_file.c_str(), "READ"), [](auto f){ f->Close(); } };
-  auto [vec_pca_mean, vec_pca_cov] = ReadMeanCov<4>("proton", calib_file.get());
-  auto p_pca_container = MakeCorrectionContainer<4>( vec_pca_mean, vec_pca_cov, PrincipalComponents<4>{}, 5e-2 );
-  auto p_pca_builder = CorrectorBuilder<4>( p_pca_container );
+  auto [vec_pca_mean, vec_pca_cov] = ReadMeanCov<NHARM>("proton", calib_file.get());
+  auto p_pca_container = MakeCorrectionContainer<NHARM>( vec_pca_mean, vec_pca_cov, PrincipalComponents<NHARM>{}, 5e-2 );
+  auto p_pca_builder = CorrectorBuilder<NHARM>( p_pca_container );
   sampled_d = sampled_d.Define( "pca_proton", p_pca_builder.IssueUVectorCorrector<uvector_t, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >(), { "ini_proton", "centrality", "trProtonY", "trPt" } );
 
   auto [vec_twr_mean, vec_twr_cov] = ReadMeanCov<2*NHARM>("proton", calib_file.get());
@@ -154,10 +154,10 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
     .axes_columns={ "centrality", "trProtonY", "trPt" },
     .axes=std::vector<Qn::AxisD>{
       Qn::AxisD{ "centrality", 6, 0, 60 },
-      // Qn::AxisD{ "y", std::vector<double>{ 0, 0.2, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2 } },
-      Qn::AxisD{ "y", std::vector<double>{ 0, 0.4, 0.6, 0.8, 1, 1.2 } },
-      // Qn::AxisD{ "pT", std::vector<double>{ 0, 0.2, 0.4, 0.5, 0.6, 0.8, 1.0, 1.5, 2.0 } },
-      Qn::AxisD{ "pT", std::vector<double>{ 0, 0.4, 0.6, 1.0, 1.5, 2.0 } },
+      Qn::AxisD{ "y", std::vector<double>{ 0, 0.2, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2 } },
+      // Qn::AxisD{ "y", std::vector<double>{ 0, 0.4, 0.6, 0.8, 1, 1.2 } },
+      Qn::AxisD{ "pT", std::vector<double>{ 0, 0.2, 0.4, 0.5, 0.6, 0.8, 1.0, 1.5, 2.0 } },
+      // Qn::AxisD{ "pT", std::vector<double>{ 0, 0.4, 0.6, 1.0, 1.5, 2.0 } },
     }
   };
 

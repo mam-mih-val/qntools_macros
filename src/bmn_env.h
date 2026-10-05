@@ -261,8 +261,8 @@ const auto proton_weight = [](
   for(auto i=size_t{}; i<vec_is_proton.size(); ++i){
     if( vec_is_proton[i] != 1 )
       continue;
-    if( has_any_tof_hit[i] != 1 )
-      continue;
+    // if( has_any_tof_hit[i] != 1 )
+    //   continue;
     if( vec_r[i] > 3.0 )
       continue;
     // if( vec_eta[i] > 3.0 )
