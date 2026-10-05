@@ -24,10 +24,10 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
 
   auto proton_axes = std::vector<Qn::AxisD>{
     Qn::AxisD{ "centrality", 6, 0, 60 },
-    Qn::AxisD{ "y", std::vector<double>{ 0, 0.2, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2 } },
-    // Qn::AxisD{ "y", std::vector<double>{ 0, 0.4, 0.6, 0.8, 1, 1.2 } },
-    Qn::AxisD{ "pT", std::vector<double>{ 0, 0.2, 0.4, 0.5, 0.6, 0.8, 1.0, 1.5,  2.0 } },
-    // Qn::AxisD{ "pT", std::vector<double>{ 0, 0.4, 0.6, 1.0, 1.5, 2.0 } },
+    // Qn::AxisD{ "y", std::vector<double>{ 0, 0.2, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2 } },
+    Qn::AxisD{ "y", std::vector<double>{ 0, 0.4, 0.6, 0.8, 1, 1.2 } },
+    // Qn::AxisD{ "pT", std::vector<double>{ 0, 0.2, 0.4, 0.5, 0.6, 0.8, 1.0, 1.5,  2.0 } },
+    Qn::AxisD{ "pT", std::vector<double>{ 0, 0.4, 0.6, 1.0, 1.5, 2.0 } },
   };
 
   auto qvector_axes = std::vector<Qn::AxisD>{
@@ -102,65 +102,65 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
   sampled_d = sampled_d.Define( "F3w", fhcal_weight_generator(f3_mod), { "fhcalModId", "fhcalModE" } );
   sampled_d = sampled_d.Define( "F4w", fhcal_weight_generator(f4_mod), { "fhcalModId", "fhcalModE" } );
 
-  // DefineVector( sampled_d, "F1", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"fhcalModPhi", "F1w"} );
-  // DefineVector( sampled_d, "F2", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"fhcalModPhi", "F2w"} );
-  // DefineVector( sampled_d, "F3", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"fhcalModPhi", "F3w"} );
-  // DefineVector( sampled_d, "F4", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"fhcalModPhi", "F4w"} );
+  DefineVector( sampled_d, "F1", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"fhcalModPhi", "F1w"} );
+  DefineVector( sampled_d, "F2", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"fhcalModPhi", "F2w"} );
+  DefineVector( sampled_d, "F3", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"fhcalModPhi", "F3w"} );
+  DefineVector( sampled_d, "F4", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"fhcalModPhi", "F4w"} );
   
-  // DefineVector( sampled_d, "Tpos", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"trPhi", "trTposW"} );
-  // DefineVector( sampled_d, "Tneg", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"trPhi", "trTnegW"} );
+  DefineVector( sampled_d, "Tpos", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"trPhi", "trTposW"} );
+  DefineVector( sampled_d, "Tneg", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"trPhi", "trTnegW"} );
 
   auto p_components_names = AddUVectorComponents(sampled_d, "proton", harmonics, "trPhi" );
   auto p_cov_names = AddUVectorCovariance(sampled_d, "proton", harmonics, "trPhi" );
 
-  // auto f1_means_str = DefineVectorMeans( sampled_d, CorrFunc1Part<qvector_t>{}, "F1", qvector_harmonics );
-  // auto f2_means_str = DefineVectorMeans( sampled_d, CorrFunc1Part<qvector_t>{}, "F2", qvector_harmonics );
-  // auto f3_means_str = DefineVectorMeans( sampled_d, CorrFunc1Part<qvector_t>{}, "F3", qvector_harmonics );
-  // auto f4_means_str = DefineVectorMeans( sampled_d, CorrFunc1Part<qvector_t>{}, "F4", qvector_harmonics );
-  // auto tp_means_str = DefineVectorMeans( sampled_d, CorrFunc1Part<qvector_t>{}, "Tpos", qvector_harmonics );
-  // auto tn_means_str = DefineVectorMeans( sampled_d, CorrFunc1Part<qvector_t>{}, "Tneg", qvector_harmonics );
+  auto f1_means_str = DefineVectorMeans( sampled_d, CorrFunc1Part<qvector_t>{}, "F1", qvector_harmonics );
+  auto f2_means_str = DefineVectorMeans( sampled_d, CorrFunc1Part<qvector_t>{}, "F2", qvector_harmonics );
+  auto f3_means_str = DefineVectorMeans( sampled_d, CorrFunc1Part<qvector_t>{}, "F3", qvector_harmonics );
+  auto f4_means_str = DefineVectorMeans( sampled_d, CorrFunc1Part<qvector_t>{}, "F4", qvector_harmonics );
+  auto tp_means_str = DefineVectorMeans( sampled_d, CorrFunc1Part<qvector_t>{}, "Tpos", qvector_harmonics );
+  auto tn_means_str = DefineVectorMeans( sampled_d, CorrFunc1Part<qvector_t>{}, "Tneg", qvector_harmonics );
 
-  // auto f1_cov_str = DefineVectorCovariance( sampled_d, CorrFunc1Part<qvector_t>{}, "F1", qvector_harmonics );
-  // auto f2_cov_str = DefineVectorCovariance( sampled_d, CorrFunc1Part<qvector_t>{}, "F2", qvector_harmonics );
-  // auto f3_cov_str = DefineVectorCovariance( sampled_d, CorrFunc1Part<qvector_t>{}, "F3", qvector_harmonics );
-  // auto f4_cov_str = DefineVectorCovariance( sampled_d, CorrFunc1Part<qvector_t>{}, "F4", qvector_harmonics );
-  // auto tp_cov_str = DefineVectorCovariance( sampled_d, CorrFunc1Part<qvector_t>{}, "Tpos", qvector_harmonics );
-  // auto tn_cov_str = DefineVectorCovariance( sampled_d, CorrFunc1Part<qvector_t>{}, "Tneg", qvector_harmonics );
+  auto f1_cov_str = DefineVectorCovariance( sampled_d, CorrFunc1Part<qvector_t>{}, "F1", qvector_harmonics );
+  auto f2_cov_str = DefineVectorCovariance( sampled_d, CorrFunc1Part<qvector_t>{}, "F2", qvector_harmonics );
+  auto f3_cov_str = DefineVectorCovariance( sampled_d, CorrFunc1Part<qvector_t>{}, "F3", qvector_harmonics );
+  auto f4_cov_str = DefineVectorCovariance( sampled_d, CorrFunc1Part<qvector_t>{}, "F4", qvector_harmonics );
+  auto tp_cov_str = DefineVectorCovariance( sampled_d, CorrFunc1Part<qvector_t>{}, "Tpos", qvector_harmonics );
+  auto tn_cov_str = DefineVectorCovariance( sampled_d, CorrFunc1Part<qvector_t>{}, "Tneg", qvector_harmonics );
 
   auto p_components_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
   p_components_ptr.reserve( p_components_names.size() );
   auto p_cov_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
   p_cov_ptr.reserve( p_cov_names.size() );
 
-  // auto f1_means_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
-  // f1_means_ptr.reserve( f1_means_str.size() );
-  // auto f1_cov_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
-  // f1_cov_ptr.reserve( f1_cov_str.size() );
+  auto f1_means_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
+  f1_means_ptr.reserve( f1_means_str.size() );
+  auto f1_cov_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
+  f1_cov_ptr.reserve( f1_cov_str.size() );
 
-  // auto f2_means_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
-  // f2_means_ptr.reserve( f2_means_str.size() );
-  // auto f2_cov_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
-  // f2_cov_ptr.reserve( f2_cov_str.size() );
+  auto f2_means_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
+  f2_means_ptr.reserve( f2_means_str.size() );
+  auto f2_cov_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
+  f2_cov_ptr.reserve( f2_cov_str.size() );
 
-  // auto f3_means_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
-  // f3_means_ptr.reserve( f3_means_str.size() );
-  // auto f3_cov_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
-  // f3_cov_ptr.reserve( f3_cov_str.size() );
+  auto f3_means_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
+  f3_means_ptr.reserve( f3_means_str.size() );
+  auto f3_cov_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
+  f3_cov_ptr.reserve( f3_cov_str.size() );
 
-  // auto f4_means_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
-  // f4_means_ptr.reserve( f4_means_str.size() );
-  // auto f4_cov_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
-  // f4_cov_ptr.reserve( f4_cov_str.size() );
+  auto f4_means_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
+  f4_means_ptr.reserve( f4_means_str.size() );
+  auto f4_cov_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
+  f4_cov_ptr.reserve( f4_cov_str.size() );
 
-  // auto tp_means_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
-  // tp_means_ptr.reserve( tp_means_str.size() );
-  // auto tp_cov_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
-  // tp_cov_ptr.reserve( tp_cov_str.size() );
+  auto tp_means_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
+  tp_means_ptr.reserve( tp_means_str.size() );
+  auto tp_cov_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
+  tp_cov_ptr.reserve( tp_cov_str.size() );
 
-  // auto tn_means_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
-  // tn_means_ptr.reserve( tn_means_str.size() );
-  // auto tn_cov_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
-  // tn_cov_ptr.reserve( tn_cov_str.size() );
+  auto tn_means_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
+  tn_means_ptr.reserve( tn_means_str.size() );
+  auto tn_cov_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
+  tn_cov_ptr.reserve( tn_cov_str.size() );
 
   for( const auto& name : p_components_names ){
     p_components_ptr.emplace_back(
@@ -174,78 +174,78 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
     ); 
   }
 
-  // for( const auto& name : f1_means_str ){
-  //   f1_means_ptr.emplace_back(
-  //     sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "One", "samples", "centrality" } )
-  //   ); 
-  // }
+  for( const auto& name : f1_means_str ){
+    f1_means_ptr.emplace_back(
+      sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "One", "samples", "centrality" } )
+    ); 
+  }
 
-  // for( const auto& name : f2_means_str ){
-  //   f2_means_ptr.emplace_back(
-  //     sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "One", "samples", "centrality" } )
-  //   ); 
-  // }
+  for( const auto& name : f2_means_str ){
+    f2_means_ptr.emplace_back(
+      sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "One", "samples", "centrality" } )
+    ); 
+  }
 
-  // for( const auto& name : f3_means_str ){
-  //   f3_means_ptr.emplace_back(
-  //     sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "One", "samples", "centrality" } )
-  //   ); 
-  // }
+  for( const auto& name : f3_means_str ){
+    f3_means_ptr.emplace_back(
+      sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "One", "samples", "centrality" } )
+    ); 
+  }
 
-  // for( const auto& name : f4_means_str ){
-  //   f4_means_ptr.emplace_back(
-  //     sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "One", "samples", "centrality" } )
-  //   ); 
-  // }
+  for( const auto& name : f4_means_str ){
+    f4_means_ptr.emplace_back(
+      sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "One", "samples", "centrality" } )
+    ); 
+  }
 
-  // for( const auto& name : tp_means_str ){
-  //   tp_means_ptr.emplace_back(
-  //     sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "One", "samples", "centrality" } )
-  //   ); 
-  // }
+  for( const auto& name : tp_means_str ){
+    tp_means_ptr.emplace_back(
+      sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "One", "samples", "centrality" } )
+    ); 
+  }
 
-  // for( const auto& name : tn_means_str ){
-  //   tn_means_ptr.emplace_back(
-  //     sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "One", "samples", "centrality" } )
-  //   ); 
-  // }
+  for( const auto& name : tn_means_str ){
+    tn_means_ptr.emplace_back(
+      sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "One", "samples", "centrality" } )
+    ); 
+  }
 
 
-  // for( const auto& name : f1_cov_str ){
-  //   f1_cov_ptr.emplace_back(
-  //     sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "One", "samples", "centrality" } )
-  //   ); 
-  // }
+  for( const auto& name : f1_cov_str ){
+    f1_cov_ptr.emplace_back(
+      sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "One", "samples", "centrality" } )
+    ); 
+  }
 
-  // for( const auto& name : f2_cov_str ){
-  //   f2_cov_ptr.emplace_back(
-  //     sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "One", "samples", "centrality" } )
-  //   ); 
-  // }
+  for( const auto& name : f2_cov_str ){
+    f2_cov_ptr.emplace_back(
+      sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "One", "samples", "centrality" } )
+    ); 
+  }
 
-  // for( const auto& name : f3_cov_str ){
-  //   f3_cov_ptr.emplace_back(
-  //     sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "One", "samples", "centrality" } )
-  //   ); 
-  // }
+  for( const auto& name : f3_cov_str ){
+    f3_cov_ptr.emplace_back(
+      sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "One", "samples", "centrality" } )
+    ); 
+  }
 
-  // for( const auto& name : f4_cov_str ){
-  //   f4_cov_ptr.emplace_back(
-  //     sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "One", "samples", "centrality" } )
-  //   ); 
-  // }
+  for( const auto& name : f4_cov_str ){
+    f4_cov_ptr.emplace_back(
+      sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "One", "samples", "centrality" } )
+    ); 
+  }
 
-  // for( const auto& name : tp_cov_str ){
-  //   tp_cov_ptr.emplace_back(
-  //     sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "One", "samples", "centrality" } )
-  //   ); 
-  // }
+  for( const auto& name : tp_cov_str ){
+    tp_cov_ptr.emplace_back(
+      sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "One", "samples", "centrality" } )
+    ); 
+  }
 
-  // for( const auto& name : tn_cov_str ){
-  //   tn_cov_ptr.emplace_back(
-  //     sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "One", "samples", "centrality" } )
-  //   ); 
-  // }
+  for( const auto& name : tn_cov_str ){
+    tn_cov_ptr.emplace_back(
+      sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(qvector_axes), std::vector<std::string>{name, "One", "samples", "centrality" } )
+    ); 
+  }
 
   auto start = std::chrono::steady_clock::now();
 
@@ -254,23 +254,23 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
   std::for_each( p_components_ptr.begin(), p_components_ptr.end(), [i=0, &p_components_names]( auto& p ) mutable { p->Write( p_components_names.at(i).c_str() ); ++i; } );
   std::for_each( p_cov_ptr.begin(), p_cov_ptr.end(), [i=0, &p_cov_names]( auto& p ) mutable { p->Write( p_cov_names.at(i).c_str() ); ++i; } );
   
-  // std::for_each( f1_means_ptr.begin(), f1_means_ptr.end(), [i=0, &f1_means_str]( auto& p ) mutable { p->Write( f1_means_str.at(i).c_str() ); ++i; } );
-  // std::for_each( f1_cov_ptr.begin(), f1_cov_ptr.end(), [i=0, &f1_cov_str]( auto& p ) mutable { p->Write( f1_cov_str.at(i).c_str() ); ++i; } );
+  std::for_each( f1_means_ptr.begin(), f1_means_ptr.end(), [i=0, &f1_means_str]( auto& p ) mutable { p->Write( f1_means_str.at(i).c_str() ); ++i; } );
+  std::for_each( f1_cov_ptr.begin(), f1_cov_ptr.end(), [i=0, &f1_cov_str]( auto& p ) mutable { p->Write( f1_cov_str.at(i).c_str() ); ++i; } );
 
-  // std::for_each( f2_means_ptr.begin(), f2_means_ptr.end(), [i=0, &f2_means_str]( auto& p ) mutable { p->Write( f2_means_str.at(i).c_str() ); ++i; } );
-  // std::for_each( f2_cov_ptr.begin(), f2_cov_ptr.end(), [i=0, &f2_cov_str]( auto& p ) mutable { p->Write( f2_cov_str.at(i).c_str() ); ++i; } );
+  std::for_each( f2_means_ptr.begin(), f2_means_ptr.end(), [i=0, &f2_means_str]( auto& p ) mutable { p->Write( f2_means_str.at(i).c_str() ); ++i; } );
+  std::for_each( f2_cov_ptr.begin(), f2_cov_ptr.end(), [i=0, &f2_cov_str]( auto& p ) mutable { p->Write( f2_cov_str.at(i).c_str() ); ++i; } );
 
-  // std::for_each( f3_means_ptr.begin(), f3_means_ptr.end(), [i=0, &f3_means_str]( auto& p ) mutable { p->Write( f3_means_str.at(i).c_str() ); ++i; } );
-  // std::for_each( f3_cov_ptr.begin(), f3_cov_ptr.end(), [i=0, &f3_cov_str]( auto& p ) mutable { p->Write( f3_cov_str.at(i).c_str() ); ++i; } );
+  std::for_each( f3_means_ptr.begin(), f3_means_ptr.end(), [i=0, &f3_means_str]( auto& p ) mutable { p->Write( f3_means_str.at(i).c_str() ); ++i; } );
+  std::for_each( f3_cov_ptr.begin(), f3_cov_ptr.end(), [i=0, &f3_cov_str]( auto& p ) mutable { p->Write( f3_cov_str.at(i).c_str() ); ++i; } );
 
-  // std::for_each( f4_means_ptr.begin(), f4_means_ptr.end(), [i=0, &f4_means_str]( auto& p ) mutable { p->Write( f4_means_str.at(i).c_str() ); ++i; } );
-  // std::for_each( f4_cov_ptr.begin(), f4_cov_ptr.end(), [i=0, &f4_cov_str]( auto& p ) mutable { p->Write( f4_cov_str.at(i).c_str() ); ++i; } );
+  std::for_each( f4_means_ptr.begin(), f4_means_ptr.end(), [i=0, &f4_means_str]( auto& p ) mutable { p->Write( f4_means_str.at(i).c_str() ); ++i; } );
+  std::for_each( f4_cov_ptr.begin(), f4_cov_ptr.end(), [i=0, &f4_cov_str]( auto& p ) mutable { p->Write( f4_cov_str.at(i).c_str() ); ++i; } );
 
-  // std::for_each( tp_means_ptr.begin(), tp_means_ptr.end(), [i=0, &tp_means_str]( auto& p ) mutable { p->Write( tp_means_str.at(i).c_str() ); ++i; } );
-  // std::for_each( tp_cov_ptr.begin(), tp_cov_ptr.end(), [i=0, &tp_cov_str]( auto& p ) mutable { p->Write( tp_cov_str.at(i).c_str() ); ++i; } );
+  std::for_each( tp_means_ptr.begin(), tp_means_ptr.end(), [i=0, &tp_means_str]( auto& p ) mutable { p->Write( tp_means_str.at(i).c_str() ); ++i; } );
+  std::for_each( tp_cov_ptr.begin(), tp_cov_ptr.end(), [i=0, &tp_cov_str]( auto& p ) mutable { p->Write( tp_cov_str.at(i).c_str() ); ++i; } );
 
-  // std::for_each( tn_means_ptr.begin(), tn_means_ptr.end(), [i=0, &tn_means_str]( auto& p ) mutable { p->Write( tn_means_str.at(i).c_str() ); ++i; } );
-  // std::for_each( tn_cov_ptr.begin(), tn_cov_ptr.end(), [i=0, &tn_cov_str]( auto& p ) mutable { p->Write( tn_cov_str.at(i).c_str() ); ++i; } );
+  std::for_each( tn_means_ptr.begin(), tn_means_ptr.end(), [i=0, &tn_means_str]( auto& p ) mutable { p->Write( tn_means_str.at(i).c_str() ); ++i; } );
+  std::for_each( tn_cov_ptr.begin(), tn_cov_ptr.end(), [i=0, &tn_cov_str]( auto& p ) mutable { p->Write( tn_cov_str.at(i).c_str() ); ++i; } );
 
   auto n_events_filtered = static_cast<double>(*(sampled_d.Count())) / 1E+3;
   auto finish = std::chrono::steady_clock::now();
