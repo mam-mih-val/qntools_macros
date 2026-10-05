@@ -24,8 +24,10 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
 
   auto proton_axes = std::vector<Qn::AxisD>{
     Qn::AxisD{ "centrality", 6, 0, 60 },
-    Qn::AxisD{ "y", std::vector<double>{ 0, 0.2, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2 } },
-    Qn::AxisD{ "pT", std::vector<double>{ 0, 0.2, 0.4, 0.5, 0.6, 0.8, 1.0, 1.5, 2.0 } },
+    // Qn::AxisD{ "y", std::vector<double>{ 0, 0.2, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2 } },
+    Qn::AxisD{ "y", std::vector<double>{ 0, 0.4, 0.6, 0.8, 1, 1.2 } },
+    // Qn::AxisD{ "pT", std::vector<double>{ 0, 0.2, 0.4, 0.5, 0.6, 0.8, 1.0, 1.5,  2.0 } },
+    Qn::AxisD{ "pT", std::vector<double>{ 0, 0.4, 0.6, 1.0, 1.5, 2.0 } },
   };
 
   auto qvector_axes = std::vector<Qn::AxisD>{
