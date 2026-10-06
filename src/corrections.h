@@ -148,6 +148,7 @@ public:
   static auto PseudoInverse() -> std::function< correction_matrix_t( correction_matrix_t, double ) > {
     return [](const correction_matrix_t& M, double l){
       auto svd = Eigen::JacobiSVD<correction_matrix_t> ( M, Eigen::ComputeThinU | Eigen::ComputeThinV );    
+      auto trace = M.trace();
       auto singular_values = svd.singularValues();
       auto sv_sum = double{0.0};
       auto U = svd.matrixU();
@@ -156,7 +157,7 @@ public:
       auto rank = size_t{0};
       for (auto i = size_t{0}; i < singular_values.size(); ++i) {
         auto s = singular_values(i);
-        if( s / 0.5  < l )
+        if( s < 5e-2 * trace )
           continue;
         Splus(i, i) = 0.5 / s;
         rank++;
