@@ -158,14 +158,17 @@ public:
       auto Splus = correction_matrix_t{ correction_matrix_t::Zero() };
       auto rank = size_t{0};
       for (auto i = size_t{0}; i < singular_values.size(); ++i) {
-        auto s = singular_values(i);
-        if( s < 5e-2 * trace ) // 5% of the total variance cut-off
+        if( sv_sum > 0.95 * trace )
           continue;
+        auto s = singular_values(i);
+        // if( s < 5e-2 * trace ) // 5% of the total variance cut-off
+        //   continue;
         Splus(i, i) = 0.5 / s;
         rank++;
-        sv_sum += sqrt( s );
+        sv_sum+=s;
       }
-      std::cout << "\nrank: " << rank << " rank approx: " << approx_rank << "\n\n";
+      std::cout << "\nrank: " << rank << " rank approx: " << approx_rank << "\n";
+      std::cout << "trace: " << trace << " used trace: " << sv_sum << "\n\n";
       auto Ur = U.leftCols(rank);
       auto Ur1 = correction_matrix_t{ correction_matrix_t::Zero() };
       auto UrUrT = Ur*Ur.transpose();
