@@ -81,7 +81,7 @@ public:
           continue;
         Splus(i, i) = 0.5 / s;
         rank++;
-        sv_sum += sqrt( s );
+        sv_sum += s;
       }
       auto Ur = U.leftCols(rank);
       auto Ur1 = correction_matrix_t{ correction_matrix_t::Zero() };
