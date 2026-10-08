@@ -149,8 +149,6 @@ public:
     return [](const correction_matrix_t& M, double l){
       auto svd = Eigen::JacobiSVD<correction_matrix_t> ( M, Eigen::ComputeThinU | Eigen::ComputeThinV );    
       auto trace = M.trace();
-      auto norm = M.norm();
-      auto approx_rank = trace*trace / norm;
       auto singular_values = svd.singularValues();
       auto sv_sum = double{0.0};
       auto U = svd.matrixU();
@@ -161,13 +159,11 @@ public:
         if( sv_sum > 0.95 * trace )
           continue;
         auto s = singular_values(i);
-        // if( s < 5e-2 * trace ) // 5% of the total variance cut-off
-        //   continue;
         Splus(i, i) = 0.5 / s;
         rank++;
         sv_sum+=s;
       }
-      std::cout << "\nrank: " << rank << " rank approx: " << approx_rank << "\n";
+      std::cout << "\nrank: " << rank << "\n";
       std::cout << "trace: " << trace << " used trace: " << sv_sum << "\n\n";
       auto Ur = U.leftCols(rank);
       auto Ur1 = correction_matrix_t{ correction_matrix_t::Zero() };
