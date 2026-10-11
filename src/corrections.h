@@ -157,7 +157,7 @@ public:
       auto Splus = correction_matrix_t{ correction_matrix_t::Zero() };
       auto rank = size_t{0};
       for (auto i = size_t{0}; i < singular_values.size(); ++i) {
-        if( sv_sum > 0.95 * trace )
+        if( sv_sum > l * trace )
           continue;
         auto s = singular_values(i);
         Splus(i, i) = 0.5 / s;
@@ -512,8 +512,6 @@ private:
         j++;
       }
       auto [Minv, c] = correction_container_[bin];
-      if( std::isnan(Minv(0, 0)) )
-        continue;
       auto Xnew = Minv*( Xold - c );
       j=0;
       for( auto p : old ){
