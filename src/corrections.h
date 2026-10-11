@@ -429,8 +429,6 @@ private:
         j++;
       }
       auto [Minv, c] = correction_container_[bin];
-      if( std::isnan(Minv(0, 0)) )
-        continue;
       auto Xnew = Minv*( Xold - c );
       j=0;
       for( auto p : old ){
