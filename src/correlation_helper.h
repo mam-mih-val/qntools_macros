@@ -77,9 +77,9 @@ private:
       auto bin = thread_results_[slot].FindBin( coord );
       auto weight = static_cast<double>(vec_weights);
       if( bin < 0 )
-          return;
+        return;
       if( bin > thread_results_[slot].size() )
-          return;
+        return;
       if( std::isnan( vec_val ) )
         return;
       thread_results_[slot][ bin ].Fill( vec_val, weight, vec_samples );

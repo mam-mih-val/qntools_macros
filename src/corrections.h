@@ -9,8 +9,10 @@
 #include <iostream>
 #include <functional>
 #include <iterator>
+#include <limits>
 #include <tuple>
 #include <vector>
+#include <type_traits>
 
 #include <Eigen/Dense>
 
@@ -171,9 +173,11 @@ public:
       auto UrUrT = Ur*Ur.transpose();
       for( auto r = size_t{0}; r < Ur.rows(); r++ ){
         for( auto c = size_t{0}; c < Ur.cols(); c++ ){
-          Ur1(r, c) = Ur(r, c) / UrUrT(r, r);
           if( fabs( UrUrT(r, r) ) < 5e-2 )
-            Ur1(r, c) = std::nan("");
+            continue;
+          Ur1(r, c) = Ur(r, c) / UrUrT(r, r);
+          // if( fabs( UrUrT(r, r) ) < 5e-2 )
+          //   Ur1(r, c) = std::nan("");
         }
       }
       auto Mpinv = correction_matrix_t{ Ur1 * Splus * U.transpose() };
@@ -314,6 +318,8 @@ inline auto ReadMeanCov( std::string str_vec_name, TFile* calib_file ) -> std::t
 
 template<size_t NHARM, typename CorrectionFunc> 
 auto MakeMixingMatrix( const std::vector<Qn::StatCalculate>& vec_stat_mean, const std::vector<Qn::StatCalculate>& vec_stat_cov, const CorrectionFunc& correction_func ) -> mixing_matrix_t<NHARM*2> {
+  if( vec_stat_mean.front().SumWeights() < std::numeric_limits<double>::epsilon() )
+    return mixing_matrix_t<NHARM*2>{ mixing_matrix_t<NHARM*2>::Identity() };
   auto vec_means_double = std::vector<double>{};
   vec_means_double.reserve( vec_stat_mean.size() );
   std::for_each( vec_stat_mean.begin(), vec_stat_mean.end(), [&vec_means_double](const auto& stat) mutable { vec_means_double.push_back( stat.Mean() ); } );
@@ -381,7 +387,8 @@ auto EstimateVarianceEV( const std::vector<Qn::StatCalculate>& vec_stat_mean, co
     auto sumwx2 = stat.sumwx2;
     auto sumw = stat.sumw;
     auto entries = stat.entries;
-
+    if( entries <= 1 )
+      variance(i) = 0;
     auto mean = sumwx / sumw;
     auto mean2 = sumwx2 / sumw;
     variance(i) = std::sqrt( ( mean2 - mean*mean ) / (entries - 1.) ); 
