@@ -389,7 +389,7 @@ auto EstimateVarianceEV( const std::vector<Qn::StatCalculate>& vec_stat_mean, co
     auto entries = stat.entries;
     if( entries <= 1 ){
       variance(i) = 0;
-      continue;
+      return;
     }
     auto mean = sumwx / sumw;
     auto mean2 = sumwx2 / sumw;
