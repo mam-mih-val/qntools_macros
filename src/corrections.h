@@ -229,7 +229,7 @@ public:
         auto s = singular_values(i);
         auto s_var = sv_variance(i);
         auto s_err = sqrt( s_var - s*s );
-        if( (s_err / s) > l )
+        if( s < l )
           continue;
         Splus(i, i) = 1.0 / s;
         rank++;
