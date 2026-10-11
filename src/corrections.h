@@ -419,6 +419,7 @@ auto MakeCorrectionContainer( std::vector<Qn::DataContainerStatCalculate> vec_me
     std::for_each( vec_means_stat.begin(), vec_means_stat.end(), [i=size_t{}, &c](auto m) mutable { c(i) = m.Mean(); ++i; } );
     correction_container[bin] = std::tie( Minv, c );
   }
+  std::cout << "HERA" << std::endl;
   return correction_container;
 }
 
