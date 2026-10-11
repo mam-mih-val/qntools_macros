@@ -387,8 +387,10 @@ auto EstimateVarianceEV( const std::vector<Qn::StatCalculate>& vec_stat_mean, co
     auto sumwx2 = stat.sumwx2;
     auto sumw = stat.sumw;
     auto entries = stat.entries;
-    if( entries <= 1 )
+    if( entries <= 1 ){
       variance(i) = 0;
+      continue;
+    }
     auto mean = sumwx / sumw;
     auto mean2 = sumwx2 / sumw;
     variance(i) = std::sqrt( ( mean2 - mean*mean ) / (entries - 1.) ); 
@@ -529,6 +531,7 @@ private:
         j++;
       }
     }
+    std::cout << "here" << std::endl;
     return result;
   }
   template<typename T, typename... ColumnTypes>

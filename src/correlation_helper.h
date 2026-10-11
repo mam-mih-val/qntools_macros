@@ -80,8 +80,8 @@ private:
         return;
       if( bin > thread_results_[slot].size() )
         return;
-      if( std::isnan( vec_val ) )
-        return;
+      // if( std::isnan( vec_val ) )
+      //   return;
       thread_results_[slot][ bin ].Fill( vec_val, weight, vec_samples );
     } 
     else {
@@ -94,8 +94,8 @@ private:
           continue;
         if( bin < 0 )
           continue;
-        if( std::isnan(val) )
-          continue;
+        // if( std::isnan(val) )
+        //   continue;
         thread_results_[slot][ bin ].Fill( val, weight, vec_samples );
       }
     }
