@@ -416,7 +416,7 @@ auto MakeCorrectionContainer( std::vector<Qn::DataContainerStatCalculate> vec_me
     auto lambda_var = EstimateVarianceEV<NHARM, CorrectionFunc>( vec_means_stat, vec_cov_stat, correction_func );
     auto Minv = pseudo_inverse_function(M, lambda_var, l);
     auto c = column_t<NHARM*2>{};
-    std::for_each( vec_means_stat.begin(), vec_means_stat.end(), [i=size_t{}, &c](auto m) mutable { c(i) = m.Mean(); ++i; } );
+    std::for_each( vec_mean.begin(), vec_mean.end(), [i=size_t{0}, bin, &c](auto m) mutable { c(i) = m[bin].Mean(); ++i; } );
     correction_container[bin] = std::tie( Minv, c );
   }
   std::cout << "HERA" << std::endl;
