@@ -326,7 +326,7 @@ auto MakeMixingMatrix( const std::vector<Qn::StatCalculate>& vec_stat_mean, cons
   auto vec_cov_double = std::vector<double>{};
   vec_cov_double.reserve( vec_stat_cov.size() );
   std::for_each( vec_stat_cov.begin(), vec_stat_cov.end(), [&vec_cov_double](const auto& stat) mutable { vec_cov_double.push_back( stat.Mean() ); } );
-  auto mixing_matrix_function = CorrectionFunc::MixingMatrix();
+  const auto& mixing_matrix_function = CorrectionFunc::MixingMatrix();
   auto M = mixing_matrix_function( vec_means_double, vec_cov_double );
   return M;
 }
@@ -364,7 +364,7 @@ auto EstimateVarianceEV( const std::vector<Qn::StatCalculate>& vec_stat_mean, co
   };
   using correction_matrix_t = Eigen::Matrix<double, NHARM*2, NHARM*2>;
   auto vec_statistics = std::vector<statistic>( 2*NHARM );
-  auto mixing_matrix_function = CorrectionFunc::MixingMatrix();
+  const auto& mixing_matrix_function = CorrectionFunc::MixingMatrix();
   auto [v2_mean_v, v2_mean_w] = ExtractBootstrapSamplesMeanWeights(vec_stat_mean);
   auto [v2_cov_v, v2_cov_w] = ExtractBootstrapSamplesMeanWeights(vec_stat_cov);
   auto nsamples = v2_mean_v.size();
@@ -404,7 +404,7 @@ auto MakeCorrectionContainer( std::vector<Qn::DataContainerStatCalculate> vec_me
   auto n_bins = vec_mean.front().size();
   auto axes = vec_mean.front().GetAxes();
   auto correction_container = correction_container_t<NHARM*2>{ axes };
-  auto pseudo_inverse_function = CorrectionFunc::PseudoInverse();
+  const auto& pseudo_inverse_function = CorrectionFunc::PseudoInverse();
   for(auto bin=size_t{}; bin < n_bins; ++bin ){
     auto vec_means_stat = std::vector<Qn::StatCalculate>{};
     vec_means_stat.reserve( vec_mean.size() );
