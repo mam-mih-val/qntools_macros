@@ -121,9 +121,13 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   // sampled_d = sampled_d.Define( "rec_proton", p_rec_builder.IssueUVectorCorrector<uvector_t, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >(), { "ini_proton", "centrality", "trProtonY", "trPt" } );
   
   auto [vec_f1_mean, vec_f1_cov] = ReadMeanCov<2*Q_NHARM>("F1", calib_file.get());
+  std::cout << "Here 1" << std::endl;
   auto f1_correction_container = MakeCorrectionContainer<Q_NHARM>( vec_f1_mean, vec_f1_cov, TwistRescale<Q_NHARM>{}, l );
+  std::cout << "Here 2" << std::endl;
   auto f1_corr_builder = CorrectorBuilder<Q_NHARM>( f1_correction_container );
+  std::cout << "Here 3" << std::endl;
   sampled_d = sampled_d.Define( "F1", f1_corr_builder.IssueQVectorCorrector<qvector_t, float>(), { "ini_F1", "centrality" } );
+  std::cout << "Here 4" << std::endl;
 
   auto [vec_f2_mean, vec_f2_cov] = ReadMeanCov<2*Q_NHARM>("F2", calib_file.get());
   auto f2_correction_container = MakeCorrectionContainer<Q_NHARM>( vec_f2_mean, vec_f2_cov, TwistRescale<Q_NHARM>{}, l );
