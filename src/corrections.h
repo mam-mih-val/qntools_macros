@@ -9,10 +9,7 @@
 #include <iostream>
 #include <functional>
 #include <iterator>
-#include <limits>
-#include <tuple>
 #include <vector>
-#include <type_traits>
 
 #include <Eigen/Dense>
 
@@ -148,8 +145,8 @@ public:
     };
   }
 
-  static auto PseudoInverse() -> std::function< correction_matrix_t( correction_matrix_t, column_t<NHARM*2>, double ) > {
-    return [](const correction_matrix_t& M, column_t<NHARM*2> sv_variance, double l){
+  static auto PseudoInverse() -> std::function< correction_matrix_t( correction_matrix_t, double ) > {
+    return [](const correction_matrix_t& M, double l){
       auto svd = Eigen::JacobiSVD<correction_matrix_t> ( M, Eigen::ComputeThinU | Eigen::ComputeThinV );    
       auto trace = M.trace();
       auto singular_values = svd.singularValues();
@@ -173,17 +170,13 @@ public:
       auto UrUrT = Ur*Ur.transpose();
       for( auto r = size_t{0}; r < Ur.rows(); r++ ){
         for( auto c = size_t{0}; c < Ur.cols(); c++ ){
-          if( fabs( UrUrT(r, r) ) < 5e-2 )
-            continue;
           Ur1(r, c) = Ur(r, c) / UrUrT(r, r);
-          // if( fabs( UrUrT(r, r) ) < 5e-2 )
-          //   Ur1(r, c) = std::nan("");
+          if( fabs( UrUrT(r, r) ) < 5e-2 ) 
+            Ur1(r, c) = std::nan("");
         }
       }
       auto Mpinv = correction_matrix_t{ Ur1 * Splus * U.transpose() };
-      std::cout << "l: " << l << "\nMatrix M:\n" << M << "\n";
-      std::cout << "S: " << singular_values.transpose() << "\nV: " << sv_variance.transpose() << "\n";
-      std::cout << "\nMatrix S:\n" << Splus << "\nInverse:\n" << Mpinv << "\nE:\n" << Ur1 << "\nUrUr^T\n" << UrUrT << "\n\n";
+      std::cout << "l: " << l << "\nMatrix M:\n" << M << "\nMatrix U:\n" << Ur << "\nS: " << singular_values.transpose() << "\nMatrix S:\n" << Splus << "\nInverse:\n" << Mpinv << "\nE:\n" << Ur1 << "\nUrUr^T\n" << UrUrT << "\n\n";
       return Mpinv;
     };
   }
@@ -217,8 +210,8 @@ public:
     };
   }
 
-  static auto PseudoInverse() -> std::function< correction_matrix_t( correction_matrix_t, column_t<NHARM*2>, double ) > {
-    return [](const correction_matrix_t& M, column_t<NHARM*2> sv_variance, double l){
+  static auto PseudoInverse() -> std::function< correction_matrix_t( correction_matrix_t, double ) > {
+    return [](const correction_matrix_t& M, double l){
       auto svd = Eigen::JacobiSVD<correction_matrix_t> ( M, Eigen::ComputeThinU | Eigen::ComputeThinV );    
       auto singular_values = svd.singularValues();
       auto U = svd.matrixU();
@@ -227,8 +220,6 @@ public:
       auto rank = size_t{0};
       for (auto i = size_t{0}; i < singular_values.size(); ++i) {
         auto s = singular_values(i);
-        auto s_var = sv_variance(i);
-        auto s_err = sqrt( s_var - s*s );
         if( s < l )
           continue;
         Splus(i, i) = 1.0 / s;
@@ -317,109 +308,25 @@ inline auto ReadMeanCov( std::string str_vec_name, TFile* calib_file ) -> std::t
 }
 
 template<size_t NHARM, typename CorrectionFunc> 
-auto MakeMixingMatrix( const std::vector<Qn::StatCalculate>& vec_stat_mean, const std::vector<Qn::StatCalculate>& vec_stat_cov, const CorrectionFunc& correction_func ) -> mixing_matrix_t<NHARM*2> {
-  if( vec_stat_mean.front().SumWeights() < std::numeric_limits<double>::epsilon() )
-    return mixing_matrix_t<NHARM*2>{ mixing_matrix_t<NHARM*2>::Identity() };
-  auto vec_means_double = std::vector<double>{};
-  vec_means_double.reserve( vec_stat_mean.size() );
-  std::for_each( vec_stat_mean.begin(), vec_stat_mean.end(), [&vec_means_double](const auto& stat) mutable { vec_means_double.push_back( stat.Mean() ); } );
-  auto vec_cov_double = std::vector<double>{};
-  vec_cov_double.reserve( vec_stat_cov.size() );
-  std::for_each( vec_stat_cov.begin(), vec_stat_cov.end(), [&vec_cov_double](const auto& stat) mutable { vec_cov_double.push_back( stat.Mean() ); } );
-  const auto& mixing_matrix_function = CorrectionFunc::MixingMatrix();
-  auto M = mixing_matrix_function( vec_means_double, vec_cov_double );
-  return M;
-}
-
-auto ExtractBootstrapSamplesMeanWeights(const std::vector<Qn::StatCalculate>& vec_stat ) -> std::tuple<  std::vector<std::vector<double>>,  std::vector<std::vector<double>> > {
-  auto v2_means = std::vector<std::vector<double>>{};
-  v2_means.reserve( vec_stat.size() );
-  auto v2_weights = std::vector<std::vector<double>>{};
-  v2_weights.reserve( vec_stat.size() );
-  std::for_each( vec_stat.begin(), vec_stat.end(), [&v2_means, &v2_weights](const auto& stat) mutable { 
-    v2_means.push_back( stat.GetSampleMeans() );
-    v2_weights.push_back( stat.GetSampleWeights() );
-  } );
-  auto n_samples = v2_means.front().size();
-  auto v2_means_T = std::vector<std::vector<double>>( n_samples );
-  auto v2_weights_T = std::vector<std::vector<double>>( n_samples );
-  for( auto i=size_t{}; i<n_samples; ++i ){
-    v2_means_T.reserve( vec_stat.size() );
-    v2_weights_T.reserve( vec_stat.size() );
-    for( auto j=size_t{}; j<vec_stat.size(); ++j ){
-      v2_means_T[i].push_back( v2_means[j][i] );
-      v2_weights_T[i].push_back( v2_weights[j][i] );
-    }
-  }
-  return std::tie( v2_means_T, v2_weights_T );
-}
-
-template<size_t NHARM, typename CorrectionFunc> 
-auto EstimateVarianceEV( const std::vector<Qn::StatCalculate>& vec_stat_mean, const std::vector<Qn::StatCalculate>& vec_stat_cov, const CorrectionFunc& correction_func ) -> column_t<NHARM*2> {
-  struct statistic{
-    double sumw{0};
-    double sumwx{0};
-    double sumwx2{0};
-    size_t entries{0};
-  };
-  using correction_matrix_t = Eigen::Matrix<double, NHARM*2, NHARM*2>;
-  auto vec_statistics = std::vector<statistic>( 2*NHARM );
-  const auto& mixing_matrix_function = CorrectionFunc::MixingMatrix();
-  auto [v2_mean_v, v2_mean_w] = ExtractBootstrapSamplesMeanWeights(vec_stat_mean);
-  auto [v2_cov_v, v2_cov_w] = ExtractBootstrapSamplesMeanWeights(vec_stat_cov);
-  auto nsamples = v2_mean_v.size();
-
-  for( auto i=size_t{0}; i<nsamples; ++i ){
-    auto M = mixing_matrix_function( v2_mean_v[i], v2_cov_v[i] );
-    auto svd = Eigen::JacobiSVD<correction_matrix_t> ( M, Eigen::ComputeThinU | Eigen::ComputeThinV );    
-    auto singular_values = svd.singularValues();
-    for( auto j=size_t{}; j<singular_values.size(); ++j ){
-      vec_statistics[j].sumwx += singular_values(j);
-      vec_statistics[j].sumwx2 += singular_values(j)*singular_values(j);
-      vec_statistics[j].sumw += 1;
-      vec_statistics[j].entries += 1;
-    }
-  }
-
-  auto variance = column_t<NHARM*2>{};
-  std::for_each( vec_statistics.begin(), vec_statistics.end(), [i=0, &variance]( auto& stat ) mutable { 
-    auto sumwx = stat.sumwx;
-    auto sumwx2 = stat.sumwx2;
-    auto sumw = stat.sumw;
-    auto entries = stat.entries;
-    if( entries <= 1 ){
-      variance(i) = 0;
-      return;
-    }
-    auto mean = sumwx / sumw;
-    auto mean2 = sumwx2 / sumw;
-    variance(i) = std::sqrt( ( mean2 - mean*mean ) / (entries - 1.) ); 
-    i++; 
-  } );
-  return variance;
-}
-
-template<size_t NHARM, typename CorrectionFunc> 
 auto MakeCorrectionContainer( std::vector<Qn::DataContainerStatCalculate> vec_mean, std::vector<Qn::DataContainerStatCalculate> vec_cov, const CorrectionFunc& correction_func, const double l=5e-3 ) -> correction_container_t<NHARM*2> {
   auto n_bins = vec_mean.front().size();
   auto axes = vec_mean.front().GetAxes();
   auto correction_container = correction_container_t<NHARM*2>{ axes };
-  const auto& pseudo_inverse_function = CorrectionFunc::PseudoInverse();
+  auto mixing_matrix_function = CorrectionFunc::MixingMatrix();
+  auto pseudo_inverse_function = CorrectionFunc::PseudoInverse();
   for(auto bin=size_t{}; bin < n_bins; ++bin ){
-    auto vec_means_stat = std::vector<Qn::StatCalculate>{};
-    vec_means_stat.reserve( vec_mean.size() );
-    std::for_each( vec_mean.begin(), vec_mean.end(), [bin, &vec_means_stat](const auto& c) mutable { vec_means_stat.push_back( c[bin] ); } );
-    auto vec_cov_stat = std::vector<Qn::StatCalculate>{};
-    vec_cov_stat.reserve( vec_cov.size() );
-    std::for_each( vec_cov.begin(), vec_cov.end(), [bin, &vec_cov_stat](const auto& c) mutable { vec_cov_stat.push_back( c[bin] ); } );
-    auto M = MakeMixingMatrix<NHARM, CorrectionFunc>( vec_means_stat, vec_cov_stat, correction_func );
-    auto lambda_var = EstimateVarianceEV<NHARM, CorrectionFunc>( vec_means_stat, vec_cov_stat, correction_func );
-    auto Minv = pseudo_inverse_function(M, lambda_var, l);
+    auto vec_means_double = std::vector<double>{};
+    vec_means_double.reserve( vec_mean.size() );
+    std::for_each( vec_mean.begin(), vec_mean.end(), [bin, &vec_means_double](const auto& c) mutable { vec_means_double.push_back( c[bin].Mean() ); } );
+    auto vec_cov_double = std::vector<double>{};
+    vec_cov_double.reserve( vec_cov.size() );
+    std::for_each( vec_cov.begin(), vec_cov.end(), [bin, &vec_cov_double](const auto& c) mutable { vec_cov_double.push_back( c[bin].Mean() ); } );
+    auto M = mixing_matrix_function( vec_means_double, vec_cov_double );
+    auto Minv = pseudo_inverse_function(M, l);
     auto c = column_t<NHARM*2>{};
-    std::for_each( vec_mean.begin(), vec_mean.end(), [i=size_t{0}, bin, &c](auto m) mutable { c(i) = m[bin].Mean(); ++i; } );
+    std::for_each( vec_means_double.begin(), vec_means_double.end(), [i=size_t{}, &c](auto m) mutable { c(i) = m; ++i; } );
     correction_container[bin] = std::tie( Minv, c );
   }
-  std::cout << "HERA" << std::endl;
   return correction_container;
 }
 
@@ -522,6 +429,8 @@ private:
         j++;
       }
       auto [Minv, c] = correction_container_[bin];
+      if( std::isnan(Minv(0, 0)) )
+        continue;
       auto Xnew = Minv*( Xold - c );
       j=0;
       for( auto p : old ){
@@ -532,7 +441,6 @@ private:
         j++;
       }
     }
-    std::cout << "here" << std::endl;
     return result;
   }
   template<typename T, typename... ColumnTypes>
