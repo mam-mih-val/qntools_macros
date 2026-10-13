@@ -204,6 +204,11 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
     // .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{"tru_proton", "psi_rp"}, {1, 1} }, tru_proton_weight, tru_proton_axes)
     // .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{"tru_proton", "psi_rp"}, {2, 2} }, tru_proton_weight, tru_proton_axes)
     
+    .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t, qvector_t>{ std::vector<std::string>{ "pca_proton", "F1" }, { 1, 1 } }, proton_weight, proton_axes)
+    .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t, qvector_t>{ std::vector<std::string>{ "pca_proton", "F2" }, { 1, 1 } }, proton_weight, proton_axes)
+    .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t, qvector_t>{ std::vector<std::string>{ "pca_proton", "F3" }, { 1, 1 } }, proton_weight, proton_axes)
+    .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t, qvector_t>{ std::vector<std::string>{ "pca_proton", "F4" }, { 1, 1 } }, proton_weight, proton_axes)
+
     .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"pca_proton", "F1", "F3"}, {2, 1, 1} }, proton_weight, proton_axes)
     .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"pca_proton", "F1", "F4"}, {2, 1, 1} }, proton_weight, proton_axes)
     .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"pca_proton", "F2", "F4"}, {2, 1, 1} }, proton_weight, proton_axes)
