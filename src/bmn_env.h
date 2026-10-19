@@ -265,6 +265,8 @@ const auto proton_weight = [](
       continue;
     if( vec_r[i] > 3.0 )
       continue;
+    if( vec_eta[i] > 3 )
+      continue;
     if( -30 <  vec_fhcal_x[i]  && vec_fhcal_x[i] < 160 &&
         -60 < vec_fhcal_y[i] && vec_fhcal_y[i] < 60   )
       continue;
@@ -627,9 +629,9 @@ const auto GenerateBmnExtendedTreeMC(DataFrame& d, TH2* efficiency_histo){
     .Define( "trTposW", tpos_weight, {"trEta", "trPt", "pq", "trDcaR", "trStsNhits", "trStsChi2", "trFhcalX", "trFhcalY"} )
     .Define( "trTnegW", tneg_weight, {"trEta", "trPt", "pq", "trDcaR", "trStsNhits", "trStsChi2", "trFhcalX", "trFhcalY"} )
     
-    .Define( "trT1W", eta_cut(5, 6), {"trEta"} )
-    .Define( "trT2W", eta_cut(6, 7), {"trEta"} )
-    .Define( "trT3W", eta_cut(7, 10), {"trEta"} )
+    .Define( "trT1W", eta_cut(4, 4.5), {"trEta"} )
+    .Define( "trT2W", eta_cut(4.5, 5.5), {"trEta"} )
+    .Define( "trT3W", eta_cut(5.6, 10), {"trEta"} )
     
     .Define( "One", "return static_cast<double>(1.0)" )
     // .Range( 1000 )

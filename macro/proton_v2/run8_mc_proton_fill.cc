@@ -66,23 +66,19 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
   };
 
   std::vector<int> f2_mod = {
-    1, 2,
-    6, 7 
+    1, 2, 3,
+    6, 7, 8,
+
+
+
+    25, 26, 27,
+    30, 31, 32
   };
 
   std::vector<int> f3_mod = {
-    25, 26,
-    30, 31 
-  };
-
-  std::vector<int> f4_mod = {
-    35, 36,
-    37, 38 
-  };
-
-  std::vector<int> f5_mod = {
+    37, 38,
+    39, 40,
     41, 42,
-    43, 44 
   };
 
   auto harmonics = std::vector<size_t>( 4 );
@@ -114,14 +110,10 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
   sampled_d = sampled_d.Define( "F1w", fhcal_weight_generator(f1_mod), { "fhcalModId", "fhcalModE" } );
   sampled_d = sampled_d.Define( "F2w", fhcal_weight_generator(f2_mod), { "fhcalModId", "fhcalModE" } );
   sampled_d = sampled_d.Define( "F3w", fhcal_weight_generator(f3_mod), { "fhcalModId", "fhcalModE" } );
-  sampled_d = sampled_d.Define( "F4w", fhcal_weight_generator(f4_mod), { "fhcalModId", "fhcalModE" } );
-  sampled_d = sampled_d.Define( "F5w", fhcal_weight_generator(f5_mod), { "fhcalModId", "fhcalModE" } );
 
   DefineVector( sampled_d, "F1", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"fhcalModPhi", "F1w"} );
   DefineVector( sampled_d, "F2", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"fhcalModPhi", "F2w"} );
   DefineVector( sampled_d, "F3", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"fhcalModPhi", "F3w"} );
-  DefineVector( sampled_d, "F4", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"fhcalModPhi", "F4w"} );
-  DefineVector( sampled_d, "F5", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"fhcalModPhi", "F5w"} );
   
   DefineVector( sampled_d, "T1", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"trPhi", "trT1W"} );
   DefineVector( sampled_d, "T2", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"trPhi", "trT2W"} );
@@ -159,35 +151,29 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
     .AddComponentMeans( Vector<uvector_t>{ "proton" }, harmonics, proton_weight, proton_axes)
     .AddComponentCovariance( Vector<uvector_t>{ "proton" }, harmonics, proton_weight, proton_axes)
 
-    .AddComponentMeans( Vector<qvector_t>{ "F1" }, qvector_harmonics, qvector_weight, qvector_axes)
-    .AddComponentCovariance( Vector<qvector_t>{ "F1" }, qvector_harmonics, qvector_weight, qvector_axes)
+    .AddComponentMeans( Vector<qvector_t>{ "F1" }, qvector_harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddComponentCovariance( Vector<qvector_t>{ "F1" }, qvector_harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
 
-    .AddComponentMeans( Vector<qvector_t>{ "F2" }, qvector_harmonics, qvector_weight, qvector_axes)
-    .AddComponentCovariance( Vector<qvector_t>{ "F2" }, qvector_harmonics, qvector_weight, qvector_axes)
+    .AddComponentMeans( Vector<qvector_t>{ "F2" }, qvector_harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddComponentCovariance( Vector<qvector_t>{ "F2" }, qvector_harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
 
-    .AddComponentMeans( Vector<qvector_t>{ "F3" }, qvector_harmonics, qvector_weight, qvector_axes)
-    .AddComponentCovariance( Vector<qvector_t>{ "F3" }, qvector_harmonics, qvector_weight, qvector_axes)
+    .AddComponentMeans( Vector<qvector_t>{ "F3" }, qvector_harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddComponentCovariance( Vector<qvector_t>{ "F3" }, qvector_harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
 
-    .AddComponentMeans( Vector<qvector_t>{ "F4" }, qvector_harmonics, qvector_weight, qvector_axes)
-    .AddComponentCovariance( Vector<qvector_t>{ "F4" }, qvector_harmonics, qvector_weight, qvector_axes)
+    .AddComponentMeans( Vector<qvector_t>{ "T1" }, qvector_harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddComponentCovariance( Vector<qvector_t>{ "T1" }, qvector_harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
 
-    .AddComponentMeans( Vector<qvector_t>{ "F5" }, qvector_harmonics, qvector_weight, qvector_axes)
-    .AddComponentCovariance( Vector<qvector_t>{ "F5" }, qvector_harmonics, qvector_weight, qvector_axes)
+    .AddComponentMeans( Vector<qvector_t>{ "T2" }, qvector_harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddComponentCovariance( Vector<qvector_t>{ "T2" }, qvector_harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
 
-    .AddComponentMeans( Vector<qvector_t>{ "T1" }, qvector_harmonics, qvector_weight, qvector_axes)
-    .AddComponentCovariance( Vector<qvector_t>{ "T1" }, qvector_harmonics, qvector_weight, qvector_axes)
+    .AddComponentMeans( Vector<qvector_t>{ "T3" }, qvector_harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddComponentCovariance( Vector<qvector_t>{ "T3" }, qvector_harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
 
-    .AddComponentMeans( Vector<qvector_t>{ "T2" }, qvector_harmonics, qvector_weight, qvector_axes)
-    .AddComponentCovariance( Vector<qvector_t>{ "T2" }, qvector_harmonics, qvector_weight, qvector_axes)
+    .AddComponentMeans( Vector<qvector_t>{ "Tpos" }, qvector_harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddComponentCovariance( Vector<qvector_t>{ "Tpos" }, qvector_harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
 
-    .AddComponentMeans( Vector<qvector_t>{ "T3" }, qvector_harmonics, qvector_weight, qvector_axes)
-    .AddComponentCovariance( Vector<qvector_t>{ "T3" }, qvector_harmonics, qvector_weight, qvector_axes)
-
-    .AddComponentMeans( Vector<qvector_t>{ "Tpos" }, qvector_harmonics, qvector_weight, qvector_axes)
-    .AddComponentCovariance( Vector<qvector_t>{ "Tpos" }, qvector_harmonics, qvector_weight, qvector_axes)
-
-    .AddComponentMeans( Vector<qvector_t>{ "Tneg" }, qvector_harmonics, qvector_weight, qvector_axes)
-    .AddComponentCovariance( Vector<qvector_t>{ "Tneg" }, qvector_harmonics, qvector_weight, qvector_axes)
+    .AddComponentMeans( Vector<qvector_t>{ "Tneg" }, qvector_harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddComponentCovariance( Vector<qvector_t>{ "Tneg" }, qvector_harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
     
   ;
 
