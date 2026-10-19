@@ -130,6 +130,8 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
   DefineVector( sampled_d, "Tpos", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"trPhi", "trTposW"} );
   DefineVector( sampled_d, "Tneg", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"trPhi", "trTnegW"} );
 
+  DefineVector(sampled_d, "proton", u_vector< std::vector<float> >( harmonics ), std::vector<std::string>{"trPhi"s} );
+
   auto proton_axes = CorrelationAxes<float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float>>{
     .axes_columns={ "centrality", "trProtonY", "trPt" },
     .axes=std::vector<Qn::AxisD>{
