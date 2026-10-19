@@ -414,7 +414,7 @@ public:
     for( const auto& name : vec_corr_names ){
       auto vec_columns = std::vector< std::string > { name, weight.weight_column, "samples" };
       vec_columns.insert( vec_columns.end(), axes.axes_columns.begin(), axes.axes_columns.end() );
-      if constexpr ( std::is_same_v<qvector_t, typename Vector_t>  ) {
+      if constexpr ( std::is_same_v<qvector_t, Vector_t>  ) {
         result_ptrs_.emplace_back(
           dataframe_.template Book< double, Weight_t, ROOT::RVec<ULong64_t>, Axes_t...>( CorrelationHelper( axes.axes, n_samples_, correlation_weight_type ), vec_columns )
         );
@@ -434,7 +434,7 @@ public:
     for( const auto& name : vec_corr_names ){
       auto vec_columns = std::vector< std::string > { name, weight.weight_column, "samples" };
       vec_columns.insert( vec_columns.end(), axes.axes_columns.begin(), axes.axes_columns.end() );
-      if constexpr ( std::is_same_v<qvector_t, typename Vector_t>  ) {
+      if constexpr ( std::is_same_v<qvector_t, Vector_t>  ) {
         result_ptrs_.emplace_back(
           dataframe_.template Book< double, Weight_t, ROOT::RVec<ULong64_t>, Axes_t...>( CorrelationHelper( axes.axes, n_samples_, correlation_weight_type ), vec_columns )
         );
