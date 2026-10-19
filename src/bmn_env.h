@@ -340,6 +340,19 @@ const auto tpos_weight = [](
   return weights;
 };
 
+const auto eta_cut = [](double eta1, double eta2){
+  return [eta1, eta2]( std::vector<float>  vec_eta ){
+    auto weights = std::vector<double>( vec_eta.size(), 0.0 );
+    for(auto i=size_t{}; i<vec_eta.size(); ++i){
+      if( vec_eta[i] < eta1 )
+        continue;
+      if( vec_eta[i] > eta2 )    
+      weights[i] = 1.0;
+    }
+    return weights;
+  };
+};
+
 const auto tneg_weight = []( 
   std::vector<float>       vec_eta, 
   ROOT::VecOps::RVec<float> vec_pT, 
@@ -613,6 +626,11 @@ const auto GenerateBmnExtendedTreeMC(DataFrame& d, TH2* efficiency_histo){
     .Define( "trProtonWeight", proton_weight, {"trIsProton", "trProtonEfficiency", "trHasAnyTofHit", "trDcaR", "trStsNhits", "trStsChi2", "trEta", "trFhcalX", "trFhcalY"} )
     .Define( "trTposW", tpos_weight, {"trEta", "trPt", "pq", "trDcaR", "trStsNhits", "trStsChi2", "trFhcalX", "trFhcalY"} )
     .Define( "trTnegW", tneg_weight, {"trEta", "trPt", "pq", "trDcaR", "trStsNhits", "trStsChi2", "trFhcalX", "trFhcalY"} )
+    
+    .Define( "trT1W", eta_cut(5, 6), {"trEta"} )
+    .Define( "trT2W", eta_cut(6, 7), {"trEta"} )
+    .Define( "trT3W", eta_cut(7, 10), {"trEta"} )
+    
     .Define( "One", "return static_cast<double>(1.0)" )
     // .Range( 1000 )
 

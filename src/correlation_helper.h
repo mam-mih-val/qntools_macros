@@ -376,6 +376,13 @@ struct Weight{
   std::string weight_column{};
 };
 
+template<typename Column_t>
+struct Vector{
+  std::string vector_column{};
+};
+
+
+
 template<typename DF>
 class CorrelationHandler{
 public:
@@ -384,6 +391,46 @@ public:
   template<typename Decorator_t, typename Weight_t, typename... Axes_t>
   auto AddCorrelation( const Decorator_t& decorator, const Weight<Weight_t>& weight, const CorrelationAxes<Axes_t...>& axes, Qn::Stat::WeightType correlation_weight_type = Qn::Stat::WeightType::OBSERVABLE ) -> CorrelationHandler& {
     auto vec_corr_names = decorator( dataframe_ );
+    for( const auto& name : vec_corr_names ){
+      auto vec_columns = std::vector< std::string > { name, weight.weight_column, "samples" };
+      vec_columns.insert( vec_columns.end(), axes.axes_columns.begin(), axes.axes_columns.end() );
+      if constexpr ( std::is_same_v<qvector_t, typename Decorator_t::First_t>  ) {
+        result_ptrs_.emplace_back(
+          dataframe_.template Book< double, Weight_t, ROOT::RVec<ULong64_t>, Axes_t...>( CorrelationHelper( axes.axes, n_samples_, correlation_weight_type ), vec_columns )
+        );
+      } else {
+        result_ptrs_.emplace_back(
+          dataframe_.template Book< std::vector<double>, Weight_t, ROOT::RVec<ULong64_t>, Axes_t...>( CorrelationHelper( axes.axes, n_samples_, correlation_weight_type ), vec_columns )
+        );
+      }
+    }
+    result_names_.insert( result_names_.end(), vec_corr_names.begin(), vec_corr_names.end() );
+    return *this;
+  }
+
+  template<typename Vector_t, typename Weight_t, typename... Axes_t>
+  auto AddComponentMeans( const Vector<Vector_t>& vector, const std::vector<size_t>& harmonics, const Weight<Weight_t>& weight, const CorrelationAxes<Axes_t...>& axes, Qn::Stat::WeightType correlation_weight_type = Qn::Stat::WeightType::OBSERVABLE ) -> CorrelationHandler& {
+    auto vec_corr_names = DefineVectorMeans(dataframe_, CorrFunc1Part<Vector_t>{}, vector.vector_column, harmonics );
+    for( const auto& name : vec_corr_names ){
+      auto vec_columns = std::vector< std::string > { name, weight.weight_column, "samples" };
+      vec_columns.insert( vec_columns.end(), axes.axes_columns.begin(), axes.axes_columns.end() );
+      if constexpr ( std::is_same_v<qvector_t, typename Decorator_t::First_t>  ) {
+        result_ptrs_.emplace_back(
+          dataframe_.template Book< double, Weight_t, ROOT::RVec<ULong64_t>, Axes_t...>( CorrelationHelper( axes.axes, n_samples_, correlation_weight_type ), vec_columns )
+        );
+      } else {
+        result_ptrs_.emplace_back(
+          dataframe_.template Book< std::vector<double>, Weight_t, ROOT::RVec<ULong64_t>, Axes_t...>( CorrelationHelper( axes.axes, n_samples_, correlation_weight_type ), vec_columns )
+        );
+      }
+    }
+    result_names_.insert( result_names_.end(), vec_corr_names.begin(), vec_corr_names.end() );
+    return *this;
+  }
+
+  template<typename Vector_t, typename Weight_t, typename... Axes_t>
+  auto AddComponentCovariance( const Vector<Vector_t>& vector, const std::vector<size_t>& harmonics, const Weight<Weight_t>& weight, const CorrelationAxes<Axes_t...>& axes, Qn::Stat::WeightType correlation_weight_type = Qn::Stat::WeightType::OBSERVABLE ) -> CorrelationHandler& {
+    auto vec_corr_names = DefineVectorCovariance(dataframe_, CorrFunc1Part<Vector_t>{}, vector.vector_column, harmonics );
     for( const auto& name : vec_corr_names ){
       auto vec_columns = std::vector< std::string > { name, weight.weight_column, "samples" };
       vec_columns.insert( vec_columns.end(), axes.axes_columns.begin(), axes.axes_columns.end() );
