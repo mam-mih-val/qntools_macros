@@ -182,6 +182,12 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
 
     .AddComponentMeans( Vector<qvector_t>{ "T3" }, qvector_harmonics, qvector_weight, qvector_axes)
     .AddComponentCovariance( Vector<qvector_t>{ "T3" }, qvector_harmonics, qvector_weight, qvector_axes)
+
+    .AddComponentMeans( Vector<qvector_t>{ "Tpos" }, qvector_harmonics, qvector_weight, qvector_axes)
+    .AddComponentCovariance( Vector<qvector_t>{ "Tpos" }, qvector_harmonics, qvector_weight, qvector_axes)
+
+    .AddComponentMeans( Vector<qvector_t>{ "Tneg" }, qvector_harmonics, qvector_weight, qvector_axes)
+    .AddComponentCovariance( Vector<qvector_t>{ "Tneg" }, qvector_harmonics, qvector_weight, qvector_axes)
     
   ;
 
