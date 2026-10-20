@@ -66,9 +66,9 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   // };
 
   std::vector<int> f1_mod = {
-    12, 13, 14,
-    17,         18,
-    21, 22, 23, 
+    11, 12, 13,
+    16, 17,       
+    20, 21, 22
   };
 
   std::vector<int> f2_mod = {
@@ -82,9 +82,11 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   };
 
   std::vector<int> f3_mod = {
-    37, 38,
-    39, 40,
-    41, 42,
+            10,
+    37, 15,
+    39, 19,
+    41, 24,
+            29
   };
 
   // std::for_each( f1_mod.begin(), f1_mod.end(), [](auto& m){ m += 1; } );

@@ -60,9 +60,9 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
   // std::for_each( f4_mod.begin(), f4_mod.end(), [](auto& m){ m += 1; } );
 
   std::vector<int> f1_mod = {
-    12, 13, 14,
-    17,         18,
-    21, 22, 23, 
+    11, 12, 13,
+    16, 17,       
+    20, 21, 22
   };
 
   std::vector<int> f2_mod = {
@@ -76,9 +76,11 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
   };
 
   std::vector<int> f3_mod = {
-    37, 38,
-    39, 40,
-    41, 42,
+            10,
+    37, 15,
+    39, 19,
+    41, 24,
+            29
   };
 
   auto harmonics = std::vector<size_t>( 4 );
