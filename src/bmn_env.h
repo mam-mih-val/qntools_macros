@@ -630,8 +630,8 @@ const auto GenerateBmnExtendedTreeMC(DataFrame& d, TH2* efficiency_histo){
     .Define( "trTnegW", tneg_weight, {"trEta", "trPt", "pq", "trDcaR", "trStsNhits", "trStsChi2", "trFhcalX", "trFhcalY"} )
     
     .Define( "trT1W", eta_cut(4, 4.5), {"trEta"} )
-    .Define( "trT2W", eta_cut(4.5, 5.5), {"trEta"} )
-    .Define( "trT3W", eta_cut(5.6, 10), {"trEta"} )
+    .Define( "trT2W", eta_cut(4.5, 5.0), {"trEta"} )
+    .Define( "trT3W", eta_cut(5, 10), {"trEta"} )
     
     .Define( "One", "return static_cast<double>(1.0)" )
     // .Range( 1000 )
