@@ -162,22 +162,7 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   auto tn_correction_container = MakeCorrectionContainer<Q_NHARM>( vec_tn_mean, vec_tn_cov, TwistRescale<Q_NHARM>{}, l );
   auto tn_corr_builder = CorrectorBuilder<Q_NHARM>( tn_correction_container );
   sampled_d = sampled_d.Define( "Tneg", tn_corr_builder.IssueQVectorCorrector<qvector_t, float>(), { "ini_Tneg", "centrality" } );
-
-  auto [vec_t1_mean, vec_t1_cov] = ReadMeanCov<2*Q_NHARM>("T1", calib_file.get());
-  auto t1_correction_container = MakeCorrectionContainer<Q_NHARM>( vec_t1_mean, vec_t1_cov, TwistRescale<Q_NHARM>{}, l );
-  auto t1_corr_builder = CorrectorBuilder<Q_NHARM>( t1_correction_container );
-  sampled_d = sampled_d.Define( "T1", t1_corr_builder.IssueQVectorCorrector<qvector_t, float>(), { "ini_T1", "centrality" } );
-
-  auto [vec_t2_mean, vec_t2_cov] = ReadMeanCov<2*Q_NHARM>("T2", calib_file.get());
-  auto t2_correction_container = MakeCorrectionContainer<Q_NHARM>( vec_t2_mean, vec_t2_cov, TwistRescale<Q_NHARM>{}, l );
-  auto t2_corr_builder = CorrectorBuilder<Q_NHARM>( t2_correction_container );
-  sampled_d = sampled_d.Define( "T2", t2_corr_builder.IssueQVectorCorrector<qvector_t, float>(), { "ini_T2", "centrality" } );
-
-  auto [vec_t3_mean, vec_t3_cov] = ReadMeanCov<2*Q_NHARM>("T3", calib_file.get());
-  auto t3_correction_container = MakeCorrectionContainer<Q_NHARM>( vec_t3_mean, vec_t3_cov, TwistRescale<Q_NHARM>{}, l );
-  auto t3_corr_builder = CorrectorBuilder<Q_NHARM>( t3_correction_container );
-  sampled_d = sampled_d.Define( "T3", t3_corr_builder.IssueQVectorCorrector<qvector_t, float>(), { "ini_T3", "centrality" } );
-
+  
   auto proton_axes = CorrelationAxes<float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float>>{
     .axes_columns={ "centrality", "trProtonY", "trPt" },
     .axes=std::vector<Qn::AxisD>{
