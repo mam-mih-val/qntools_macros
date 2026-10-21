@@ -323,15 +323,11 @@ const auto tpos_weight = [](
       continue;
     if( vec_eta[i] > 3.0 )
       continue;
-    if( vec_pT[i] < 0.2 )
+    if( vec_pT[i] < 0.5 )
       continue;
     if( vec_pq[i] < 0.0 )
       continue;
-    if( vec_r[i] > 5.0 )
-      continue;
-    if( vec_nhits[i] < 5 )
-      continue;
-    if( vec_chi2[i] > 5 )
+    if( vec_r[i] > 3.0 )
       continue;
     if( -30 <  vec_fhcal_x[i]  && vec_fhcal_x[i] < 160 &&
         -60 < vec_fhcal_y[i] && vec_fhcal_y[i] < 60   )
@@ -375,11 +371,7 @@ const auto tneg_weight = [](
       continue;
     if( vec_pq[i] > 0.0 )
       continue;
-    if( vec_r[i] > 5.0 )
-      continue;
-    if( vec_nhits[i] < 5 )
-      continue;
-    if( vec_chi2[i] > 5 )
+    if( vec_r[i] > 3.0 )
       continue;
     if( -30 <  vec_fhcal_x[i]  && vec_fhcal_x[i] < 160 &&
         -60 < vec_fhcal_y[i] && vec_fhcal_y[i] < 60   )
