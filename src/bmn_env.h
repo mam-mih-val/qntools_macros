@@ -319,17 +319,17 @@ const auto tpos_weight = [](
   ){
   auto weights = std::vector<double>( vec_eta.size(), 0.0 );
   for(auto i=size_t{}; i<vec_eta.size(); ++i){
-    if( vec_eta[i] < 2.0 )
+    if( vec_eta[i] < 1.5 )
       continue;
-    if( vec_eta[i] > 3.0 )
+    if( vec_eta[i] > 2.5 )
       continue;
-    if( vec_pT[i] < 0.5 )
+    if( vec_pT[i] < 1.0 )
       continue;
     if( vec_pq[i] < 0.0 )
       continue;
     if( vec_r[i] > 3.0 )
       continue;
-    if( -30 <  vec_fhcal_x[i]  && vec_fhcal_x[i] < 160 &&
+    if( -40 <  vec_fhcal_x[i]  && vec_fhcal_x[i] < 170 &&
         -60 < vec_fhcal_y[i] && vec_fhcal_y[i] < 60   )
       continue;
     
