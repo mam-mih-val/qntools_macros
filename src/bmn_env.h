@@ -621,7 +621,7 @@ const auto GenerateBmnExtendedTreeMC(DataFrame& d, TH2* efficiency_histo){
     .Define( "simPt", pT, {"simPxCorr", "simPyCorr"} )
     .Define( "simProtonY", rapidity_generator(PROTON_M, Y_CM), {"simPzCorr", "simP"} )
 
-    .Define( "trIsProton", tr_is_particle, {"trSimIndex", "simIsProton"} )
+    .Define( "trIsProton", tr_is_particle, {"trSimIndex", "simIsPrimProton"} )
     // .Define( "trSimPt", tr_sim_val(tr_sim_val_types<ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >{}), {"trSimIndex", "simPt"} )
     // .Define( "trSimProtonY", tr_sim_val(tr_sim_val_types<ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >{}), {"trSimIndex", "simProtonY"} )
     // .Define( "trSimPhi", tr_sim_val(tr_sim_val_types<ROOT::VecOps::RVec<float>, std::vector<float> >{}), {"trSimIndex", "simPhi"} )
