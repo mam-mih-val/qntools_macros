@@ -227,7 +227,7 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
     .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"F4", "psi_rp"}, {1, 1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
   ;
 
-  auto p_psi_names = Define2PartCorrelation( sampled_d, CorrFunc2Part< uvector_t, qvector_t >{}, "proton", "psi_rp", std::vector{ std::pair<size_t, size_t>{1, 1} } );
+  auto p_psi_names = Define2PartCorrelation( sampled_d, CorrFunc2Part< uvector_t, qvector_t >{}, "pca_proton", "psi_rp", std::vector{ std::pair<size_t, size_t>{1, 1} } );
   auto f1_psi_names = Define2PartCorrelation( sampled_d, CorrFunc2Part< qvector_t, qvector_t >{}, "F1", "psi_rp", std::vector{ std::pair<size_t, size_t>{1, 1} } );
 
   auto vec_proton_axes = std::vector<Qn::AxisD>{
