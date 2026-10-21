@@ -174,7 +174,7 @@ const auto is_sim_prim_particle = []( int pdg_code ) {
   };
 };
 
-const auto tr_is_particle = []( ROOT::VecOps::RVec<int> vec_sim_idx, std::vector<int> vec_is_sim_particle ){
+const auto tr_is_particle = []( ROOT::VecOps::RVec<int> vec_sim_idx, std::vector<double> vec_is_sim_particle ){
   auto vec_is = std::vector<int>( vec_sim_idx.size(), 0 );
   for( auto i=size_t{0}; i<vec_sim_idx.size(); ++i ){
     auto idx = vec_sim_idx[i];
@@ -182,7 +182,7 @@ const auto tr_is_particle = []( ROOT::VecOps::RVec<int> vec_sim_idx, std::vector
       continue;
     if( idx < 0 )
       continue;
-    vec_is[i] = vec_is_sim_particle[idx];
+    vec_is[i] = static_cast<int>(vec_is_sim_particle[idx]);
   }
   return vec_is;
 };
