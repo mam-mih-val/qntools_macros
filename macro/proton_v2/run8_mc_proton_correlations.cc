@@ -65,30 +65,6 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
     42,                     53
   };
 
-  // std::vector<int> f1_mod = {
-  //   11, 12, 13,
-  //   16, 17,       
-  //   20, 21, 22
-  // };
-
-  // std::vector<int> f2_mod = {
-  //   1, 2, 3,
-  //   6, 7, 8,
-
-
-
-  //   25, 26, 27,
-  //   30, 31, 32
-  // };
-
-  // std::vector<int> f3_mod = {
-  //           10,
-  //   37, 15,
-  //   39, 19,
-  //   41, 24,
-  //           29
-  // };
-
   std::for_each( f1_mod.begin(), f1_mod.end(), [](auto& m){ m += 1; } );
   std::for_each( f2_mod.begin(), f2_mod.end(), [](auto& m){ m += 1; } );
   std::for_each( f3_mod.begin(), f3_mod.end(), [](auto& m){ m += 1; } );
@@ -115,7 +91,7 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   sampled_d = sampled_d.Define( "F1w", fhcal_weight_generator(f1_mod), { "fhcalModId", "fhcalModE" } );
   sampled_d = sampled_d.Define( "F2w", fhcal_weight_generator(f2_mod), { "fhcalModId", "fhcalModE" } );
   sampled_d = sampled_d.Define( "F3w", fhcal_weight_generator(f3_mod), { "fhcalModId", "fhcalModE" } );
-  sampled_d = sampled_d.Define( "F4w", fhcal_weight_generator(f3_mod), { "fhcalModId", "fhcalModE" } );
+  sampled_d = sampled_d.Define( "F4w", fhcal_weight_generator(f4_mod), { "fhcalModId", "fhcalModE" } );
 
   DefineVector( sampled_d, "ini_F1", q_vector< std::vector<float>, std::vector<double> >(harmonics_q), std::vector<std::string>{"fhcalModPhi", "F1w"} );
   DefineVector( sampled_d, "ini_F2", q_vector< std::vector<float>, std::vector<double> >(harmonics_q), std::vector<std::string>{"fhcalModPhi", "F2w"} );
@@ -244,34 +220,20 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
     .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"F4", "Tneg", "psi_rp"}, {1, 1, 2} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
   ;
 
-  // auto p_psi_names = Define2PartCorrelation( sampled_d, CorrFunc2Part< uvector_t, qvector_t >{}, "pca_proton", "psi_rp", std::vector{ std::pair<size_t, size_t>{1, 1} } );
-  // auto f1_psi_names = Define2PartCorrelation( sampled_d, CorrFunc2Part< qvector_t, qvector_t >{}, "F1", "psi_rp", std::vector{ std::pair<size_t, size_t>{1, 1} } );
+  auto histo1d = std::vector<ROOT::RDF::RResultPtr<::TH1D>>{};
+  auto histo2d = std::vector<ROOT::RDF::RResultPtr<::TH1D>>{};
 
-  // auto vec_proton_axes = std::vector<Qn::AxisD>{
-  //   Qn::AxisD{ "centrality", 6, 0, 60 },
-  //   Qn::AxisD{ "y", 6, 0.0, 1.2 },
-  //   Qn::AxisD{ "pT", 5, 0.0, 2.0 },
-  // };
-  
-  // auto vec_qvector_axes = std::vector<Qn::AxisD>{
-  //   Qn::AxisD{ "centrality", 6, 0, 60 },
-  // };
-
-  // auto p_psi_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
-  // for( const auto& name : p_psi_names ){
-  //   p_psi_ptr.emplace_back(
-  //     sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >( CorrelationHelper(vec_qvector_axes), {name, "trProtonWeight", "samples", "centrality", "trProtonY", "trPt" } )
-  //   ); 
-  // }
-  // auto f1_psi_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
-  // for( const auto& name : f1_psi_names ){
-  //   f1_psi_ptr.emplace_back(
-  //     sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(vec_qvector_axes, 100, Qn::Stat::WeightType::REFERENCE), {name, "One", "samples", "centrality" } )
-  //   ); 
-  // }
+  histo2d.push_back( sampled_d.Histo2D( {"h2_fhcal_x_y_f1", ";x (cm); y (cm)", 300, -50, 250, 200, -100, 100 }, "fhcalModX", "fhcalModY", "F1w" ) );
+  histo2d.push_back( sampled_d.Histo2D( {"h2_fhcal_x_y_f2", ";x (cm); y (cm)", 300, -50, 250, 200, -100, 100 }, "fhcalModX", "fhcalModY", "F2w" ) );
+  histo2d.push_back( sampled_d.Histo2D( {"h2_fhcal_x_y_f3", ";x (cm); y (cm)", 300, -50, 250, 200, -100, 100 }, "fhcalModX", "fhcalModY", "F3w" ) );
+  histo2d.push_back( sampled_d.Histo2D( {"h2_fhcal_x_y_f4", ";x (cm); y (cm)", 300, -50, 250, 200, -100, 100 }, "fhcalModX", "fhcalModY", "F4w" ) );
 
   auto file_out = std::unique_ptr<TFile, std::function<void(TFile*)> >{ TFile::Open( "corr.root", "RECREATE"), [](auto f){ f->Close(); } };
   handler.DumpCorrelations( file_out.get() );
+  file_out->cd();
+  std::for_each( histo1d.begin(), histo1d.end(), []( auto h1 ){ h1->Write(); } );
+  std::for_each( histo2d.begin(), histo2d.end(), []( auto h1 ){ h1->Write(); } );
+
   
   // std::for_each( p_psi_ptr.begin(), p_psi_ptr.end(), [i=0, &p_psi_names]( auto& p ) mutable { p->Write( p_psi_names.at(i).append("_old").c_str() ); ++i; } );
   // std::for_each( f1_psi_ptr.begin(), f1_psi_ptr.end(), [i=0, &f1_psi_names]( auto& p ) mutable { p->Write( f1_psi_names.at(i).append("_old").c_str() ); ++i; } );
