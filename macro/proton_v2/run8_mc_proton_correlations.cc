@@ -221,12 +221,12 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   ;
 
   auto histo1d = std::vector<ROOT::RDF::RResultPtr<::TH1D>>{};
-  auto histo2d = std::vector<ROOT::RDF::RResultPtr<::TH1D>>{};
+  auto histo2d = std::vector<ROOT::RDF::RResultPtr<::TH2D>>{};
 
-  histo2d.push_back( sampled_d.Histo2D( {"h2_fhcal_x_y_f1", ";x (cm); y (cm)", 300, -50, 250, 200, -100, 100 }, "fhcalModX", "fhcalModY", "F1w" ) );
-  histo2d.push_back( sampled_d.Histo2D( {"h2_fhcal_x_y_f2", ";x (cm); y (cm)", 300, -50, 250, 200, -100, 100 }, "fhcalModX", "fhcalModY", "F2w" ) );
-  histo2d.push_back( sampled_d.Histo2D( {"h2_fhcal_x_y_f3", ";x (cm); y (cm)", 300, -50, 250, 200, -100, 100 }, "fhcalModX", "fhcalModY", "F3w" ) );
-  histo2d.push_back( sampled_d.Histo2D( {"h2_fhcal_x_y_f4", ";x (cm); y (cm)", 300, -50, 250, 200, -100, 100 }, "fhcalModX", "fhcalModY", "F4w" ) );
+  histo2d.push_back( sampled_d.Histo2D( {"h2_fhcal_x_y_f1", ";x (cm); y (cm)", 300, -50., 250., 200, -100., 100. }, "fhcalModX", "fhcalModY", "F1w" ) );
+  histo2d.push_back( sampled_d.Histo2D( {"h2_fhcal_x_y_f2", ";x (cm); y (cm)", 300, -50., 250., 200, -100., 100. }, "fhcalModX", "fhcalModY", "F2w" ) );
+  histo2d.push_back( sampled_d.Histo2D( {"h2_fhcal_x_y_f3", ";x (cm); y (cm)", 300, -50., 250., 200, -100., 100. }, "fhcalModX", "fhcalModY", "F3w" ) );
+  histo2d.push_back( sampled_d.Histo2D( {"h2_fhcal_x_y_f4", ";x (cm); y (cm)", 300, -50., 250., 200, -100., 100. }, "fhcalModX", "fhcalModY", "F4w" ) );
 
   auto file_out = std::unique_ptr<TFile, std::function<void(TFile*)> >{ TFile::Open( "corr.root", "RECREATE"), [](auto f){ f->Close(); } };
   handler.DumpCorrelations( file_out.get() );
