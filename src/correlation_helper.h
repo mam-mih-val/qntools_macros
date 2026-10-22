@@ -319,20 +319,26 @@ public:
   auto operator()( Args... args ) -> RetType {
     counter_=0;
     auto result = RetType{};
-    InitResult(result);
+    InitResult(result, args...);
     Exec(result, args...);
     return result;
   }
 private:
   std::vector< AnyComponent > components_{};
   size_t counter_{0};
-  auto InitResult( RetType& result ){
+  template<typename First, typename... Rest>
+  auto InitResult( RetType& result, First first, Rest... rest ){
+    InitResult(result, first);
+  }
+  template<typename First>
+  auto InitResult( RetType& result, First first  ){
     if constexpr( std::is_floating_point_v<RetType> ){
       result = static_cast<RetType>(1);
     } else {
       result = RetType( first.size(), 1 );
     }
   }
+  
 
   template<typename... Last>
   auto Exec( RetType& result, uvector_t first, Last... last ) -> void {
