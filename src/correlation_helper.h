@@ -1,11 +1,13 @@
 #ifndef CORRELATION_HELPER_H
 #define CORRELATION_HELPER_H
 
+#include <algorithm>
 #include <cassert>
 #include <cstddef>
 #include <iterator>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 #include <cmath>
 #include <type_traits>
@@ -234,12 +236,14 @@ struct x{
   float operator()(Qn::QVec vec) const {
     return vec.x;
   }
+  const std::string name={"x"};
 };
 
 struct y{
   float operator()(Qn::QVec vec) const {
     return vec.y;
   }
+  const std::string name={"y"};
 };
 
 template<typename T>
@@ -247,10 +251,62 @@ auto MakeComponent( T component ){
   return [component](Qn::QVec vec){ return component(vec); };
 }
 
+class Component{
+public::
+  virtual ~Component() = default;
+  virtual auto operator()(Qn::QVec vec) const -> float = 0;
+  virtual auto Name() const -> std::string = 0;
+};
+
+template<typename T>
+class ComponentImpl : public Component {
+public:
+  ComponentImpl( T comp ) : comp_( std::move(comp) ) {}
+  auto operator()(Qn::QVec vec) const override -> float {
+    return comp_.operator()( vec );
+  }
+  auto Name()() const override -> std::string {
+    return comp_.name;
+  }
+private:
+  T comp_{};
+}
+
+template<typename T>
+class ComponentImpl : public Component {
+public:
+  ComponentImpl( T comp ) : comp_( std::move(comp) ) {}
+  auto operator()(Qn::QVec vec) const override -> float {
+    return comp_.operator()( vec );
+  }
+  auto Name()() const override -> std::string {
+    return comp_.name;
+  }
+private:
+  T comp_{};
+}
+
+class AnyComponent{
+public:
+  template<typename T>
+  AnyComponent( T obj ) : comp_impl_( new ComponentImpl<T>(obj) ) {}
+
+  auto operator()(Qn::QVec vec) const -> float { 
+    return comp_impl_->operator()( vec );
+  }
+
+  auto Name() const -> std::string {
+    return comp_impl_->Name();
+  }
+
+private:
+  std::unique_ptr<Component> comp_impl_{};
+}
+
 template<typename RetType, typename... Args>
 class Correlator{
 public:
-  Correlator( std::vector<size_t> harmonics, std::vector< std::function< float(Qn::QVec) > > components ) : 
+  Correlator( std::vector<size_t> harmonics, std::vector<AnyComponent> components ) : 
     harmonics_( std::move(harmonics) ), components_( std::move(components) ) {}
   auto operator()( Args... args ) -> RetType {
     counter_=0;
@@ -329,20 +385,20 @@ public:
   auto operator()( DF& df ) const -> std::vector<std::string> {
     auto general_correlation_name = std::string{};
     std::for_each( vector_names_.begin(), vector_names_.end(), [&general_correlation_name]( const auto& name ) mutable { general_correlation_name.append(name).append("_"); } );
-    auto vec_components = std::vector< std::vector< std::function<float(Qn::QVec)> > >{ std::vector< std::function<float(Qn::QVec)> >{} };
+    auto vec_components = std::vector< std::vector< AnyComponent > >{ std::vector< AnyComponent >{} };
     auto vec_corr_names = std::vector< std::string >{ general_correlation_name };
     for( size_t i=0; i<vector_names_.size(); ++i ){
       auto upd_vec_corr_names = std::vector<std::string>{};
-      auto upd_vec_components = std::vector< std::vector< std::function<float(Qn::QVec)> > >{};
+      auto upd_vec_components = std::vector< std::vector< AnyComponent > >{};
       for( auto j=0; j < vec_corr_names.size(); ++j ){
         upd_vec_corr_names.push_back( vec_corr_names[j]+"x"+std::to_string(harmonics_[i]) );
         upd_vec_corr_names.push_back( vec_corr_names[j]+"y"+std::to_string(harmonics_[i]) );
 
         auto curr_component_layout = vec_components.at(j);
-        curr_component_layout.push_back( MakeComponent(x{}) );
+        curr_component_layout.push_back( AnyComponent(x{}) );
         upd_vec_components.emplace_back( curr_component_layout );
         curr_component_layout = vec_components.at(j);
-        curr_component_layout.push_back( MakeComponent(y{}) );
+        curr_component_layout.push_back( AnyComponent(y{}) );
         upd_vec_components.emplace_back( curr_component_layout );
       }
       vec_corr_names = std::move(upd_vec_corr_names);
@@ -352,10 +408,16 @@ public:
     if constexpr( std::is_same_v<qvector_t, First> ){
       for( auto i=size_t{0}; i<vec_corr_names.size(); ++i ){
         df = df.Define( vec_corr_names[i], Correlator<double, First, Args...>{ harmonics_, vec_components[i] }, vector_names_ );
+        std::cout << "Q-vector correlation added: " << vec_corr_names[i] << "\n";
+        std::for_each( vec_components[i].begin(), vec_components[i].end(), []( const auto& comp ){ std::cout <<  comp.Name() << "()"; } );
+        std::cout << "\n\n";
       }
     } else {
       for( auto i=size_t{0}; i<vec_corr_names.size(); ++i ){
         df = df.Define( vec_corr_names[i], Correlator< std::vector<double>, First, Args...>{ harmonics_, vec_components[i] }, vector_names_ );
+        std::cout << "Q-vector correlation added: " << vec_corr_names[i] << "\n";
+        std::for_each( vec_components[i].begin(), vec_components[i].end(), []( const auto& comp ){ std::cout <<  comp.Name() << "()"; } );
+        std::cout << "\n\n";
       }
     }
     return vec_corr_names;
