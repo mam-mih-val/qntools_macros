@@ -256,23 +256,26 @@ public:
   virtual ~Component() = default;
   virtual auto operator()(Qn::QVec vec) const -> float = 0;
   virtual auto Name() const -> std::string = 0;
+  virtual auto Clone() const -> std::unique_ptr<Component> = 0;
 };
 
 template<typename T>
 class ComponentImpl : public Component {
 public:
   ComponentImpl( T comp ) : comp_( std::move(comp) ) {}
-  ComponentImpl( const ComponentImpl& ) = default;
   ComponentImpl( ComponentImpl&& ) noexcept = default;
-  ComponentImpl& operator=( const ComponentImpl& ) = default;
   ComponentImpl& operator=( ComponentImpl&& ) noexcept = default;
-  ComponentImpl() override = default;
+  
+  ~ComponentImpl() override = default;
 
   auto operator()(Qn::QVec vec) const -> float override {
     return comp_.operator()( vec );
   }
   auto Name() const -> std::string override {
     return comp_.name;
+  }
+  auto Clone() const -> std::unique_ptr<Component> override {
+    return std::make_unique<ComponentImpl>(*this);
   }
 private:
   T comp_{};
@@ -283,15 +286,15 @@ public:
   template<typename T>
   AnyComponent( T obj ) : comp_impl_( new ComponentImpl<T>(obj) ) {}
 
-  AnyComponent( const AnyComponent& obj ) : comp_impl_{ std::make_unique( obj.comp_impl_ ) } {}
+  template<typename T>
+  AnyComponent( const AnyComponent& obj ) : comp_impl_{ obj.comp_impl_->Clone() } {}
   AnyComponent& operator=( const AnyComponent& obj ) {
     comp_impl_.reset(std::make_unique( obj.comp_impl_ ));
     return *this;
   }
-
   AnyComponent( AnyComponent&& obj ) noexcept : comp_impl_{ std::move( obj.comp_impl_ ) } {}
   AnyComponent& operator=( const AnyComponent& obj ) {
-    comp_impl_ = std::move( obj.comp_impl_  );
+    comp_impl_ = obj.comp_impl_->Clone();
     return *this;
   }
 
