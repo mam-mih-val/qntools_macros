@@ -263,6 +263,8 @@ template<typename T>
 class ComponentImpl : public Component {
 public:
   ComponentImpl( T comp ) : comp_( std::move(comp) ) {}
+  ComponentImpl( const ComponentImpl& ) noexcept = default;
+  ComponentImpl& operator=( const ComponentImpl& ) noexcept = default;
   ComponentImpl( ComponentImpl&& ) noexcept = default;
   ComponentImpl& operator=( ComponentImpl&& ) noexcept = default;
   
