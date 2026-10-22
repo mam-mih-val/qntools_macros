@@ -256,8 +256,8 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   auto file_out = std::unique_ptr<TFile, std::function<void(TFile*)> >{ TFile::Open( "corr.root", "RECREATE"), [](auto f){ f->Close(); } };
   handler.DumpCorrelations( file_out.get() );
   
-  std::for_each( p_psi_ptr.begin(), p_psi_ptr.end(), [i=0, &p_psi_names]( auto& p ) mutable { p->Write( p_psi_names.at(i).append("_old").c_str() ); ++i; } );
-  std::for_each( f1_psi_ptr.begin(), f1_psi_ptr.end(), [i=0, &f1_psi_names]( auto& p ) mutable { p->Write( f1_psi_names.at(i).append("_old").c_str() ); ++i; } );
+  // std::for_each( p_psi_ptr.begin(), p_psi_ptr.end(), [i=0, &p_psi_names]( auto& p ) mutable { p->Write( p_psi_names.at(i).append("_old").c_str() ); ++i; } );
+  // std::for_each( f1_psi_ptr.begin(), f1_psi_ptr.end(), [i=0, &f1_psi_names]( auto& p ) mutable { p->Write( f1_psi_names.at(i).append("_old").c_str() ); ++i; } );
 
   auto n_events_filtered = static_cast<double>(*(sampled_d.Count())) / 1E+3;
   auto end = std::chrono::steady_clock::now();
