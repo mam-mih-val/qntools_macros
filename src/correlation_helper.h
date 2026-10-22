@@ -270,7 +270,7 @@ public:
   }
 private:
   T comp_{};
-}
+};
 
 class AnyComponent{
 public:
@@ -287,7 +287,7 @@ public:
 
 private:
   std::unique_ptr<Component> comp_impl_{};
-}
+};
 
 template<typename RetType, typename... Args>
 class Correlator{
