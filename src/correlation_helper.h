@@ -263,11 +263,6 @@ template<typename T>
 class ComponentImpl : public Component {
 public:
   ComponentImpl( T comp ) : comp_( std::move(comp) ) {}
-  ComponentImpl( const ComponentImpl& ) noexcept = default;
-  ComponentImpl& operator=( const ComponentImpl& ) noexcept = default;
-  ComponentImpl( ComponentImpl&& ) noexcept = default;
-  ComponentImpl& operator=( ComponentImpl&& ) noexcept = default;
-  
   ~ComponentImpl() override = default;
 
   auto operator()(Qn::QVec vec) const -> float override {
@@ -288,14 +283,16 @@ public:
   template<typename T>
   AnyComponent( T obj, size_t harm ) : comp_impl_( new ComponentImpl<T>(obj) ), harmonic_(harm) {}
 
-  AnyComponent( const AnyComponent& obj ) : comp_impl_{ obj.comp_impl_->Clone() } {}  
+  AnyComponent( const AnyComponent& obj ) : comp_impl_{ obj.comp_impl_->Clone() }, harmonic_(obj.harmonic_) {}  
   AnyComponent& operator=( const AnyComponent& obj ) {
     comp_impl_.reset( obj.comp_impl_->Clone().release() );
+    harmonic_ = obj.harmonic_;
     return *this;
   }
-  AnyComponent( AnyComponent&& obj ) noexcept : comp_impl_{ std::move( obj.comp_impl_ ) } {}
+  AnyComponent( AnyComponent&& obj ) noexcept : comp_impl_{ std::move( obj.comp_impl_ ) }, harmonic_(obj.harmonic_) {}
   AnyComponent& operator=( AnyComponent&& obj ) noexcept {
     comp_impl_ = std::move(obj.comp_impl_);
+    harmonic_ = obj.harmonic_;
     return *this;
   }
 
