@@ -404,14 +404,14 @@ public:
         df = df.Define( vec_corr_names[i], Correlator<double, First, Args...>{ vec_components[i] }, vector_names_ );
         std::cout << "Q-vector correlation added: " << vec_corr_names[i] << "\n";
         std::for_each( vec_components[i].begin(), vec_components[i].end(), []( const auto& comp ){ std::cout <<  comp.Name() << "()"; } );
-        std::cout << "\n\n";
+        std::cout << "\n";
       }
     } else {
       for( auto i=size_t{0}; i<vec_corr_names.size(); ++i ){
         df = df.Define( vec_corr_names[i], Correlator< std::vector<double>, First, Args...>{ vec_components[i] }, vector_names_ );
-        std::cout << "Q-vector correlation added: " << vec_corr_names[i] << "\n";
+        std::cout << "u- and Q-vector correlation added: " << vec_corr_names[i] << "\n";
         std::for_each( vec_components[i].begin(), vec_components[i].end(), []( const auto& comp ){ std::cout <<  comp.Name() << "()"; } );
-        std::cout << "\n\n";
+        std::cout << "\n";
       }
     }
     return vec_corr_names;
