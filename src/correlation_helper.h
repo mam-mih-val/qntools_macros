@@ -324,7 +324,7 @@ public:
   }
 private:
   std::vector<size_t> harmonics_{0};
-  std::vector< std::function< float(Qn::QVec) > > components_{0};
+  std::vector< AnyComponent > components_{};
   size_t counter_{0};
   template< typename First, typename... Last >
   auto InitResult( RetType& result, First first, Last... last ){
