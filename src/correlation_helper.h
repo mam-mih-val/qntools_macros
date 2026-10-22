@@ -304,7 +304,7 @@ public:
   }
 
   auto Name() const -> std::string {
-    return comp_impl_->Name().append( std::to_string(harmonic_) );
+    return std::string{comp_impl_->Name()}.append( std::to_string(harmonic_) );
   }
 
 private:
