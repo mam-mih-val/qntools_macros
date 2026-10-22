@@ -289,7 +289,7 @@ public:
   template<typename T>
   AnyComponent( const AnyComponent& obj ) : comp_impl_{ obj.comp_impl_->Clone() } {}
   AnyComponent& operator=( const AnyComponent& obj ) {
-    comp_impl_.reset( obj.comp_impl_->Clone() );
+    comp_impl_.reset( obj.comp_impl_->Clone().release() );
     return *this;
   }
   AnyComponent( AnyComponent&& obj ) noexcept : comp_impl_{ std::move( obj.comp_impl_ ) } {}
