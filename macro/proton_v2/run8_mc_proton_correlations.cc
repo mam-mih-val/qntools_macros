@@ -227,31 +227,31 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
     .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"F4", "psi_rp"}, {1, 1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
   ;
 
-  auto p_psi_names = Define2PartCorrelation( sampled_d, CorrFunc2Part< uvector_t, qvector_t >{}, "pca_proton", "psi_rp", std::vector{ std::pair<size_t, size_t>{1, 1} } );
-  auto f1_psi_names = Define2PartCorrelation( sampled_d, CorrFunc2Part< qvector_t, qvector_t >{}, "F1", "psi_rp", std::vector{ std::pair<size_t, size_t>{1, 1} } );
+  // auto p_psi_names = Define2PartCorrelation( sampled_d, CorrFunc2Part< uvector_t, qvector_t >{}, "pca_proton", "psi_rp", std::vector{ std::pair<size_t, size_t>{1, 1} } );
+  // auto f1_psi_names = Define2PartCorrelation( sampled_d, CorrFunc2Part< qvector_t, qvector_t >{}, "F1", "psi_rp", std::vector{ std::pair<size_t, size_t>{1, 1} } );
 
-  auto vec_proton_axes = std::vector<Qn::AxisD>{
-    Qn::AxisD{ "centrality", 6, 0, 60 },
-    Qn::AxisD{ "y", 6, 0.0, 1.2 },
-    Qn::AxisD{ "pT", 5, 0.0, 2.0 },
-  };
+  // auto vec_proton_axes = std::vector<Qn::AxisD>{
+  //   Qn::AxisD{ "centrality", 6, 0, 60 },
+  //   Qn::AxisD{ "y", 6, 0.0, 1.2 },
+  //   Qn::AxisD{ "pT", 5, 0.0, 2.0 },
+  // };
   
-  auto vec_qvector_axes = std::vector<Qn::AxisD>{
-    Qn::AxisD{ "centrality", 6, 0, 60 },
-  };
+  // auto vec_qvector_axes = std::vector<Qn::AxisD>{
+  //   Qn::AxisD{ "centrality", 6, 0, 60 },
+  // };
 
-  auto p_psi_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
-  for( const auto& name : p_psi_names ){
-    p_psi_ptr.emplace_back(
-      sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >( CorrelationHelper(vec_qvector_axes), {name, "trProtonWeight", "samples", "centrality", "trProtonY", "trPt" } )
-    ); 
-  }
-  auto f1_psi_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
-  for( const auto& name : f1_psi_names ){
-    f1_psi_ptr.emplace_back(
-      sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(vec_qvector_axes, 100, Qn::Stat::WeightType::REFERENCE), {name, "One", "samples", "centrality" } )
-    ); 
-  }
+  // auto p_psi_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
+  // for( const auto& name : p_psi_names ){
+  //   p_psi_ptr.emplace_back(
+  //     sampled_d.Book< std::vector<double>, std::vector<double>,  ROOT::VecOps::RVec<ULong64_t>, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >( CorrelationHelper(vec_qvector_axes), {name, "trProtonWeight", "samples", "centrality", "trProtonY", "trPt" } )
+  //   ); 
+  // }
+  // auto f1_psi_ptr = std::vector< ROOT::RDF::RResultPtr< Qn::DataContainerStatCollect > >{};
+  // for( const auto& name : f1_psi_names ){
+  //   f1_psi_ptr.emplace_back(
+  //     sampled_d.Book< double, double,  ROOT::VecOps::RVec<ULong64_t>, float>( CorrelationHelper(vec_qvector_axes, 100, Qn::Stat::WeightType::REFERENCE), {name, "One", "samples", "centrality" } )
+  //   ); 
+  // }
 
   auto file_out = std::unique_ptr<TFile, std::function<void(TFile*)> >{ TFile::Open( "corr.root", "RECREATE"), [](auto f){ f->Close(); } };
   handler.DumpCorrelations( file_out.get() );
