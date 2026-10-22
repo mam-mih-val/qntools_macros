@@ -315,8 +315,7 @@ private:
 template<typename RetType, typename... Args>
 class Correlator{
 public:
-  Correlator( std::vector<size_t> harmonics, std::vector<AnyComponent> components ) : 
-    harmonics_( std::move(harmonics) ), components_( std::move(components) ) {}
+  Correlator( std::vector<AnyComponent> components ) : components_( std::move(components) ) {}
   auto operator()( Args... args ) -> RetType {
     counter_=0;
     auto result = RetType{};
@@ -325,7 +324,6 @@ public:
     return result;
   }
 private:
-  std::vector<size_t> harmonics_{0};
   std::vector< AnyComponent > components_{};
   size_t counter_{0};
   auto InitResult( RetType& result ){
@@ -361,8 +359,8 @@ private:
         result[i] *= components_[counter_]( first );
       }
     }
+    counter_++;
   }
-  counter_++;
 };
 
 template<typename First, typename... Args>
@@ -400,14 +398,14 @@ public:
 
     if constexpr( std::is_same_v<qvector_t, First> ){
       for( auto i=size_t{0}; i<vec_corr_names.size(); ++i ){
-        df = df.Define( vec_corr_names[i], Correlator<double, First, Args...>{ harmonics_, vec_components[i] }, vector_names_ );
+        df = df.Define( vec_corr_names[i], Correlator<double, First, Args...>{ vec_components[i] }, vector_names_ );
         std::cout << "Q-vector correlation added: " << vec_corr_names[i] << "\n";
         std::for_each( vec_components[i].begin(), vec_components[i].end(), []( const auto& comp ){ std::cout <<  comp.Name() << "()"; } );
         std::cout << "\n\n";
       }
     } else {
       for( auto i=size_t{0}; i<vec_corr_names.size(); ++i ){
-        df = df.Define( vec_corr_names[i], Correlator< std::vector<double>, First, Args...>{ harmonics_, vec_components[i] }, vector_names_ );
+        df = df.Define( vec_corr_names[i], Correlator< std::vector<double>, First, Args...>{ vec_components[i] }, vector_names_ );
         std::cout << "Q-vector correlation added: " << vec_corr_names[i] << "\n";
         std::for_each( vec_components[i].begin(), vec_components[i].end(), []( const auto& comp ){ std::cout <<  comp.Name() << "()"; } );
         std::cout << "\n\n";
