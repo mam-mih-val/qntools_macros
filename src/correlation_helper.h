@@ -286,8 +286,8 @@ private:
 class AnyComponent{
 public:
   template<typename T>
-  AnyComponent( T obj ) : comp_impl_( new ComponentImpl<T>(obj) ) {}
-  
+  AnyComponent( T obj, size_t harm ) : comp_impl_( new ComponentImpl<T>(obj) ), harmonic_(harm) {}
+
   AnyComponent( const AnyComponent& obj ) : comp_impl_{ obj.comp_impl_->Clone() } {}  
   AnyComponent& operator=( const AnyComponent& obj ) {
     comp_impl_.reset( obj.comp_impl_->Clone().release() );
@@ -299,16 +299,17 @@ public:
     return *this;
   }
 
-  auto operator()(Qn::QVec vec) const -> float { 
-    return comp_impl_->operator()( vec );
+  auto operator()( std::map<size_t, Qn::QVec> vec ) const -> float { 
+    return comp_impl_->operator()( vec[harmonic_] );
   }
 
   auto Name() const -> std::string {
-    return comp_impl_->Name();
+    return comp_impl_->Name().append( std::to_string(harmonic_) );
   }
 
 private:
   std::unique_ptr<Component> comp_impl_{};
+  size_t harmonic_;
 };
 
 template<typename RetType, typename... Args>
@@ -319,7 +320,7 @@ public:
   auto operator()( Args... args ) -> RetType {
     counter_=0;
     auto result = RetType{};
-    InitResult(result, args...);
+    InitResult(result);
     Exec(result, args...);
     return result;
   }
@@ -327,57 +328,41 @@ private:
   std::vector<size_t> harmonics_{0};
   std::vector< AnyComponent > components_{};
   size_t counter_{0};
-  template< typename First, typename... Last >
-  auto InitResult( RetType& result, First first, Last... last ){
+  auto InitResult( RetType& result ){
     if constexpr( std::is_floating_point_v<RetType> ){
       result = static_cast<RetType>(1);
     } else {
       result = RetType( first.size(), 1 );
-    }
-  }
-  template< typename First >
-  auto InitResult( RetType& result, First first ){
-    if constexpr( std::is_floating_point_v<RetType> ){
-      result = static_cast<RetType>(1);
-    } else {
-      result = RetType( first.size(), 1 );
-    }
-  }
-  template<typename... Last>
-  auto Exec( RetType& result, uvector_t first, Last... last ) -> void {
-    for( auto i=0; i<first.size(); ++i ){
-      result[i] *= components_[counter_]( first[i][ harmonics_[counter_] ] );
-    }
-    counter_++;
-    Exec( result, last... );
-  }
-  auto Exec( RetType& result, uvector_t first) -> void {
-    for( auto i=0; i<first.size(); ++i ){
-      result[i] *= components_[counter_]( first[i][ harmonics_[counter_] ] );
     }
   }
 
   template<typename... Last>
-  auto Exec( RetType& result, qvector_t first, Last... last ) -> void {
-    if constexpr( std::is_floating_point_v<RetType> ){
-      result *= components_[counter_]( first[ harmonics_[counter_] ]);
-    } else {
-      for( auto i=0; i < result.size(); ++i ){
-        result[i] *= components_[counter_]( first[ harmonics_[counter_] ] );
-      }
+  auto Exec( RetType& result, uvector_t first, Last... last ) -> void {
+    Exec(result, first);
+    Exec( result, last... );
+  }
+  auto Exec( RetType& result, uvector_t first) -> void {
+    for( auto i=0; i<first.size(); ++i ){
+      result[i] *= components_[counter_]( first[i] );
     }
     counter_++;
+  }
+
+  template<typename... Last>
+  auto Exec( RetType& result, qvector_t first, Last... last ) -> void {
+    Exec( result, first );
     Exec( result, last... );
   }
   auto Exec( RetType& result, qvector_t first ) -> void {
     if constexpr( std::is_floating_point_v<RetType> ){
-      result *= components_[counter_]( first[ harmonics_[counter_] ]);
+      result *= components_[counter_]( first );
     } else{
       for( auto i= 0; i < result.size(); ++i ){
-        result[i] *= components_[counter_]( first[ harmonics_[counter_] ] );
+        result[i] *= components_[counter_]( first );
       }
     }
   }
+  counter_++;
 };
 
 template<typename First, typename... Args>
@@ -403,10 +388,10 @@ public:
         upd_vec_corr_names.push_back( vec_corr_names[j]+"y"+std::to_string(harmonics_[i]) );
 
         auto curr_component_layout = vec_components.at(j);
-        curr_component_layout.push_back( AnyComponent(x{}) );
+        curr_component_layout.push_back( AnyComponent(x{}, harmonics_[i]) );
         upd_vec_components.emplace_back( curr_component_layout );
         curr_component_layout = vec_components.at(j);
-        curr_component_layout.push_back( AnyComponent(y{}) );
+        curr_component_layout.push_back( AnyComponent(y{}, harmonics_[i]) );
         upd_vec_components.emplace_back( curr_component_layout );
       }
       vec_corr_names = std::move(upd_vec_corr_names);
