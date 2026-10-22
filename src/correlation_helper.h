@@ -252,7 +252,7 @@ auto MakeComponent( T component ){
 }
 
 class Component{
-public::
+public:
   virtual ~Component() = default;
   virtual auto operator()(Qn::QVec vec) const -> float = 0;
   virtual auto Name() const -> std::string = 0;
@@ -262,10 +262,10 @@ template<typename T>
 class ComponentImpl : public Component {
 public:
   ComponentImpl( T comp ) : comp_( std::move(comp) ) {}
-  auto operator()(Qn::QVec vec) const override -> float {
+  auto operator()(Qn::QVec vec) const -> float override {
     return comp_.operator()( vec );
   }
-  auto Name()() const override -> std::string {
+  auto Name()() const -> std::string override {
     return comp_.name;
   }
 private:
