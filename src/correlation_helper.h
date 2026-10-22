@@ -287,9 +287,8 @@ class AnyComponent{
 public:
   template<typename T>
   AnyComponent( T obj ) : comp_impl_( new ComponentImpl<T>(obj) ) {}
-
-  template<typename T>
-  AnyComponent( const AnyComponent& obj ) : comp_impl_{ obj.comp_impl_->Clone() } {}
+  
+  AnyComponent( const AnyComponent& obj ) : comp_impl_{ obj.comp_impl_->Clone() } {}  
   AnyComponent& operator=( const AnyComponent& obj ) {
     comp_impl_.reset( obj.comp_impl_->Clone().release() );
     return *this;
