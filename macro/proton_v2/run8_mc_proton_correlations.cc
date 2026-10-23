@@ -25,7 +25,7 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   std::cout << "starting execution" << std::endl;
 
   constexpr size_t NHARM = 4;
-  constexpr size_t Q_NHARM = 1;
+  constexpr size_t Q_NHARM = 2;
 
   const auto l = double{ 5e-2 };
   auto harmonics = std::vector<size_t>(NHARM);
@@ -237,6 +237,7 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   auto histo1d = std::vector<ROOT::RDF::RResultPtr<::TH1D>>{};
   auto histo2d = std::vector<ROOT::RDF::RResultPtr<::TH2D>>{};
 
+  histo2d.push_back( sampled_d.Histo2D( {"h2_modE_modId", ";Module ID; E_{loss}", 55, 0, 55, 300, 0, 30 }, "fhcalModId", "fhcalModE" ) );
   histo2d.push_back( sampled_d.Histo2D( {"h2_qx_qy_f1", ";Q_{x}; Q_{y}", 300, -1.5, 1.5, 300, -1.5, 1.5 }, "F1_x1", "F1_y1" ) );
   histo2d.push_back( sampled_d.Histo2D( {"h2_ini_qx_qy_f1", ";Q_{x}; Q_{y}", 300, -1.5, 1.5, 300, -1.5, 1.5 }, "ini_F1_x1", "ini_F1_y1" ) );
   histo2d.push_back( sampled_d.Histo2D( {"h2_qx_qy_f2", ";Q_{x}; Q_{y}", 300, -1.5, 1.5, 300, -1.5, 1.5 }, "F2_x1", "F2_y1" ) );
