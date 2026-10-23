@@ -218,19 +218,49 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
     .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"F2", "Tneg", "psi_rp"}, {1, 1, 2} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
     .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"F3", "Tneg", "psi_rp"}, {1, 1, 2} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
     .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"F4", "Tneg", "psi_rp"}, {1, 1, 2} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+
+    .AddCorrelation( CorrelationDecorator<qvector_t>{ std::vector<std::string>{"F1"}, {1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddCorrelation( CorrelationDecorator<qvector_t>{ std::vector<std::string>{"F2"}, {1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddCorrelation( CorrelationDecorator<qvector_t>{ std::vector<std::string>{"F3"}, {1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddCorrelation( CorrelationDecorator<qvector_t>{ std::vector<std::string>{"F4"}, {1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddCorrelation( CorrelationDecorator<qvector_t>{ std::vector<std::string>{"Tpos"}, {1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddCorrelation( CorrelationDecorator<qvector_t>{ std::vector<std::string>{"Tneg"}, {1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+
+    .AddCorrelation( CorrelationDecorator<qvector_t>{ std::vector<std::string>{"ini_F1"}, {1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddCorrelation( CorrelationDecorator<qvector_t>{ std::vector<std::string>{"ini_F2"}, {1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddCorrelation( CorrelationDecorator<qvector_t>{ std::vector<std::string>{"ini_F3"}, {1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddCorrelation( CorrelationDecorator<qvector_t>{ std::vector<std::string>{"ini_F4"}, {1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddCorrelation( CorrelationDecorator<qvector_t>{ std::vector<std::string>{"ini_Tpos"}, {1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddCorrelation( CorrelationDecorator<qvector_t>{ std::vector<std::string>{"ini_Tneg"}, {1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
   ;
 
   auto histo1d = std::vector<ROOT::RDF::RResultPtr<::TH1D>>{};
   auto histo2d = std::vector<ROOT::RDF::RResultPtr<::TH2D>>{};
 
-  histo2d.push_back( sampled_d.Histo2D( {"h2_fhcal_x_y_f1", ";x (cm); y (cm)", 300, -50., 250., 200, -100., 100. }, "fhcalModX", "fhcalModY", "F1w" ) );
-  histo2d.push_back( sampled_d.Histo2D( {"h2_fhcal_x_y_f2", ";x (cm); y (cm)", 300, -50., 250., 200, -100., 100. }, "fhcalModX", "fhcalModY", "F2w" ) );
-  histo2d.push_back( sampled_d.Histo2D( {"h2_fhcal_x_y_f3", ";x (cm); y (cm)", 300, -50., 250., 200, -100., 100. }, "fhcalModX", "fhcalModY", "F3w" ) );
-  histo2d.push_back( sampled_d.Histo2D( {"h2_fhcal_x_y_f4", ";x (cm); y (cm)", 300, -50., 250., 200, -100., 100. }, "fhcalModX", "fhcalModY", "F4w" ) );
+  histo2d.push_back( sampled_d.Histo2D( {"h2_qx_qy_f1", ";Q_{x}; Q_{y}", 300, -1.5, 1.5, 300, -1.5, 1.5 }, "F1_x1", "F1_y1" ) );
+  histo2d.push_back( sampled_d.Histo2D( {"h2_ini_qx_qy_f1", ";Q_{x}; Q_{y}", 300, -1.5, 1.5, 300, -1.5, 1.5 }, "ini_F1_x1", "ini_F1_y1" ) );
+  histo2d.push_back( sampled_d.Histo2D( {"h2_qx_qy_f2", ";Q_{x}; Q_{y}", 300, -1.5, 1.5, 300, -1.5, 1.5 }, "F2_x1", "F2_y1" ) );
+  histo2d.push_back( sampled_d.Histo2D( {"h2_ini_qx_qy_f2", ";Q_{x}; Q_{y}", 300, -1.5, 1.5, 300, -1.5, 1.5 }, "ini_F2_x1", "ini_F2_y1" ) );
+  histo2d.push_back( sampled_d.Histo2D( {"h2_qx_qy_f3", ";Q_{x}; Q_{y}", 300, -1.5, 1.5, 300, -1.5, 1.5 }, "F3_x1", "F3_y1" ) );
+  histo2d.push_back( sampled_d.Histo2D( {"h2_ini_qx_qy_f3", ";Q_{x}; Q_{y}", 300, -1.5, 1.5, 300, -1.5, 1.5 }, "ini_F3_x1", "ini_F3_y1" ) );
+  histo2d.push_back( sampled_d.Histo2D( {"h2_qx_qy_f4", ";Q_{x}; Q_{y}", 300, -1.5, 1.5, 300, -1.5, 1.5 }, "F4_x1", "F4_y1" ) );
+  histo2d.push_back( sampled_d.Histo2D( {"h2_ini_qx_qy_f4", ";Q_{x}; Q_{y}", 300, -1.5, 1.5, 300, -1.5, 1.5 }, "ini_F4_x1", "ini_F4_y1" ) );
+
+  histo2d.push_back( sampled_d.Histo2D( {"h2_qx_qy_tp", ";Q_{x}; Q_{y}", 300, -1.5, 1.5, 300, -1.5, 1.5 }, "Tpos_x1", "Tpos_y1" ) );
+  histo2d.push_back( sampled_d.Histo2D( {"h2_ini_qx_qy_tp", ";Q_{x}; Q_{y}", 300, -1.5, 1.5, 300, -1.5, 1.5 }, "ini_Tpos_x1", "ini_Tpos_y1" ) );
+  histo2d.push_back( sampled_d.Histo2D( {"h2_qx_qy_tp", ";Q_{x}; Q_{y}", 300, -1.5, 1.5, 300, -1.5, 1.5 }, "Tneg_x1", "Tneg_y1" ) );
+  histo2d.push_back( sampled_d.Histo2D( {"h2_ini_qx_qy_tp", ";Q_{x}; Q_{y}", 300, -1.5, 1.5, 300, -1.5, 1.5 }, "ini_Tneg_x1", "ini_Tneg_y1" ) );
+
+  histo2d.push_back( sampled_d.Histo2D( {"h2_fhcal_x_y_f1", ";x (cm); y (cm)", 200, -100., 100., 200, -100., 100. }, "fhcalModX", "fhcalModY", "F1w" ) );
+  histo2d.push_back( sampled_d.Histo2D( {"h2_fhcal_x_y_f2", ";x (cm); y (cm)", 200, -100., 100., 200, -100., 100. }, "fhcalModX", "fhcalModY", "F2w" ) );
+  histo2d.push_back( sampled_d.Histo2D( {"h2_fhcal_x_y_f3", ";x (cm); y (cm)", 200, -100., 100., 200, -100., 100. }, "fhcalModX", "fhcalModY", "F3w" ) );
+  histo2d.push_back( sampled_d.Histo2D( {"h2_fhcal_x_y_f4", ";x (cm); y (cm)", 200, -100., 100., 200, -100., 100. }, "fhcalModX", "fhcalModY", "F4w" ) );
 
   auto file_out = std::unique_ptr<TFile, std::function<void(TFile*)> >{ TFile::Open( "corr.root", "RECREATE"), [](auto f){ f->Close(); } };
   handler.DumpCorrelations( file_out.get() );
   file_out->cd();
+  file_out->mkdir("qa");
+  file_out->cd("qa");
   std::for_each( histo1d.begin(), histo1d.end(), []( auto h1 ){ h1->Write(); } );
   std::for_each( histo2d.begin(), histo2d.end(), []( auto h1 ){ h1->Write(); } );
 
