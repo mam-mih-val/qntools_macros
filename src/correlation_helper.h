@@ -233,14 +233,14 @@ struct CorrFunc1Part{
 };
 
 struct x{
-  float operator()(Qn::QVec vec) const {
+  float operator()(qvec_t vec) const {
     return vec.x;
   }
   const std::string name={"x"};
 };
 
 struct y{
-  float operator()(Qn::QVec vec) const {
+  float operator()(qvec_t vec) const {
     return vec.y;
   }
   const std::string name={"y"};
@@ -248,13 +248,13 @@ struct y{
 
 template<typename T>
 auto MakeComponent( T component ){
-  return [component](Qn::QVec vec){ return component(vec); };
+  return [component](qvec_t vec){ return component(vec); };
 }
 
 class Component{
 public:
   virtual ~Component() = default;
-  virtual auto operator()(Qn::QVec vec) const -> float = 0;
+  virtual auto operator()(qvec_t vec) const -> float = 0;
   virtual auto Name() const -> std::string = 0;
   virtual auto Clone() const -> std::unique_ptr<Component> = 0;
 };
@@ -265,7 +265,7 @@ public:
   ComponentImpl( T comp ) : comp_( std::move(comp) ) {}
   ~ComponentImpl() override = default;
 
-  auto operator()(Qn::QVec vec) const -> float override {
+  auto operator()(qvec_t vec) const -> float override {
     return comp_.operator()( vec );
   }
   auto Name() const -> std::string override {
@@ -296,7 +296,9 @@ public:
     return *this;
   }
 
-  auto operator()( std::map<size_t, Qn::QVec> vec ) const -> float { 
+  auto operator()( std::map<size_t, qvec_t> vec ) const -> float { 
+    if( vec[harmonic_].n_entries == 0 )
+      return std::nanf("");
     return comp_impl_->operator()( vec[harmonic_] );
   }
 

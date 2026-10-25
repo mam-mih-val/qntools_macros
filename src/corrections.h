@@ -352,6 +352,7 @@ private:
         return result;
     auto Xold = column_t<NHARM*2>{};
     auto j=size_t{0};
+    auto n_entries = int{0};
     for( auto p : old_vectors ){
       auto x = p.second.x;
       auto y = p.second.y;
@@ -366,7 +367,7 @@ private:
       auto harm = p.first;
       auto x = Xnew(2*j);
       auto y = Xnew(2*j+1);
-      result[harm] = Qn::QVec{ static_cast<float>(x), static_cast<float>(y) };
+      result[harm] = qvec_t{ .x=static_cast<float>(x), .y=static_cast<float>(y), .n_entries=p.second.n_entries };
       j++;
     }
     return result;
@@ -435,7 +436,7 @@ private:
         auto harm = p.first;
         auto x = Xnew(2*j);
         auto y = Xnew(2*j+1);
-        result.back()[harm] = Qn::QVec{static_cast<float>(x), static_cast<float>(y)};
+        result.back()[harm] = qvec_t{.x=static_cast<float>(x), .y=static_cast<float>(y), .n_entries=p.second.n_entries };
         j++;
       }
     }

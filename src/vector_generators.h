@@ -10,8 +10,14 @@
 
 #include <QVector.hpp>
 
-using qvector_t = std::map< size_t, Qn::QVec >;
-using uvector_t = std::vector<std::map< size_t, Qn::QVec >>;
+struct qvec_t{ 
+  float x{0.f};
+  float y{0.f};
+  int n_entries{0};
+};
+
+using qvector_t = std::map< size_t, qvec_t >;
+using uvector_t = std::vector<std::map< size_t, qvec_t >>;
 
 const auto u_generator( size_t harmonic, std::function< double(double) > component ){
   return [harmonic, component]( std::vector<float> vec_phi ){
@@ -43,7 +49,7 @@ inline const auto u_vector( const std::vector<size_t>& harmonics ){
     for( auto phi : vec_phi ){
       vec_results.emplace_back();
       for( auto n : harmonics ){
-        vec_results.back()[n] = Qn::QVec{ cosf(n*phi), sinf(n*phi) };
+        vec_results.back()[n] = qvec_t{ .x=cosf(n*phi), .y=sinf(n*phi), .n_entries=1 };
       }
     }
     return vec_results;
@@ -62,6 +68,7 @@ inline const auto q_vector( const std::vector<size_t>& harmonics ){
       for( auto n : harmonics ){
         qvec[n].x += w * cos( n * phi );
         qvec[n].y += w * sin( n * phi );
+        qvec[n].n_entries += fabs(w) > std::numeric_limits<double>::epsilon() ? 1 : 0; 
       }
     }
     if( fabs(sum_w) < std::numeric_limits<double>::epsilon() )
@@ -79,7 +86,7 @@ inline const auto psi_rp_vector( const std::vector<size_t>& harmonics ){
   return [&harmonics]( T psi_rp ){
     auto result = qvector_t{};
     for( auto n : harmonics ){
-      result[n] = Qn::QVec{ cosf(n*psi_rp), sinf(n*psi_rp) };
+      result[n] = qvec_t{ .x=cosf(n*psi_rp), .y=sinf(n*psi_rp), .n_entries=1 };
     }
     return result;
   };
