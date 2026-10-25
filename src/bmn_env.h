@@ -245,6 +245,82 @@ const auto fhcal_weight_generator = []( const auto& layout ){
   };
 };
 
+const auto tr_in_f1 = []( std::vector<float> vec_fhcal_x, std::vector<float> vec_fhcal_y ){
+  auto vec_is = std::vector<int>( vec_fhcal_x.size(), 0 );
+  for( auto i=0; i<vec_fhcal_x.size(); ++i ){
+    if( vec_fhcal_x[i] < (65. - 15. * 1.5 ) )
+      continue;
+    if( vec_fhcal_x[i] > (65. + 15. * 1.5 ) )
+      continue;
+    if( vec_fhcal_y[i] < ( -15. * 2.5 ) )
+      continue;
+    if( vec_fhcal_y[i] > ( 15 * 2.5 ) )
+      continue;
+    vec_is[i] = 1;
+  }
+  return vec_is;
+};
+
+const auto tr_in_f2 = []( std::vector<float> vec_fhcal_x, std::vector<float> vec_fhcal_y, std::vector<int> vec_in_f1 ){
+  auto vec_is = std::vector<int>( vec_fhcal_x.size(), 0 );
+  for( auto i=0; i<vec_fhcal_x.size(); ++i ){
+    if( vec_fhcal_x[i] < (65. - 15. * 2.5 ) )
+      continue;
+    if( vec_fhcal_x[i] > (65. + 15. * 2.5 ) )
+      continue;
+    if( vec_fhcal_y[i] < ( -15. * 3.5 ) )
+      continue;
+    if( vec_fhcal_y[i] > ( 15. * 3.5 ) )
+      continue;
+    if( vec_in_f1[i] != 0 )
+      continue;
+    vec_is[i] = 1;
+  }
+  return vec_is;
+};
+
+const auto tr_in_f3 = []( std::vector<float> vec_fhcal_x, std::vector<float> vec_fhcal_y, std::vector<int> vec_in_f1, std::vector<int> vec_in_f2 ){
+  auto vec_is = std::vector<int>( vec_fhcal_x.size(), 0 );
+  for( auto i=0; i<vec_fhcal_x.size(); ++i ){
+    if( vec_fhcal_x[i] < (65. - 15. * 2.5 - 20 ) )
+      continue;
+    if( vec_fhcal_x[i] > (65. + 15. * 2.5 + 20 ) )
+      continue;
+    if( vec_fhcal_y[i] < ( -15. * 3.5 ) )
+      continue;
+    if( vec_fhcal_y[i] > ( 15. * 3.5 ) )
+      continue;
+    if( vec_in_f1[i] != 0 )
+      continue;
+    if( vec_in_f2[i] != 0 )
+      continue;
+    vec_is[i] = 1;
+  }
+  return vec_is;
+};
+
+const auto tr_in_f4 = []( std::vector<float> vec_fhcal_x, std::vector<float> vec_fhcal_y, std::vector<int> vec_in_f1, std::vector<int> vec_in_f2, std::vector<int> vec_in_f3 ){
+  auto vec_is = std::vector<int>( vec_fhcal_x.size(), 0 );
+  for( auto i=0; i<vec_fhcal_x.size(); ++i ){
+    if( vec_fhcal_x[i] < (65. - 15. * 2.5 - 20 * 2 ) )
+      continue;
+    if( vec_fhcal_x[i] > (65. + 15. * 2.5 + 20 * 2 ) )
+      continue;
+    if( vec_fhcal_y[i] < ( -15. * 3.5 ) )
+      continue;
+    if( vec_fhcal_y[i] > ( 15. * 3.5 ) )
+      continue;
+    if( vec_in_f1[i] != 0 )
+      continue;
+    if( vec_in_f2[i] != 0 )
+      continue;
+    if( vec_in_f3[i] != 0 )
+      continue;
+    vec_is[i] = 1;
+  }
+  return vec_is;
+};
+
 const auto proton_weight = []( 
   std::vector<int> vec_is_proton, 
   std::vector<float> vec_efficiency, 
@@ -556,6 +632,10 @@ const auto GenerateBmnExtendedTreeMC(DataFrame& d, TH2* efficiency_histo){
     .Define( "trHasTof400Hit", tr_has_tof_hit, { "trBetaTof400" } )
     .Define( "trHasTof700Hit", tr_has_tof_hit, { "trBetaTof700" } )
     .Define( "trHasAnyTofHit", tr_has_any_tof_hit, { "trHasTof400Hit", "trHasTof700Hit" } )
+    .Define( "trInF1", tr_in_f1, { "trFhcalX", "trFhcalY" } )
+    .Define( "trInF2", tr_in_f2, { "trFhcalX", "trFhcalY", "trInF1" } )
+    .Define( "trInF3", tr_in_f3, { "trFhcalX", "trFhcalY", "trInF1", "trInF2" } )
+    .Define( "trInF4", tr_in_f4, { "trFhcalX", "trFhcalY", "trInF1", "trInF2", "trInF3" } )
 
     // .Define( "simPxCorr", correct_component( 0.997203, -0.0738832, -0.0112676 ), {"simPx", "simPy", "simPz"} )
     // .Define( "simPyCorr", correct_component( 0.0738782, 0.997267, -0.000857844 ), {"simPx", "simPy", "simPz"} )

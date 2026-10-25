@@ -100,6 +100,11 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   DefineVector( sampled_d, "ini_Tpos", q_vector< std::vector<float>, std::vector<double> >(harmonics_q), std::vector<std::string>{"trPhi", "trTposW"} );
   DefineVector( sampled_d, "ini_Tneg", q_vector< std::vector<float>, std::vector<double> >(harmonics_q), std::vector<std::string>{"trPhi", "trTnegW"} );
 
+  DefineVector( sampled_d, "ini_T1", q_vector< std::vector<float>, std::vector<int> >(harmonics_q), std::vector<std::string>{"trPhi", "trInF1"} );
+  DefineVector( sampled_d, "ini_T2", q_vector< std::vector<float>, std::vector<int> >(harmonics_q), std::vector<std::string>{"trPhi", "trInF2"} );
+  DefineVector( sampled_d, "ini_T3", q_vector< std::vector<float>, std::vector<int> >(harmonics_q), std::vector<std::string>{"trPhi", "trInF3"} );
+  DefineVector( sampled_d, "ini_T4", q_vector< std::vector<float>, std::vector<int> >(harmonics_q), std::vector<std::string>{"trPhi", "trInF4"} );
+
   DefineVector(sampled_d, "ini_proton", u_vector< std::vector<float> >( harmonics ), std::vector<std::string>{"trPhi"s} );
   DefineVector(sampled_d, "psi_rp", psi_rp_vector< double >( harmonics ), std::vector<std::string>{"psiRP"s} );
 
@@ -138,6 +143,26 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   auto tn_correction_container = MakeCorrectionContainer<Q_NHARM>( vec_tn_mean, vec_tn_cov, Recenter<Q_NHARM>{}, 0.95 );
   auto tn_corr_builder = CorrectorBuilder<Q_NHARM>( tn_correction_container );
   sampled_d = sampled_d.Define( "Tneg", tn_corr_builder.IssueQVectorCorrector<qvector_t, float>(), { "ini_Tneg", "centrality" } );
+
+  auto [vec_t1_mean, vec_t1_cov] = ReadMeanCov<Q_NHARM>("T1", calib_file.get());
+  auto t1_correction_container = MakeCorrectionContainer<Q_NHARM>( vec_t1_mean, vec_t1_cov, Recenter<Q_NHARM>{}, 0.95 );
+  auto t1_corr_builder = CorrectorBuilder<Q_NHARM>( t1_correction_container );
+  sampled_d = sampled_d.Define( "T1", t1_corr_builder.IssueQVectorCorrector<qvector_t, float>(), { "ini_T1", "centrality" } );
+
+  auto [vec_t2_mean, vec_t2_cov] = ReadMeanCov<Q_NHARM>("T2", calib_file.get());
+  auto t2_correction_container = MakeCorrectionContainer<Q_NHARM>( vec_t2_mean, vec_t2_cov, Recenter<Q_NHARM>{}, 0.95 );
+  auto t2_corr_builder = CorrectorBuilder<Q_NHARM>( t2_correction_container );
+  sampled_d = sampled_d.Define( "T2", t2_corr_builder.IssueQVectorCorrector<qvector_t, float>(), { "ini_T2", "centrality" } );
+
+  auto [vec_t3_mean, vec_t3_cov] = ReadMeanCov<Q_NHARM>("T3", calib_file.get());
+  auto t3_correction_container = MakeCorrectionContainer<Q_NHARM>( vec_t3_mean, vec_t3_cov, Recenter<Q_NHARM>{}, 0.95 );
+  auto t3_corr_builder = CorrectorBuilder<Q_NHARM>( t3_correction_container );
+  sampled_d = sampled_d.Define( "T3", t3_corr_builder.IssueQVectorCorrector<qvector_t, float>(), { "ini_T3", "centrality" } );
+
+  auto [vec_t4_mean, vec_t4_cov] = ReadMeanCov<Q_NHARM>("T4", calib_file.get());
+  auto t4_correction_container = MakeCorrectionContainer<Q_NHARM>( vec_t4_mean, vec_t4_cov, Recenter<Q_NHARM>{}, 0.95 );
+  auto t4_corr_builder = CorrectorBuilder<Q_NHARM>( t4_correction_container );
+  sampled_d = sampled_d.Define( "T4", t4_corr_builder.IssueQVectorCorrector<qvector_t, float>(), { "ini_T4", "centrality" } );
 
   auto proton_axes = CorrelationAxes<float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float>>{
     .axes_columns={ "centrality", "trProtonY", "trPt" },
@@ -186,6 +211,13 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
     .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"F2", "F3"}, {1, 1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
     .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"F2", "F4"}, {1, 1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
     .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"F3", "F4"}, {1, 1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+
+    .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"T1", "T2"}, {1, 1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"T1", "T3"}, {1, 1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"T1", "T4"}, {1, 1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"T2", "T3"}, {1, 1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"T2", "T4"}, {1, 1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"T3", "T4"}, {1, 1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
     
     .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"F1", "Tpos"}, {1, 1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
     .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"F2", "Tpos"}, {1, 1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
@@ -208,6 +240,13 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
     .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"F2", "F3", "psi_rp"}, {1, 1, 2} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
     .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"F2", "F4", "psi_rp"}, {1, 1, 2} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
     .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"F3", "F4", "psi_rp"}, {1, 1, 2} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+
+    .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"T1", "T2", "psi_rp"}, {1, 1, 2} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"T1", "T3", "psi_rp"}, {1, 1, 2} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"T1", "T4", "psi_rp"}, {1, 1, 2} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"T2", "T3", "psi_rp"}, {1, 1, 2} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"T2", "T4", "psi_rp"}, {1, 1, 2} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"T3", "T4", "psi_rp"}, {1, 1, 2} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
 
     .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"F1", "Tpos", "psi_rp"}, {1, 1, 2} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
     .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"F2", "Tpos", "psi_rp"}, {1, 1, 2} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
@@ -239,17 +278,17 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
 
   histo2d.push_back( sampled_d.Histo2D( {"h2_modE_modId", ";Module ID; E_{loss}", 55, 0, 55, 300, 0, 30 }, "fhcalModId", "fhcalModE" ) );
   histo2d.push_back( sampled_d.Histo2D( {"h2_qx_qy_f1", ";Q_{x}; Q_{y}", 300, -1.5, 1.5, 300, -1.5, 1.5 }, "F1_x1", "F1_y1" ) );
-  histo2d.push_back( sampled_d.Histo2D( {"h2_ini_qx_qy_f1", ";Q_{x}; Q_{y}", 300, -1.5, 1.5, 300, -1.5, 1.5 }, "ini_F1_x1", "ini_F1_y1" ) );
   histo2d.push_back( sampled_d.Histo2D( {"h2_qx_qy_f2", ";Q_{x}; Q_{y}", 300, -1.5, 1.5, 300, -1.5, 1.5 }, "F2_x1", "F2_y1" ) );
-  histo2d.push_back( sampled_d.Histo2D( {"h2_ini_qx_qy_f2", ";Q_{x}; Q_{y}", 300, -1.5, 1.5, 300, -1.5, 1.5 }, "ini_F2_x1", "ini_F2_y1" ) );
   histo2d.push_back( sampled_d.Histo2D( {"h2_qx_qy_f3", ";Q_{x}; Q_{y}", 300, -1.5, 1.5, 300, -1.5, 1.5 }, "F3_x1", "F3_y1" ) );
-  histo2d.push_back( sampled_d.Histo2D( {"h2_ini_qx_qy_f3", ";Q_{x}; Q_{y}", 300, -1.5, 1.5, 300, -1.5, 1.5 }, "ini_F3_x1", "ini_F3_y1" ) );
   histo2d.push_back( sampled_d.Histo2D( {"h2_qx_qy_f4", ";Q_{x}; Q_{y}", 300, -1.5, 1.5, 300, -1.5, 1.5 }, "F4_x1", "F4_y1" ) );
+  histo2d.push_back( sampled_d.Histo2D( {"h2_ini_qx_qy_f1", ";Q_{x}; Q_{y}", 300, -1.5, 1.5, 300, -1.5, 1.5 }, "ini_F1_x1", "ini_F1_y1" ) );
+  histo2d.push_back( sampled_d.Histo2D( {"h2_ini_qx_qy_f2", ";Q_{x}; Q_{y}", 300, -1.5, 1.5, 300, -1.5, 1.5 }, "ini_F2_x1", "ini_F2_y1" ) );
+  histo2d.push_back( sampled_d.Histo2D( {"h2_ini_qx_qy_f3", ";Q_{x}; Q_{y}", 300, -1.5, 1.5, 300, -1.5, 1.5 }, "ini_F3_x1", "ini_F3_y1" ) );
   histo2d.push_back( sampled_d.Histo2D( {"h2_ini_qx_qy_f4", ";Q_{x}; Q_{y}", 300, -1.5, 1.5, 300, -1.5, 1.5 }, "ini_F4_x1", "ini_F4_y1" ) );
 
   histo2d.push_back( sampled_d.Histo2D( {"h2_qx_qy_tp", ";Q_{x}; Q_{y}", 300, -1.5, 1.5, 300, -1.5, 1.5 }, "Tpos_x1", "Tpos_y1" ) );
-  histo2d.push_back( sampled_d.Histo2D( {"h2_ini_qx_qy_tp", ";Q_{x}; Q_{y}", 300, -1.5, 1.5, 300, -1.5, 1.5 }, "ini_Tpos_x1", "ini_Tpos_y1" ) );
   histo2d.push_back( sampled_d.Histo2D( {"h2_qx_qy_tp", ";Q_{x}; Q_{y}", 300, -1.5, 1.5, 300, -1.5, 1.5 }, "Tneg_x1", "Tneg_y1" ) );
+  histo2d.push_back( sampled_d.Histo2D( {"h2_ini_qx_qy_tp", ";Q_{x}; Q_{y}", 300, -1.5, 1.5, 300, -1.5, 1.5 }, "ini_Tpos_x1", "ini_Tpos_y1" ) );
   histo2d.push_back( sampled_d.Histo2D( {"h2_ini_qx_qy_tp", ";Q_{x}; Q_{y}", 300, -1.5, 1.5, 300, -1.5, 1.5 }, "ini_Tneg_x1", "ini_Tneg_y1" ) );
 
   histo2d.push_back( sampled_d.Histo2D( {"h2_fhcal_x_y_f1", ";x (cm); y (cm)", 200, -100., 100., 200, -100., 100. }, "fhcalModX", "fhcalModY", "F1w" ) );
