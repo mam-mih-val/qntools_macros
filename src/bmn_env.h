@@ -321,6 +321,54 @@ const auto tr_in_f4 = []( std::vector<float> vec_fhcal_x, std::vector<float> vec
   return vec_is;
 };
 
+const auto tr_in_old_f1 = []( std::vector<float> vec_fhcal_x, std::vector<float> vec_fhcal_y ){
+  auto vec_is = std::vector<int>( vec_fhcal_x.size(), 0 );
+  for( auto i=0; i<vec_fhcal_x.size(); ++i ){
+    if( vec_fhcal_x[i] < -20 )
+      continue;
+    if( vec_fhcal_x[i] > 30 )
+      continue;
+    if( vec_fhcal_y[i] < -55  )
+      continue;
+    if( vec_fhcal_y[i] > 55  )
+      continue;
+    vec_is[i] = 1;
+  }
+  return vec_is;
+};
+
+const auto tr_in_old_f2 = []( std::vector<float> vec_fhcal_x, std::vector<float> vec_fhcal_y ){
+  auto vec_is = std::vector<int>( vec_fhcal_x.size(), 0 );
+  for( auto i=0; i<vec_fhcal_x.size(); ++i ){
+    if( vec_fhcal_x[i] < 20 )
+      continue;
+    if( vec_fhcal_x[i] > 110 )
+      continue;
+    if( vec_fhcal_y[i] < -55  )
+      continue;
+    if( vec_fhcal_y[i] > 55  )
+      continue;
+    vec_is[i] = 1;
+  }
+  return vec_is;
+};
+
+const auto tr_in_old_f3 = []( std::vector<float> vec_fhcal_x, std::vector<float> vec_fhcal_y ){
+  auto vec_is = std::vector<int>( vec_fhcal_x.size(), 0 );
+  for( auto i=0; i<vec_fhcal_x.size(); ++i ){
+    if( vec_fhcal_x[i] < 110 )
+      continue;
+    if( vec_fhcal_x[i] > 150 )
+      continue;
+    if( vec_fhcal_y[i] < -55  )
+      continue;
+    if( vec_fhcal_y[i] > 55  )
+      continue;
+    vec_is[i] = 1;
+  }
+  return vec_is;
+};
+
 const auto proton_weight = []( 
   std::vector<int> vec_is_proton, 
   std::vector<float> vec_efficiency, 
@@ -636,6 +684,11 @@ const auto GenerateBmnExtendedTreeMC(DataFrame& d, TH2* efficiency_histo){
     .Define( "trInF2", tr_in_f2, { "trFhcalX", "trFhcalY", "trInF1" } )
     .Define( "trInF3", tr_in_f3, { "trFhcalX", "trFhcalY", "trInF1", "trInF2" } )
     .Define( "trInF4", tr_in_f4, { "trFhcalX", "trFhcalY", "trInF1", "trInF2", "trInF3" } )
+
+    .Define( "trInOldF1", tr_in_old_f1, { "trFhcalX", "trFhcalY" } )
+    .Define( "trInOldF2", tr_in_old_f2, { "trFhcalX", "trFhcalY" } )
+    .Define( "trInOldF3", tr_in_old_f3, { "trFhcalX", "trFhcalY" } )
+
 
     // .Define( "simPxCorr", correct_component( 0.997203, -0.0738832, -0.0112676 ), {"simPx", "simPy", "simPz"} )
     // .Define( "simPyCorr", correct_component( 0.0738782, 0.997267, -0.000857844 ), {"simPx", "simPy", "simPz"} )
