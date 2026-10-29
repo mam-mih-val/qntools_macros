@@ -33,49 +33,46 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   std::iota( harmonics.begin(), harmonics.end(), 1 );
   std::iota( harmonics_q.begin(), harmonics_q.end(), 1 );
 
-  // std::vector<int> f1_mod = {
-  //   6,  7,  8,
-  //   11, 12, 13,
-  //   16,     17,
-  //   20, 21, 22, 
-  //   25, 26, 27
-  // };
-  // std::vector<int> f2_mod = {
-  //   0,  1,  2,  3,  4,
-  //   5,              9,
-  //   10,             14,
-  //   15,             18,
-  //   19,             23,
-  //   24,             28,
-  //   29, 30, 31, 32, 33,
-  // };
-  // std::vector<int> f3_mod = {
-  //   35,                 44,
-  //   37,                 46, 
-  //   39,                 48, 
-  //   41,                 50,
-  //   43,                 52
-  // };
+std::vector<int> f1_mod = {
+                      1,
+    35, 36, 6,
+    37, 38, 11, 
+    39, 40, 16, 
+    41, 42, 20,
+    43, 44, 25,
+                      30,
 
-  // std::vector<int> f4_mod = {
-  //   34,                     45,
-  //   36,                     47, 
-  //   38,                     49, 
-  //   40,                     51,
-  //   42,                     53
-  // };
+  };
+  std::vector<int> f2_mod = {
+    2,     3,   4,
+    7,     8,   9,
+    12,   13,  14, 
+    17,           18,
+    21, 22, 23,
+    26, 27, 28,
+    31, 32, 33
+  };
+  std::vector<int> f3_mod = {
+    5,
+    10, 45, 46,
+    15, 47, 48,
+    19, 49, 50,
+    24, 51, 52,
+    29, 53, 54,
+    34,
+  };
 
   // std::for_each( f1_mod.begin(), f1_mod.end(), [](auto& m){ m += 1; } );
   // std::for_each( f2_mod.begin(), f2_mod.end(), [](auto& m){ m += 1; } );
   // std::for_each( f3_mod.begin(), f3_mod.end(), [](auto& m){ m += 1; } );
   // std::for_each( f4_mod.begin(), f4_mod.end(), [](auto& m){ m += 1; } );
 
-  auto f1_mod = std::vector<int>(10);
-  std::iota( f1_mod.begin(), f1_mod.end(), 45 );
-  auto f2_mod = std::vector<int>(34);
-  std::iota( f2_mod.begin(), f2_mod.end(), 1 );
-  auto f3_mod = std::vector<int>(10);
-  std::iota( f3_mod.begin(), f3_mod.end(), 35 );
+  // auto f1_mod = std::vector<int>(10);
+  // std::iota( f1_mod.begin(), f1_mod.end(), 45 );
+  // auto f2_mod = std::vector<int>(34);
+  // std::iota( f2_mod.begin(), f2_mod.end(), 1 );
+  // auto f3_mod = std::vector<int>(10);
+  // std::iota( f3_mod.begin(), f3_mod.end(), 35 );
 
   std::unique_ptr<TFile> effieciency_file{TFile::Open( str_effieciency_file.c_str(), "READ" )};
   TH2* efficiency_histo{nullptr};

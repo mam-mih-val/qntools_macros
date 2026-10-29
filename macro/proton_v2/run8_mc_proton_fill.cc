@@ -22,29 +22,34 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
 
   std::cout << "starting execution" << std::endl;
 
-  // std::vector<int> f1_mod = {
-  //   6,  7,  8,
-  //   11, 12, 13,
-  //   16,     17,
-  //   20, 21, 22, 
-  //   25, 26, 27
-  // };
-  // std::vector<int> f2_mod = {
-  //   0,  1,  2,  3,  4,
-  //   5,              9,
-  //   10,             14,
-  //   15,             18,
-  //   19,             23,
-  //   24,             28,
-  //   29, 30, 31, 32, 33,
-  // };
-  // std::vector<int> f3_mod = {
-  //   35,                 44,
-  //   37,                 46, 
-  //   39,                 48, 
-  //   41,                 50,
-  //   43,                 52
-  // };
+  std::vector<int> f1_mod = {
+                      1,
+    35, 36, 6,
+    37, 38, 11, 
+    39, 40, 16, 
+    41, 42, 20,
+    43, 44, 25,
+                      30,
+
+  };
+  std::vector<int> f2_mod = {
+    2,     3,   4,
+    7,     8,   9,
+    12,   13,  14, 
+    17,           18,
+    21, 22, 23,
+    26, 27, 28,
+    31, 32, 33
+  };
+  std::vector<int> f3_mod = {
+    5,
+    10, 45, 46,
+    15, 47, 48,
+    19, 49, 50,
+    24, 51, 52,
+    29, 53, 54,
+    34,
+  };
 
   // std::vector<int> f4_mod = {
   //   34,                     45,
@@ -118,6 +123,15 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
       // Qn::AxisD{ "y", std::vector<double>{ 0, 0.4, 0.6, 0.8, 1, 1.2 } },
       Qn::AxisD{ "pT", std::vector<double>{ 0, 0.2, 0.4, 0.5, 0.6, 0.8, 1.0, 1.5 } },
       // Qn::AxisD{ "pT", std::vector<double>{ 0, 0.4, 0.6, 1.0, 1.5, 2.0 } },
+    }
+  };
+
+  auto t_axes = CorrelationAxes<float, std::vector<float>, ROOT::VecOps::RVec<float>>{
+    .axes_columns={ "centrality", "trEta", "trPt" },
+    .axes=std::vector<Qn::AxisD>{
+      Qn::AxisD{ "centrality", 6, 0, 60 },
+      Qn::AxisD{ "eta", 10, 2, 4 },
+      Qn::AxisD{ "trPt", 15, 0, 1.5 },
     }
   };
 
