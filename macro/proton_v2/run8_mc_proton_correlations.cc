@@ -101,12 +101,12 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   auto [vec_tp_mean, vec_tp_cov] = ReadMeanCov<2*Q_NHARM>("Tpos", calib_file.get());
   auto tp_correction_container = MakeCorrectionContainer<Q_NHARM>( vec_tp_mean, vec_tp_cov, TwistRescale<Q_NHARM>{}, 0.005 );
   auto tp_corr_builder = CorrectorBuilder<Q_NHARM>( tp_correction_container );
-  sampled_d = sampled_d.Define( "Tpos", tp_corr_builder.IssueUVectorCorrector<uvector_t, float, std::vector<float>, ROOT::VecOps::RVec<float> >(), { "ini_Tpos", "centrality", "trEta", "trPt" } );
+  sampled_d = sampled_d.Define( "Tpos", tp_corr_builder.IssueUVectorCorrector<uvector_t, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >(), { "ini_Tpos", "centrality", "trEta", "trPt" } );
 
   auto [vec_tn_mean, vec_tn_cov] = ReadMeanCov<2*Q_NHARM>("Tneg", calib_file.get());
   auto tn_correction_container = MakeCorrectionContainer<Q_NHARM>( vec_tn_mean, vec_tn_cov, TwistRescale<Q_NHARM>{}, 0.005 );
   auto tn_corr_builder = CorrectorBuilder<Q_NHARM>( tn_correction_container );
-  sampled_d = sampled_d.Define( "Tneg", tn_corr_builder.IssueUVectorCorrector<uvector_t, float, std::vector<float>, ROOT::VecOps::RVec<float> >(), { "ini_Tneg", "centrality", "trEta", "trPt" } );
+  sampled_d = sampled_d.Define( "Tneg", tn_corr_builder.IssueUVectorCorrector<uvector_t, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >(), { "ini_Tneg", "centrality", "trEta", "trPt" } );
 
   auto proton_axes = CorrelationAxes<float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float>>{
     .axes_columns={ "centrality", "trProtonY", "trPt" },
@@ -124,7 +124,7 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
     }
   };
 
-  auto t_axes = CorrelationAxes<float, std::vector<float>, ROOT::VecOps::RVec<float>>{
+  auto t_axes = CorrelationAxes<float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float>>{
     .axes_columns={ "centrality", "trEta", "trPt" },
     .axes=std::vector<Qn::AxisD>{
       Qn::AxisD{ "centrality", 6, 0, 60 },
