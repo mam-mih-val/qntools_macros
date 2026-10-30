@@ -22,33 +22,23 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
 
   std::cout << "starting execution" << std::endl;
 
+  
   std::vector<int> f1_mod = {
-                      1,
-    35, 36, 6,
-    37, 38, 11, 
-    39, 40, 16, 
-    41, 42, 20,
-    43, 44, 25,
-                      30,
-
+    12, 13, 14, 
+    17,         18,
+    21, 22, 23,
   };
   std::vector<int> f2_mod = {
-    2,     3,   4,
-    7,     8,   9,
-    12,   13,  14, 
-    17,           18,
-    21, 22, 23,
-    26, 27, 28,
-    31, 32, 33
+    1, 2, 4, 5,
+    30, 31, 33, 34
   };
   std::vector<int> f3_mod = {
-    5,
-    10, 45, 46,
-    15, 47, 48,
-    19, 49, 50,
-    24, 51, 52,
-    29, 53, 54,
-    34,
+    35, 43, 
+    46, 54,
+  };
+  std::vector<int> f4_mod = {
+    3, 32,
+    39, 50
   };
 
   // std::vector<int> f4_mod = {
@@ -101,10 +91,12 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
   sampled_d = sampled_d.Define( "F1w", fhcal_weight_generator(f1_mod), { "fhcalModId", "fhcalModE" } );
   sampled_d = sampled_d.Define( "F2w", fhcal_weight_generator(f2_mod), { "fhcalModId", "fhcalModE" } );
   sampled_d = sampled_d.Define( "F3w", fhcal_weight_generator(f3_mod), { "fhcalModId", "fhcalModE" } );
+  sampled_d = sampled_d.Define( "F4w", fhcal_weight_generator(f4_mod), { "fhcalModId", "fhcalModE" } );
 
   DefineVector( sampled_d, "F1", q_vector< std::vector<float>, std::vector<double> >(qvector_harmonics), std::vector<std::string>{"fhcalModPhi", "F1w"} );
   DefineVector( sampled_d, "F2", q_vector< std::vector<float>, std::vector<double> >(qvector_harmonics), std::vector<std::string>{"fhcalModPhi", "F2w"} );
   DefineVector( sampled_d, "F3", q_vector< std::vector<float>, std::vector<double> >(qvector_harmonics), std::vector<std::string>{"fhcalModPhi", "F3w"} );
+  DefineVector( sampled_d, "F4", q_vector< std::vector<float>, std::vector<double> >(qvector_harmonics), std::vector<std::string>{"fhcalModPhi", "F4w"} );
 
   DefineVector( sampled_d, "T1", q_vector< std::vector<float>, std::vector<int> >(qvector_harmonics), std::vector<std::string>{"trPhi", "trInOldF1"} );
   DefineVector( sampled_d, "T2", q_vector< std::vector<float>, std::vector<int> >(qvector_harmonics), std::vector<std::string>{"trPhi", "trInOldF2"} );
@@ -165,6 +157,9 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
 
     .AddComponentMeans( Vector<qvector_t>{ "F3" }, qvector_harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
     .AddComponentCovariance( Vector<qvector_t>{ "F3" }, qvector_harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+
+    .AddComponentMeans( Vector<qvector_t>{ "F4" }, qvector_harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddComponentCovariance( Vector<qvector_t>{ "F4" }, qvector_harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
 
     .AddComponentMeans( Vector<qvector_t>{ "T1" }, qvector_harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
     .AddComponentCovariance( Vector<qvector_t>{ "T1" }, qvector_harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
