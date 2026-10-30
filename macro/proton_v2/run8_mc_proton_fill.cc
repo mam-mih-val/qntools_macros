@@ -65,12 +65,12 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
   // std::for_each( f4_mod.begin(), f4_mod.end(), [](auto& m){ m += 1; } );
 
 
-  auto f1_mod = std::vector<int>(10);
-  std::iota( f1_mod.begin(), f1_mod.end(), 45 );
-  auto f2_mod = std::vector<int>(34);
-  std::iota( f2_mod.begin(), f2_mod.end(), 1 );
-  auto f3_mod = std::vector<int>(10);
-  std::iota( f3_mod.begin(), f3_mod.end(), 35 );
+  // auto f1_mod = std::vector<int>(10);
+  // std::iota( f1_mod.begin(), f1_mod.end(), 45 );
+  // auto f2_mod = std::vector<int>(34);
+  // std::iota( f2_mod.begin(), f2_mod.end(), 1 );
+  // auto f3_mod = std::vector<int>(10);
+  // std::iota( f3_mod.begin(), f3_mod.end(), 35 );
 
   auto harmonics = std::vector<size_t>( 4 );
   std::iota( harmonics.begin(), harmonics.end(), 1 );
