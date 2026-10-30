@@ -63,8 +63,8 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
   DefineVector( sampled_d, "F2", q_vector< std::vector<float>, std::vector<double> >(qvector_harmonics), std::vector<std::string>{"fhcalModPhi", "F2w"} );
   DefineVector( sampled_d, "F3", q_vector< std::vector<float>, std::vector<double> >(qvector_harmonics), std::vector<std::string>{"fhcalModPhi", "F3w"} );
   
-  DefineVector( sampled_d, "Tpos", q_vector< std::vector<float>, std::vector<double> >(qvector_harmonics), std::vector<std::string>{"trPhi", "trTposW"} );
-  DefineVector( sampled_d, "Tneg", q_vector< std::vector<float>, std::vector<double> >(qvector_harmonics), std::vector<std::string>{"trPhi", "trTnegW"} );
+  // DefineVector( sampled_d, "Tpos", q_vector< std::vector<float>, std::vector<double> >(qvector_harmonics), std::vector<std::string>{"trPhi", "trTposW"} );
+  // DefineVector( sampled_d, "Tneg", q_vector< std::vector<float>, std::vector<double> >(qvector_harmonics), std::vector<std::string>{"trPhi", "trTnegW"} );
 
   DefineVector(sampled_d, "proton", u_vector< std::vector<float> >( harmonics ), std::vector<std::string>{"trPhi"s} );
   DefineVector(sampled_d, "Tpos", u_vector< std::vector<float> >( harmonics ), std::vector<std::string>{"trPhi"s} );
