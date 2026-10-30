@@ -376,7 +376,7 @@ const auto proton_weight = [](
   std::vector<float> vec_r,
   ROOT::VecOps::RVec<int> vec_nhits,
   ROOT::VecOps::RVec<float> vec_chi2,
-  std::vector<float> vec_eta,
+  ROOT::VecOps::RVec<float> vec_eta,
   std::vector<float> vec_fhcal_x,
   std::vector<float> vec_fhcal_y
   // "trIsProton", "trProtonEfficiency", "trHasAnyTofHit", "trDcaR", "trStsNhits", "trStsChi2", "trFhcalX", "trFhcalY"
@@ -432,7 +432,7 @@ const auto proton_weight_data = [](
 };
 
 const auto tpos_weight = []( 
-  std::vector<float>       vec_eta, 
+  ROOT::VecOps::RVec<float> vec_eta, 
   ROOT::VecOps::RVec<float> vec_pT, 
   std::vector<float> vec_pq,
   std::vector<float> vec_r,
@@ -463,7 +463,7 @@ const auto tpos_weight = [](
 };
 
 const auto eta_cut = [](double eta1, double eta2){
-  return [eta1, eta2]( std::vector<float>  vec_eta ){
+  return [eta1, eta2]( ROOT::VecOps::RVec<float>  vec_eta ){
     auto weights = std::vector<double>( vec_eta.size(), 0.0 );
     for(auto i=size_t{}; i<vec_eta.size(); ++i){
       if( vec_eta[i] < eta1 )
@@ -476,7 +476,7 @@ const auto eta_cut = [](double eta1, double eta2){
 };
 
 const auto tneg_weight = []( 
-  std::vector<float>       vec_eta, 
+  ROOT::VecOps::RVec<float>       vec_eta, 
   ROOT::VecOps::RVec<float> vec_pT, 
   std::vector<float> vec_pq,
   std::vector<float> vec_r,
