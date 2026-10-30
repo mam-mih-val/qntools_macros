@@ -81,7 +81,7 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
     }
   };
 
-  auto t_axes = CorrelationAxes<float, std::vector<float>, ROOT::VecOps::RVec<float>>{
+  auto t_axes = CorrelationAxes<float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float>>{
     .axes_columns={ "centrality", "trEta", "trPt" },
     .axes=std::vector<Qn::AxisD>{
       Qn::AxisD{ "centrality", 6, 0, 60 },
