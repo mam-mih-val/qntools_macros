@@ -443,12 +443,12 @@ const auto tpos_weight = [](
   ){
   auto weights = std::vector<double>( vec_eta.size(), 0.0 );
   for(auto i=size_t{}; i<vec_eta.size(); ++i){
-    if( vec_eta[i] < 1.5 )
-      continue;
-    if( vec_eta[i] > 2.0 )
-      continue;
-    if( vec_pT[i] < 1.0 )
-      continue;
+    // if( vec_eta[i] < 1.5 )
+    //   continue;
+    // if( vec_eta[i] > 2.0 )
+    //   continue;
+    // if( vec_pT[i] < 1.0 )
+    //   continue;
     if( vec_pq[i] < 0.0 )
       continue;
     if( vec_r[i] > 3.0 )
@@ -487,20 +487,19 @@ const auto tneg_weight = [](
   ){
   auto weights = std::vector<double>( vec_eta.size(), 0.0 );
   for(auto i=size_t{}; i<vec_eta.size(); ++i){
-    if( vec_eta[i] < 1.5 )
-      continue;
-    if( vec_eta[i] > 4.0 )
-      continue;
-    if( vec_pT[i] < 0.2 )
-      continue;
+    // if( vec_eta[i] < 1.5 )
+    //   continue;
+    // if( vec_eta[i] > 4.0 )
+    //   continue;
+    // if( vec_pT[i] < 0.2 )
+    //   continue;
     if( vec_pq[i] > 0.0 )
       continue;
     if( vec_r[i] > 3.0 )
       continue;
-    if( -30 <  vec_fhcal_x[i]  && vec_fhcal_x[i] < 160 &&
+    if( -40 <  vec_fhcal_x[i]  && vec_fhcal_x[i] < 170 &&
         -60 < vec_fhcal_y[i] && vec_fhcal_y[i] < 60   )
       continue;
-    
     weights[i] = 1.0;
   }
   return weights;
@@ -672,7 +671,7 @@ const auto GenerateBmnExtendedTreeMC(DataFrame& d, TH2* efficiency_histo){
     .Define( "trPx", " std::vector<float> px; for( auto mom : trMom ){ px.push_back( mom.Px() ); } return px; " )
     .Define( "trPy", " std::vector<float> py; for( auto mom : trMom ){ py.push_back( mom.Py() ); } return py; " )
     .Define( "trPhi","std::vector<float> phi;for(auto& mom : trMom) phi.push_back( mom.phi() ); return phi;")
-    .Define( "trEta","std::vector<float> eta;for(auto& mom : trMom) eta.push_back( mom.Eta() ); return eta;")
+    .Define( "trEta","ROOT::VecOps::RVec<float> eta;for(auto& mom : trMom) eta.push_back( mom.Eta() ); return eta;")
     .Define( "pz", " std::vector<float> pz; for( auto mom : trMom ){ pz.push_back( mom.Pz() ); } return pz; " )
     .Define( "pq", " std::vector<float> pq; for( int i=0; i<trMom.size(); i++ ){ pq.push_back( trMom.at(i).P() / trCharge.at(i) ); } return pq;" )
     .Define( "trProtonY", rapidity_generator(PROTON_M, Y_CM), {"pz", "pq"} )
