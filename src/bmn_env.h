@@ -616,7 +616,7 @@ auto pT = []( std::vector<float> vec_px, std::vector<float> vec_py ){
 };
 
 auto subevent_centered_phi = []( const std::vector<int>& mod_layout ){
-  [mod_layout](ROOT::VecOps::RVec<int> vec_mod_id, ROOT::VecOps::RVec<float> vec_mod_x, ROOT::VecOps::RVec<float> vec_mod_y){
+  return [mod_layout](ROOT::VecOps::RVec<int> vec_mod_id, ROOT::VecOps::RVec<float> vec_mod_x, ROOT::VecOps::RVec<float> vec_mod_y){
     auto vec_phi = std::vector<float>( vec_mod_id.size(), -999. );
     auto sum_x = double{};
     auto sum_y = double{};
