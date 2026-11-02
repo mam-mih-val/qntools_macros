@@ -445,7 +445,7 @@ const auto tpos_weight = [](
   for(auto i=size_t{}; i<vec_eta.size(); ++i){
     if( vec_eta[i] < 2.0 )
       continue;
-    if( vec_eta[i] > 3.0 )
+    if( vec_eta[i] > 2.5 )
       continue;
     if( vec_pT[i] < 0.2 )
       continue;
