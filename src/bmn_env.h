@@ -2,6 +2,7 @@
 #define BMN_ENV_H
 
 #include <algorithm>
+#include <cstddef>
 #include <vector>
 const auto rapidity_generator = []( auto particle_m, auto y_cm ){
   return 
@@ -612,6 +613,33 @@ auto pT = []( std::vector<float> vec_px, std::vector<float> vec_py ){
     vec_pT[i] = sqrt( px*px + py*py );
   }
   return vec_pT;
+};
+
+auto subevent_centered_phi = []( const std::vector<int>& mod_layout ){
+  [mod_layout](ROOT::VecOps::RVec<int> vec_mod_id, ROOT::VecOps::RVec<float> vec_mod_x, ROOT::VecOps::RVec<float> vec_mod_y){
+    auto vec_phi = std::vector<float>( vec_mod_id.size(), -999. );
+    auto sum_x = double{};
+    auto sum_y = double{};
+    auto n_modules = double{};
+    for( auto i=size_t{}; i<vec_mod_id.size(); ++i ){
+      auto m_id = vec_mod_id[i];
+      if( std::find( mod_layout.begin(), mod_layout.end(), m_id ) == mod_layout.end() )
+        continue;
+      sum_x+=vec_mod_x[i];
+      sum_y+=vec_mod_y[i];
+      n_modules+=1;
+    }
+    auto cm_x = sum_x / n_modules;
+    auto cm_y = sum_y / n_modules;
+
+    for( auto i=size_t{}; i<vec_mod_id.size(); ++i ){
+      auto x = vec_mod_x[i] - cm_x;
+      auto y = vec_mod_y[i] - cm_y;
+      auto phi = atan2( y, x );
+      vec_phi[i] = phi;
+    }
+    return vec_phi;
+  };
 };
 
 std::vector<int> f1_modules = {
