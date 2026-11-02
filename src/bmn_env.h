@@ -443,12 +443,12 @@ const auto tpos_weight = [](
   ){
   auto weights = std::vector<double>( vec_eta.size(), 0.0 );
   for(auto i=size_t{}; i<vec_eta.size(); ++i){
-    // if( vec_eta[i] < 1.5 )
-    //   continue;
-    // if( vec_eta[i] > 2.0 )
-    //   continue;
-    // if( vec_pT[i] < 1.0 )
-    //   continue;
+    if( vec_eta[i] < 2.0 )
+      continue;
+    if( vec_eta[i] > 3.0 )
+      continue;
+    if( vec_pT[i] < 0.2 )
+      continue;
     if( vec_pq[i] < 0.0 )
       continue;
     if( vec_r[i] > 3.0 )
@@ -487,12 +487,12 @@ const auto tneg_weight = [](
   ){
   auto weights = std::vector<double>( vec_eta.size(), 0.0 );
   for(auto i=size_t{}; i<vec_eta.size(); ++i){
-    // if( vec_eta[i] < 1.5 )
-    //   continue;
-    // if( vec_eta[i] > 4.0 )
-    //   continue;
-    // if( vec_pT[i] < 0.2 )
-    //   continue;
+    if( vec_eta[i] < 2.0 )
+      continue;
+    if( vec_eta[i] > 4.0 )
+      continue;
+    if( vec_pT[i] < 0.1 )
+      continue;
     if( vec_pq[i] > 0.0 )
       continue;
     if( vec_r[i] > 3.0 )
