@@ -29,7 +29,7 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
   auto f3_mod = std::vector<int>(10);
   std::iota( f3_mod.begin(), f3_mod.end(), 35 );
 
-  auto harmonics = std::vector<size_t>( 4 );
+  auto harmonics = std::vector<size_t>( 8 );
   std::iota( harmonics.begin(), harmonics.end(), 1 );
 
   auto qvector_harmonics = std::vector<size_t>( 2 );
