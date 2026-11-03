@@ -125,10 +125,10 @@ public:
             cov.push_back( vec_cov.at(i+j) );
           } i+=4;
 
-          cov[0] -= x_a*x_b;
-          cov[1] -= y_a*x_b;
-          cov[2] -= x_a*y_b;
-          cov[3] -= y_a*y_b;
+          // cov[0] -= x_a*x_b;
+          // cov[1] -= y_a*x_b;
+          // cov[2] -= x_a*y_b;
+          // cov[3] -= y_a*y_b;
 
           M( 2*h_a, 2*h_b ) = cov[0];
           M( 2*h_a+1, 2*h_b ) = cov[1];

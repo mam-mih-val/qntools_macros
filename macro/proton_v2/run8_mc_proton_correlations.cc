@@ -147,6 +147,8 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   
   auto handler = CorrelationHandler{ sampled_d, 100 };
   handler
+    .AddComponentMeans( Vector<uvector_t>{ "pca_proton" }, harmonics, proton_weight, proton_axes)
+    
     .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{"pca_proton", "psi_rp"}, {1, 1} }, proton_weight, proton_axes)
     .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{"pca_proton", "psi_rp"}, {2, 2} }, proton_weight, proton_axes)
     
@@ -193,14 +195,10 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
     .AddCorrelation( CorrelationDecorator<qvector_t>{ std::vector<std::string>{"F1"}, {1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
     .AddCorrelation( CorrelationDecorator<qvector_t>{ std::vector<std::string>{"F2"}, {1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
     .AddCorrelation( CorrelationDecorator<qvector_t>{ std::vector<std::string>{"F3"}, {1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
-    // .AddCorrelation( CorrelationDecorator<qvector_t>{ std::vector<std::string>{"Tpos"}, {1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
-    // .AddCorrelation( CorrelationDecorator<qvector_t>{ std::vector<std::string>{"Tneg"}, {1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
 
     .AddCorrelation( CorrelationDecorator<qvector_t>{ std::vector<std::string>{"ini_F1"}, {1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
     .AddCorrelation( CorrelationDecorator<qvector_t>{ std::vector<std::string>{"ini_F2"}, {1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
     .AddCorrelation( CorrelationDecorator<qvector_t>{ std::vector<std::string>{"ini_F3"}, {1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
-    // .AddCorrelation( CorrelationDecorator<qvector_t>{ std::vector<std::string>{"ini_Tpos"}, {1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
-    // .AddCorrelation( CorrelationDecorator<qvector_t>{ std::vector<std::string>{"ini_Tneg"}, {1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
   ;
 
   auto histo1d = std::vector<ROOT::RDF::RResultPtr<::TH1D>>{};
