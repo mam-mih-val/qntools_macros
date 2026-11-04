@@ -122,13 +122,13 @@ public:
           auto cov = std::vector<double>{}; 
           cov.reserve(4);
           for( auto j=size_t{0}; j<4; ++j ){
-            cov.push_back( vec_cov.at(i+j) );
+            cov.push_back( vec_cov.at(i+j)*2 );
           } i+=4;
 
-          cov[0] -= x_a*x_b;
-          cov[1] -= y_a*x_b;
-          cov[2] -= x_a*y_b;
-          cov[3] -= y_a*y_b;
+          // cov[0] -= x_a*x_b;
+          // cov[1] -= y_a*x_b;
+          // cov[2] -= x_a*y_b;
+          // cov[3] -= y_a*y_b;
 
           M( 2*h_a, 2*h_b ) = cov[0];
           M( 2*h_a+1, 2*h_b ) = cov[1];
@@ -159,7 +159,7 @@ public:
         if( sv_sum > l * trace )
           continue;
         auto s = singular_values(i);
-        Splus(i, i) = sqrt(0.5 / s);
+        Splus(i, i) = 1. / s;
         rank++;
         sv_sum+=s;
       }
