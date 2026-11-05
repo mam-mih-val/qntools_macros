@@ -147,7 +147,7 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   
   auto handler = CorrelationHandler{ sampled_d, 100 };
   handler
-    .AddComponentMeans( MeansDecorator<uvector_t>{ "pca_proton", harmonics }, proton_weight, proton_axes)
+    .AddCorrelation( MeansDecorator<uvector_t>{ "pca_proton", harmonics }, proton_weight, proton_axes)
     
     .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{"pca_proton", "psi_rp"}, {1, 1} }, proton_weight, proton_axes)
     .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{"pca_proton", "psi_rp"}, {2, 2} }, proton_weight, proton_axes)
