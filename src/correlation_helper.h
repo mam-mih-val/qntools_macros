@@ -427,7 +427,7 @@ template<typename First>
 class MeansDecorator{
 public:
   using First_t = First;
-  CorrelationDecorator( std::string vector_name, std::vector<size_t> harmonics ) : 
+  MeansDecorator( std::string vector_name, std::vector<size_t> harmonics ) : 
     vector_name_(std::move(vector_name)), 
     harmonics_(std::move(harmonics)) {}
   template<typename DF>
