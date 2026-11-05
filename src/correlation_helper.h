@@ -433,7 +433,7 @@ public:
   template<typename DF>
   auto operator()( DF& df ) const -> std::vector<std::string> {
     auto general_correlation_name = std::string{ vector_name_ }.append("_");
-    auto vec_components = std::vector< std::vector< AnyComponent > >{ std::vector< AnyComponent >{} };
+    auto vec_components = std::vector< std::vector< AnyComponent > >{};
     auto vec_corr_names = std::vector< std::string >{};
     for( size_t i=0; i<harmonics_.size(); ++i ){
       vec_corr_names.push_back( general_correlation_name + "x" + std::to_string(harmonics_[i]) );
@@ -474,7 +474,7 @@ public:
   template<typename DF>
   auto operator()( DF& df ) const -> std::vector<std::string> {
     auto general_correlation_name = std::string{ vector_name_ }.append("_");
-    auto vec_components = std::vector< std::vector< AnyComponent > >{ std::vector< AnyComponent >{} };
+    auto vec_components = std::vector< std::vector< AnyComponent > >{};
     auto vec_corr_names = std::vector< std::string >{};
     for( size_t i=0; i<harmonics_.size(); ++i ){
       for( auto j=i; j<harmonics_.size(); ++j ){
