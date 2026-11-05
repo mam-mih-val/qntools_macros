@@ -110,23 +110,23 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
   auto start = std::chrono::steady_clock::now();
   auto handler = CorrelationHandler{ sampled_d, 100 };
   handler
-    .AddCorrelation( MeansDecorator<uvector_t>{ "proton" }, harmonics, proton_weight, proton_axes )
-    .AddCorrelation( CovarianceDecorator<uvector_t>{ "proton" }, harmonics, proton_weight, proton_axes )
+    .AddCorrelation( MeansDecorator<uvector_t>{ "proton", harmonics }, proton_weight, proton_axes )
+    .AddCorrelation( CovarianceDecorator<uvector_t>{ "proton", harmonics }, proton_weight, proton_axes )
 
-    .AddCorrelation( MeansDecorator<qvector_t>{ "F1" }, qvector_harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE )
-    .AddCorrelation( CovarianceDecorator<qvector_t>{ "F1" }, qvector_harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE )
+    .AddCorrelation( MeansDecorator<qvector_t>{ "F1", qvector_harmonics }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE )
+    .AddCorrelation( CovarianceDecorator<qvector_t>{ "F1", qvector_harmonics }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE )
 
-    .AddCorrelation( MeansDecorator<qvector_t>{ "F2" }, qvector_harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE )
-    .AddCorrelation( CovarianceDecorator<qvector_t>{ "F2" }, qvector_harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE )
+    .AddCorrelation( MeansDecorator<qvector_t>{ "F2", qvector_harmonics }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE )
+    .AddCorrelation( CovarianceDecorator<qvector_t>{ "F2", qvector_harmonics }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE )
 
-    .AddCorrelation( MeansDecorator<qvector_t>{ "F3" }, qvector_harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE )
-    .AddCorrelation( CovarianceDecorator<qvector_t>{ "F3" }, qvector_harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE )
+    .AddCorrelation( MeansDecorator<qvector_t>{ "F3", qvector_harmonics }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE )
+    .AddCorrelation( CovarianceDecorator<qvector_t>{ "F3", qvector_harmonics }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE )
 
-    .AddCorrelation( MeansDecorator<qvector_t>{ "Tpos" }, qvector_harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE )
-    .AddCorrelation( CovarianceDecorator<qvector_t>{ "Tpos" }, qvector_harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE )
+    .AddCorrelation( MeansDecorator<qvector_t>{ "Tpos", qvector_harmonics }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE )
+    .AddCorrelation( CovarianceDecorator<qvector_t>{ "Tpos", qvector_harmonics }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE )
 
-    .AddCorrelation( MeansDecorator<qvector_t>{ "Tneg" }, qvector_harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE )
-    .AddCorrelation( CovarianceDecorator<qvector_t>{ "Tneg" }, qvector_harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE )
+    .AddCorrelation( MeansDecorator<qvector_t>{ "Tneg", qvector_harmonics }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE )
+    .AddCorrelation( CovarianceDecorator<qvector_t>{ "Tneg", qvector_harmonics }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE )
 
     // .AddComponentMeans( Vector<uvector_t>{ "proton" }, harmonics, proton_weight, proton_axes)
     // .AddComponentCovariance( Vector<uvector_t>{ "proton" }, harmonics, proton_weight, proton_axes)
