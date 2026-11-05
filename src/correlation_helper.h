@@ -423,12 +423,6 @@ private:
   std::vector<size_t> harmonics_{};
 };
 
-template<typename... Column_t>
-struct CorrelationAxes{
-  std::vector<std::string> axes_columns{};
-  std::vector<Qn::AxisD> axes{};
-};
-
 template<typename First>
 class MeansDecorator{
 public:
@@ -468,12 +462,6 @@ public:
 private:
   std::string vector_name_{};
   std::vector<size_t> harmonics_{};
-};
-
-template<typename... Column_t>
-struct CorrelationAxes{
-  std::vector<std::string> axes_columns{};
-  std::vector<Qn::AxisD> axes{};
 };
 
 template<typename First>
