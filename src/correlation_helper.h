@@ -444,14 +444,14 @@ public:
 
     if constexpr( std::is_same_v<qvector_t, First> ){
       for( auto i=size_t{0}; i<vec_corr_names.size(); ++i ){
-        df = df.Define( vec_corr_names[i], Correlator<double, First>{ vec_components[i] }, std::vector<std::string>{vector_names_} );
+        df = df.Define( vec_corr_names[i], Correlator<double, First>{ vec_components[i] }, std::vector<std::string>{vector_name_} );
         std::cout << "Q-vector correlation added: " << vec_corr_names[i] << "\n";
         std::for_each( vec_components[i].begin(), vec_components[i].end(), []( const auto& comp ){ std::cout <<  comp.Name() << "()"; } );
         std::cout << "\n";
       }
     } else {
       for( auto i=size_t{0}; i<vec_corr_names.size(); ++i ){
-        df = df.Define( vec_corr_names[i], Correlator< std::vector<double>, First>{ vec_components[i] }, std::vector<std::string>{vector_names_} );
+        df = df.Define( vec_corr_names[i], Correlator< std::vector<double>, First>{ vec_components[i] }, std::vector<std::string>{vector_name_} );
         std::cout << "u- and Q-vector correlation added: " << vec_corr_names[i] << "\n";
         std::for_each( vec_components[i].begin(), vec_components[i].end(), []( const auto& comp ){ std::cout <<  comp.Name() << "()"; } );
         std::cout << "\n";
