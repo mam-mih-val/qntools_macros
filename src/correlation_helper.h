@@ -429,6 +429,107 @@ struct CorrelationAxes{
   std::vector<Qn::AxisD> axes{};
 };
 
+template<typename First>
+class MeansDecorator{
+public:
+  using First_t = First;
+  CorrelationDecorator( std::string vector_name, std::vector<size_t> harmonics ) : 
+    vector_name_(std::move(vector_name)), 
+    harmonics_(std::move(harmonics)) {}
+  template<typename DF>
+  auto operator()( DF& df ) const -> std::vector<std::string> {
+    auto general_correlation_name = std::string{ vector_name_ }.append("_");
+    auto vec_components = std::vector< std::vector< AnyComponent > >{ std::vector< AnyComponent >{} };
+    auto vec_corr_names = std::vector< std::string >{ general_correlation_name };
+    for( size_t i=0; i<harmonics_.size(); ++i ){
+      vec_corr_names.push_back( general_correlation_name + "x" + std::to_string(harmonics_[i]) );
+      vec_corr_names.push_back( general_correlation_name + "y" + std::to_string(harmonics_[i]) );
+      vec_components.push_back( std::vector<AnyComponent>{ AnyComponent(x{}, harmonics_[i]) } );
+      vec_components.push_back( std::vector<AnyComponent>{ AnyComponent(y{}, harmonics_[i]) } );
+    }
+
+    if constexpr( std::is_same_v<qvector_t, First> ){
+      for( auto i=size_t{0}; i<vec_corr_names.size(); ++i ){
+        df = df.Define( vec_corr_names[i], Correlator<double, First>{ vec_components[i] }, vector_names_ );
+        std::cout << "Q-vector correlation added: " << vec_corr_names[i] << "\n";
+        std::for_each( vec_components[i].begin(), vec_components[i].end(), []( const auto& comp ){ std::cout <<  comp.Name() << "()"; } );
+        std::cout << "\n";
+      }
+    } else {
+      for( auto i=size_t{0}; i<vec_corr_names.size(); ++i ){
+        df = df.Define( vec_corr_names[i], Correlator< std::vector<double>, First>{ vec_components[i] }, vector_names_ );
+        std::cout << "u- and Q-vector correlation added: " << vec_corr_names[i] << "\n";
+        std::for_each( vec_components[i].begin(), vec_components[i].end(), []( const auto& comp ){ std::cout <<  comp.Name() << "()"; } );
+        std::cout << "\n";
+      }
+    }
+    return vec_corr_names;
+  }
+private:
+  std::string vector_name_{};
+  std::vector<size_t> harmonics_{};
+};
+
+template<typename... Column_t>
+struct CorrelationAxes{
+  std::vector<std::string> axes_columns{};
+  std::vector<Qn::AxisD> axes{};
+};
+
+template<typename First>
+class CovarianceDecorator{
+public:
+  using First_t = First;
+  CovarianceDecorator( std::string vector_name, std::vector<size_t> harmonics ) : 
+    vector_name_(std::move(vector_name)), 
+    harmonics_(std::move(harmonics)) {}
+  template<typename DF>
+  auto operator()( DF& df ) const -> std::vector<std::string> {
+    auto general_correlation_name = std::string{ vector_name_ }.append("_");
+    auto vec_components = std::vector< std::vector< AnyComponent > >{ std::vector< AnyComponent >{} };
+    auto vec_corr_names = std::vector< std::string >{ general_correlation_name };
+    for( size_t i=0; i<harmonics_.size(); ++i ){
+      for( auto j=i; j<harmonics_.size(); ++j ){
+        vec_corr_names.push_back( general_correlation_name + "x" + std::to_string(harmonics_[i])+ "x" + std::to_string(harmonics_[j]) );
+        vec_corr_names.push_back( general_correlation_name + "y" + std::to_string(harmonics_[i])+ "x" + std::to_string(harmonics_[j]) );
+        vec_corr_names.push_back( general_correlation_name + "x" + std::to_string(harmonics_[i])+ "y" + std::to_string(harmonics_[j]) );
+        vec_corr_names.push_back( general_correlation_name + "y" + std::to_string(harmonics_[i])+ "y" + std::to_string(harmonics_[j]) );
+
+        vec_components.push_back( std::vector<AnyComponent>{ AnyComponent(x{}, harmonics_[i]), AnyComponent(x{}, harmonics_[j]) } );
+        vec_components.push_back( std::vector<AnyComponent>{ AnyComponent(y{}, harmonics_[i]), AnyComponent(x{}, harmonics_[j]) } );
+        vec_components.push_back( std::vector<AnyComponent>{ AnyComponent(x{}, harmonics_[i]), AnyComponent(y{}, harmonics_[j]) } );
+        vec_components.push_back( std::vector<AnyComponent>{ AnyComponent(y{}, harmonics_[i]), AnyComponent(y{}, harmonics_[j]) } );
+      }
+    }
+
+    if constexpr( std::is_same_v<qvector_t, First> ){
+      for( auto i=size_t{0}; i<vec_corr_names.size(); ++i ){
+        df = df.Define( vec_corr_names[i], Correlator<double, First, First>{ vec_components[i] }, std::vector<std::string>( 2, vector_name_ ) );
+        std::cout << "Q-vector correlation added: " << vec_corr_names[i] << "\n";
+        std::for_each( vec_components[i].begin(), vec_components[i].end(), []( const auto& comp ){ std::cout <<  comp.Name() << "()"; } );
+        std::cout << "\n";
+      }
+    } else {
+      for( auto i=size_t{0}; i<vec_corr_names.size(); ++i ){
+        df = df.Define( vec_corr_names[i], Correlator< std::vector<double>, First, First>{ vec_components[i] }, std::vector<std::string>( 2, vector_name_ ) );
+        std::cout << "u- and Q-vector correlation added: " << vec_corr_names[i] << "\n";
+        std::for_each( vec_components[i].begin(), vec_components[i].end(), []( const auto& comp ){ std::cout <<  comp.Name() << "()"; } );
+        std::cout << "\n";
+      }
+    }
+    return vec_corr_names;
+  }
+private:
+  std::string vector_name_{};
+  std::vector<size_t> harmonics_{};
+};
+
+template<typename... Column_t>
+struct CorrelationAxes{
+  std::vector<std::string> axes_columns{};
+  std::vector<Qn::AxisD> axes{};
+};
+
 template<typename Column_t>
 struct Weight{
   std::string weight_column{};
