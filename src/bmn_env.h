@@ -421,9 +421,9 @@ const auto proton_weight_data = [](
       continue;
     if( vec_chi2[i] > 5 )
       continue;
-    // if( vec_eta[i] > 3.0 )
-    //   continue;
-    if( -30 <  vec_fhcal_x[i]  && vec_fhcal_x[i] < 160 &&
+    if( vec_eta[i] > 3.0 )
+      continue;
+    if( -40 <  vec_fhcal_x[i]  && vec_fhcal_x[i] < 170 &&
         -60 < vec_fhcal_y[i] && vec_fhcal_y[i] < 60   )
       continue;
     
