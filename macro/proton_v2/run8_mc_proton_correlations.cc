@@ -152,6 +152,7 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
     
     .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{"pca_proton", "psi_rp"}, {1, 1} }, proton_weight, proton_axes)
     .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{"pca_proton", "psi_rp"}, {2, 2} }, proton_weight, proton_axes)
+    .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"pca_proton", "psi_rp", "psi_rp"}, {1, 1, 2} }, proton_weight, proton_axes)
     
     .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{ "pca_proton", "F1" }, { 1, 1 } }, proton_weight, proton_axes)
     .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{ "pca_proton", "F2" }, { 1, 1 } }, proton_weight, proton_axes)
