@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <random>
 #include <vector>
 const auto rapidity_generator = []( auto particle_m, auto y_cm ){
   return 
@@ -639,6 +640,17 @@ auto subevent_centered_phi = []( const std::vector<int>& mod_layout ){
       vec_phi[i] = phi;
     }
     return vec_phi;
+  };
+};
+
+auto poisson_sample = [](const std::mt19937& random_engine, const std::poisson_distribution<int>& distribution){
+  return [&random_engine, &distribution]( std::vector<double> weights ){
+    auto upd_weights = std::vector<double>(weights.size());
+    for( auto w : weights ){
+      auto sample = distribution(random_engine);
+      auto upd_weights.push_back( w * sample );
+    }
+    return upd_weights;
   };
 };
 
