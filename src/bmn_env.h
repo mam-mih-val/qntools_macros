@@ -645,7 +645,7 @@ auto subevent_centered_phi = []( const std::vector<int>& mod_layout ){
 
 auto poisson_sample = [](std::mt19937& random_engine, std::poisson_distribution<int>& distribution){
   return [&random_engine, &distribution]( std::vector<double> weights ) mutable {
-    auto upd_weights = std::vector<double>(weights.size());
+    auto upd_weights = std::vector<double>{};
     for( auto w : weights ){
       auto sample = distribution(random_engine);
       upd_weights.push_back( w * sample );
