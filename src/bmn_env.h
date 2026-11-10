@@ -643,12 +643,12 @@ auto subevent_centered_phi = []( const std::vector<int>& mod_layout ){
   };
 };
 
-auto poisson_sample = [](const std::mt19937& random_engine, const std::poisson_distribution<int>& distribution){
-  return [&random_engine, &distribution]( std::vector<double> weights ){
+auto poisson_sample = [](std::mt19937& random_engine, std::poisson_distribution<int>& distribution){
+  return [&random_engine, &distribution]( std::vector<double> weights ) mutable {
     auto upd_weights = std::vector<double>(weights.size());
     for( auto w : weights ){
       auto sample = distribution(random_engine);
-      auto upd_weights.push_back( w * sample );
+      upd_weights.push_back( w * sample );
     }
     return upd_weights;
   };
