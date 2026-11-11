@@ -5,6 +5,8 @@
 #include <cstddef>
 #include <random>
 #include <vector>
+
+#include <Math/Vector4D.h>
 const auto rapidity_generator = []( auto particle_m, auto y_cm ){
   return 
   [particle_m, y_cm]( std::vector<float> vec_pz, std::vector<float> vec_pq ){
@@ -207,6 +209,16 @@ const auto tr_has_any_tof_hit = []( std::vector<int> vec_is_400, std::vector<int
     vec_has[i] = 1;
   }
   return vec_has;
+};
+
+const auto not_a_poi = []( std::vector<double> vec_val ){
+  auto vec_res = std::vector<double>( vec_val.size(), 0. );
+  for( auto i=size_t{}; i<vec_val.size(); ++i ){
+    if( vec_val[i] != 0 )
+      continue;
+    vec_res[i] = 1.;
+  }
+  return vec_res;
 };
 
 const auto weight_generator = []( auto efficiency_map ){
@@ -651,6 +663,28 @@ auto poisson_sample = [](std::mt19937& random_engine, std::poisson_distribution<
       upd_weights.push_back( w * sample );
     }
     return upd_weights;
+  };
+};
+
+auto random_int_generator = []( std::mt19937& random_engine, std::uniform_int_distribution<int>& distribution ){
+  return [&random_engine, &distribution]( std::vector<double> vec_not_a_poi ) mutable {
+    auto vec_random = std::vector<int>( vec_not_a_poi.size(), 0 );
+    for( auto i=size_t{}; i<vec_not_a_poi.size(); ++i ){
+      vec_random[i] = distribution( random_engine );
+    }
+    return vec_random;
+  };
+};
+
+auto random_int_mask_generator = []( int reference ){
+  return [reference]( std::vector<double> vec_not_a_poi, std::vector<int> vec_random ){
+    auto vec_mask = std::vector<double>( vec_not_a_poi.size(), 0. );
+    for( auto i=size_t{}; i<vec_not_a_poi.size(); ++i ){
+      if( vec_random[i] != reference )
+        continue;
+      vec_mask[i] = vec_not_a_poi[i];
+    }
+    return vec_mask;
   };
 };
 
