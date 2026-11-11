@@ -71,7 +71,9 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
   auto random_engine = std::mt19937{ device() };
   auto random_distribution = std::uniform_int_distribution<int>{ 0, 1 };
 
-  sampled_d = sampled_d.Define( "trNotProton", not_a_poi, { "trProtonWeight" } );
+  sampled_d = sampled_d.Define( "trNotPoi", not_a_poi, { "trProtonWeight" } );
+  sampled_d = sampled_d.Define( "trNotInFhcal", not_in_fhcal, { "trFhcalX", "trFhcalY" } );
+  sampled_d = sampled_d.Define( "trNotProton", vector_conjunction, { "trNotPoi", "trNotInFhcal" } );
   sampled_d = sampled_d.Define( "trRndSe", random_int_generator( random_engine, random_distribution ), { "trNotProton" } );
   sampled_d = sampled_d.Define( "trNotProtonA", random_int_mask_generator( 0 ), { "trNotProton", "trRndSe" } );
   sampled_d = sampled_d.Define( "trNotProtonB", random_int_mask_generator( 1 ), { "trNotProton", "trRndSe" } );

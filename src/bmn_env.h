@@ -221,6 +221,29 @@ const auto not_a_poi = []( std::vector<double> vec_val ){
   return vec_res;
 };
 
+const auto vector_conjunction = []( std::vector<double> vec_a, std::vector<double> vec_b ){
+  auto vec_res = std::vector<double>( vec_a.size(), 0. );
+  for( auto i=size_t{}; i<vec_a.size(); ++i ){
+    if( vec_a[i] == 0 )
+      continue;
+    if( vec_b[i] == 0 )
+      continue;
+    vec_res[i] = 1.;
+  }
+  return vec_res;
+};
+
+const auto not_in_fhcal = []( std::vector<float> vec_fhcal_x, std::vector<float> vec_fhcal_y ){
+  auto vec_res = std::vector<double>( vec_fhcal_x.size(), 0. );
+  for( auto i=size_t{}; i<vec_fhcal_x.size(); ++i ){
+    if( -40 <  vec_fhcal_x[i] && vec_fhcal_x[i] < 170 &&
+        -60 < vec_fhcal_y[i] && vec_fhcal_y[i] < 60   )
+      continue;
+    vec_res[i] = 1.;
+  }
+  return vec_res;
+};
+
 const auto weight_generator = []( auto efficiency_map ){
   return [efficiency_map](ROOT::VecOps::RVec<float> vec_pT, ROOT::VecOps::RVec<float> vec_y, std::vector<float> vec_phi){
     if( !efficiency_map ){
