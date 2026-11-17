@@ -742,6 +742,104 @@ auto phi_shuffle_generator = []( std::mt19937& random_engine ){
   };
 };
 
+auto phi_triplet_shuffle_generator = []( std::mt19937& random_engine, std::size_t n_sweeps ){
+  return [&random_engine, n_sweeps]( const ROOT::VecOps::RVec<float>& vec_pT, std::vector<float> vec_phi ) mutable {
+    const auto n_particles = static_cast<int>( std::min( vec_pT.size(), vec_phi.size() ) );
+    if( n_particles < 3 )
+      return vec_phi;
+
+    constexpr auto pi = 3.14159265358979323846;
+    constexpr auto eps = 1e-9;
+    constexpr int max_attempts = 10000;
+
+    auto index_distribution = std::uniform_int_distribution<int>( 0, n_particles - 1 );
+    auto angle_distribution = std::uniform_real_distribution<double>( -pi, pi );
+    auto acceptance_distribution = std::uniform_real_distribution<double>( 0., 1. );
+
+    for( auto sweep=std::size_t{}; sweep<n_sweeps; ++sweep ){
+      for( int i=0; i<n_particles; ++i ){
+        auto j = index_distribution( random_engine );
+        while( j == i )
+          j = index_distribution( random_engine );
+        auto k = index_distribution( random_engine );
+        while( k == i || k == j )
+          k = index_distribution( random_engine );
+
+        const auto pT_i = static_cast<double>( vec_pT[i] );
+        const auto pT_j = static_cast<double>( vec_pT[j] );
+        const auto pT_k = static_cast<double>( vec_pT[k] );
+        if( pT_i < eps || pT_j < eps || pT_k < eps )
+          continue;
+
+        const auto phi_i_old = static_cast<double>( vec_phi[i] );
+        const auto pxi_old = pT_i * std::cos( phi_i_old );
+        const auto pyi_old = pT_i * std::sin( phi_i_old );
+        const auto pxj_old = pT_j * std::cos( vec_phi[j] );
+        const auto pyj_old = pT_j * std::sin( vec_phi[j] );
+        const auto pxk_old = pT_k * std::cos( vec_phi[k] );
+        const auto pyk_old = pT_k * std::sin( vec_phi[k] );
+
+        const auto triplet_sum_x = pxi_old + pxj_old + pxk_old;
+        const auto triplet_sum_y = pyi_old + pyj_old + pyk_old;
+
+        // Magnitude of the rest vector before the proposal.
+        const auto rest_old_x = triplet_sum_x - pxi_old;
+        const auto rest_old_y = triplet_sum_y - pyi_old;
+        const auto rest_old_mag = std::sqrt( rest_old_x*rest_old_x + rest_old_y*rest_old_y );
+
+        auto accepted = false;
+        for( int attempt=0; attempt<max_attempts && !accepted; ++attempt ){
+          const auto new_phi_i = phi_i_old + angle_distribution( random_engine );
+          const auto new_px_i = pT_i * std::cos( new_phi_i );
+          const auto new_py_i = pT_i * std::sin( new_phi_i );
+
+          const auto rest_x = triplet_sum_x - new_px_i;
+          const auto rest_y = triplet_sum_y - new_py_i;
+          const auto rest_mag = std::sqrt( rest_x*rest_x + rest_y*rest_y );
+
+          // For a decomposition rest = p_j + p_k with fixed |p_j| and |p_k|
+          // the triangle inequalities must hold.
+          if( rest_mag < eps )
+            continue;
+          if( rest_mag >= pT_j + pT_k )
+            continue;
+          if( rest_mag < std::fabs( pT_j - pT_k ) )
+            continue;
+
+          // Accept the proposed triplet with probability
+          // alpha = rest_new / (rest_new + rest_old).
+          const auto alpha = rest_mag / ( rest_mag + rest_old_mag );
+          if( acceptance_distribution( random_engine ) > alpha )
+            break;
+
+          // Law of cosines: |p_k|^2 = |rest|^2 + |p_j|^2 - 2|rest||p_j|cos(theta)
+          const auto cos_theta = ( rest_mag*rest_mag + pT_j*pT_j - pT_k*pT_k )
+                               / ( 2. * rest_mag * pT_j );
+          if( cos_theta < -1. || cos_theta > 1. )
+            continue;
+          const auto theta = std::acos( std::clamp( cos_theta, -1., 1. ) );
+          const auto cos_angle = std::cos( theta );
+          const auto sin_angle = std::sin( theta );
+
+          const auto rest_unit_x = rest_x / rest_mag;
+          const auto rest_unit_y = rest_y / rest_mag;
+          const auto new_px_j = pT_j * ( rest_unit_x*cos_angle - rest_unit_y*sin_angle );
+          const auto new_py_j = pT_j * ( rest_unit_x*sin_angle + rest_unit_y*cos_angle );
+          const auto new_px_k = rest_x - new_px_j;
+          const auto new_py_k = rest_y - new_py_j;
+
+          vec_phi[i] = static_cast<float>( std::atan2( new_py_i, new_px_i ) );
+          vec_phi[j] = static_cast<float>( std::atan2( new_py_j, new_px_j ) );
+          vec_phi[k] = static_cast<float>( std::atan2( new_py_k, new_px_k ) );
+          accepted = true;
+        }
+        // If no valid angle was found within max_attempts, leave this triplet unchanged.
+      }
+    }
+    return vec_phi;
+  };
+};
+
 std::vector<int> f1_modules = {
   6,  7,  8,
   11, 12, 13,

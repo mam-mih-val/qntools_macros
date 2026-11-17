@@ -69,8 +69,9 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
 
   auto device = std::random_device{};
   auto random_engine = std::mt19937{ device() };
+  const auto n_triplet_sweeps = std::size_t{ 10 };
 
-  sampled_d = sampled_d.Define( "trRndPhi", phi_shuffle_generator( random_engine ), { "trPt", "trPhi" } );
+  sampled_d = sampled_d.Define( "trRndPhi", phi_triplet_shuffle_generator( random_engine, n_triplet_sweeps ), { "trPt", "trPhi" } );
 
   DefineVector( sampled_d, "F1", q_vector< std::vector<float>, std::vector<double> >(qvector_harmonics), std::vector<std::string>{"F1phi", "F1w"} );
   DefineVector( sampled_d, "F2", q_vector< std::vector<float>, std::vector<double> >(qvector_harmonics), std::vector<std::string>{"F2phi", "F2w"} );
