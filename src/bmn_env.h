@@ -2,6 +2,7 @@
 #define BMN_ENV_H
 
 #include <algorithm>
+#include <cmath>
 #include <cstddef>
 #include <random>
 #include <vector>
@@ -708,6 +709,36 @@ auto random_int_mask_generator = []( int reference ){
       vec_mask[i] = vec_not_a_poi[i];
     }
     return vec_mask;
+  };
+};
+
+auto phi_shuffle_generator = []( std::mt19937& random_engine ){
+  return [&random_engine]( ROOT::VecOps::RVec<float> vec_pT, std::vector<float> vec_phi ) mutable {
+    if( vec_pT.size() < 2 )
+      return vec_phi;
+    auto distribution = std::uniform_int_distribution<int>( 0, static_cast<int>(vec_pT.size()) - 1 );
+    for( auto i=size_t{}; i<vec_pT.size(); ++i ){
+      auto j = distribution( random_engine );
+      while( j == static_cast<int>(i) )
+        j = distribution( random_engine );
+
+      auto pxi = vec_pT[i] * std::cos( vec_phi[i] );
+      auto pyi = vec_pT[i] * std::sin( vec_phi[i] );
+      auto pxj = vec_pT[j] * std::cos( vec_phi[j] );
+      auto pyj = vec_pT[j] * std::sin( vec_phi[j] );
+
+      auto sum_px = pxi + pxj;
+      auto sum_py = pyi + pyj;
+
+      auto pxi_new = 2. * ( pxi * sum_px ) * sum_px - pxi;
+      auto pyi_new = 2. * ( pyi * sum_py ) * sum_py - pyi;
+      auto pxj_new = sum_px - pxi_new;
+      auto pyj_new = sum_py - pyi_new;
+
+      vec_phi[i] = std::atan2( pyi_new, pxi_new );
+      vec_phi[j] = std::atan2( pyj_new, pxj_new );
+    }
+    return vec_phi;
   };
 };
 
