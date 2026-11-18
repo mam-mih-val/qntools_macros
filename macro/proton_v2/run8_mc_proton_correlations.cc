@@ -80,7 +80,7 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   auto random_engine = std::mt19937{ device() };
   const auto n_triplet_sweeps = std::size_t{ 100 };
 
-  sampled_d = sampled_d.Define( "trRndPhi", phi_triplet_shuffle_generator( random_engine, n_triplet_sweeps ), { "trPt", "trPhi" } );
+  sampled_d = sampled_d.Define( "trRndPhi", phi_triplet_shuffle_generator( random_engine, n_triplet_sweeps ), { "trPt", "trPhi", "trProtonWeight" } );
 
   DefineVector( sampled_d, "ini_F1", q_vector< std::vector<float>, std::vector<double> >(harmonics_q), std::vector<std::string>{"F1phi", "F1w"} );
   DefineVector( sampled_d, "ini_F2", q_vector< std::vector<float>, std::vector<double> >(harmonics_q), std::vector<std::string>{"F2phi", "F2w"} );

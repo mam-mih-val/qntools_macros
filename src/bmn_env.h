@@ -743,27 +743,42 @@ auto phi_shuffle_generator = []( std::mt19937& random_engine ){
 };
 
 auto phi_triplet_shuffle_generator = []( std::mt19937& random_engine, std::size_t n_sweeps ){
-  return [&random_engine, n_sweeps]( const ROOT::VecOps::RVec<float>& vec_pT, std::vector<float> vec_phi ) mutable {
-    const auto n_particles = static_cast<int>( std::min( vec_pT.size(), vec_phi.size() ) );
+  return [&random_engine, n_sweeps]( const ROOT::VecOps::RVec<float>& vec_pT, std::vector<float> vec_phi, const std::vector<double>& vec_weights ) mutable {
+    const auto n_particles = static_cast<int>( std::min( { vec_pT.size(), vec_phi.size(), vec_weights.size() } ) );
     if( n_particles < 3 )
       return vec_phi;
 
     constexpr auto pi = 3.14159265358979323846;
     constexpr auto eps = 1e-9;
+    constexpr auto min_weight = 0.01;
     constexpr int max_attempts = 10000;
 
-    auto index_distribution = std::uniform_int_distribution<int>( 0, n_particles - 1 );
+    auto active_indices = std::vector<int>{};
+    active_indices.reserve( n_particles );
+    for( int i=0; i<n_particles; ++i ){
+      if( !( vec_weights[i] > min_weight ) )
+        continue;
+      active_indices.push_back( i );
+    }
+    const auto n_active = static_cast<int>( active_indices.size() );
+    if( n_active < 3 )
+      return vec_phi;
+
+    auto index_distribution = std::uniform_int_distribution<int>( 0, n_active - 1 );
     auto angle_distribution = std::uniform_real_distribution<double>( -pi, pi );
     auto acceptance_distribution = std::uniform_real_distribution<double>( 0., 1. );
 
     for( auto sweep=std::size_t{}; sweep<n_sweeps; ++sweep ){
-      for( int i=0; i<n_particles; ++i ){
-        auto j = index_distribution( random_engine );
-        while( j == i )
-          j = index_distribution( random_engine );
-        auto k = index_distribution( random_engine );
-        while( k == i || k == j )
-          k = index_distribution( random_engine );
+      for( int i_pos=0; i_pos<n_active; ++i_pos ){
+        const auto i = active_indices[i_pos];
+        auto j_pos = index_distribution( random_engine );
+        while( j_pos == i_pos )
+          j_pos = index_distribution( random_engine );
+        auto k_pos = index_distribution( random_engine );
+        while( k_pos == i_pos || k_pos == j_pos )
+          k_pos = index_distribution( random_engine );
+        const auto j = active_indices[j_pos];
+        const auto k = active_indices[k_pos];
 
         const auto pT_i = static_cast<double>( vec_pT[i] );
         const auto pT_j = static_cast<double>( vec_pT[j] );
