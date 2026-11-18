@@ -93,7 +93,7 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   DefineVector(sampled_d, "ini_rnd_proton", u_vector< std::vector<float> >( harmonics ), std::vector<std::string>{"trRndPhi"s} );
   DefineVector(sampled_d, "psi_rp", psi_rp_vector< double >( harmonics ), std::vector<std::string>{"psiRP"s} );
 
-  // auto calib_file = std::unique_ptr<TFile, std::function<void(TFile*)> >{ TFile::Open( str_calib_file.c_str(), "READ"), [](auto f){ f->Close(); } };
+  auto calib_file = std::unique_ptr<TFile, std::function<void(TFile*)> >{ TFile::Open( str_calib_file.c_str(), "READ"), [](auto f){ f->Close(); } };
   // auto [vec_pca_mean, vec_pca_cov] = ReadMeanCov<NHARM>("proton", calib_file.get());
   // auto p_pca_container = MakeCorrectionContainer<NHARM>( vec_pca_mean, vec_pca_cov, PrincipalComponents<NHARM>{}, 0.99 );
   // auto p_pca_builder = CorrectorBuilder<NHARM>( p_pca_container );
