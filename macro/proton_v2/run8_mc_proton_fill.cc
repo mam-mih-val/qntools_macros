@@ -69,7 +69,7 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
 
   auto device = std::random_device{};
   auto random_engine = std::mt19937{ device() };
-  const auto n_triplet_sweeps = std::size_t{ 100 };
+  const auto n_triplet_sweeps = std::size_t{ 500 };
 
   sampled_d = sampled_d.Define( "trRndPhi", phi_triplet_shuffle_generator( random_engine, n_triplet_sweeps ), { "trPt", "trPhi", "trProtonWeight" } );
 
@@ -123,7 +123,7 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
   handler
     // .AddCorrelation( MeansDecorator<uvector_t>{ "proton", harmonics }, proton_weight, proton_axes )
     // .AddCorrelation( CovarianceDecorator<uvector_t>{ "proton", harmonics }, proton_weight, proton_axes )
-    
+
     .AddCorrelation( MeansDecorator<uvector_t>{ "rnd_proton", harmonics }, proton_weight, proton_axes )
     .AddCorrelation( CovarianceDecorator<uvector_t>{ "rnd_proton", harmonics }, proton_weight, proton_axes )
 

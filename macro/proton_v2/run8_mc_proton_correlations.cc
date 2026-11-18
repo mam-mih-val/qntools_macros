@@ -78,7 +78,7 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
 
   auto device = std::random_device{};
   auto random_engine = std::mt19937{ device() };
-  const auto n_triplet_sweeps = std::size_t{ 100 };
+  const auto n_triplet_sweeps = std::size_t{ 500 };
 
   sampled_d = sampled_d.Define( "trRndPhi", phi_triplet_shuffle_generator( random_engine, n_triplet_sweeps ), { "trPt", "trPhi", "trProtonWeight" } );
 
