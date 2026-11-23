@@ -67,7 +67,6 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
   sampled_d = sampled_d.Define( "F2phi", subevent_centered_phi(f2_mod), { "fhcalModId", "fhcalModX", "fhcalModY" } );
   sampled_d = sampled_d.Define( "F3phi", subevent_centered_phi(f3_mod), { "fhcalModId", "fhcalModX", "fhcalModY" } );
 
-  // Q-vector from all protons, weighted with pT.
   sampled_d = sampled_d.Define( "trProtonPtW",
     []( const ROOT::VecOps::RVec<float>& vec_pT, const std::vector<int>& vec_is_proton ){
       std::vector<double> vec_w;
@@ -86,7 +85,6 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
   DefineVector( sampled_d, "Tneg", q_vector< std::vector<float>, std::vector<double> >(qvector_harmonics), std::vector<std::string>{"trPhi", "trTnegW"} );
 
   DefineVector(sampled_d, "proton", u_vector< std::vector<float> >( harmonics ), std::vector<std::string>{"trPhi"s} );
-  DefineVector(sampled_d, "protonQ", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"trPhi", "trProtonPtW"} );
 
   auto proton_axes = CorrelationAxes<float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float>>{
     .axes_columns={ "centrality", "trProtonY", "trPt" },
@@ -118,9 +116,6 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
     .AddCorrelation( MeansDecorator<uvector_t>{ "proton", harmonics }, proton_weight, proton_axes )
     .AddCorrelation( CovarianceDecorator<uvector_t>{ "proton", harmonics }, proton_weight, proton_axes )
 
-    .AddCorrelation( MeansDecorator<qvector_t>{ "protonQ", harmonics }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE )
-    .AddCorrelation( CovarianceDecorator<qvector_t>{ "protonQ", harmonics }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE )
-
     .AddCorrelation( MeansDecorator<qvector_t>{ "F1", qvector_harmonics }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE )
     .AddCorrelation( CovarianceDecorator<qvector_t>{ "F1", qvector_harmonics }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE )
 
@@ -135,18 +130,6 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
 
     .AddCorrelation( MeansDecorator<qvector_t>{ "Tneg", qvector_harmonics }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE )
     .AddCorrelation( CovarianceDecorator<qvector_t>{ "Tneg", qvector_harmonics }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE )
-
-    // .AddComponentMeans( Vector<uvector_t>{ "proton" }, harmonics, proton_weight, proton_axes)
-    // .AddComponentCovariance( Vector<uvector_t>{ "proton" }, harmonics, proton_weight, proton_axes)
-
-    // .AddComponentMeans( Vector<qvector_t>{ "F1" }, qvector_harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
-    // .AddComponentCovariance( Vector<qvector_t>{ "F1" }, qvector_harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
-
-    // .AddComponentMeans( Vector<qvector_t>{ "F2" }, qvector_harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
-    // .AddComponentCovariance( Vector<qvector_t>{ "F2" }, qvector_harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
-
-    // .AddComponentMeans( Vector<qvector_t>{ "F3" }, qvector_harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
-    // .AddComponentCovariance( Vector<qvector_t>{ "F3" }, qvector_harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)    
   ;
 
   auto file_out = std::unique_ptr<TFile, std::function<void(TFile*)> >{ TFile::Open( "corr.root", "RECREATE"), [](auto f){ f->Close(); } };
