@@ -67,11 +67,16 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
   sampled_d = sampled_d.Define( "F2phi", subevent_centered_phi(f2_mod), { "fhcalModId", "fhcalModX", "fhcalModY" } );
   sampled_d = sampled_d.Define( "F3phi", subevent_centered_phi(f3_mod), { "fhcalModId", "fhcalModX", "fhcalModY" } );
 
-  auto device = std::random_device{};
-  auto random_engine = std::mt19937{ device() };
-  const auto n_triplet_sweeps = std::size_t{ 500 };
-
-  sampled_d = sampled_d.Define( "trRndPhi", phi_triplet_shuffle_generator( random_engine, n_triplet_sweeps ), { "trPt", "trPhi", "trProtonWeight" } );
+  // Q-vector from all protons, weighted with pT.
+  sampled_d = sampled_d.Define( "trProtonPtW",
+    []( const ROOT::VecOps::RVec<float>& vec_pT, const std::vector<int>& vec_is_proton ){
+      std::vector<double> vec_w;
+      const auto n = std::min( vec_pT.size(), vec_is_proton.size() );
+      vec_w.reserve( n );
+      for( size_t i=0; i<n; ++i )
+        vec_w.push_back( vec_pT[i] * vec_is_proton[i] );
+      return vec_w;
+    }, { "trPt", "trIsProton" } );
 
   DefineVector( sampled_d, "F1", q_vector< std::vector<float>, std::vector<double> >(qvector_harmonics), std::vector<std::string>{"F1phi", "F1w"} );
   DefineVector( sampled_d, "F2", q_vector< std::vector<float>, std::vector<double> >(qvector_harmonics), std::vector<std::string>{"F2phi", "F2w"} );
@@ -81,7 +86,7 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
   DefineVector( sampled_d, "Tneg", q_vector< std::vector<float>, std::vector<double> >(qvector_harmonics), std::vector<std::string>{"trPhi", "trTnegW"} );
 
   DefineVector(sampled_d, "proton", u_vector< std::vector<float> >( harmonics ), std::vector<std::string>{"trPhi"s} );
-  DefineVector(sampled_d, "rnd_proton", u_vector< std::vector<float> >( harmonics ), std::vector<std::string>{"trRndPhi"s} );
+  DefineVector(sampled_d, "protonQ", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"trPhi", "trProtonPtW"} );
 
   auto proton_axes = CorrelationAxes<float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float>>{
     .axes_columns={ "centrality", "trProtonY", "trPt" },
@@ -91,15 +96,6 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
       // Qn::AxisD{ "y", std::vector<double>{ 0, 0.4, 0.6, 0.8, 1, 1.2 } },
       Qn::AxisD{ "pT", std::vector<double>{ 0, 0.2, 0.4, 0.5, 0.6, 0.8, 1.0, 1.5 } },
       // Qn::AxisD{ "pT", std::vector<double>{ 0, 0.4, 0.6, 1.0, 1.5, 2.0 } },
-    }
-  };
-
-  auto t_axes = CorrelationAxes<float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float>>{
-    .axes_columns={ "centrality", "trEta", "trPt" },
-    .axes=std::vector<Qn::AxisD>{
-      Qn::AxisD{ "centrality", 6, 0, 60 },
-      Qn::AxisD{ "eta", 20, 2, 4 },
-      Qn::AxisD{ "trPt", 5, 0, 2.0 },
     }
   };
 
@@ -114,18 +110,16 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
   auto f1_weight = Weight< std::vector<double> >{ "F1w" };
   auto f2_weight = Weight< std::vector<double> >{ "F2w" };
   auto f3_weight = Weight< std::vector<double> >{ "F3w" };
-  auto tp_weight = Weight< std::vector<double> >{ "trTposW" };
-  auto tn_weight = Weight< std::vector<double> >{ "trTnegW" };
   auto qvector_weight = Weight<double>{ "One" };
 
   auto start = std::chrono::steady_clock::now();
   auto handler = CorrelationHandler{ sampled_d, 100 };
   handler
-    // .AddCorrelation( MeansDecorator<uvector_t>{ "proton", harmonics }, proton_weight, proton_axes )
-    // .AddCorrelation( CovarianceDecorator<uvector_t>{ "proton", harmonics }, proton_weight, proton_axes )
+    .AddCorrelation( MeansDecorator<uvector_t>{ "proton", harmonics }, proton_weight, proton_axes )
+    .AddCorrelation( CovarianceDecorator<uvector_t>{ "proton", harmonics }, proton_weight, proton_axes )
 
-    .AddCorrelation( MeansDecorator<uvector_t>{ "rnd_proton", harmonics }, proton_weight, proton_axes )
-    .AddCorrelation( CovarianceDecorator<uvector_t>{ "rnd_proton", harmonics }, proton_weight, proton_axes )
+    .AddCorrelation( MeansDecorator<qvector_t>{ "protonQ", harmonics }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE )
+    .AddCorrelation( CovarianceDecorator<qvector_t>{ "protonQ", harmonics }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE )
 
     .AddCorrelation( MeansDecorator<qvector_t>{ "F1", qvector_harmonics }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE )
     .AddCorrelation( CovarianceDecorator<qvector_t>{ "F1", qvector_harmonics }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE )
@@ -144,12 +138,6 @@ void run8_mc_proton_fill( std::string list, std::string str_effieciency_file ){
 
     // .AddComponentMeans( Vector<uvector_t>{ "proton" }, harmonics, proton_weight, proton_axes)
     // .AddComponentCovariance( Vector<uvector_t>{ "proton" }, harmonics, proton_weight, proton_axes)
-
-    // .AddComponentMeans( Vector<qvector_t>{ "Tpos" }, harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE )
-    // .AddComponentCovariance( Vector<qvector_t>{ "Tpos" }, harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE )
-
-    // .AddComponentMeans( Vector<qvector_t>{ "Tneg" }, harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE )
-    // .AddComponentCovariance( Vector<qvector_t>{ "Tneg" }, harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE )
 
     // .AddComponentMeans( Vector<qvector_t>{ "F1" }, qvector_harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
     // .AddComponentCovariance( Vector<qvector_t>{ "F1" }, qvector_harmonics, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
