@@ -95,6 +95,25 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   DefineVector( sampled_d, "protonQ", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"trPhi", "trProtonPtW"} );
   DefineVector( sampled_d, "psi_rp", psi_rp_vector< double >( harmonics ), std::vector<std::string>{"psiRP"s} );
 
+  // Per-proton pT fraction: pT / sum(pT of all protons).
+  sampled_d = sampled_d.Define( "protonPtFrac",
+    []( const ROOT::VecOps::RVec<float>& vec_pT, const std::vector<int>& vec_is_proton ){
+      const auto n = vec_pT.size();
+      std::vector<double> vec_fraction( n, 0. );
+      double sum_proton_pT = 0.;
+      for( size_t i=0; i<n && i<vec_is_proton.size(); ++i ){
+        if( vec_is_proton[i] )
+          sum_proton_pT += vec_pT[i];
+      }
+      if( sum_proton_pT <= 0. )
+        return vec_fraction;
+      for( size_t i=0; i<n && i<vec_is_proton.size(); ++i ){
+        if( vec_is_proton[i] )
+          vec_fraction[i] = vec_pT[i] / sum_proton_pT;
+      }
+      return vec_fraction;
+    }, { "trPt", "trIsProton" } );
+
   auto calib_file = std::unique_ptr<TFile, std::function<void(TFile*)> >{ TFile::Open( str_calib_file.c_str(), "READ"), [](auto f){ f->Close(); } };
   auto [vec_pca_mean, vec_pca_cov] = ReadMeanCov<NHARM>("proton", calib_file.get());
   auto p_pca_container = MakeCorrectionContainer<NHARM>( vec_pca_mean, vec_pca_cov, PrincipalComponents<NHARM>{}, 0.99 );
@@ -148,6 +167,7 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
     .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{ "pca_proton", "F1" }, { 1, 1 } }, proton_weight, proton_axes)
     .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{ "pca_proton", "F2" }, { 1, 1 } }, proton_weight, proton_axes)
     .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{ "pca_proton", "F3" }, { 1, 1 } }, proton_weight, proton_axes)
+    .AddVectorCorrelation( "protonPtFrac", proton_weight, proton_axes )
 
     .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"pca_proton", "F1", "F2"}, {2, 1, 1} }, proton_weight, proton_axes)
     .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"pca_proton", "F1", "F3"}, {2, 1, 1} }, proton_weight, proton_axes)

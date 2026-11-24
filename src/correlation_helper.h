@@ -555,6 +555,24 @@ public:
     return *this;
   }
 
+  // Book a single vector-valued correlation column. The column must contain
+  // std::vector<double> values (one entry per particle), and the weight column
+  // is applied per particle, just like the u-vector correlations.
+  template<typename Weight_t, typename... Axes_t>
+  auto AddVectorCorrelation( const std::string& vector_column,
+                             const Weight<Weight_t>& weight,
+                             const CorrelationAxes<Axes_t...>& axes,
+                             Qn::Stat::WeightType correlation_weight_type = Qn::Stat::WeightType::OBSERVABLE ) -> CorrelationHandler& {
+    auto vec_columns = std::vector<std::string>{ vector_column, weight.weight_column, "samples" };
+    vec_columns.insert( vec_columns.end(), axes.axes_columns.begin(), axes.axes_columns.end() );
+    result_ptrs_.emplace_back(
+      dataframe_.template Book<std::vector<double>, Weight_t, ROOT::RVec<ULong64_t>, Axes_t...>(
+        CorrelationHelper( axes.axes, n_samples_, correlation_weight_type ), vec_columns )
+    );
+    result_names_.push_back( vector_column );
+    return *this;
+  }
+
   template<typename Vector_t, typename Weight_t, typename... Axes_t>
   auto AddComponentMeans( const Vector<Vector_t>& vector, const std::vector<size_t>& harmonics, const Weight<Weight_t>& weight, const CorrelationAxes<Axes_t...>& axes, Qn::Stat::WeightType correlation_weight_type = Qn::Stat::WeightType::OBSERVABLE ) -> CorrelationHandler& {
     auto vec_corr_names = DefineVectorMeans(dataframe_, CorrFunc1Part<Vector_t>{}, vector.vector_column, harmonics );
