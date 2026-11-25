@@ -6,6 +6,7 @@
 #include <cassert>
 #include <cmath>
 #include <cstddef>
+#include <cstdint>
 #include <exception>
 #include <limits>
 #include <memory>
@@ -23,6 +24,23 @@
 #include "bmn_env.h"
 #include "vector_generators.h"
 #include "corrections.h"
+
+namespace {
+
+// SplitMix64 finalizer.  Used to build deterministic per-track random
+// numbers for the proton-subsampling scan.
+inline std::uint64_t mix_hash( std::uint64_t x ){
+  x += 0x9e3779b97f4a7c15ULL;
+  x = ( x ^ ( x >> 30 ) ) * 0xbf58476d1ce4e5b9ULL;
+  x = ( x ^ ( x >> 27 ) ) * 0x94d049bb133111ebULL;
+  return x ^ ( x >> 31 );
+}
+
+inline double uniform_from_hash( std::uint64_t x ){
+  return static_cast<double>( mix_hash( x ) >> 11 ) * 0x1.0p-53;
+}
+
+}  // namespace
 
 void run8_mc_proton_correlations( std::string list, std::string str_effieciency_file, std::string str_calib_file ){
 
@@ -82,6 +100,55 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
       return vec_w;
     }, { "trPt", "trIsProton" } );
 
+  // Deterministic per-track random numbers for the proton-subsampling scan.
+  // The hash depends only on the event identity (run, event, multiplicity)
+  // and on the track index, so every bootstrap replica of an event receives
+  // exactly the same proton subsets.  It is independent of the probe proton
+  // and of any bootstrap column.  Subsets are nested: f25 is contained in
+  // f50, and f50 in f75.
+  sampled_d = sampled_d.Define( "protonSubsetU",
+    []( UInt_t runId, UInt_t evtId, const ROOT::VecOps::RVec<float>& vec_pT ){
+      const auto n = vec_pT.size();
+      auto base = mix_hash( ( static_cast<std::uint64_t>( runId ) << 32 )
+                            ^ static_cast<std::uint64_t>( evtId ) );
+      base ^= mix_hash( static_cast<std::uint64_t>( n ) + 0x517cc1b727220a95ULL );
+      auto vec_u = std::vector<double>( n );
+      for( size_t i=0; i<n; ++i )
+        vec_u[i] = uniform_from_hash( base ^ mix_hash( i + 1 ) );
+      return vec_u;
+    }, { "runId", "evtId", "trPt" } );
+
+  // Mask the pT weights with an exact-size random subset: for each event
+  // keep the round(f * N_proton) protons with the smallest hash values.
+  // The subsets are nested (f25 subset is contained in f50 in f75), and the
+  // number of protons in the subset is fixed event by event.
+  auto subset_weights = []( double fraction ){
+    return [fraction]( const std::vector<double>& vec_u, const std::vector<double>& vec_w ){
+      const auto n = std::min( vec_u.size(), vec_w.size() );
+      auto indices = std::vector<size_t>{};
+      indices.reserve( n );
+      for( size_t i=0; i<n; ++i ){
+        if( vec_w[i] > 0. )
+          indices.push_back( i );
+      }
+      auto vec_out = std::vector<double>( vec_w.size(), 0. );
+      if( indices.empty() )
+        return vec_out;
+      auto n_keep = static_cast<size_t>(
+        std::llround( fraction * static_cast<double>( indices.size() ) ) );
+      n_keep = std::max<size_t>( 1, std::min( n_keep, indices.size() ) );
+      std::partial_sort( indices.begin(), indices.begin() + n_keep, indices.end(),
+        [&vec_u]( size_t lhs, size_t rhs ){ return vec_u[lhs] < vec_u[rhs]; } );
+      for( size_t i=0; i<n_keep; ++i )
+        vec_out[indices[i]] = vec_w[indices[i]];
+      return vec_out;
+    };
+  };
+
+  sampled_d = sampled_d.Define( "trProtonPtW_f25", subset_weights( 0.25 ), { "protonSubsetU", "trProtonPtW" } );
+  sampled_d = sampled_d.Define( "trProtonPtW_f50", subset_weights( 0.50 ), { "protonSubsetU", "trProtonPtW" } );
+  sampled_d = sampled_d.Define( "trProtonPtW_f75", subset_weights( 0.75 ), { "protonSubsetU", "trProtonPtW" } );
+
   DefineVector( sampled_d, "ini_F1", q_vector< std::vector<float>, std::vector<double> >(harmonics_q), std::vector<std::string>{"F1phi", "F1w"} );
   DefineVector( sampled_d, "ini_F2", q_vector< std::vector<float>, std::vector<double> >(harmonics_q), std::vector<std::string>{"F2phi", "F2w"} );
   DefineVector( sampled_d, "ini_F3", q_vector< std::vector<float>, std::vector<double> >(harmonics_q), std::vector<std::string>{"F3phi", "F3w"} );
@@ -91,6 +158,10 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
 
   DefineVector(sampled_d, "ini_proton", u_vector< std::vector<float> >( harmonics ), std::vector<std::string>{"trPhi"s} );
   DefineVector( sampled_d, "protonQ", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"trPhi", "trProtonPtW"} );
+  // Subsampled proton Q-vectors for the flow / momentum-conservation scan.
+  DefineVector(sampled_d, "protonQ_f25", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"trPhi", "trProtonPtW_f25"} );
+  DefineVector(sampled_d, "protonQ_f50", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"trPhi", "trProtonPtW_f50"} );
+  DefineVector(sampled_d, "protonQ_f75", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"trPhi", "trProtonPtW_f75"} );
   DefineVector( sampled_d, "psi_rp", psi_rp_vector< double >( harmonics ), std::vector<std::string>{"psiRP"s} );
 
   // Per-proton pT fraction: pT / sum(pT of all protons).
@@ -204,6 +275,30 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
     // denominator of the F-on-protonQ regression coefficient.
     .AddCorrelation( CovarianceDecorator<qvector_t>{ "protonQ", { 1 } }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
     .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"protonQ", "psi_rp"}, {1, 1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+
+    // Proton u-vector vs the subsampled proton Q-vectors.
+    .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{ "pca_proton", "protonQ_f25" }, { 1, 1 } }, proton_weight, proton_axes)
+    .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{ "pca_proton", "protonQ_f50" }, { 1, 1 } }, proton_weight, proton_axes)
+    .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{ "pca_proton", "protonQ_f75" }, { 1, 1 } }, proton_weight, proton_axes)
+
+    // Subsampled proton Q-vector vs the F-vectors.
+    .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"protonQ_f25", "F1"}, {1, 1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"protonQ_f25", "F2"}, {1, 1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"protonQ_f25", "F3"}, {1, 1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddCorrelation( CovarianceDecorator<qvector_t>{ "protonQ_f25", { 1 } }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"protonQ_f25", "psi_rp"}, {1, 1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+
+    .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"protonQ_f50", "F1"}, {1, 1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"protonQ_f50", "F2"}, {1, 1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"protonQ_f50", "F3"}, {1, 1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddCorrelation( CovarianceDecorator<qvector_t>{ "protonQ_f50", { 1 } }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"protonQ_f50", "psi_rp"}, {1, 1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+
+    .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"protonQ_f75", "F1"}, {1, 1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"protonQ_f75", "F2"}, {1, 1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"protonQ_f75", "F3"}, {1, 1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddCorrelation( CovarianceDecorator<qvector_t>{ "protonQ_f75", { 1 } }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"protonQ_f75", "psi_rp"}, {1, 1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
 
     .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"F1", "psi_rp"}, {1, 1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
     .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"F2", "psi_rp"}, {1, 1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
