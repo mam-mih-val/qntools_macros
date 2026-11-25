@@ -258,6 +258,13 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
     .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{ "pca_proton", "F1" }, { 1, 1 } }, proton_weight, proton_axes)
     .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{ "pca_proton", "F2" }, { 1, 1 } }, proton_weight, proton_axes)
     .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{ "pca_proton", "F3" }, { 1, 1 } }, proton_weight, proton_axes)
+    // Raw (uncorrected) proton u-vector vs the same vectors, for the
+    // PCA-correction diagnostic.
+    .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{ "ini_proton", "F1" }, { 1, 1 } }, proton_weight, proton_axes)
+    .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{ "ini_proton", "F2" }, { 1, 1 } }, proton_weight, proton_axes)
+    .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{ "ini_proton", "F3" }, { 1, 1 } }, proton_weight, proton_axes)
+    .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{ "ini_proton", "psi_rp" }, { 1, 1 } }, proton_weight, proton_axes)
+    .AddCorrelation( CovarianceDecorator<uvector_t>{ "ini_proton", { 1 } }, proton_weight, proton_axes)
     // Proton u-vector vs the total proton momentum Q-vector.  Needed to
     // remove the momentum-conservation part of the u-F correlation.
     .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{ "pca_proton", "protonQ" }, { 1, 1 } }, proton_weight, proton_axes)
