@@ -176,8 +176,6 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
     // Proton u-vector vs the total proton momentum Q-vector.  Needed to
     // remove the momentum-conservation part of the u-F correlation.
     .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{ "pca_proton", "protonQ" }, { 1, 1 } }, proton_weight, proton_axes)
-    
-    .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{ "pca_proton", "protonQ" }, { 1, 1 } }, proton_weight, proton_axes)
 
     .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"pca_proton", "F1", "F2"}, {2, 1, 1} }, proton_weight, proton_axes)
     .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"pca_proton", "F1", "F3"}, {2, 1, 1} }, proton_weight, proton_axes)
