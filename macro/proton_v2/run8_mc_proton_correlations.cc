@@ -38,11 +38,6 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   std::iota( harmonics.begin(), harmonics.end(), 1 );
   std::iota( harmonics_q.begin(), harmonics_q.end(), 1 );
 
-  // std::for_each( f1_mod.begin(), f1_mod.end(), [](auto& m){ m += 1; } );
-  // std::for_each( f2_mod.begin(), f2_mod.end(), [](auto& m){ m += 1; } );
-  // std::for_each( f3_mod.begin(), f3_mod.end(), [](auto& m){ m += 1; } );
-  // std::for_each( f4_mod.begin(), f4_mod.end(), [](auto& m){ m += 1; } );
-
   auto f1_mod = std::vector<int>(10);
   std::iota( f1_mod.begin(), f1_mod.end(), 45 );
   auto f2_mod = std::vector<int>(34);
@@ -91,28 +86,27 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   DefineVector( sampled_d, "ini_F2", q_vector< std::vector<float>, std::vector<double> >(harmonics_q), std::vector<std::string>{"F2phi", "F2w"} );
   DefineVector( sampled_d, "ini_F3", q_vector< std::vector<float>, std::vector<double> >(harmonics_q), std::vector<std::string>{"F3phi", "F3w"} );
   
+  DefineVector( sampled_d, "ini_Tpos", q_vector< std::vector<float>, std::vector<double> >(harmonics_q), std::vector<std::string>{"trPhi", "trTposW"} );
+  DefineVector( sampled_d, "ini_Tneg", q_vector< std::vector<float>, std::vector<double> >(harmonics_q), std::vector<std::string>{"trPhi", "trTnegW"} );
+
   DefineVector(sampled_d, "ini_proton", u_vector< std::vector<float> >( harmonics ), std::vector<std::string>{"trPhi"s} );
   DefineVector( sampled_d, "protonQ", q_vector< std::vector<float>, std::vector<double> >(harmonics), std::vector<std::string>{"trPhi", "trProtonPtW"} );
   DefineVector( sampled_d, "psi_rp", psi_rp_vector< double >( harmonics ), std::vector<std::string>{"psiRP"s} );
 
   // Per-proton pT fraction: pT / sum(pT of all protons).
   sampled_d = sampled_d.Define( "protonPtFrac",
-    []( const ROOT::VecOps::RVec<float>& vec_pT, const std::vector<int>& vec_is_proton ){
+    []( const std::vector<double>& vec_pT ){
       const auto n = vec_pT.size();
-      std::vector<double> vec_fraction( n, 0. );
-      double sum_proton_pT = 0.;
-      for( size_t i=0; i<n && i<vec_is_proton.size(); ++i ){
-        if( vec_is_proton[i] )
-          sum_proton_pT += vec_pT[i];
-      }
+      auto vec_fraction = std::vector<double>{};
+      vec_fraction.reserve(n);
+      auto sum_proton_pT = std::accumulate( vec_pT.begin(), vec_pT.end(), 0.0 );
       if( sum_proton_pT <= 0. )
-        return vec_fraction;
-      for( size_t i=0; i<n && i<vec_is_proton.size(); ++i ){
-        if( vec_is_proton[i] )
-          vec_fraction[i] = vec_pT[i] / sum_proton_pT;
+        return std::vector<double>( n, 0.0 );
+      for( auto pT : vec_pT ){
+        vec_fraction.push_back( pT / sum_proton_pT );
       }
       return vec_fraction;
-    }, { "trPt", "trIsProton" } );
+    }, { "trProtonPtW" } );
 
   auto calib_file = std::unique_ptr<TFile, std::function<void(TFile*)> >{ TFile::Open( str_calib_file.c_str(), "READ"), [](auto f){ f->Close(); } };
   auto [vec_pca_mean, vec_pca_cov] = ReadMeanCov<NHARM>("proton", calib_file.get());
@@ -134,6 +128,16 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   auto f3_correction_container = MakeCorrectionContainer<Q_NHARM>( vec_f3_mean, vec_f3_cov, TwistRescale<Q_NHARM>{}, 0.005 );
   auto f3_corr_builder = CorrectorBuilder<Q_NHARM>( f3_correction_container );
   sampled_d = sampled_d.Define( "F3", f3_corr_builder.IssueQVectorCorrector<qvector_t, float>(), { "ini_F3", "centrality" } );
+
+  auto [vec_tp_mean, vec_tp_cov] = ReadMeanCov<2*Q_NHARM>("Tpos", calib_file.get());
+  auto tp_correction_container = MakeCorrectionContainer<Q_NHARM>( vec_tp_mean, vec_tp_cov, TwistRescale<Q_NHARM>{}, 0.005 );
+  auto tp_corr_builder = CorrectorBuilder<Q_NHARM>( tp_correction_container );
+  sampled_d = sampled_d.Define( "Tpos", tp_corr_builder.IssueQVectorCorrector<qvector_t, float>(), { "ini_Tpos", "centrality" } );
+
+  auto [vec_tn_mean, vec_tn_cov] = ReadMeanCov<2*Q_NHARM>("Tneg", calib_file.get());
+  auto tn_correction_container = MakeCorrectionContainer<Q_NHARM>( vec_tn_mean, vec_tn_cov, TwistRescale<Q_NHARM>{}, 0.005 );
+  auto tn_corr_builder = CorrectorBuilder<Q_NHARM>( tn_correction_container );
+  sampled_d = sampled_d.Define( "Tneg", tn_corr_builder.IssueQVectorCorrector<qvector_t, float>(), { "ini_Tneg", "centrality" } );
 
   auto proton_axes = CorrelationAxes<float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float>>{
     .axes_columns={ "centrality", "trProtonY", "trPt" },
@@ -158,25 +162,17 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
   
   auto handler = CorrelationHandler{ sampled_d, 100 };
   handler
-    .AddCorrelation( MeansDecorator<uvector_t>{ "pca_proton", { 1 } }, proton_weight, proton_axes)
-    
+    .AddCorrelation( MeansDecorator<uvector_t>{ "pca_proton", { 1, 2 } }, proton_weight, proton_axes)
+    .AddCorrelation( CovarianceDecorator<uvector_t>{ "pca_proton", { 1, 2 } }, proton_weight, proton_axes)
+    .AddCorrelation( CorrelationDecorator<uvector_t, uvector_t>{ std::vector<std::string>{ "pca_proton", "ini_proton" }, { 1, 1 } }, proton_weight, proton_axes)
+    .AddVectorCorrelation( "protonPtFrac", proton_weight, proton_axes )
+
     .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{"pca_proton", "psi_rp"}, {1, 1} }, proton_weight, proton_axes)
-    .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{"ini_proton", "psi_rp"}, {1, 1} }, proton_weight, proton_axes)
     .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{"pca_proton", "psi_rp"}, {2, 2} }, proton_weight, proton_axes)
     
     .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{ "pca_proton", "F1" }, { 1, 1 } }, proton_weight, proton_axes)
     .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{ "pca_proton", "F2" }, { 1, 1 } }, proton_weight, proton_axes)
     .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{ "pca_proton", "F3" }, { 1, 1 } }, proton_weight, proton_axes)
-
-    .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{ "ini_proton", "F1" }, { 1, 1 } }, proton_weight, proton_axes)
-    .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{ "ini_proton", "F2" }, { 1, 1 } }, proton_weight, proton_axes)
-    .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{ "ini_proton", "F3" }, { 1, 1 } }, proton_weight, proton_axes)
-    // Overlap of the PCA-corrected and raw proton u-vectors.  Used to
-    // rescale the momentum-conservation correction, because the latter
-    // is derived for the raw proton direction, while the measured v1
-    // uses the PCA-corrected u-vector.
-    .AddCorrelation( CorrelationDecorator<uvector_t, uvector_t>{ std::vector<std::string>{ "pca_proton", "ini_proton" }, { 1, 1 } }, proton_weight, proton_axes)
-    .AddVectorCorrelation( "protonPtFrac", proton_weight, proton_axes )
 
     .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"pca_proton", "F1", "F2"}, {2, 1, 1} }, proton_weight, proton_axes)
     .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t, qvector_t>{ std::vector<std::string>{"pca_proton", "F1", "F3"}, {2, 1, 1} }, proton_weight, proton_axes)
@@ -186,15 +182,21 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
     .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"F1", "F3"}, {1, 1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
     .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"F2", "F3"}, {1, 1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
 
+    .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"F1", "Tpos"}, {1, 1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"F2", "Tpos"}, {1, 1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"F3", "Tpos"}, {1, 1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+
+    .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"F1", "Tneg"}, {1, 1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"F2", "Tneg"}, {1, 1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+    .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"F3", "Tneg"}, {1, 1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
+
     .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"protonQ", "F1"}, {1, 1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
     .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"protonQ", "F2"}, {1, 1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
     .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"protonQ", "F3"}, {1, 1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
     // Self-correlation of the total proton momentum Q-vector.  It is the
     // denominator of the F-on-protonQ regression coefficient.
-    .AddCorrelation( CovarianceDecorator<qvector_t>{ "protonQ", harmonics_q }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
-
+    .AddCorrelation( CovarianceDecorator<qvector_t>{ "protonQ", { 1 } }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
     .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"protonQ", "psi_rp"}, {1, 1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
-    .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"protonQ", "psi_rp"}, {2, 2} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
 
     .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"F1", "psi_rp"}, {1, 1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
     .AddCorrelation( CorrelationDecorator<qvector_t, qvector_t>{ std::vector<std::string>{"F2", "psi_rp"}, {1, 1} }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
