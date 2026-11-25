@@ -101,22 +101,36 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
     }, { "trPt", "trIsProton" } );
 
   // Deterministic per-track random numbers for the proton-subsampling scan.
-  // The hash depends only on the event identity (run, event, multiplicity)
-  // and on the track index, so every bootstrap replica of an event receives
-  // exactly the same proton subsets.  It is independent of the probe proton
-  // and of any bootstrap column.  Subsets are nested: f25 is contained in
-  // f50, and f50 in f75.
+  // The hash is built from the event content (centrality, track multiplicity,
+  // sums of pT and of the track direction) and from the track index, so every
+  // bootstrap replica of an event receives exactly the same proton subsets.
+  // It does not depend on any bootstrap column.  Subsets are nested:
+  // f25 is contained in f50, and f50 in f75.
   sampled_d = sampled_d.Define( "protonSubsetU",
-    []( UInt_t runId, UInt_t evtId, const ROOT::VecOps::RVec<float>& vec_pT ){
-      const auto n = vec_pT.size();
-      auto base = mix_hash( ( static_cast<std::uint64_t>( runId ) << 32 )
-                            ^ static_cast<std::uint64_t>( evtId ) );
+    []( float centrality,
+        const ROOT::VecOps::RVec<float>& vec_pT,
+        const std::vector<float>& vec_phi ){
+      const auto n = std::min( vec_pT.size(), vec_phi.size() );
+      auto pT_sum = 0.0;
+      auto phi_cos = 0.0;
+      auto phi_sin = 0.0;
+      for( size_t i=0; i<n; ++i ){
+        pT_sum += vec_pT[i];
+        phi_cos += std::cos( vec_phi[i] );
+        phi_sin += std::sin( vec_phi[i] );
+      }
+      auto base = mix_hash( static_cast<std::uint64_t>( std::llround( centrality * 1e3 ) )
+                            + 0x9e3779b97f4a7c15ULL );
       base ^= mix_hash( static_cast<std::uint64_t>( n ) + 0x517cc1b727220a95ULL );
+      base ^= mix_hash( static_cast<std::uint64_t>( std::llround( pT_sum * 1e6 ) )
+                        + 0x2545f4914f6cdd1dULL );
+      base ^= mix_hash( static_cast<std::uint64_t>( std::llround( ( phi_cos + 2. ) * 1e6 ) ) );
+      base ^= mix_hash( static_cast<std::uint64_t>( std::llround( ( phi_sin + 2. ) * 1e6 ) ) );
       auto vec_u = std::vector<double>( n );
       for( size_t i=0; i<n; ++i )
         vec_u[i] = uniform_from_hash( base ^ mix_hash( i + 1 ) );
       return vec_u;
-    }, { "runId", "evtId", "trPt" } );
+    }, { "centrality", "trPt", "trPhi" } );
 
   // Mask the pT weights with an exact-size random subset: for each event
   // keep the round(f * N_proton) protons with the smallest hash values.
