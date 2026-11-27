@@ -89,17 +89,6 @@ void run8_mc_proton_correlations_selfexcl( std::string list, std::string str_eff
   sampled_d = sampled_d.Define( "F2phi", subevent_centered_phi(f2_mod), { "fhcalModId", "fhcalModX", "fhcalModY" } );
   sampled_d = sampled_d.Define( "F3phi", subevent_centered_phi(f3_mod), { "fhcalModId", "fhcalModX", "fhcalModY" } );
 
-  // Q-vector from all protons, weighted with pT.
-  sampled_d = sampled_d.Define( "trProtonPtW",
-    []( const ROOT::VecOps::RVec<float>& vec_pT, const std::vector<int>& vec_is_proton ){
-      std::vector<double> vec_w;
-      const auto n = std::min( vec_pT.size(), vec_is_proton.size() );
-      vec_w.reserve( n );
-      for( size_t i=0; i<n; ++i )
-        vec_w.push_back( vec_pT[i] * vec_is_proton[i] );
-      return vec_w;
-    }, { "trPt", "trIsProton" } );
-
   DefineVector( sampled_d, "ini_F1", q_vector< std::vector<float>, std::vector<double> >(harmonics_q), std::vector<std::string>{"F1phi", "F1w"} );
   DefineVector( sampled_d, "ini_F2", q_vector< std::vector<float>, std::vector<double> >(harmonics_q), std::vector<std::string>{"F2phi", "F2w"} );
   DefineVector( sampled_d, "ini_F3", q_vector< std::vector<float>, std::vector<double> >(harmonics_q), std::vector<std::string>{"F3phi", "F3w"} );
@@ -109,11 +98,20 @@ void run8_mc_proton_correlations_selfexcl( std::string list, std::string str_eff
 
   DefineVector(sampled_d, "ini_proton", u_vector< std::vector<float> >( harmonics ), std::vector<std::string>{"trPhi"s} );
 
-  // For each track, the pT-weighted average of all other tracks:
+  DefineVector( sampled_d, "psi_rp", psi_rp_vector< double >( harmonics ), std::vector<std::string>{"psiRP"s} );
+
+  auto calib_file = std::unique_ptr<TFile, std::function<void(TFile*)> >{ TFile::Open( str_calib_file.c_str(), "READ"), [](auto f){ f->Close(); } };
+  auto [vec_pca_mean, vec_pca_cov] = ReadMeanCov<NHARM>("proton", calib_file.get());
+  auto p_pca_container = MakeCorrectionContainer<NHARM>( vec_pca_mean, vec_pca_cov, PrincipalComponents<NHARM>{}, 0.99 );
+  auto p_pca_builder = CorrectorBuilder<NHARM>( p_pca_container );
+  sampled_d = sampled_d.Define( "pca_proton", p_pca_builder.IssueUVectorCorrector<uvector_t, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >(), { "ini_proton", "centrality", "trProtonY", "trPt" } );
+
+  // For each track, the efficiency-weighted average of all other corrected
+  // u-vectors:
   //   P_{-i} = (W P - w_i u_i)/(W - w_i).
   DefineVector( sampled_d, "P_excl",
     u_vector_excluding_self<uvector_t, std::vector<double>>(harmonics),
-    std::vector<std::string>{"ini_proton", "trProtonPtW"} );
+    std::vector<std::string>{"pca_proton", "trProtonWeight"} );
 
   sampled_d = sampled_d.Define( "P_excl_sq",
     []( const uvector_t& vec_p ){
@@ -128,13 +126,6 @@ void run8_mc_proton_correlations_selfexcl( std::string list, std::string str_eff
       }
       return vec_sq;
     }, { "P_excl" } );
-  DefineVector( sampled_d, "psi_rp", psi_rp_vector< double >( harmonics ), std::vector<std::string>{"psiRP"s} );
-
-  auto calib_file = std::unique_ptr<TFile, std::function<void(TFile*)> >{ TFile::Open( str_calib_file.c_str(), "READ"), [](auto f){ f->Close(); } };
-  auto [vec_pca_mean, vec_pca_cov] = ReadMeanCov<NHARM>("proton", calib_file.get());
-  auto p_pca_container = MakeCorrectionContainer<NHARM>( vec_pca_mean, vec_pca_cov, PrincipalComponents<NHARM>{}, 0.99 );
-  auto p_pca_builder = CorrectorBuilder<NHARM>( p_pca_container );
-  sampled_d = sampled_d.Define( "pca_proton", p_pca_builder.IssueUVectorCorrector<uvector_t, float, ROOT::VecOps::RVec<float>, ROOT::VecOps::RVec<float> >(), { "ini_proton", "centrality", "trProtonY", "trPt" } );
 
   // Alias of the corrected u-vector for the centrality-only correlations.
   auto uvector_copy = []( const uvector_t& vec_u ){ return vec_u; };
@@ -243,7 +234,7 @@ void run8_mc_proton_correlations_selfexcl( std::string list, std::string str_eff
   histo2d.push_back( sampled_d.Histo2D( {"h2_fhcal_x_y_f2", ";x (cm); y (cm)", 200, -100., 100., 200, -100., 100. }, "fhcalModX", "fhcalModY", "F2w" ) );
   histo2d.push_back( sampled_d.Histo2D( {"h2_fhcal_x_y_f3", ";x (cm); y (cm)", 200, -100., 100., 200, -100., 100. }, "fhcalModX", "fhcalModY", "F3w" ) );
 
-  auto file_out = std::unique_ptr<TFile, std::function<void(TFile*)> >{ TFile::Open( "corr_selfexcl.root", "RECREATE"), [](auto f){ f->Close(); } };
+  auto file_out = std::unique_ptr<TFile, std::function<void(TFile*)> >{ TFile::Open( "corr_selfexcl_pca.root", "RECREATE"), [](auto f){ f->Close(); } };
   handler.DumpCorrelations( file_out.get() );
   file_out->cd();
   file_out->mkdir("qa");
