@@ -83,8 +83,11 @@ inline const auto u_vector_excluding_self( const std::vector<size_t>& harmonics 
     auto total = std::map<size_t, std::pair<double,double>>{};
     for( size_t i=0; i<n; ++i ){
       for( auto h : harmonics ){
-        total[h].first  += vec_weights[i] * vec_u[i].at( h ).x;
-        total[h].second += vec_weights[i] * vec_u[i].at( h ).y;
+        const auto it = vec_u[i].find( h );
+        if( it == vec_u[i].end() )
+          continue;
+        total[h].first  += vec_weights[i] * it->second.x;
+        total[h].second += vec_weights[i] * it->second.y;
       }
     }
 
@@ -93,9 +96,10 @@ inline const auto u_vector_excluding_self( const std::vector<size_t>& harmonics 
       const auto entries = n_protons - ( vec_weights[i] > 0. ? 1 : 0 );
       for( auto h : harmonics ){
         auto qvec = qvec_t{};
-        if( denom > std::numeric_limits<double>::epsilon() ){
-          qvec.x = ( total[h].first  - vec_weights[i] * vec_u[i].at( h ).x ) / denom;
-          qvec.y = ( total[h].second - vec_weights[i] * vec_u[i].at( h ).y ) / denom;
+        const auto it = vec_u[i].find( h );
+        if( it != vec_u[i].end() && denom > std::numeric_limits<double>::epsilon() ){
+          qvec.x = ( total[h].first  - vec_weights[i] * it->second.x ) / denom;
+          qvec.y = ( total[h].second - vec_weights[i] * it->second.y ) / denom;
           qvec.n_entries = entries;
         }
         result[i][h] = qvec;

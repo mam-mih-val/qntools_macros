@@ -109,8 +109,9 @@ void run8_mc_proton_correlations_selfexcl( std::string list, std::string str_eff
   // For each track, the efficiency-weighted average of all other corrected
   // u-vectors:
   //   P_{-i} = (W P - w_i u_i)/(W - w_i).
+  const auto p_excl_harmonics = std::vector<size_t>{ 1 };
   DefineVector( sampled_d, "P_excl",
-    u_vector_excluding_self<uvector_t, std::vector<double>>(harmonics),
+    u_vector_excluding_self<uvector_t, std::vector<double>>(p_excl_harmonics),
     std::vector<std::string>{"pca_proton", "trProtonWeight"} );
 
   sampled_d = sampled_d.Define( "P_excl_sq",
