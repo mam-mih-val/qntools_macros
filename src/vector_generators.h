@@ -1,12 +1,14 @@
 #ifndef VECTOR_GENERATORS_H
 #define VECTOR_GENERATORS_H
 
+#include <algorithm>
 #include <limits>
 #include <string>
 #include <vector>
 #include <functional>
 #include <map>
 #include <cmath>
+#include <utility>
 
 #include <QVector.hpp>
 
@@ -56,6 +58,53 @@ inline const auto u_vector( const std::vector<size_t>& harmonics ){
   };
 }
 
+// For each track i, build the weighted average of the u-vectors of all
+// other tracks:
+//
+//   P_{-i} = (W P - w_i u_i) / (W - w_i),
+//   W = sum_j w_j,  P = sum_j w_j u_j / W.
+//
+// The output is a uvector_t with one q-vector per input track.
+template<typename u_vec_t, typename w_vec_t>
+inline const auto u_vector_excluding_self( const std::vector<size_t>& harmonics ){
+  return [&harmonics]( const u_vec_t& vec_u, const w_vec_t& vec_weights ){
+    auto result = uvector_t{};
+    const auto n = std::min( vec_u.size(), vec_weights.size() );
+    result.resize( n );
+
+    auto sum_w = 0.0;
+    auto n_protons = int{0};
+    for( size_t i=0; i<n; ++i ){
+      sum_w += vec_weights[i];
+      if( vec_weights[i] > 0. )
+        ++n_protons;
+    }
+
+    auto total = std::map<size_t, std::pair<double,double>>{};
+    for( size_t i=0; i<n; ++i ){
+      for( auto h : harmonics ){
+        total[h].first  += vec_weights[i] * vec_u[i].at( h ).x;
+        total[h].second += vec_weights[i] * vec_u[i].at( h ).y;
+      }
+    }
+
+    for( size_t i=0; i<n; ++i ){
+      const auto denom = sum_w - vec_weights[i];
+      const auto entries = n_protons - ( vec_weights[i] > 0. ? 1 : 0 );
+      for( auto h : harmonics ){
+        auto qvec = qvec_t{};
+        if( denom > std::numeric_limits<double>::epsilon() ){
+          qvec.x = ( total[h].first  - vec_weights[i] * vec_u[i].at( h ).x ) / denom;
+          qvec.y = ( total[h].second - vec_weights[i] * vec_u[i].at( h ).y ) / denom;
+          qvec.n_entries = entries;
+        }
+        result[i][h] = qvec;
+      }
+    }
+    return result;
+  };
+}
+
 template<typename phi_vec_t, typename w_vec_t>
 inline const auto q_vector( const std::vector<size_t>& harmonics ){
   return [&harmonics]( phi_vec_t vec_phi, w_vec_t vec_weights ){
@@ -80,6 +129,7 @@ inline const auto q_vector( const std::vector<size_t>& harmonics ){
     return qvec;
   };
 }
+
 
 template<typename T>
 inline const auto psi_rp_vector( const std::vector<size_t>& harmonics ){
