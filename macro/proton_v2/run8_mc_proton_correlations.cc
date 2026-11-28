@@ -274,9 +274,9 @@ void run8_mc_proton_correlations( std::string list, std::string str_effieciency_
     .AddCorrelation( CovarianceDecorator<qvector_t>{ "Tneg", { 1 } }, qvector_weight, qvector_axes, Qn::Stat::WeightType::REFERENCE)
 
     // Proton u-vector vs F and psi with the fraction-sampled weights,
-    // integrated over y and pT: only the centrality axis.  The input column
-    // is the same pca_proton; only the output name and the per-track weight
-    // differ.
+    // integrated over y and pT: only the centrality axis.  The pca_proton_f*
+    // columns are copies of pca_proton; the fraction enters through the
+    // per-track weight column.
     .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{"pca_proton_f100", "F1"}, {1, 1} }, proton_weight, qvector_axes)
     .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{"pca_proton_f100", "F2"}, {1, 1} }, proton_weight, qvector_axes)
     .AddCorrelation( CorrelationDecorator<uvector_t, qvector_t>{ std::vector<std::string>{"pca_proton_f100", "F3"}, {1, 1} }, proton_weight, qvector_axes)
