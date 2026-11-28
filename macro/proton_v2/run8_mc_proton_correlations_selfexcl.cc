@@ -240,6 +240,8 @@ void run8_mc_proton_correlations_selfexcl( std::string list, std::string str_eff
   file_out->cd();
   file_out->mkdir("qa");
   file_out->cd("qa");
+  auto p_excl_source = new TNamed( "P_excl_source", "pca_proton_trProtonWeight" );
+  p_excl_source->Write();
   std::for_each( histo1d.begin(), histo1d.end(), []( auto h1 ){ h1->Write(); } );
   std::for_each( histo2d.begin(), histo2d.end(), []( auto h1 ){ h1->Write(); } );
 
